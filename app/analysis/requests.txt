@@ -1,0 +1,5 @@
+POST
+https://www.linkedin.com/realtime/realtimeFrontendClientConnectivityTracking?action=sendHeartbeat
+
+POST
+https://www.linkedin.com/voyager/api/messaging/dash/presenceStatuses
