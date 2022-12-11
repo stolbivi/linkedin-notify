@@ -1,0 +1,11 @@
+{
+  "name": {
+    "message": "LinkedIn Notify"
+  },
+  "short_name": {
+    "message": "LinkedIn Notify"
+  },
+  "description": {
+    "message": "Extension to monitor activity on your LinkedIn profile"
+  }
+}
