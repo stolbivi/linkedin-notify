@@ -8,39 +8,18 @@
   "background": {
     "service_worker": "scripts/bs.js"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "*://*/*"
-      ],
-      "js": [
-        "content_scripts/inpage.js"
-      ],
-      "run_at": "document_start"
-    }
-  ],
   "action": {
     "default_icon": {
-      "128": "/content/icon-128.png"
+      "128": "content/icon-128.png"
     },
     "default_popup": "popup.html"
   },
   "permissions": [
-    "cookies"
+    "cookies",
+    "alarms"
   ],
   "host_permissions": [
     "*://*.linkedin.com/"
-  ],
-  "web_accessible_resources": [
-    {
-      "matches": [
-        "*://*/*"
-      ],
-      "use_dynamic_url": true,
-      "resources": [
-        "/scripts/inject.js"
-      ]
-    }
   ],
   "default_locale": "en",
   "manifest_version": 3

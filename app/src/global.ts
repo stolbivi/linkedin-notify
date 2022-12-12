@@ -1,6 +1,7 @@
 export enum AppMessageType {
     isLogged,
-    signIn
+    signIn,
+    test
 }
 
 export interface IAppRequest {
@@ -9,6 +10,12 @@ export interface IAppRequest {
 
 export interface IsLoggedResponse {
     isLogged: boolean
+}
+
+export interface Badges {
+    NOTIFICATIONS: number
+    MESSAGING: number
+    MY_NETWORK: number
 }
 
 export const MESSAGE_ID = 'linkedin-notify-app';

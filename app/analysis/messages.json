@@ -1,0 +1,262 @@
+{
+  "data": {
+    "_recipeType": "com.linkedin.bc13e1b1426cc03e36eab503d342cabe",
+    "_type": "com.linkedin.bc13e1b1426cc03e36eab503d342cabe",
+    "messengerConversationsBySyncToken": {
+      "_type": "com.linkedin.restli.common.CollectionResponse",
+      "metadata": {
+        "newSyncToken": "wt7w-aBh8Ir4-aBhLnVybjpsaTpmYWJyaWM6cHJvZC1sdHgxAA==",
+        "_recipeType": "com.linkedin.6614bca623fc9720b29edae666a9bdb4",
+        "_type": "com.linkedin.messenger.SyncMetadata"
+      },
+      "_recipeType": "com.linkedin.c4d40619b988a313e6dbd442876520d5",
+      "elements": [
+        {
+          "disabledFeatures": [
+            {
+              "_type": "com.linkedin.messenger.ConversationDisabledFeature",
+              "disabledFeature": "UPDATE_MESSAGE_REQUEST_STATE",
+              "reasonText": null,
+              "_recipeType": "com.linkedin.a2ca2658a10f32cd19074ed775ec6243"
+            },
+            {
+              "_type": "com.linkedin.messenger.ConversationDisabledFeature",
+              "disabledFeature": "ADD_PARTICIPANT",
+              "reasonText": null,
+              "_recipeType": "com.linkedin.a2ca2658a10f32cd19074ed775ec6243"
+            },
+            {
+              "_type": "com.linkedin.messenger.ConversationDisabledFeature",
+              "disabledFeature": "RENAMED_CONVERSATION",
+              "reasonText": null,
+              "_recipeType": "com.linkedin.a2ca2658a10f32cd19074ed775ec6243"
+            },
+            {
+              "_type": "com.linkedin.messenger.ConversationDisabledFeature",
+              "disabledFeature": "REMOVE_PARTICIPANT",
+              "reasonText": null,
+              "_recipeType": "com.linkedin.a2ca2658a10f32cd19074ed775ec6243"
+            },
+            {
+              "_type": "com.linkedin.messenger.ConversationDisabledFeature",
+              "disabledFeature": "CREATE_GROUP_CHAT_LINK",
+              "reasonText": null,
+              "_recipeType": "com.linkedin.a2ca2658a10f32cd19074ed775ec6243"
+            }
+          ],
+          "notificationStatus": "ACTIVE",
+          "creator": {
+            "hostIdentityUrn": "urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA",
+            "entityUrn": "urn:li:msg_messagingParticipant:urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA",
+            "_type": "com.linkedin.messenger.MessagingParticipant",
+            "participantType": {
+              "member": {
+                "profileUrl": "https://www.linkedin.com/in/ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA",
+                "firstName": {
+                  "_type": "com.linkedin.pemberly.text.AttributedText",
+                  "attributes": [],
+                  "text": "Pauk",
+                  "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                },
+                "lastName": {
+                  "_type": "com.linkedin.pemberly.text.AttributedText",
+                  "attributes": [],
+                  "text": "Zekvakuk",
+                  "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                },
+                "profilePicture": null,
+                "distance": "SELF",
+                "pronoun": null,
+                "_type": "com.linkedin.messenger.MemberParticipantInfo",
+                "_recipeType": "com.linkedin.7eb3a14326aeb4c8c16f24e1979ffe01",
+                "headline": {
+                  "_type": "com.linkedin.pemberly.text.AttributedText",
+                  "attributes": [],
+                  "text": "Researcher at Swanky Puss Studio",
+                  "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                }
+              },
+              "custom": null,
+              "organization": null
+            },
+            "_recipeType": "com.linkedin.01f8e638b9e4e8fdedf2a35d7e7bc3dc",
+            "backendUrn": "urn:li:member:1069077643"
+          },
+          "read": false,
+          "groupChat": false,
+          "_type": "com.linkedin.messenger.Conversation",
+          "conversationParticipants": [
+            {
+              "hostIdentityUrn": "urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA",
+              "entityUrn": "urn:li:msg_messagingParticipant:urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA",
+              "_type": "com.linkedin.messenger.MessagingParticipant",
+              "participantType": {
+                "member": {
+                  "profileUrl": "https://www.linkedin.com/in/ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA",
+                  "firstName": {
+                    "_type": "com.linkedin.pemberly.text.AttributedText",
+                    "attributes": [],
+                    "text": "Pauk",
+                    "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                  },
+                  "lastName": {
+                    "_type": "com.linkedin.pemberly.text.AttributedText",
+                    "attributes": [],
+                    "text": "Zekvakuk",
+                    "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                  },
+                  "profilePicture": null,
+                  "distance": "SELF",
+                  "pronoun": null,
+                  "_type": "com.linkedin.messenger.MemberParticipantInfo",
+                  "_recipeType": "com.linkedin.7eb3a14326aeb4c8c16f24e1979ffe01",
+                  "headline": {
+                    "_type": "com.linkedin.pemberly.text.AttributedText",
+                    "attributes": [],
+                    "text": "Researcher at Swanky Puss Studio",
+                    "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                  }
+                },
+                "custom": null,
+                "organization": null
+              },
+              "_recipeType": "com.linkedin.01f8e638b9e4e8fdedf2a35d7e7bc3dc",
+              "backendUrn": "urn:li:member:1069077643"
+            },
+            {
+              "hostIdentityUrn": "urn:li:fsd_profile:ACoAAA2hl-oBGqNMFHWt9qHPEfSKB6h1ICpL4NQ",
+              "entityUrn": "urn:li:msg_messagingParticipant:urn:li:fsd_profile:ACoAAA2hl-oBGqNMFHWt9qHPEfSKB6h1ICpL4NQ",
+              "_type": "com.linkedin.messenger.MessagingParticipant",
+              "participantType": {
+                "member": {
+                  "profileUrl": "https://www.linkedin.com/in/ACoAAA2hl-oBGqNMFHWt9qHPEfSKB6h1ICpL4NQ",
+                  "firstName": {
+                    "_type": "com.linkedin.pemberly.text.AttributedText",
+                    "attributes": [],
+                    "text": "Viktor",
+                    "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                  },
+                  "lastName": {
+                    "_type": "com.linkedin.pemberly.text.AttributedText",
+                    "attributes": [],
+                    "text": "Stolbin",
+                    "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                  },
+                  "profilePicture": {
+                    "digitalmediaAsset": null,
+                    "_type": "com.linkedin.common.VectorImage",
+                    "attribution": null,
+                    "_recipeType": "com.linkedin.5a06e769367ad613e374bfe0fb8b474c",
+                    "focalPoint": null,
+                    "artifacts": [
+                      {
+                        "width": 100,
+                        "_type": "com.linkedin.common.VectorArtifact",
+                        "_recipeType": "com.linkedin.adae398a316afc92d9372666e5da2b7d",
+                        "fileIdentifyingUrlPathSegment": "100_100/0/1652706460095?e=1676505600&v=beta&t=LUe4_IE5HdZ4IxejETbTmp1YJP95hBZDIN-FniNOHYA",
+                        "height": 100
+                      },
+                      {
+                        "width": 200,
+                        "_type": "com.linkedin.common.VectorArtifact",
+                        "_recipeType": "com.linkedin.adae398a316afc92d9372666e5da2b7d",
+                        "fileIdentifyingUrlPathSegment": "200_200/0/1652706460095?e=1676505600&v=beta&t=owVVF6od5NtLLeTHcprFnBTUMA1l_bLfsWmwiJntUnU",
+                        "height": 200
+                      },
+                      {
+                        "width": 400,
+                        "_type": "com.linkedin.common.VectorArtifact",
+                        "_recipeType": "com.linkedin.adae398a316afc92d9372666e5da2b7d",
+                        "fileIdentifyingUrlPathSegment": "400_400/0/1652706460095?e=1676505600&v=beta&t=FSAV3LJaX1-NWdBaYelP63oZYe-SGFlj9V7Wj1cTbF8",
+                        "height": 400
+                      },
+                      {
+                        "width": 800,
+                        "_type": "com.linkedin.common.VectorArtifact",
+                        "_recipeType": "com.linkedin.adae398a316afc92d9372666e5da2b7d",
+                        "fileIdentifyingUrlPathSegment": "800_800/0/1652706460095?e=1676505600&v=beta&t=kf0DsRtfWZph6C8Gha_lK-TbKxJmb7nvgEpGMg_3dfU",
+                        "height": 800
+                      }
+                    ],
+                    "rootUrl": "https://media-exp1.licdn.com/dms/image/C5603AQHLjwn_G72GlQ/profile-displayphoto-shrink_"
+                  },
+                  "distance": "DISTANCE_1",
+                  "pronoun": null,
+                  "_type": "com.linkedin.messenger.MemberParticipantInfo",
+                  "_recipeType": "com.linkedin.7eb3a14326aeb4c8c16f24e1979ffe01",
+                  "headline": {
+                    "_type": "com.linkedin.pemberly.text.AttributedText",
+                    "attributes": [],
+                    "text": "Principal Full Stack Developer at BNY Mellon",
+                    "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                  }
+                },
+                "custom": null,
+                "organization": null
+              },
+              "_recipeType": "com.linkedin.01f8e638b9e4e8fdedf2a35d7e7bc3dc",
+              "backendUrn": "urn:li:member:228693994"
+            }
+          ],
+          "unreadCount": 2,
+          "lastActivityAt": 1670870079392,
+          "contentMetadata": null,
+          "_recipeType": "com.linkedin.e0457b8b4985e4e141d2bd624526db5a",
+          "title": null,
+          "backendUrn": "urn:li:messagingThread:2-MDkzYTM2YjItYzMwZS00OTQ1LTlhYTgtYzA4ODdmMmFkMWNiXzAxMg==",
+          "conversationUrl": "https://www.linkedin.com/messaging/thread/2-MDkzYTM2YjItYzMwZS00OTQ1LTlhYTgtYzA4ODdmMmFkMWNiXzAxMg==/",
+          "shortHeadlineText": null,
+          "headlineText": null,
+          "createdAt": 1670776018300,
+          "lastReadAt": null,
+          "hostConversationActions": [],
+          "entityUrn": "urn:li:msg_conversation:(urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA,2-MDkzYTM2YjItYzMwZS00OTQ1LTlhYTgtYzA4ODdmMmFkMWNiXzAxMg==)",
+          "messages": {
+            "_type": "com.linkedin.restli.common.CollectionResponse",
+            "_recipeType": "com.linkedin.2fd852a9be7c7d3602803db62bded474",
+            "elements": [
+              {
+                "reactionSummaries": [],
+                "subject": null,
+                "_type": "com.linkedin.messenger.Message",
+                "inlineWarning": null,
+                "body": {
+                  "_type": "com.linkedin.pemberly.text.AttributedText",
+                  "attributes": [],
+                  "text": "how are you",
+                  "_recipeType": "com.linkedin.5d98a92dbd37a25932928c4b4b771881"
+                },
+                "_recipeType": "com.linkedin.7f5095a72b369d7ce1483bdfc62ee3e0",
+                "originToken": null,
+                "backendUrn": "urn:li:messagingMessage:2-MTY3MDg3MDA3OTIzOWI5NTEyNS0wMDMmMDkzYTM2YjItYzMwZS00OTQ1LTlhYTgtYzA4ODdmMmFkMWNiXzAxMg==",
+                "deliveredAt": 1670870079385,
+                "renderContentFallbackText": null,
+                "entityUrn": "urn:li:msg_message:(urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA,2-MTY3MDg3MDA3OTIzOWI5NTEyNS0wMDMmMDkzYTM2YjItYzMwZS00OTQ1LTlhYTgtYzA4ODdmMmFkMWNiXzAxMg==)",
+                "sender": {
+                  "hostIdentityUrn": "urn:li:fsd_profile:ACoAAA2hl-oBGqNMFHWt9qHPEfSKB6h1ICpL4NQ",
+                  "_type": "com.linkedin.messenger.MessagingParticipant",
+                  "_recipeType": "com.linkedin.01f8e638b9e4e8fdedf2a35d7e7bc3dc",
+                  "entityUrn": "urn:li:msg_messagingParticipant:urn:li:fsd_profile:ACoAAA2hl-oBGqNMFHWt9qHPEfSKB6h1ICpL4NQ"
+                },
+                "backendConversationUrn": "urn:li:messagingThread:2-MDkzYTM2YjItYzMwZS00OTQ1LTlhYTgtYzA4ODdmMmFkMWNiXzAxMg==",
+                "messageBodyRenderFormat": "DEFAULT",
+                "renderContent": [],
+                "conversation": {
+                  "_recipeType": "com.linkedin.e0457b8b4985e4e141d2bd624526db5a",
+                  "_type": "com.linkedin.messenger.Conversation",
+                  "entityUrn": "urn:li:msg_conversation:(urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA,2-MDkzYTM2YjItYzMwZS00OTQ1LTlhYTgtYzA4ODdmMmFkMWNiXzAxMg==)"
+                }
+              }
+            ]
+          },
+          "categories": [
+            "INBOX",
+            "PRIMARY_INBOX"
+          ],
+          "conversationTypeText": null,
+          "state": null
+        }
+      ]
+    }
+  }
+}

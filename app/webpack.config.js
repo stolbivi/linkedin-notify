@@ -1,15 +1,14 @@
-const { initEntry } = require("./webpack.core");
-const { addHTMLModules } = require("./webpack.core");
+const {initEntry} = require("./webpack.core");
+const {addHTMLModules} = require("./webpack.core");
 
 const DIST = "dist";
 
 module.exports = function (_env, argv) {
-  return [
-    addHTMLModules(
-        initEntry(DIST, "./src/popup/popup.tsx", "popup.js"),
-        "./src/popup/popup.html", "popup.html","popup.css"
-    ),
-    initEntry(DIST, "./src/bs.ts", "scripts/bs.js"),
-    initEntry(DIST, "./src/inpage.ts", "content_scripts/inpage.js"),
-  ];
+    return [
+        addHTMLModules(
+            initEntry(DIST, "./src/popup/popup.tsx", "popup.js"),
+            "./src/popup/popup.html", "popup.html", "popup.css"
+        ),
+        initEntry(DIST, "./src/bs.ts", "scripts/bs.js"),
+    ];
 };

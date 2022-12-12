@@ -1,0 +1,252 @@
+{
+  "data": {
+    "entityUrn": "urn:li:collectionResponse:4HlijJjSiEXmgxSNTaZbyKnZ88db1eTefgOnimBx6wM&#61;",
+    "elements": [
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 4,
+          "experimentId": 4533282,
+          "treatmentIndex": 2,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "onboarding/templates/components/widgets/people-you-may-know",
+          "message": "Next, connect with people you know",
+          "locale": "en_US",
+          "key": "i18n_onboarding_pymk_page_header_phase_3",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "displayName": "Onboarding PYMK CA and Concise Copy Test",
+        "description": "Test career accelerator confidence and concise related copy on PYMK onboarding widget on web.",
+        "lixTreatment": "VAR_t27955_PR_2",
+        "lixKey": "chameleon.GROWTH:global.web-copy-definition.26210",
+        "creatorDisplayName": "whchan",
+        "status": "CUSTOM_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      },
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 3,
+          "experimentId": 4510388,
+          "treatmentIndex": 0,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "organization-admin-pages-entrypoint/components/card",
+          "message": "",
+          "locale": "en_US",
+          "key": "i18n_org_page_notifications",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "displayName": "Pages-left-rail-activity-copy",
+        "description": "Testing copy for the left rail landing page from page notifications to page activity (to mirror activity tab)",
+        "lixTreatment": "control",
+        "lixKey": "chameleon.PAGES:Global.web-copy-definition.26519",
+        "creatorDisplayName": "nalberts",
+        "status": "INITIAL_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      },
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 4,
+          "experimentId": 4533279,
+          "treatmentIndex": 1,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "onboarding/templates/components/widgets/photo-upload",
+          "message": "{:hasPhoto,boolean,true#You look great, {:member,name,familiar}!|false#Add a photo for up to 21x more profile views}",
+          "locale": "en_US",
+          "key": "i18n_onboarding_photo_page_header_v2",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "displayName": "Onboarding Add Photo Social Proof Copy Test",
+        "description": "Test social proof in onboarding photo upload on web.",
+        "lixTreatment": "VAR_t27839_PR_1",
+        "lixKey": "chameleon.GROWTH:global.web-copy-definition.26106",
+        "creatorDisplayName": "whchan",
+        "status": "CUSTOM_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      },
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 5,
+          "experimentId": 4510389,
+          "treatmentIndex": 0,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "organization-admin/components/admin/admin-nav",
+          "message": "",
+          "locale": "en_US",
+          "key": "i18n_org_activity_tab",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "displayName": "Pages-Activity-Tab-Copy-Test",
+        "description": "Testing different copy for the activity tab in Pages admin view ",
+        "lixTreatment": "control",
+        "lixKey": "chameleon.PAGES:Global.web-copy-definition.26520",
+        "creatorDisplayName": "nalberts",
+        "status": "INITIAL_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      },
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 2,
+          "experimentId": 4556861,
+          "treatmentIndex": 1,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "jobs/components/detail/job-view-layout",
+          "message": "More jobs",
+          "locale": "en_US",
+          "key": "i18n_simjob_header",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "displayName": "similar-jobs-to-more-jobs-web-copy",
+        "description": "\"Similar Jobs\" to \"More jobs\" copy",
+        "lixTreatment": "VAR_t27884_PR_1",
+        "lixKey": "chameleon.CAREER-SEARCH-EVAL:GLOBAL.web-copy-definition.26145",
+        "creatorDisplayName": "rorodrig",
+        "status": "PERMANENT_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      },
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 3,
+          "experimentId": 4530437,
+          "treatmentIndex": 0,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "feed/components/identity-module",
+          "message": "",
+          "locale": "en_US",
+          "key": "premium_access_headline",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "parentLixKey": "chameleon.PREMIUM:us.copy-definition.27071.parent",
+        "displayName": "Child Test For Premium Retention - Goal Setting Chameleon Test 10.18.22",
+        "description": "Child Test Testing goal setting language across Welcome Flow and My Premium",
+        "lixTreatment": "control",
+        "parentLixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 3,
+          "experimentId": 4530440,
+          "treatmentIndex": 0,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "lixKey": "chameleon.PREMIUM:us.copy-definition.27071.child.29537",
+        "creatorDisplayName": "mramadan",
+        "status": "MAX_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      },
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 2,
+          "experimentId": 4358724,
+          "treatmentIndex": 1,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "premium/templates/components/chooser/plan-card",
+          "locale": "en_US",
+          "message": "Learn more",
+          "key": "i18n_card_select_plan",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "displayName": "card_select_plan",
+        "description": "testing &#39;Learn more&#39; on SKU cards, vs control of &#39;Select plan&#39; ",
+        "lixTreatment": "VAR_t20152_PR_1",
+        "lixKey": "chameleon.PREMIUM:us.copy.17654",
+        "creatorDisplayName": "cyount",
+        "status": "PERMANENT_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      },
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 3,
+          "experimentId": 4415314,
+          "treatmentIndex": 1,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "product-education/components/onboarding-modal",
+          "locale": "en_US",
+          "message": "View now",
+          "key": "carousel_done",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "displayName": "TBR View Now CTA Feed Takeover",
+        "description": "Changing Done to View now for curated communities feed takeover for Retail+ TBR members",
+        "lixTreatment": "VAR_t22813_PR_1",
+        "lixKey": "chameleon.GROWTH:en.copy.20296",
+        "creatorDisplayName": "whchan",
+        "status": "MAX_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      },
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 3,
+          "experimentId": 4401348,
+          "treatmentIndex": 0,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "onboarding/templates/components/widgets/get-the-app",
+          "locale": "en_US",
+          "message": "Get the LinkedIn app",
+          "key": "i18n_onboarding_get_the_app_page_header",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "displayName": "String i18n_onboarding_get_the_app_page_header, GTA copy test",
+        "description": "String i18n_onboarding_get_the_app_page_header, Header and subheader copy test for GET_THE_APP widget",
+        "lixTreatment": "control",
+        "lixKey": "chameleon.ONBOARDING:global.copy.19594.child.22158",
+        "creatorDisplayName": "zihliu",
+        "status": "MAX_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      },
+      {
+        "lixTracking": {
+          "urn": "urn:li:member:1069077643",
+          "segmentIndex": 3,
+          "experimentId": 4401349,
+          "treatmentIndex": 0,
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigLixTrackingInfo"
+        },
+        "data": {
+          "namespace": "onboarding/templates/components/widgets/get-the-app",
+          "locale": "en_US",
+          "message": "Keep opportunity in your pocket wherever you are",
+          "key": "i18n_onboarding_get_the_app_page_subheader",
+          "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigDataI18n"
+        },
+        "displayName": "String i18n_onboarding_get_the_app_page_subheader, GTA copy test",
+        "description": "String i18n_onboarding_get_the_app_page_subheader, Header and subheader copy test for GET_THE_APP widget",
+        "lixTreatment": "control",
+        "lixKey": "chameleon.ONBOARDING:global.copy.19594.child.22159",
+        "creatorDisplayName": "zihliu",
+        "status": "MAX_RAMP",
+        "$type": "com.linkedin.voyager.dash.segments.chameleon.ChameleonConfigItem"
+      }
+    ],
+    "paging": {
+      "count": 10,
+      "start": 0,
+      "links": []
+    },
+    "$type": "com.linkedin.restli.common.CollectionResponse"
+  },
+  "included": []
+}

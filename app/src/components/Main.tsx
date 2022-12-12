@@ -11,10 +11,11 @@ export const Main: React.FC<Props> = ({}) => {
     const messages = new Messages();
 
     useEffect(() => {
-        messages.runtimeMessage<IAppRequest, IsLoggedResponse>(MESSAGE_ID, {type: AppMessageType.isLogged}, (response) => {
-            console.debug('Response', response);
-            setIsLogged(response.isLogged);
-        }).then(/* nada */)
+        messages.runtimeMessage<IAppRequest, IsLoggedResponse>(MESSAGE_ID, {type: AppMessageType.isLogged},
+            (r) => {
+                console.debug('Response', r);
+                setIsLogged(r.isLogged);
+            }).then(/* nada */)
     }, []);
 
     const signIn = () => {
@@ -23,7 +24,7 @@ export const Main: React.FC<Props> = ({}) => {
 
     return (
         <div className="p-5 d-flex flex-column justify-content-center align-items-center">
-            {isLogged
+            {isLogged === true
                 ? <div>You are logged in!</div>
                 : <div onClick={signIn} style={{cursor: "pointer"}}>Sign in</div>
             }
