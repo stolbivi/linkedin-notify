@@ -1,7 +1,8 @@
 export enum AppMessageType {
-    isLogged,
-    signIn,
-    test
+    IsLogged,
+    SignIn,
+    Conversations,
+    Test
 }
 
 export interface IAppRequest {
@@ -10,6 +11,10 @@ export interface IAppRequest {
 
 export interface IsLoggedResponse {
     isLogged: boolean
+}
+
+export interface ConversationsResponse {
+    conversations: any
 }
 
 export interface Badges {

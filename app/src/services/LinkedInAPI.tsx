@@ -6,6 +6,7 @@ export class LinkedInAPI {
     public static readonly THE_COOKIE = 'li_at';
     private static readonly BASE = 'https://www.linkedin.com/voyager/api/';
     private static readonly CSRF = 'JSESSIONID';
+    private static readonly MAGIC_NUMBER = 'd5089df1b5a665ee527be74b9ab1859e';
 
     public isLogged(cookies: Cookie[]): boolean {
         const theCookie = cookies.find(c => c.name === LinkedInAPI.THE_COOKIE);
@@ -22,6 +23,10 @@ export class LinkedInAPI {
             .then(response => response.json());
     }
 
+    public extractProfileUrn(response: any): string {
+        return response.miniProfile?.entityUrn?.split(":").pop();
+    }
+
     public getTabBadges(token: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + "voyagerCommunicationsTabBadges?q=tabBadges&countFrom=0", this.getRequest(token))
             .then(response => response.json());
@@ -32,10 +37,49 @@ export class LinkedInAPI {
         return Object.assign({}, ...badges);
     }
 
-    // const getProfileUrn = (codes: Array<any>): string => {
-    // const profile = codes.find(c => c.data && c.data["$type"] === "com.linkedin.voyager.common.Me") as any;
-    // return profile.data["*miniProfile"].split(":").pop();
-    // }
+    public getConversations(token: string, profileUrn: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerConversations.${LinkedInAPI.MAGIC_NUMBER}&variables=(mailboxUrn:urn%3Ali%3Afsd_profile%3A${profileUrn})`, this.getRequest(token))
+            .then(response => response.json());
+    }
+
+    public extractConversations(response: any): Array<any> {
+        const elements = response.data?.messengerConversationsBySyncToken?.elements as Array<any>;
+
+        function getParticipants(participants: Array<any>) {
+            return participants.map(p => ({
+                urn: p.entityUrn.split(":").pop(),
+                profileUrl: p.participantType?.member?.profileUrl,
+                firstName: p.participantType?.member?.firstName?.text,
+                lastName: p.participantType?.member?.lastName?.text,
+                profilePicture: {
+                    rootUrl: p.participantType?.member?.profilePicture?.rootUrl,
+                    artifacts: p.participantType?.member?.profilePicture?.artifacts?.map((a: any) => ({
+                        width: a.width,
+                        height: a.height,
+                        path: a.fileIdentifyingUrlPathSegment
+                    }))
+                },
+                distance: p.participantType?.member?.distance
+            }))
+        }
+
+        function getMessages(messages: Array<any>) {
+            return messages.map(m => ({
+                deliveredAt: m.deliveredAt,
+                urn: m.entityUrn,
+                body: m.body?.text
+            }));
+        }
+
+        const result = elements.map(e => ({
+            groupChat: e.groupChat,
+            unreadCount: e.unreadCount,
+            lastReadAt: e.lastReadAt,
+            conversationParticipants: getParticipants(e.conversationParticipants),
+            messages: getMessages(e.messages?.elements)
+        }));
+        return result;
+    }
 
     private getRequest(token: string): any {
         return {

@@ -1,10 +1,13 @@
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, Badges, IAppRequest, MESSAGE_ID} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
+import {LinkedInHelper} from "./services/LinkedInHelper";
 import Port = chrome.runtime.Port;
 
 const messages = new Messages();
 const api = new LinkedInAPI();
+//@ts-ignore
+const helper = new LinkedInHelper();
 
 // adding popup
 chrome.action.onClicked.addListener(() => {
@@ -45,23 +48,32 @@ messages.onMessage<IAppRequest>(MESSAGE_ID,
     (message: IAppRequest, port: Port) => {
         console.debug('Message:', message);
         switch (message.type) {
-            case AppMessageType.isLogged:
+            case AppMessageType.IsLogged:
                 return getCookies(DOMAIN)
                     .then(cookies => api.isLogged(cookies))
                     .then(async l => {
                         await updateAction(l);
                         port.postMessage({isLogged: l});
                         return message;
-                    })
-            case AppMessageType.signIn:
+                    });
+            case AppMessageType.SignIn:
                 return chrome.tabs.create({url: "https://" + DOMAIN, selected: true})
                     .then(_ => (message));
-            case AppMessageType.test:
+            case AppMessageType.Conversations:
                 return getCookies(DOMAIN)
-                    .then(cookies => api.getCsrfToken(cookies))
-                    .then(token => api.getTabBadges(token))
-                    .then(result => console.log(JSON.stringify(result)))
-                    .then(_ => (message));
+                    .then(async cookies => api.getCsrfToken(cookies))
+                    .then(async token => {
+                        const meResponse = await api.getMe(token);
+                        const profileUrn = api.extractProfileUrn(meResponse);
+                        const conversationResponse = await api.getConversations(token, profileUrn);
+                        const conversations = api.extractConversations(conversationResponse);
+                        port.postMessage({conversations});
+                        return message;
+                    });
+            case AppMessageType.Test:
+                return getCookies(DOMAIN)
+                    .then(cookies => helper.getAllCodes("https://www.linkedin.com/messaging/", cookies))
+                    .then(_ => message);
             default:
                 console.warn('Unsupported message type for:', message)
                 return Promise.resolve(message);
