@@ -22,10 +22,14 @@ export const Main: React.FC<Props> = ({}) => {
         return messages.runtimeMessage<IAppRequest, IsLoggedResponse>(MESSAGE_ID, {type: AppMessageType.signIn});
     }
 
+    const test = () => {
+        return messages.runtimeMessage<IAppRequest, IsLoggedResponse>(MESSAGE_ID, {type: AppMessageType.test});
+    }
+
     return (
         <div className="p-5 d-flex flex-column justify-content-center align-items-center">
             {isLogged === true
-                ? <div>You are logged in!</div>
+                ? <div onClick={test}>You are logged in!</div>
                 : <div onClick={signIn} style={{cursor: "pointer"}}>Sign in</div>
             }
         </div>
