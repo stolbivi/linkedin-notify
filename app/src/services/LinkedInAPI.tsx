@@ -1,6 +1,14 @@
 import Cookie = chrome.cookies.Cookie;
 import {Badges} from "../global";
 
+function extractArtifacts(artifacts: Array<any>) {
+    return artifacts.map((a: any) => ({
+        width: a.width,
+        height: a.height,
+        path: a.fileIdentifyingUrlPathSegment
+    }))
+}
+
 export class LinkedInAPI {
 
     public static readonly THE_COOKIE = 'li_at';
@@ -43,7 +51,6 @@ export class LinkedInAPI {
     }
 
     public extractConversations(response: any): Array<any> {
-        const elements = response.data?.messengerConversationsBySyncToken?.elements as Array<any>;
 
         function getParticipants(participants: Array<any>) {
             return participants.map(p => ({
@@ -53,11 +60,7 @@ export class LinkedInAPI {
                 lastName: p.participantType?.member?.lastName?.text,
                 profilePicture: {
                     rootUrl: p.participantType?.member?.profilePicture?.rootUrl,
-                    artifacts: p.participantType?.member?.profilePicture?.artifacts?.map((a: any) => ({
-                        width: a.width,
-                        height: a.height,
-                        path: a.fileIdentifyingUrlPathSegment
-                    }))
+                    artifacts: extractArtifacts(p.participantType?.member?.profilePicture?.artifacts)
                 },
                 distance: p.participantType?.member?.distance
             }))
@@ -71,12 +74,51 @@ export class LinkedInAPI {
             }));
         }
 
+        const elements = response.data?.messengerConversationsBySyncToken?.elements as Array<any>;
         const result = elements.map(e => ({
             groupChat: e.groupChat,
             unreadCount: e.unreadCount,
             lastReadAt: e.lastReadAt,
             conversationParticipants: getParticipants(e.conversationParticipants),
             messages: getMessages(e.messages?.elements)
+        }));
+        return result;
+    }
+
+    public getNotifications(token: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + "voyagerIdentityDashNotificationCards?decorationId=com.linkedin.voyager.dash.deco.identity.notifications.CardsCollectionWithInjectionsNoPills-9&count=10&filterVanityName=all&q=filterVanityName", this.getRequest(token))
+            .then(response => response.json());
+    }
+
+    public extractNotifications(response: any): Array<any> {
+        function getHeaderImage(i: any) {
+            const p = i?.attributes?.find((a: any) => a.detailData?.profilePicture)
+            if (p) {
+                const picture = p.detailData.profilePicture;
+                const artifacts = picture.profilePicture?.displayImageReference?.vectorImage?.artifacts;
+                if (artifacts) {
+                    return extractArtifacts(artifacts);
+                }
+            }
+        }
+
+        function getActions(actions: Array<any>) {
+            return actions.map((a: any) => ({
+                displayText: a.displayText?.text,
+                actionTarget: a.actionTarget
+            }))
+        }
+
+        const elements = response.elements as Array<any>;
+        const result = elements.map(e => ({
+            read: e.read,
+            publishedAt: e.publishedAt,
+            headerImage: getHeaderImage(e.headerImage),
+            headline: e.headline?.text,
+            subHeadline: e.subHeadline?.text,
+            cardAction: e.cardAction?.actionTarget,
+            actions: getActions(e.actions)
+
         }));
         return result;
     }

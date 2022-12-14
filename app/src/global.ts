@@ -2,6 +2,7 @@ export enum AppMessageType {
     IsLogged,
     SignIn,
     Conversations,
+    Notifications,
     Test
 }
 
@@ -15,6 +16,10 @@ export interface IsLoggedResponse {
 
 export interface ConversationsResponse {
     conversations: any
+}
+
+export interface NotificationsResponse {
+    notifications: any
 }
 
 export interface Badges {

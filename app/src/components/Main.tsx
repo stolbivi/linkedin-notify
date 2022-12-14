@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, IAppRequest, IsLoggedResponse, MESSAGE_ID} from "../global";
+// import {Conversations} from "./Conversations";
+import {Notifications} from "./Notifications";
 import {Conversations} from "./Conversations";
 
 type Props = {};
@@ -25,7 +27,11 @@ export const Main: React.FC<Props> = ({}) => {
         <div className="p-5 d-flex flex-column justify-content-center align-items-center">
             {isLogged === false
                 ? <div onClick={signIn} style={{cursor: "pointer"}}>Sign in</div>
-                : <Conversations/>
+                :
+                <div>
+                    <Conversations/>
+                    <Notifications/>
+                </div>
             }
         </div>
     );

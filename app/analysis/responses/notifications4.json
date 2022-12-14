@@ -1,0 +1,1611 @@
+[
+  [
+    {
+      "metadata": {
+        "numUnseen": 3,
+        "notificationFilter": {
+          "vanityName": "all",
+          "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1313430062",
+          "entityUrn": "urn:li:fsd_notificationFilter:ALL",
+          "banners": {
+            "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1268747437",
+            "elements": []
+          },
+          "productEducations": {
+            "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1606069696",
+            "elements": []
+          }
+        },
+        "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1582908598",
+        "nextStart": 10,
+        "latestPublishedAt": 1670976752060
+      },
+      "elements": [
+        {
+          "read": false,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,EDITORIAL_EVENING_RUNDOWN_INAPP,urn:li:none)",
+          "publishedAt": 1670976752060,
+          "entityUrn": "urn:li:fsd_notificationCard:(EDITORIAL_EVENING_RUNDOWN_INAPP,urn:li:none)",
+          "headerImage": {
+            "attributes": [
+              {
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "imageUrl": {
+                    "url": "https://media.licdn.com/media/AAYQAgQJAAgAAQAAAAAAADy5uqvd3sSVRcq_xVLI-hEXbg.png",
+                    "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1529112441"
+                  }
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/feed/update/urn%3Ali%3Aactivity%3A7008575206906621952",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_EVENING_RUNDOWN_INAPP",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_EVENING_RUNDOWN_INAPP)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_EVENING_RUNDOWN_INAPP)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_EVENING_RUNDOWN_INAPP",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_EVENING_RUNDOWN_INAPP)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_EVENING_RUNDOWN_INAPP)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "Tuesday Wrap-Up: Feds charge SBF; big payday for Boeing; and more news.",
+            "attributesV2": [
+              {
+                "start": 8,
+                "length": 7,
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextAttributeV2",
+                "detailDataUnion": {
+                  "style": "BOLD"
+                }
+              }
+            ],
+            "accessibilityText": "Tuesday Wrap-Up: Feds charge SBF; big payday for Boeing; and more news."
+          },
+          "actions": [],
+          "trackingId": "LQLqm7S4Ty6Ngd16xK7ISw=="
+        },
+        {
+          "read": false,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,EDITORIAL_BLAZE_INAPP,urn:li:none)",
+          "publishedAt": 1670974449692,
+          "entityUrn": "urn:li:fsd_notificationCard:(EDITORIAL_BLAZE_INAPP,urn:li:none)",
+          "headerImage": {
+            "attributes": [
+              {
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "icon": "IMG_NEWS_PAPER_STACK_56DP"
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/feed/news/6109850",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_BLAZE_INAPP",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_BLAZE_INAPP)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_BLAZE_INAPP)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_BLAZE_INAPP",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_BLAZE_INAPP)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_BLAZE_INAPP)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "Avoid being catfished by an employer with these tips.",
+            "attributesV2": [],
+            "accessibilityText": "Avoid being catfished by an employer with these tips."
+          },
+          "actions": [],
+          "trackingId": "2JtQaCHwR8e5jwB1D2RNGg=="
+        },
+        {
+          "read": false,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,WVMP_V2,urn:li:uniqueSuffix:(urn:li:string:WVMP_V2,WUMBHn0zQQeIcxJILKgvvQ))",
+          "publishedAt": 1670967670452,
+          "entityUrn": "urn:li:fsd_notificationCard:(WVMP_V2,urn:li:uniqueSuffix:(urn:li:string:WVMP_V2,WUMBHn0zQQeIcxJILKgvvQ))",
+          "headerImage": {
+            "attributes": [
+              {
+                "detailData": {
+                  "profilePicture": {
+                    "$recipeType": "com.linkedin.voyager.dash.deco.common.image.Profile",
+                    "entityUrn": "urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA",
+                    "$anti_abuse_metadata": {
+                      "/phoneticFirstName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/industryV2Urn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/tempStatus": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/defaultToActivityTab": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/companyNameOnProfileTopCardShown": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/summary": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/influencer": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/trackingId": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/address": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/objectUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/emailRequired": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/geoLocationBackfilled": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/versionTag": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/premium": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/headline": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/showPremiumSubscriberBadge": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/educationCardUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/experienceCardUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/locationName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/industryUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/educationOnProfileTopCardShown": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/trackingMemberId": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/lastName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/memorialized": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/tempStatusEmoji": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/entityUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/lastNamePronunciationHint": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/firstName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/firstNamePronunciationHint": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/phoneticLastName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/endorsementsEnabled": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/maidenName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/creator": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/student": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/iweWarned": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/imFollowsPromoLegoTrackingId": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      },
+                      "/publicIdentifier": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:1069077643"
+                        }
+                      }
+                    }
+                  }
+                },
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "profilePicture": "urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA"
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel",
+            "actionTarget": "/in/pauk%2Dzekvakuk%2D23704725a",
+            "accessibilityText": "View Pauk Zekvakuk’s profile"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/me/profile-views",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:WVMP_V2",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,WVMP_V2)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,WVMP_V2)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:WVMP_V2",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,WVMP_V2)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,WVMP_V2)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "Pauk Zekvakuk viewed your profile",
+            "attributesV2": [
+              {
+                "start": 0,
+                "length": 13,
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextAttributeV2",
+                "detailDataUnion": {
+                  "style": "BOLD"
+                }
+              }
+            ]
+          },
+          "actions": [
+            {
+              "displayText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "See all views",
+                "attributesV2": []
+              },
+              "reloadCard": false,
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+              "actionTarget": "/me/profile-views",
+              "type": "DISPLAY"
+            }
+          ],
+          "trackingId": "PBlwRks+QIG9ylU9kPH/7A=="
+        },
+        {
+          "read": true,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,EDITORIAL_INSIGHT,urn:li:uniqueSuffix:(urn:li:activity:7008525027688013825,m4M7mhDHQWmjIb6cRJwa6g))",
+          "publishedAt": 1670964220866,
+          "entityUrn": "urn:li:fsd_notificationCard:(EDITORIAL_INSIGHT,urn:li:uniqueSuffix:(urn:li:activity:7008525027688013825,m4M7mhDHQWmjIb6cRJwa6g))",
+          "headerImage": {
+            "attributes": [
+              {
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "icon": "IMG_NEWS_PAPER_STACK_56DP"
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/feed/update/urn%3Ali%3Aactivity%3A7008525027688013825",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_INSIGHT",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_INSIGHT",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "NYC is trying to make its subways safer. Here's how the city is beefing up security.",
+            "attributesV2": [],
+            "accessibilityText": "NYC is trying to make its subways safer. Here's how the city is beefing up security."
+          },
+          "actions": [],
+          "trackingId": "JBQ049pXQ9KspP2TbADHCA=="
+        },
+        {
+          "read": true,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,WVMP_V2,urn:li:uniqueSuffix:(urn:li:string:WVMP_V2,HNBURf19R6i3CawDKfHakQ))",
+          "publishedAt": 1670962270369,
+          "entityUrn": "urn:li:fsd_notificationCard:(WVMP_V2,urn:li:uniqueSuffix:(urn:li:string:WVMP_V2,HNBURf19R6i3CawDKfHakQ))",
+          "headerImage": {
+            "attributes": [
+              {
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "icon": "IMG_PROFILE_CARDS_PREMIUM_56DP"
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/me/profile-views",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:WVMP_V2",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,WVMP_V2)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,WVMP_V2)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:WVMP_V2",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,WVMP_V2)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,WVMP_V2)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "1 person viewed your profile",
+            "attributesV2": [
+              {
+                "start": 0,
+                "length": 8,
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextAttributeV2",
+                "detailDataUnion": {
+                  "style": "BOLD"
+                }
+              }
+            ]
+          },
+          "actions": [
+            {
+              "displayText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Retry Premium Free",
+                "attributesV2": []
+              },
+              "reloadCard": false,
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+              "actionTarget": "/premium/products?upsellOrderOrigin=premium_wvmp_upsell_notifications&premiumFeatureType=WVMP",
+              "type": "DISPLAY"
+            }
+          ],
+          "trackingId": "QGt4VJK4RhqmQx/Xg3LRbA=="
+        },
+        {
+          "read": true,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,COMMENTS_BY_YOUR_NETWORK,urn:li:uniqueSuffix:(urn:li:activity:7008404534825730048,8cmJI5ohTiaoFTQ0aG_XUA))",
+          "publishedAt": 1670960470692,
+          "entityUrn": "urn:li:fsd_notificationCard:(COMMENTS_BY_YOUR_NETWORK,urn:li:uniqueSuffix:(urn:li:activity:7008404534825730048,8cmJI5ohTiaoFTQ0aG_XUA))",
+          "headerImage": {
+            "attributes": [
+              {
+                "detailData": {
+                  "profilePicture": {
+                    "profilePicture": {
+                      "displayImageReference": {
+                        "vectorImage": {
+                          "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorImageOnlyRootUrlAndAttribution",
+                          "rootUrl": "https://media-exp1.licdn.com/dms/image/C4E03AQFDqRzDDm2XXw/profile-displayphoto-shrink_",
+                          "artifacts": [
+                            {
+                              "width": 100,
+                              "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                              "fileIdentifyingUrlPathSegment": "100_100/0/1581980561724?e=1676505600&v=beta&t=To7TvNrgMrpLIDLcB7wtfkpRGYMYfYf0x9qxS8A8bBA",
+                              "expiresAt": 1676505600000,
+                              "height": 100
+                            },
+                            {
+                              "width": 200,
+                              "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                              "fileIdentifyingUrlPathSegment": "200_200/0/1581980561724?e=1676505600&v=beta&t=NMEq2Il5rG4UiNntbodL4lq13Bk8tuLUfqNUkVVtiCo",
+                              "expiresAt": 1676505600000,
+                              "height": 200
+                            },
+                            {
+                              "width": 400,
+                              "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                              "fileIdentifyingUrlPathSegment": "400_400/0/1581980561724?e=1676505600&v=beta&t=rxAyGmlfvWdLJ_7Qs54Rv3PwlsRYimojixat2v62LA0",
+                              "expiresAt": 1676505600000,
+                              "height": 400
+                            },
+                            {
+                              "width": 800,
+                              "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                              "fileIdentifyingUrlPathSegment": "800_800/0/1581980561724?e=1676505600&v=beta&t=oKZcs38tkpbdqnbnTRktOp6brh5n-KmYbj04130_jJs",
+                              "expiresAt": 1676505600000,
+                              "height": 800
+                            }
+                          ]
+                        }
+                      },
+                      "$recipeType": "com.linkedin.voyager.dash.deco.common.image.PhotoFilterPicture"
+                    },
+                    "$recipeType": "com.linkedin.voyager.dash.deco.common.image.Profile",
+                    "entityUrn": "urn:li:fsd_profile:ACoAAADSUCMBf3VxIQlp_-uVbsQktF0lYXOZen4",
+                    "$anti_abuse_metadata": {
+                      "/phoneticFirstName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/industryV2Urn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/tempStatus": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/defaultToActivityTab": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/companyNameOnProfileTopCardShown": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/summary": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/influencer": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/trackingId": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/address": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/objectUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/emailRequired": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/geoLocationBackfilled": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/versionTag": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/premium": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/headline": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/showPremiumSubscriberBadge": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/educationCardUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/experienceCardUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/locationName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/industryUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/educationOnProfileTopCardShown": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/trackingMemberId": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/lastName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/memorialized": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/tempStatusEmoji": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/entityUrn": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/lastNamePronunciationHint": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/firstName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/firstNamePronunciationHint": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/phoneticLastName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/endorsementsEnabled": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/maidenName": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/creator": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/student": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/iweWarned": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/imFollowsPromoLegoTrackingId": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      },
+                      "/publicIdentifier": {
+                        "sourceUrns": {
+                          "com.linkedin.common.urn.MemberUrn": "urn:li:member:13783075"
+                        }
+                      }
+                    }
+                  }
+                },
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "profilePicture": "urn:li:fsd_profile:ACoAAADSUCMBf3VxIQlp_-uVbsQktF0lYXOZen4"
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel",
+            "actionTarget": "/in/dexterwilson",
+            "accessibilityText": "View Dexter Wilson’s profile"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/feed/update/urn%3Ali%3Aactivity%3A7008404534825730048?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7008404534825730048%2C7008510487348805632%29&dashCommentUrn=urn%3Ali%3Afsd%5Fcomment%3A%287008510487348805632%2Curn%3Ali%3Aactivity%3A7008404534825730048%29&origin=COMMENTS_BY_YOUR_NETWORK",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:COMMENTS_BY_YOUR_NETWORK",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,COMMENTS_BY_YOUR_NETWORK)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,COMMENTS_BY_YOUR_NETWORK)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "notificationTypeUrn": "urn:li:notificationType:COMMENTS_BY_YOUR_NETWORK",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop seeing Dexter’s updates",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Mute Dexter Wilson",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,COMMENTS_BY_YOUR_NETWORK)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              },
+              "optionType": "UNFOLLOW",
+              "followingStateUrn": "urn:li:fsd_followingState:urn:li:fsd_profile:ACoAAADSUCMBf3VxIQlp_-uVbsQktF0lYXOZen4",
+              "followingState": {
+                "entityUrn": "urn:li:fsd_followingState:urn:li:fsd_profile:ACoAAADSUCMBf3VxIQlp_-uVbsQktF0lYXOZen4",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1572650367"
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,COMMENTS_BY_YOUR_NETWORK)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications about Dexter. You can re-follow them from their profile.",
+                "attributesV2": []
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:COMMENTS_BY_YOUR_NETWORK",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,COMMENTS_BY_YOUR_NETWORK)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,COMMENTS_BY_YOUR_NETWORK)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "Dexter Wilson commented on AYR, formerly Singularity Systems's post: Welcome!!! Excited to see the results of the POC.",
+            "attributesV2": [
+              {
+                "start": 0,
+                "length": 13,
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextAttributeV2",
+                "detailDataUnion": {
+                  "style": "BOLD"
+                }
+              },
+              {
+                "start": 27,
+                "length": 35,
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextAttributeV2",
+                "detailDataUnion": {
+                  "style": "BOLD"
+                }
+              }
+            ]
+          },
+          "actions": [],
+          "trackingId": "yxrgh8ptRzi5Q3+yGf8vKg=="
+        },
+        {
+          "read": true,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,EDITORIAL_INSIGHT,urn:li:uniqueSuffix:(urn:li:contentTopic:5090593,8ClJjz27QIm8e28yGCzazg))",
+          "publishedAt": 1670958408570,
+          "entityUrn": "urn:li:fsd_notificationCard:(EDITORIAL_INSIGHT,urn:li:uniqueSuffix:(urn:li:contentTopic:5090593,8ClJjz27QIm8e28yGCzazg))",
+          "headerImage": {
+            "attributes": [
+              {
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "icon": "IMG_NEWS_PAPER_STACK_56DP"
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/feed/news/5090593",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_INSIGHT",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_INSIGHT",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "Millennials are spending less on travel and gifts this holiday season. See what's behind the cutbacks.",
+            "attributesV2": [],
+            "accessibilityText": "Millennials are spending less on travel and gifts this holiday season. See what's behind the cutbacks."
+          },
+          "actions": [],
+          "trackingId": "NElfs3EwSFyd37KrPo9tRQ=="
+        },
+        {
+          "read": true,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,EDITORIAL_INSIGHT,urn:li:uniqueSuffix:(urn:li:contentTopic:5517820,j8jBnqpdR1WEIJQnTB12Kg))",
+          "publishedAt": 1670956974522,
+          "entityUrn": "urn:li:fsd_notificationCard:(EDITORIAL_INSIGHT,urn:li:uniqueSuffix:(urn:li:contentTopic:5517820,j8jBnqpdR1WEIJQnTB12Kg))",
+          "headerImage": {
+            "attributes": [
+              {
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "icon": "IMG_NEWS_PAPER_STACK_56DP"
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/feed/news/5517820",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_INSIGHT",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_INSIGHT",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_INSIGHT)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "U.S. scientists just made a major energy breakthrough that 'will go down in the history books.' Here's the latest. ",
+            "attributesV2": [],
+            "accessibilityText": "U.S. scientists just made a major energy breakthrough that 'will go down in the history books.' Here's the latest. "
+          },
+          "actions": [],
+          "trackingId": "Lq5o9SIIRROhedcQGiRlew=="
+        },
+        {
+          "read": true,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,JYMBII_V2,urn:li:member:228693994)",
+          "publishedAt": 1670952883645,
+          "entityUrn": "urn:li:fsd_notificationCard:(JYMBII_V2,urn:li:member:228693994)",
+          "headerImage": {
+            "attributes": [
+              {
+                "detailData": {
+                  "companyLogo": {
+                    "logo": {
+                      "vectorImage": {
+                        "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorImageOnlyRootUrlAndAttribution",
+                        "rootUrl": "https://media-exp1.licdn.com/dms/image/C560BAQE88xCsONDULQ/company-logo_",
+                        "artifacts": [
+                          {
+                            "width": 200,
+                            "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                            "fileIdentifyingUrlPathSegment": "200_200/0/1618231291419?e=1678924800&v=beta&t=EVyNjp1VDUhmRag7vTConkrnqD9H1JhDP2FJSjfUcI8",
+                            "expiresAt": 1678924800000,
+                            "height": 200
+                          },
+                          {
+                            "width": 100,
+                            "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                            "fileIdentifyingUrlPathSegment": "100_100/0/1618231291419?e=1678924800&v=beta&t=729QuuwjMFqpA1P41jZ45IS5jNAsZTeWjSx3oAZ6qEI",
+                            "expiresAt": 1678924800000,
+                            "height": 100
+                          },
+                          {
+                            "width": 400,
+                            "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                            "fileIdentifyingUrlPathSegment": "400_400/0/1618231291419?e=1678924800&v=beta&t=_JO1bNS-_5N8_Ieb5pRfTyVnD_EEH5GLShGIt6bRndc",
+                            "expiresAt": 1678924800000,
+                            "height": 400
+                          }
+                        ]
+                      }
+                    },
+                    "$recipeType": "com.linkedin.voyager.dash.deco.common.image.Company",
+                    "entityUrn": "urn:li:fsd_company:1035"
+                  }
+                },
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "companyLogo": "urn:li:fsd_company:1035"
+                }
+              },
+              {
+                "detailData": {
+                  "companyLogo": {
+                    "logo": {
+                      "vectorImage": {
+                        "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorImageOnlyRootUrlAndAttribution",
+                        "rootUrl": "https://media-exp1.licdn.com/dms/image/C4D0BAQHiNSL4Or29cg/company-logo_",
+                        "artifacts": [
+                          {
+                            "width": 200,
+                            "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                            "fileIdentifyingUrlPathSegment": "200_200/0/1519856215226?e=1678924800&v=beta&t=1tkgT6b1iCjiUDO0wMMflArD-6vCQ5ScZ1PDK3hfcNw",
+                            "expiresAt": 1678924800000,
+                            "height": 200
+                          },
+                          {
+                            "width": 100,
+                            "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                            "fileIdentifyingUrlPathSegment": "100_100/0/1519856215226?e=1678924800&v=beta&t=1BKJHlpTkzLd9xc2FxHYwdGUcamMsF79whJx4O93GvA",
+                            "expiresAt": 1678924800000,
+                            "height": 100
+                          },
+                          {
+                            "width": 400,
+                            "$recipeType": "com.linkedin.voyager.dash.deco.common.VectorArtifact",
+                            "fileIdentifyingUrlPathSegment": "400_400/0/1519856215226?e=1678924800&v=beta&t=E_Dzi1jPVdN-hHB-Vxj8P5sQGb6zwDGJQ3BaRjajdi8",
+                            "expiresAt": 1678924800000,
+                            "height": 400
+                          }
+                        ]
+                      }
+                    },
+                    "$recipeType": "com.linkedin.voyager.dash.deco.common.image.Company",
+                    "entityUrn": "urn:li:fsd_company:1441"
+                  }
+                },
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "companyLogo": "urn:li:fsd_company:1441"
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/jobs/jobsForYou/?origin=JOB_COLLECTION_PAGE_IN_APP_NOTIFICATION",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:JYMBII_V2",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,JYMBII_V2)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,JYMBII_V2)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:JYMBII_V2",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,JYMBII_V2)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,JYMBII_V2)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "Google is hiring: Staff Software Engineer, Geo. See this and 9 other job recommendations.",
+            "attributesV2": [
+              {
+                "start": 0,
+                "length": 6,
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextAttributeV2",
+                "detailDataUnion": {
+                  "style": "BOLD"
+                }
+              },
+              {
+                "start": 18,
+                "length": 28,
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextAttributeV2",
+                "detailDataUnion": {
+                  "style": "BOLD"
+                }
+              },
+              {
+                "start": 61,
+                "length": 1,
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextAttributeV2",
+                "detailDataUnion": {
+                  "style": "BOLD"
+                }
+              }
+            ],
+            "accessibilityText": "Google is hiring: Staff Software Engineer, Geo. See this and 9 other job recommendations."
+          },
+          "actions": [
+            {
+              "displayText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "View jobs",
+                "attributesV2": []
+              },
+              "reloadCard": false,
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+              "actionTarget": "/jobs/jobsForYou/?origin=JOB_COLLECTION_PAGE_IN_APP_NOTIFICATION",
+              "type": "DISPLAY"
+            }
+          ],
+          "trackingId": "4EYvGdfTSGy7G5arpf8YsA=="
+        },
+        {
+          "read": true,
+          "objectUrn": "urn:li:notificationV2:(urn:li:member:228693994,EDITORIAL_WORKFORCE_INSIGHT_INAPP,urn:li:uniqueSuffix:(urn:li:none,ApyeuYCuS_GkHfDd-6Cztw))",
+          "publishedAt": 1670949701274,
+          "entityUrn": "urn:li:fsd_notificationCard:(EDITORIAL_WORKFORCE_INSIGHT_INAPP,urn:li:uniqueSuffix:(urn:li:none,ApyeuYCuS_GkHfDd-6Cztw))",
+          "headerImage": {
+            "attributes": [
+              {
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageAttribute",
+                "detailDataUnion": {
+                  "imageUrl": {
+                    "url": "https://media.licdn.com/media/AAYQAgQJAAgAAQAAAAAAADkMFTp3EoIdRMKB6S3ic927hw.png",
+                    "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1529112441"
+                  }
+                }
+              }
+            ],
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.image.ImageViewModel"
+          },
+          "cardAction": {
+            "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCardAction",
+            "actionTarget": "/feed/news/5089913",
+            "type": "DISPLAY"
+          },
+          "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullCard",
+          "settingOptions": [
+            {
+              "optionType": "DELETE",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_WORKFORCE_INSIGHT_INAPP",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete this notification",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_WORKFORCE_INSIGHT_INAPP)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Delete",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_WORKFORCE_INSIGHT_INAPP)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            },
+            {
+              "optionType": "TURN_OFF",
+              "notificationTypeUrn": "urn:li:notificationType:EDITORIAL_WORKFORCE_INSIGHT_INAPP",
+              "description": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Stop receiving notifications like this",
+                "attributesV2": []
+              },
+              "notificationSettingUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_WORKFORCE_INSIGHT_INAPP)",
+              "$recipeType": "com.linkedin.voyager.dash.deco.identity.notifications.FullSettingOption",
+              "successToastText": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "You will no longer receive notifications like these. You can re-enable them from the settings page.",
+                "attributesV2": []
+              },
+              "title": {
+                "textDirection": "USER_LOCALE",
+                "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+                "text": "Turn off",
+                "attributesV2": []
+              },
+              "notificationSetting": {
+                "entityUrn": "urn:li:fsd_notificationSetting:(IN_APP,EDITORIAL_WORKFORCE_INSIGHT_INAPP)",
+                "$recipeType": "com.linkedin.deco.recipe.anonymous.Anon1085501102"
+              }
+            }
+          ],
+          "headline": {
+            "textDirection": "USER_LOCALE",
+            "$recipeType": "com.linkedin.voyager.dash.deco.common.text.TextViewModelV2",
+            "text": "Inflation just fell to its lowest level since last year. See the latest.",
+            "attributesV2": [],
+            "accessibilityText": "Inflation just fell to its lowest level since last year. See the latest."
+          },
+          "actions": [],
+          "trackingId": "mIuG3qU6Tm21RxpZOFF5rA=="
+        }
+      ],
+      "paging": {
+        "start": 0,
+        "count": 10,
+        "links": [],
+        "$recipeType": "com.linkedin.voyager.dash.deco.common.FullPaging"
+      }
+    }
+  ],
+  [
+    {
+      "read": false,
+      "publishedAt": 1670976752060,
+      "actions": []
+    },
+    {
+      "read": false,
+      "publishedAt": 1670974449692,
+      "actions": []
+    },
+    {
+      "read": false,
+      "publishedAt": 1670967670452,
+      "actions": [
+        {
+          "displayText": "See all views",
+          "actionTarget": "/me/profile-views"
+        }
+      ]
+    },
+    {
+      "read": true,
+      "publishedAt": 1670964220866,
+      "actions": []
+    },
+    {
+      "read": true,
+      "publishedAt": 1670962270369,
+      "actions": [
+        {
+          "displayText": "Retry Premium Free",
+          "actionTarget": "/premium/products?upsellOrderOrigin=premium_wvmp_upsell_notifications&premiumFeatureType=WVMP"
+        }
+      ]
+    },
+    {
+      "read": true,
+      "publishedAt": 1670960470692,
+      "headerImage": [
+        {
+          "width": 100,
+          "height": 100,
+          "path": "100_100/0/1581980561724?e=1676505600&v=beta&t=To7TvNrgMrpLIDLcB7wtfkpRGYMYfYf0x9qxS8A8bBA"
+        },
+        {
+          "width": 200,
+          "height": 200,
+          "path": "200_200/0/1581980561724?e=1676505600&v=beta&t=NMEq2Il5rG4UiNntbodL4lq13Bk8tuLUfqNUkVVtiCo"
+        },
+        {
+          "width": 400,
+          "height": 400,
+          "path": "400_400/0/1581980561724?e=1676505600&v=beta&t=rxAyGmlfvWdLJ_7Qs54Rv3PwlsRYimojixat2v62LA0"
+        },
+        {
+          "width": 800,
+          "height": 800,
+          "path": "800_800/0/1581980561724?e=1676505600&v=beta&t=oKZcs38tkpbdqnbnTRktOp6brh5n-KmYbj04130_jJs"
+        }
+      ],
+      "actions": []
+    },
+    {
+      "read": true,
+      "publishedAt": 1670958408570,
+      "actions": []
+    },
+    {
+      "read": true,
+      "publishedAt": 1670956974522,
+      "actions": []
+    },
+    {
+      "read": true,
+      "publishedAt": 1670952883645,
+      "actions": [
+        {
+          "displayText": "View jobs",
+          "actionTarget": "/jobs/jobsForYou/?origin=JOB_COLLECTION_PAGE_IN_APP_NOTIFICATION"
+        }
+      ]
+    },
+    {
+      "read": true,
+      "publishedAt": 1670949701274,
+      "actions": []
+    }
+  ]
+]

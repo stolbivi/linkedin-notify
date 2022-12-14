@@ -70,6 +70,15 @@ messages.onMessage<IAppRequest>(MESSAGE_ID,
                         port.postMessage({conversations});
                         return message;
                     });
+            case AppMessageType.Notifications:
+                return getCookies(DOMAIN)
+                    .then(async cookies => api.getCsrfToken(cookies))
+                    .then(async token => {
+                        const notificationsResponse = await api.getNotifications(token);
+                        const notifications = api.extractNotifications(notificationsResponse);
+                        port.postMessage({notifications});
+                        return message;
+                    });
             case AppMessageType.Test:
                 return getCookies(DOMAIN)
                     .then(cookies => helper.getAllCodes("https://www.linkedin.com/messaging/", cookies))
