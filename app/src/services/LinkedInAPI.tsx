@@ -2,11 +2,13 @@ import Cookie = chrome.cookies.Cookie;
 import {Badges} from "../global";
 
 function extractArtifacts(artifacts: Array<any>) {
-    return artifacts.map((a: any) => ({
-        width: a.width,
-        height: a.height,
-        path: a.fileIdentifyingUrlPathSegment
-    }))
+    return artifacts ?
+        artifacts.map((a: any) => ({
+            width: a.width,
+            height: a.height,
+            path: a.fileIdentifyingUrlPathSegment
+        }))
+        : [];
 }
 
 export class LinkedInAPI {

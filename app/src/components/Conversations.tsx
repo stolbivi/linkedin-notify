@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {AppMessageType, ConversationsResponse, IAppRequest, MESSAGE_ID} from "../global";
 import {Messages} from "@stolbivi/pirojok";
+import {ConversationCard} from "./ConversationCard";
 
 type Props = {};
 
@@ -13,13 +14,15 @@ export const Conversations: React.FC<Props> = ({}) => {
     useEffect(() => {
         messages.runtimeMessage<IAppRequest, ConversationsResponse>(MESSAGE_ID, {type: AppMessageType.Conversations},
             (r) => {
-                setConversations(r.conversations);
+                setConversations(r.conversations.map((c: any) =>
+                    (<ConversationCard conversation={c}></ConversationCard>)
+                ));
             }).then(/* nada */)
     }, []);
 
     return (
-        <div className="p-5 d-flex flex-column justify-content-center align-items-center">
-            {JSON.stringify(conversations)}
+        <div className="w-100">
+            {conversations}
         </div>
     );
 };
