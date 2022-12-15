@@ -2,12 +2,17 @@ body {
   font-family: -apple-system, "system-ui", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Fira Sans", "Ubuntu", "Oxygen", "Oxygen Sans", "Cantarell", "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", "Helvetica", "Arial", sans-serif;
 }
 
-.conversations-tab {
+.container {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 550px;
+  padding: 0px;
+}
+
+.scroll {
+  margin-top: 80px;
 }
 
 .has-unread {
@@ -105,6 +110,32 @@ body {
 
     &:hover {
       background-color: #e2f0fd !important;
+    }
+  }
+}
+
+.tabs {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1em;
+  position: fixed;
+  top: 0px;
+  background-color: white;
+
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+
+    &:hover {
+      color: rgba(0, 0, 0, 0.9);
     }
   }
 }
