@@ -28,7 +28,12 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
     }
 
     useEffect(() => {
-        setPicture(notification.headerImage?.rootUrl + notification.headerImage?.artifacts?.pop()?.path);
+        if (notification.headerImage?.rootUrl) {
+            setPicture(notification.headerImage?.rootUrl + notification.headerImage?.artifacts?.pop()?.path);
+        }
+        if (notification.headerImage?.url) {
+            setPicture(notification.headerImage?.url);
+        }
         setPublishedAt(notification.publishedAt);
         console.log(JSON.stringify(notification));
         const timestamp = new Date(notification.publishedAt);

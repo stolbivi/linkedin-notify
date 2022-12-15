@@ -94,9 +94,10 @@ export class LinkedInAPI {
 
     public extractNotifications(response: any): Array<any> {
         function getHeaderImage(i: any) {
-            const p = i?.attributes?.find((a: any) => a.detailData?.profilePicture)
-            if (p) {
-                const picture = p.detailData.profilePicture;
+            // trying to get pictures
+            const p1 = i?.attributes?.find((a: any) => a.detailData?.profilePicture);
+            if (p1) {
+                const picture = p1.detailData.profilePicture;
                 const vectorImage = picture.profilePicture?.displayImageReference?.vectorImage;
                 if (vectorImage?.artifacts) {
                     return {
@@ -105,6 +106,13 @@ export class LinkedInAPI {
                     };
                 }
             }
+            // getting images
+            const p2 = i?.attributes?.find((a: any) => a.detailDataUnion?.imageUrl);
+            if (p2) {
+                return {url: p2.detailDataUnion?.imageUrl?.url};
+            }
+            // getting icons
+
         }
 
         function getActions(actions: Array<any>) {

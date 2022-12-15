@@ -5,6 +5,7 @@ import {Notifications} from "./Notifications";
 import {Tabs, TabTypes} from "./Tabs";
 import {Conversations} from "./Conversations";
 import {Invitations} from "./Invitations";
+import {SignIn} from "./SignIn";
 
 type Props = {};
 
@@ -21,16 +22,11 @@ export const Main: React.FC<Props> = ({}) => {
             .then(/* nada */)
     }, []);
 
-    const signIn = () => {
-        return messages.runtimeMessage<IAppRequest, IsLoggedResponse>(MESSAGE_ID, {type: AppMessageType.SignIn});
-    }
-
     return (
         <div className="container">
             {isLogged === false
-                ? <div onClick={signIn} className="w-100">Sign in</div>
-                :
-                <div className="w-100 d-flex flex-column justify-content-center align-items-start">
+                ? <SignIn/>
+                : <div className="w-100 d-flex flex-column justify-content-center align-items-start">
                     <Tabs onTab={setTab}/>
                     <div className="scroll">
                         {
@@ -47,4 +43,5 @@ export const Main: React.FC<Props> = ({}) => {
             }
         </div>
     );
-};
+}
+;

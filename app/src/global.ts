@@ -1,14 +1,16 @@
+export const DOMAIN = 'linkedin.com';
+
 export enum AppMessageType {
     IsLogged,
-    SignIn,
+    OpenURL,
     Conversations,
     Notifications,
-    Invitations,
-    Test
+    Invitations
 }
 
 export interface IAppRequest {
     type: AppMessageType
+    payload?: any
 }
 
 export interface IsLoggedResponse {

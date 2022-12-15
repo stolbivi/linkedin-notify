@@ -1,5 +1,5 @@
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, Badges, IAppRequest, MESSAGE_ID} from "./global";
+import {AppMessageType, Badges, DOMAIN, IAppRequest, MESSAGE_ID} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import Port = chrome.runtime.Port;
 
@@ -12,7 +12,6 @@ chrome.action.onClicked.addListener(() => {
 });
 
 // global parameters
-const DOMAIN = 'linkedin.com';
 const CHECK_FREQUENCY = 0.5;
 
 let lastBadge: Badges = {
@@ -53,8 +52,8 @@ messages.onMessage<IAppRequest>(MESSAGE_ID,
                         port.postMessage({isLogged: l});
                         return message;
                     });
-            case AppMessageType.SignIn:
-                return chrome.tabs.create({url: "https://" + DOMAIN, selected: true})
+            case AppMessageType.OpenURL:
+                return chrome.tabs.create({url: message.payload.url, selected: true})
                     .then(_ => (message));
             case AppMessageType.Conversations:
                 return getCookies(DOMAIN)
