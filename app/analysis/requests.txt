@@ -20,3 +20,6 @@ https://www.linkedin.com/voyager/api/messaging/dash/presenceStatuses
 
   {"request":"/voyager/api/voyagerIdentityDashNotificationCards?decorationId=com.linkedin.voyager.dash.deco.identity.notifications.CardsCollectionWithInjectionsNoPills-9&count=10&filterVanityName=all&q=filterVanityName","status":200,"body":"bpr-guid-4630","method":"GET","headers":{"x-li-uuid":"AAXvvbsLLmO92yPZppFGHA=="}}
 /voyager/api/voyagerIdentityDashNotificationCards?decorationId=com.linkedin.voyager.dash.deco.identity.notifications.CardsCollectionWithInjectionsNoPills-9&count=10&filterVanityName=all&q=filterVanityName
+
+
+  {"request":"/voyager/api/relationships/invitationViews?count=50&includeInsights=false&q=receivedInvitation&start=0","status":200,"body":"bpr-guid-2306186","method":"GET","headers":{"x-li-uuid":"AAXv35WGuyXH44qT9qEGsA=="}}

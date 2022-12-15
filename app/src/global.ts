@@ -3,6 +3,7 @@ export enum AppMessageType {
     SignIn,
     Conversations,
     Notifications,
+    Invitations,
     Test
 }
 
@@ -20,6 +21,10 @@ export interface ConversationsResponse {
 
 export interface NotificationsResponse {
     notifications: any
+}
+
+export interface InvitationsResponse {
+    invitations: any
 }
 
 export interface Badges {

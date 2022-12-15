@@ -128,6 +128,44 @@ export class LinkedInAPI {
         return result;
     }
 
+    public getInvitations(token: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + "relationships/invitationViews?count=50&includeInsights=false&q=receivedInvitation&start=0", this.getRequest(token))
+            .then(response => response.json());
+    }
+
+    public extractInvitations(response: any): Array<any> {
+
+        function getFromMember(fromMember: any) {
+            if (fromMember) {
+                const picture = fromMember.picture;
+                return {
+                    firstName: fromMember.firstName,
+                    lastName: fromMember.lastName,
+                    occupation: fromMember.occupation,
+                    publicIdentifier: fromMember.publicIdentifier,
+                    picture: picture && picture["com.linkedin.common.VectorImage"] ? {
+                        rootUrl: picture["com.linkedin.common.VectorImage"]?.rootUrl,
+                        artifacts: extractArtifacts(picture["com.linkedin.common.VectorImage"]?.artifacts)
+                    } : {}
+                }
+            }
+        }
+
+        const elements = response.elements as Array<any>;
+        const result = elements.map(i => {
+            const invitation = i.invitation;
+            return {
+                message: invitation?.message,
+                invitationType: invitation?.invitationType,
+                sentTime: invitation?.sentTime,
+                customMessage: invitation?.customMessage,
+                unseen: invitation?.unseen,
+                fromMember: getFromMember(invitation?.fromMember)
+            }
+        });
+        return result;
+    }
+
     private getRequest(token: string): any {
         return {
             "headers": {

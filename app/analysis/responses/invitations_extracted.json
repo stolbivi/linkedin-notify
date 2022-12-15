@@ -1,0 +1,53 @@
+[
+  {
+    "invitationType": "PENDING",
+    "sentTime": 1671052803759,
+    "customMessage": false,
+    "unseen": false,
+    "fromMember": {
+      "firstName": "Raul",
+      "lastName": "Albero",
+      "occupation": "Homemaker at Home",
+      "publicIdentifier": "raul-albero-0b873325a",
+      "picture": {}
+    }
+  },
+  {
+    "message": "Hi Viktor, I help manage the BNY/MongoDB partnership. Thought it'd make sense to connect, cheers!",
+    "invitationType": "PENDING",
+    "sentTime": 1671031094984,
+    "customMessage": true,
+    "unseen": false,
+    "fromMember": {
+      "firstName": "Harrison",
+      "lastName": "Rosen",
+      "occupation": "Unleashing the power of software and data for innovators everywhere 🍃",
+      "publicIdentifier": "harrison-rosen-196a1b188",
+      "picture": {
+        "rootUrl": "https://media.licdn.com/dms/image/C5603AQEs11kVL9yvAQ/profile-displayphoto-shrink_",
+        "artifacts": [
+          {
+            "width": 100,
+            "height": 100,
+            "path": "100_100/0/1659131867446?e=1676505600&v=beta&t=ar57pHLYwI4WzQID5Vp3VTudSLLABpesoG9j6rwsvRE"
+          },
+          {
+            "width": 200,
+            "height": 200,
+            "path": "200_200/0/1659131867446?e=1676505600&v=beta&t=NxBNoqumzEPDdNAXHAl-PlOTQBZk1DR62PHB8IG0aGI"
+          },
+          {
+            "width": 400,
+            "height": 400,
+            "path": "400_400/0/1659131867446?e=1676505600&v=beta&t=PJP7bLOeCi-EEulDcnmfzzpbdOma4aessBh0UR6cmfY"
+          },
+          {
+            "width": 800,
+            "height": 800,
+            "path": "800_800/0/1659131867446?e=1676505600&v=beta&t=G_akkb5JNDU3onxd33bC_qbbnetn5f1gbSW5C6no5XA"
+          }
+        ]
+      }
+    }
+  }
+]

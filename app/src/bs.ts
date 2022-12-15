@@ -1,13 +1,10 @@
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, Badges, IAppRequest, MESSAGE_ID} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
-import {LinkedInHelper} from "./services/LinkedInHelper";
 import Port = chrome.runtime.Port;
 
 const messages = new Messages();
 const api = new LinkedInAPI();
-//@ts-ignore
-const helper = new LinkedInHelper();
 
 // adding popup
 chrome.action.onClicked.addListener(() => {
@@ -79,10 +76,15 @@ messages.onMessage<IAppRequest>(MESSAGE_ID,
                         port.postMessage({notifications});
                         return message;
                     });
-            case AppMessageType.Test:
+            case AppMessageType.Invitations:
                 return getCookies(DOMAIN)
-                    .then(cookies => helper.getAllCodes("https://www.linkedin.com/messaging/", cookies))
-                    .then(_ => message);
+                    .then(async cookies => api.getCsrfToken(cookies))
+                    .then(async token => {
+                        const invitationsResponse = await api.getInvitations(token);
+                        const invitations = api.extractInvitations(invitationsResponse);
+                        port.postMessage({invitations});
+                        return message;
+                    });
             default:
                 console.warn('Unsupported message type for:', message)
                 return Promise.resolve(message);
@@ -112,7 +114,7 @@ chrome.alarms.onAlarm.addListener(a => {
                 if (lastBadge.MESSAGING < badges.MESSAGING
                     || lastBadge.NOTIFICATIONS < badges.NOTIFICATIONS
                     || lastBadge.MY_NETWORK < badges.MY_NETWORK) {
-                    // TODO notification
+                    // TODO notification API seems to be broken in Manifest v3
                 }
                 lastBadge = badges;
                 return chrome.action.setBadgeText({text: total.toString()});

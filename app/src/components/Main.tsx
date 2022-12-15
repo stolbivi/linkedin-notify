@@ -4,6 +4,7 @@ import {AppMessageType, IAppRequest, IsLoggedResponse, MESSAGE_ID} from "../glob
 import {Notifications} from "./Notifications";
 import {Tabs, TabTypes} from "./Tabs";
 import {Conversations} from "./Conversations";
+import {Invitations} from "./Invitations";
 
 type Props = {};
 
@@ -33,7 +34,7 @@ export const Main: React.FC<Props> = ({}) => {
                     <Tabs onTab={setTab}/>
                     <div className="scroll">
                         {
-                            tab === TabTypes.MyNetwork && <div>My Network Placeholder</div>
+                            tab === TabTypes.MyNetwork && <Invitations/>
                         }
                         {
                             tab === TabTypes.Messages && <Conversations/>

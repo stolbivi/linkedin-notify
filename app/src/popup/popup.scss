@@ -26,7 +26,6 @@ body {
   align-items: center;
   width: 100%;
   padding: 0.55em 0.75em;
-  margin: 0.05em;
 
   .card-image {
     display: flex;
@@ -49,6 +48,18 @@ body {
     margin-left: auto;
   }
 
+  .card-title {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.9);
+
+    &:hover {
+      color: rgba(0, 0, 0, 1);
+      text-decoration: underline;
+    }
+  }
+
   .card-message {
     cursor: pointer;
     font-size: 14px;
@@ -59,23 +70,8 @@ body {
   }
 }
 
-.base-card:hover {
-  background-color: #ebebeb !important;
-}
-
 .conversation-card {
   @extend .base-card;
-
-  .card-title {
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.9);
-
-    &:hover {
-      color: rgba(0, 0, 0, 1);
-    }
-  }
 
   .card-badge {
     display: flex;
@@ -93,18 +89,24 @@ body {
 
 }
 
+.conversation-card:hover {
+  background-color: #ebebeb !important;
+}
+
 .notification-card {
   @extend .base-card;
 
   cursor: pointer;
 
   .notification-action {
+    font-size: 16px;
     color: rgb(10, 102, 194);
     border-color: rgb(10, 102, 194);
     border-width: 1px;
     border-style: solid;
     border-radius: 50px;
     padding: 0.25em 0.75em;
+    margin: 0em 0.5em;
     user-select: none;
     cursor: pointer;
 
@@ -112,6 +114,80 @@ body {
       background-color: #e2f0fd !important;
     }
   }
+}
+
+.notification-card:hover {
+  background-color: #ebebeb !important;
+}
+
+.invitation-card {
+  @extend .base-card;
+
+  .card-subtitle {
+    margin-right: auto;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+    max-height: 3em;
+    overflow-y: hidden;
+  }
+
+  .action-accept {
+    font-size: 16px;
+    color: rgb(10, 102, 194);
+    border-color: rgb(10, 102, 194);
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 50px;
+    padding: 0.25em 0.75em;
+    margin: 0em 0.5em;
+    user-select: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #e2f0fd !important;
+    }
+  }
+
+  .action-ignore {
+    font-size: 16px;
+    color: #585858;
+    padding: 0.25em 0.75em;
+    margin: 0em 0.5em;
+    user-select: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ebebeb !important;
+    }
+  }
+
+  .custom-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    padding: 0.5em;
+    margin: 0.5em;
+    border-width: 2px;
+    border-color: #ebebeb;
+    border-style: solid;
+    border-radius: 8px;
+
+    .action-reply {
+      font-size: 14px;
+      color: #585858;
+      padding: 0.25em 0.75em;
+      user-select: none;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #ebebeb !important;
+      }
+    }
+  }
+
 }
 
 .tabs {
