@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, IAppRequest, IsLoggedResponse, MESSAGE_ID} from "../global";
-import {Conversations} from "./Conversations";
+import {Notifications} from "./Notifications";
 
 type Props = {};
 
@@ -27,8 +27,8 @@ export const Main: React.FC<Props> = ({}) => {
                 ? <div onClick={signIn} className="w-100">Sign in</div>
                 :
                 <div className="w-100">
-                    <Conversations/>
-                    {/*<Notifications/>*/}
+                    {/*<Conversations/>*/}
+                    <Notifications/>
                 </div>
             }
         </div>

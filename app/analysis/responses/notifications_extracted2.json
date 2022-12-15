@@ -1,0 +1,60 @@
+[
+  {
+    "read": false,
+    "publishedAt": 1671047909482,
+    "headline": "LinkedIn News posted: Impromptu remote meetings are happening more often in the workplace, according to a study done by Harvard Business Review. Remote workers can now expect eight virtual meetings per week in 2022, compared to five per week in 2020. #TrendingNow Read More at Harvard Business Review: https://lnkd.in/gCwx6kQt ",
+    "cardAction": "/feed/update/urn%3Ali%3Aactivity%3A7008878200835493889?origin=SHARED%5FBY%5FYOUR%5FPAGES",
+    "actions": []
+  },
+  {
+    "read": true,
+    "publishedAt": 1670967350327,
+    "headline": "1 person viewed your profile",
+    "cardAction": "/me/profile-views",
+    "actions": [
+      {
+        "displayText": "Try Premium Free for 1 Month",
+        "actionTarget": "/premium/products?upsellOrderOrigin=premium_wvmp_upsell_notifications&premiumFeatureType=WVMP"
+      }
+    ]
+  },
+  {
+    "read": true,
+    "publishedAt": 1670966956057,
+    "headerImage": [
+      {
+        "width": 100,
+        "height": 100,
+        "path": "100_100/0/1652706460095?e=1676505600&v=beta&t=LUe4_IE5HdZ4IxejETbTmp1YJP95hBZDIN-FniNOHYA"
+      },
+      {
+        "width": 200,
+        "height": 200,
+        "path": "200_200/0/1652706460095?e=1676505600&v=beta&t=owVVF6od5NtLLeTHcprFnBTUMA1l_bLfsWmwiJntUnU"
+      },
+      {
+        "width": 400,
+        "height": 400,
+        "path": "400_400/0/1652706460095?e=1676505600&v=beta&t=FSAV3LJaX1-NWdBaYelP63oZYe-SGFlj9V7Wj1cTbF8"
+      },
+      {
+        "width": 800,
+        "height": 800,
+        "path": "800_800/0/1652706460095?e=1676505600&v=beta&t=kf0DsRtfWZph6C8Gha_lK-TbKxJmb7nvgEpGMg_3dfU"
+      }
+    ],
+    "headline": "Viktor Stolbin invited you to connect",
+    "subHeadline": "Principal Full Stack Developer at BNY Mellon",
+    "cardAction": "/in/stolbivi",
+    "actions": [
+      {
+        "displayText": "Accept",
+        "actionTarget": "/invitation_op?action=accept&invitationId=7008541487420354561&invitationUrn=urn%3Ali%3Ainvitation%3A7008541487420354561&invitationType=CONNECTION&invitationTargetUrn=urn%3Ali%3Afsd%5Fprofile%3AACoAAA2hl%2DoBGqNMFHWt9qHPEfSKB6h1ICpL4NQ&sharedSecret=mmJ5k3vb"
+      },
+      {
+        "displayText": "Ignore",
+        "actionTarget": "/invitation_op?action=ignore&invitationId=7008541487420354561&invitationUrn=urn%3Ali%3Ainvitation%3A7008541487420354561&invitationType=CONNECTION&invitationTargetUrn=urn%3Ali%3Afsd%5Fprofile%3AACoAAA2hl%2DoBGqNMFHWt9qHPEfSKB6h1ICpL4NQ&sharedSecret=mmJ5k3vb"
+      }
+    ]
+  }
+]

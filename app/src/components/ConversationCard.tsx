@@ -35,13 +35,13 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
 
     return (
         <div className={"conversation-card" + (conversation.unreadCount > 0 ? " has-unread" : "")}>
-            <div className="conversation-image">
+            <div className="card-image">
                 <img src={picture}/>
             </div>
             <div className="w-100 d-flex flex-column justify-content-center align-items-start">
                 <div className="w-100 d-flex flex-row">
                     <div className="card-title">{participant?.firstName} {participant.lastName}</div>
-                    <div className="card-delivered-at">{deliveredAt}</div>
+                    <div className="card-timestamp">{deliveredAt}</div>
                 </div>
                 <div className="w-100 d-flex flex-row align-items-end">
                     <div className="card-message">{message?.body}</div>

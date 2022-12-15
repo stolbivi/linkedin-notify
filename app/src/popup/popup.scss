@@ -8,44 +8,36 @@ body {
   justify-content: center;
   align-items: center;
   width: 550px;
-  padding: 1em;
 }
 
 .has-unread {
-  background-color: #eff3f9;
+  background-color: #e2f0fd;
 }
 
-.conversation-card {
+.base-card {
   display: flex;
   flex-direction: row;
   justify-content: start;
   align-items: center;
   width: 100%;
-  padding: 0.25em 0.75em 0.25em 0.75em;
-  margin: 0.15em;
+  padding: 0.55em 0.75em;
+  margin: 0.05em;
 
-  .conversation-image {
+  .card-image {
     display: flex;
     justify-content: center;
     align-items: center;
     padding-right: 0.5em;
 
     img {
-      border-radius: 50%;
       cursor: pointer;
+      border-radius: 50%;
       height: 75px;
       width: 75px;
     }
   }
 
-  .card-title {
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.9);
-  }
-
-  .card-delivered-at {
+  .card-timestamp {
     font-size: 14px;
     font-weight: 400;
     color: rgba(0, 0, 0, 0.9);
@@ -60,12 +52,30 @@ body {
     max-height: 3em;
     overflow-y: hidden;
   }
+}
+
+.base-card:hover {
+  background-color: #ebebeb !important;
+}
+
+.conversation-card {
+  @extend .base-card;
+
+  .card-title {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.9);
+
+    &:hover {
+      color: rgba(0, 0, 0, 1);
+    }
+  }
 
   .card-badge {
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
     font-size: 14px;
     font-weight: 400;
     color: white;
@@ -75,8 +85,26 @@ body {
     height: 25px;
     margin-left: auto;
   }
+
 }
 
-.conversation-card:hover {
-  background-color: #ebebeb !important;
+.notification-card {
+  @extend .base-card;
+
+  cursor: pointer;
+
+  .notification-action {
+    color: rgb(10, 102, 194);
+    border-color: rgb(10, 102, 194);
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 50px;
+    padding: 0.25em 0.75em;
+    user-select: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #e2f0fd !important;
+    }
+  }
 }

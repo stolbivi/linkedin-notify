@@ -88,7 +88,7 @@ export class LinkedInAPI {
     }
 
     public getNotifications(token: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + "voyagerIdentityDashNotificationCards?decorationId=com.linkedin.voyager.dash.deco.identity.notifications.CardsCollectionWithInjectionsNoPills-9&count=10&filterVanityName=all&q=filterVanityName", this.getRequest(token))
+        return fetch(LinkedInAPI.BASE + "voyagerIdentityDashNotificationCards?decorationId=com.linkedin.voyager.dash.deco.identity.notifications.CardsCollectionWithInjectionsNoPills-9&count=50&filterVanityName=all&q=filterVanityName", this.getRequest(token))
             .then(response => response.json());
     }
 
@@ -97,9 +97,12 @@ export class LinkedInAPI {
             const p = i?.attributes?.find((a: any) => a.detailData?.profilePicture)
             if (p) {
                 const picture = p.detailData.profilePicture;
-                const artifacts = picture.profilePicture?.displayImageReference?.vectorImage?.artifacts;
-                if (artifacts) {
-                    return extractArtifacts(artifacts);
+                const vectorImage = picture.profilePicture?.displayImageReference?.vectorImage;
+                if (vectorImage?.artifacts) {
+                    return {
+                        rootUrl: vectorImage?.rootUrl,
+                        artifacts: extractArtifacts(vectorImage?.artifacts)
+                    };
                 }
             }
         }
