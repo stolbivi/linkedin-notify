@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {AppMessageType, IAppRequest, MESSAGE_ID, NotificationsResponse} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {NotificationCard} from "./NotificationCard";
+import {Loader} from "./Loader";
 
 type Props = {};
 
@@ -22,6 +23,7 @@ export const Notifications: React.FC<Props> = ({}) => {
 
     return (
         <div className="w-100">
+            <Loader show={!(notifications?.length > 0)}/>
             {notifications}
         </div>
     );

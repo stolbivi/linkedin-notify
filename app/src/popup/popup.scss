@@ -18,7 +18,7 @@ body {
   border-width: 1px;
   border-style: solid;
   border-radius: 50px;
-  padding: 0.5em 1em;
+  padding: 0.5em 2em;
   user-select: none;
   cursor: pointer;
 
@@ -27,7 +27,12 @@ body {
   }
 }
 
+.loader {
+  color: rgb(10, 102, 194);
+}
+
 .scroll {
+  width: 100%;
   margin-top: 80px;
 }
 

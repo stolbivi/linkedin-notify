@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {AppMessageType, IAppRequest, InvitationsResponse, MESSAGE_ID} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {InvitationCard} from "./InvitationCard";
+import {Loader} from "./Loader";
 
 type Props = {};
 
@@ -22,6 +23,7 @@ export const Invitations: React.FC<Props> = ({}) => {
 
     return (
         <div className="w-100">
+            <Loader show={!(invitations?.length > 0)}/>
             {invitations}
         </div>
     );
