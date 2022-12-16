@@ -31,6 +31,14 @@ body {
   color: rgb(10, 102, 194);
 }
 
+.no-data {
+  width: 100%;
+  padding: 4em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .scroll {
   width: 100%;
   margin-top: 80px;

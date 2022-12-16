@@ -71,7 +71,7 @@ export class LinkedInAPI {
         function getMessages(messages: Array<any>) {
             return messages.map(m => ({
                 deliveredAt: m.deliveredAt,
-                urn: m.entityUrn,
+                urn: m.backendConversationUrn,
                 body: m.body?.text
             }));
         }
@@ -112,7 +112,7 @@ export class LinkedInAPI {
                 return {url: p2.detailDataUnion?.imageUrl?.url};
             }
             // getting icons
-
+            // TODO
         }
 
         function getActions(actions: Array<any>) {
@@ -163,15 +163,30 @@ export class LinkedInAPI {
         const result = elements.map(i => {
             const invitation = i.invitation;
             return {
-                message: invitation?.message,
+                urn: i?.entityUrn,
+                sharedSecret: i?.sharedSecret,
                 invitationType: invitation?.invitationType,
                 sentTime: invitation?.sentTime,
                 customMessage: invitation?.customMessage,
+                message: invitation?.message,
                 unseen: invitation?.unseen,
                 fromMember: getFromMember(invitation?.fromMember)
             }
         });
         return result;
+    }
+
+    public handleInvitation(token: string, invitation: any) {
+        return fetch(LinkedInAPI.BASE + `relationships/invitations/${invitation.id}?action=${invitation.action}`, {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token,
+            },
+            "body": `{\"invitationId\":\"${invitation.id}\",\"invitationSharedSecret\":\"${invitation.sharedSecret}\",\"isGenericInvitation\":false}`,
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        });
     }
 
     private getRequest(token: string): any {

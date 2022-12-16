@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
+import {Messages} from "@stolbivi/pirojok";
+import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
 
 type Props = {
     notification: any
 };
-
 
 export const NotificationCard: React.FC<Props> = ({notification}) => {
 
@@ -12,6 +13,8 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
     const [cardAction, setCardAction] = useState("");
     const [actions, setActions] = useState([]);
 
+    const messages = new Messages();
+
     const isToday = (someDate: Date) => {
         const today = new Date()
         return someDate.getDate() == today.getDate() &&
@@ -19,12 +22,17 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
             someDate.getFullYear() == today.getFullYear()
     }
 
-    const onAction = (actionTarget: string) => {
-        console.log("actionTarget:", actionTarget);
+    const onAction = (actionTarget: string, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (actionTarget && actionTarget.length > 0) {
+            e.stopPropagation();
+            return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
+                {type: AppMessageType.OpenURL, payload: {url: `https://${DOMAIN}/` + actionTarget}});
+        }
     }
 
     const onCardAction = () => {
-        console.log("cardAction:", cardAction);
+        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
+            {type: AppMessageType.OpenURL, payload: {url: `https://${DOMAIN}/` + cardAction}});
     }
 
     useEffect(() => {
@@ -35,12 +43,13 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
             setPicture(notification.headerImage?.url);
         }
         setPublishedAt(notification.publishedAt);
-        console.log(JSON.stringify(notification));
         const timestamp = new Date(notification.publishedAt);
         setPublishedAt(isToday(timestamp) ? timestamp.toLocaleTimeString() : timestamp.toLocaleDateString());
         setCardAction(notification.cardAction);
-        setActions(notification.actions.map((a: any) =>
-            (<div className="notification-action" onClick={() => onAction(a.onAction)}>{a.displayText}</div>)
+        setActions(notification.actions.map((a: any, i: number) =>
+            (<div className="notification-action"
+                  onClick={(e) => onAction(a.actionTarget, e)}
+                  key={i}>{a.displayText}</div>)
         ));
     }, []);
 

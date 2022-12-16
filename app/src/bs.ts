@@ -93,6 +93,13 @@ messages.onMessage<IAppRequest>(MESSAGE_ID,
                         port.postMessage({badges});
                         return message;
                     });
+            case AppMessageType.Fetch:
+                return getCookies(DOMAIN)
+                    .then(cookies => api.getCsrfToken(cookies))
+                    .then(async token => {
+                        await api.handleInvitation(token, message.payload);
+                        return message;
+                    });
             default:
                 console.warn('Unsupported message type for:', message)
                 return Promise.resolve(message);

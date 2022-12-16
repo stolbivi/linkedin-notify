@@ -9,6 +9,7 @@ type Props = {};
 export const Notifications: React.FC<Props> = ({}) => {
 
     const [notifications, setNotifications] = useState([]);
+    const [completed, setCompleted] = useState(false);
 
     const messages = new Messages();
 
@@ -18,12 +19,14 @@ export const Notifications: React.FC<Props> = ({}) => {
                 setNotifications(r.notifications.map((n: any, i: number) =>
                     (<NotificationCard notification={n} key={i}></NotificationCard>)
                 ));
+                setCompleted(true);
             }).then(/* nada */)
     }, []);
 
     return (
         <div className="w-100">
-            <Loader show={!(notifications?.length > 0)}/>
+            <Loader show={!completed}/>
+            {completed && notifications.length == 0 && <div className="no-data">No data</div>}
             {notifications}
         </div>
     );

@@ -20,10 +20,7 @@ export const Tabs: React.FC<Props> = ({onTab}) => {
 
         useEffect(() => {
             messages.runtimeMessage<IAppRequest, BadgesResponse>(MESSAGE_ID, {type: AppMessageType.Badges},
-                (r) => {
-                    console.log('Badges:', r.badges);
-                    setBadges(r.badges);
-                })
+                (r) => setBadges(r.badges))
                 .then(/* nada */)
         }, []);
 

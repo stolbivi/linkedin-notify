@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from "react";
+import {Messages} from "@stolbivi/pirojok";
+import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
 
 type Props = {
     invitation: any
@@ -9,6 +11,10 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
 
     const [picture, setPicture] = useState("");
     const [sentTime, setSentTime] = useState("");
+    const [id, setId] = useState("");
+    const [hideActions, setHideActions] = useState(false);
+
+    const messages = new Messages();
 
     const isToday = (someDate: Date) => {
         const today = new Date()
@@ -25,22 +31,35 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
         }
         const timestamp = new Date(invitation.sentTime);
         setSentTime(isToday(timestamp) ? timestamp.toLocaleTimeString() : timestamp.toLocaleDateString());
+        setId(invitation.urn.split(":").pop());
     }, []);
 
     const onIgnore = () => {
-        console.log("onIgnore");
+        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
+            {
+                type: AppMessageType.Fetch,
+                payload: {id: id, sharedSecret: invitation.sharedSecret, action: "ignore"}
+            }).then(_ => setHideActions(true));
     }
 
     const onAccept = () => {
-        console.log("onAccept");
+        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
+            {
+                type: AppMessageType.Fetch,
+                payload: {id: id, sharedSecret: invitation.sharedSecret, action: "accept"}
+            }).then(_ => setHideActions(true));
     }
 
-    const onReply = () => {
-        console.log("onReply");
-    }
+    // const onReply = () => {
+    //     console.log("onReply");
+    // }
 
     const onOpenProfile = () => {
-        console.log("onOpenProfile");
+        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
+            {
+                type: AppMessageType.OpenURL,
+                payload: {url: `https://${DOMAIN}/in/` + invitation.fromMember.publicIdentifier}
+            });
     }
 
     return (
@@ -57,13 +76,13 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
                 </div>
                 <div className="w-100 d-flex flex-row align-items-center">
                     <div className="card-subtitle" onClick={onOpenProfile}>{invitation.fromMember?.occupation}</div>
-                    <div className="action-ignore" onClick={onIgnore}>Ignore</div>
-                    <div className="action-accept" onClick={onAccept}>Accept</div>
+                    <div className="action-ignore" onClick={onIgnore} hidden={hideActions}>Ignore</div>
+                    <div className="action-accept" onClick={onAccept} hidden={hideActions}>Accept</div>
                 </div>
                 {invitation.customMessage &&
                 <div className="custom-message">
                     <div>{invitation.message}</div>
-                    <div className="action-reply" onClick={onReply}>Reply to {invitation.fromMember?.firstName}</div>
+                    {/*<div className="action-reply" onClick={onReply}>Reply to {invitation.fromMember?.firstName}</div>*/}
                 </div>}
             </div>
         </div>

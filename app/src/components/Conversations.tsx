@@ -9,6 +9,7 @@ type Props = {};
 export const Conversations: React.FC<Props> = ({}) => {
 
     const [conversations, setConversations] = useState([]);
+    const [completed, setCompleted] = useState(false);
 
     const messages = new Messages();
 
@@ -18,12 +19,14 @@ export const Conversations: React.FC<Props> = ({}) => {
                 setConversations(r.conversations.map((c: any, i: number) =>
                     (<ConversationCard conversation={c} key={i}></ConversationCard>)
                 ));
+                setCompleted(true);
             }).then(/* nada */)
     }, []);
 
     return (
         <div className="w-100">
-            <Loader show={!(conversations?.length > 0)}/>
+            <Loader show={!completed}/>
+            {completed && conversations.length == 0 && <div className="no-data">No data</div>}
             {conversations}
         </div>
     );

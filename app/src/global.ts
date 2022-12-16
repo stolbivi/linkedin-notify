@@ -6,7 +6,8 @@ export enum AppMessageType {
     Conversations,
     Notifications,
     Invitations,
-    Badges
+    Badges,
+    Fetch
 }
 
 export interface IAppRequest {

@@ -23,3 +23,14 @@ https://www.linkedin.com/voyager/api/messaging/dash/presenceStatuses
 
 
   {"request":"/voyager/api/relationships/invitationViews?count=50&includeInsights=false&q=receivedInvitation&start=0","status":200,"body":"bpr-guid-2306186","method":"GET","headers":{"x-li-uuid":"AAXv35WGuyXH44qT9qEGsA=="}}
+
+https://www.linkedin.com/messaging/thread/2-YTc0ZTQ5OTEtYjY3Yi00M2RiLTgyNDUtNjhmNjIxMTdkODg4XzAxMA==/?lipi=urn%3Ali%3Apage%3Ad_flagship3_messaging%3BDdkhxg7hT9WqfEqGOzBBxg%3D%3D
+
+https://www.linkedin.com/messaging/thread/2-MTY3MTEyMDk0NzkxNmI2NzA4OS0wMDQmZWI3MTczOTQtYjFkOC00YzY3LThhODktNzY0OGJkMzZkMzkzXzAxMw==/
+https://www.linkedin.com/messaging/thread/2-ZWI3MTczOTQtYjFkOC00YzY3LThhODktNzY0OGJkMzZkMzkzXzAxMw==/?lipi=urn%3Ali%3Apage%3Ad_UNKNOWN_ROUTE_messaging.error%3B4Hl0oDMcRfyfs%2FfItPAQjg%3D%3D
+
+https://www.linkedin.com/messaging/thread/2-NmIwZTliOGQtYmZmMi00NWJlLTgxZGUtOGZkOGFhOTg5NmMzXzAxMw==
+
+https://www.linkedin.com/voyager/api/relationships/invitations/7008812365320241152?action=accept
+
+{invitationId: "7008812365320241152", invitationSharedSecret: "okgr1Sob", isGenericInvitation: false}

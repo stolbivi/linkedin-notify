@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from "react";
+import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
+import {Messages} from "@stolbivi/pirojok";
 
 type Props = {
     conversation: any
@@ -12,11 +14,24 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
     const [picture, setPicture] = useState("");
     const [deliveredAt, setDeliveredAt] = useState("");
 
+    const messages = new Messages();
+
     const isToday = (someDate: Date) => {
         const today = new Date()
         return someDate.getDate() == today.getDate() &&
             someDate.getMonth() == today.getMonth() &&
             someDate.getFullYear() == today.getFullYear()
+    }
+
+    const onOpenProfile = () => {
+        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
+            {type: AppMessageType.OpenURL, payload: {url: participant.profileUrl}});
+    }
+
+    const onOpenMessage = () => {
+        const url = message.urn?.split(":").pop();
+        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
+            {type: AppMessageType.OpenURL, payload: {url: `https://${DOMAIN}/messaging/thread/` + url}});
     }
 
     useEffect(() => {
@@ -35,16 +50,17 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
 
     return (
         <div className={"conversation-card" + (conversation.unreadCount > 0 ? " has-unread" : "")}>
-            <div className="card-image">
+            <div className="card-image" onClick={onOpenProfile}>
                 <img src={picture}/>
             </div>
             <div className="w-100 d-flex flex-column justify-content-center align-items-start">
                 <div className="w-100 d-flex flex-row">
-                    <div className="card-title">{participant?.firstName} {participant.lastName}</div>
+                    <div className="card-title"
+                         onClick={onOpenProfile}>{participant?.firstName} {participant.lastName}</div>
                     <div className="card-timestamp">{deliveredAt}</div>
                 </div>
                 <div className="w-100 d-flex flex-row align-items-end">
-                    <div className="card-message">{message?.body}</div>
+                    <div className="card-message" onClick={onOpenMessage}>{message?.body}</div>
                     {conversation.unreadCount > 0 &&
                     <div className="card-badge">{conversation.unreadCount}</div>
                     }
