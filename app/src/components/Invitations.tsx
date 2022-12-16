@@ -15,8 +15,8 @@ export const Invitations: React.FC<Props> = ({}) => {
     useEffect(() => {
         messages.runtimeMessage<IAppRequest, InvitationsResponse>(MESSAGE_ID, {type: AppMessageType.Invitations},
             (r) => {
-                setInvitations(r.invitations.map((i: any) =>
-                    (<InvitationCard invitation={i}></InvitationCard>)
+                setInvitations(r.invitations.map((v: any, i: number) =>
+                    (<InvitationCard invitation={v} key={i}></InvitationCard>)
                 ));
             }).then(/* nada */)
     }, []);

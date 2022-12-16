@@ -15,8 +15,8 @@ export const Conversations: React.FC<Props> = ({}) => {
     useEffect(() => {
         messages.runtimeMessage<IAppRequest, ConversationsResponse>(MESSAGE_ID, {type: AppMessageType.Conversations},
             (r) => {
-                setConversations(r.conversations.map((c: any) =>
-                    (<ConversationCard conversation={c}></ConversationCard>)
+                setConversations(r.conversations.map((c: any, i: number) =>
+                    (<ConversationCard conversation={c} key={i}></ConversationCard>)
                 ));
             }).then(/* nada */)
     }, []);

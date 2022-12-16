@@ -15,9 +15,9 @@ chrome.action.onClicked.addListener(() => {
 const CHECK_FREQUENCY = 0.5;
 
 let lastBadge: Badges = {
-    NOTIFICATIONS: 0,
+    MY_NETWORK: 0,
     MESSAGING: 0,
-    MY_NETWORK: 0
+    NOTIFICATIONS: 0
 }
 
 /**
@@ -57,7 +57,7 @@ messages.onMessage<IAppRequest>(MESSAGE_ID,
                     .then(_ => (message));
             case AppMessageType.Conversations:
                 return getCookies(DOMAIN)
-                    .then(async cookies => api.getCsrfToken(cookies))
+                    .then(cookies => api.getCsrfToken(cookies))
                     .then(async token => {
                         const meResponse = await api.getMe(token);
                         const profileUrn = api.extractProfileUrn(meResponse);
@@ -68,7 +68,7 @@ messages.onMessage<IAppRequest>(MESSAGE_ID,
                     });
             case AppMessageType.Notifications:
                 return getCookies(DOMAIN)
-                    .then(async cookies => api.getCsrfToken(cookies))
+                    .then(cookies => api.getCsrfToken(cookies))
                     .then(async token => {
                         const notificationsResponse = await api.getNotifications(token);
                         const notifications = api.extractNotifications(notificationsResponse);
@@ -82,6 +82,15 @@ messages.onMessage<IAppRequest>(MESSAGE_ID,
                         const invitationsResponse = await api.getInvitations(token);
                         const invitations = api.extractInvitations(invitationsResponse);
                         port.postMessage({invitations});
+                        return message;
+                    });
+            case AppMessageType.Badges:
+                return getCookies(DOMAIN)
+                    .then(cookies => api.getCsrfToken(cookies))
+                    .then(async token => {
+                        const badgesResponse = await api.getTabBadges(token);
+                        const badges = api.extractBadges(badgesResponse);
+                        port.postMessage({badges});
                         return message;
                     });
             default:
@@ -108,7 +117,6 @@ chrome.alarms.onAlarm.addListener(a => {
                 const token = await api.getCsrfToken(cookies);
                 const response = await api.getTabBadges(token);
                 const badges = api.extractBadges(response);
-                console.log("Badges:", badges);
                 const total = badges.MESSAGING + badges.NOTIFICATIONS + badges.MY_NETWORK;
                 if (lastBadge.MESSAGING < badges.MESSAGING
                     || lastBadge.NOTIFICATIONS < badges.NOTIFICATIONS

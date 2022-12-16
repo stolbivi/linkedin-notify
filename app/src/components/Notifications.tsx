@@ -15,8 +15,8 @@ export const Notifications: React.FC<Props> = ({}) => {
     useEffect(() => {
         messages.runtimeMessage<IAppRequest, NotificationsResponse>(MESSAGE_ID, {type: AppMessageType.Notifications},
             (r) => {
-                setNotifications(r.notifications.map((n: any) =>
-                    (<NotificationCard notification={n}></NotificationCard>)
+                setNotifications(r.notifications.map((n: any, i: number) =>
+                    (<NotificationCard notification={n} key={i}></NotificationCard>)
                 ));
             }).then(/* nada */)
     }, []);

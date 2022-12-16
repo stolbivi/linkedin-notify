@@ -5,7 +5,8 @@ export enum AppMessageType {
     OpenURL,
     Conversations,
     Notifications,
-    Invitations
+    Invitations,
+    Badges
 }
 
 export interface IAppRequest {
@@ -27,6 +28,10 @@ export interface NotificationsResponse {
 
 export interface InvitationsResponse {
     invitations: any
+}
+
+export interface BadgesResponse {
+    badges: Badges
 }
 
 export interface Badges {
