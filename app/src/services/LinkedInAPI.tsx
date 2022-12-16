@@ -164,7 +164,7 @@ export class LinkedInAPI {
             const invitation = i.invitation;
             return {
                 urn: i?.entityUrn,
-                sharedSecret: i?.sharedSecret,
+                sharedSecret: invitation?.sharedSecret,
                 invitationType: invitation?.invitationType,
                 sentTime: invitation?.sentTime,
                 customMessage: invitation?.customMessage,
