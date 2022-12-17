@@ -1,2 +1,4 @@
 /app/*.iml
 /app/dist*
+/app/node_modules
+.idea
