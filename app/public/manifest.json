@@ -10,7 +10,7 @@
   },
   "action": {
     "default_icon": {
-      "128": "content/icon-128.png"
+      "128": "content/icon-128-logout.png"
     },
     "default_popup": "popup.html"
   },

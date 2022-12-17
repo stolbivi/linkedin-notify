@@ -1,5 +1,5 @@
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, Badges, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "./global";
+import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 
 const messages = new Messages(MESSAGE_ID, VERBOSE);
@@ -13,10 +13,9 @@ chrome.action.onClicked.addListener(() => {
 // global parameters
 const CHECK_FREQUENCY = 0.5;
 
-let lastBadge: Badges = {
-    MY_NETWORK: 0,
-    MESSAGING: 0,
-    NOTIFICATIONS: 0
+const startMonitoring = () => {
+    console.debug("Starting monitoring");
+    chrome.alarms.create('alarm', {periodInMinutes: CHECK_FREQUENCY, delayInMinutes: 0});
 }
 
 /**
@@ -25,26 +24,21 @@ let lastBadge: Badges = {
  */
 const getCookies = async (domain: string) => chrome.cookies.getAll({domain})
 
-/**
- * Update action based on login status
- */
-const updateAction = async (logged: boolean) => {
-    chrome.action.setIcon({path: logged ? "/content/icon-128.png" : "/content/icon-128-logout.png"});
-    if (!logged) {
-        chrome.action.setBadgeText({text: ""}).then(/* nada */);
-    }
-    return logged;
-}
-
 // Main course below! //
+
+getCookies(DOMAIN)
+    .then(cookies => api.isLogged(cookies))
+    .then(logged => {
+        if (logged) {
+            startMonitoring();
+        }
+    });
+
 messages.listen<IAppRequest, any>({
     [AppMessageType.IsLogged]: () =>
         getCookies(DOMAIN)
             .then(cookies => api.isLogged(cookies))
-            .then(async l => {
-                await updateAction(l);
-                return {isLogged: l};
-            }),
+            .then(logged => ({isLogged: logged})),
     [AppMessageType.OpenURL]: (message) =>
         chrome.tabs.create({url: message.payload.url, selected: true}),
     [AppMessageType.Conversations]: () =>
@@ -88,34 +82,39 @@ messages.listen<IAppRequest, any>({
 })
 
 // listening to cookies store events
-chrome.cookies.onChanged.addListener((changeInfo) => {
+chrome.cookies.onChanged.addListener(async (changeInfo) => {
     if (changeInfo.cookie.name === LinkedInAPI.THE_COOKIE) {
-        updateAction(!changeInfo.removed).then(/* nada */);
+        if (changeInfo.removed) {
+            console.log("Stop monitoring");
+            await chrome.alarms.clearAll();
+            chrome.action.setIcon({path: "/content/icon-128-logout.png"});
+            await chrome.action.setBadgeText({text: ""});
+        } else {
+            startMonitoring();
+        }
     }
 })
 
-// registering periodic task checker
 chrome.alarms.onAlarm.addListener(a => {
+    // double check logging since logout can happen between moment alarm is cancelled and fired
     console.debug('Firing:', a);
     return getCookies(DOMAIN)
         .then(async cookies => {
             const l = await api.isLogged(cookies);
             if (l) {
                 console.debug('Checking updates');
+                chrome.action.setIcon({path: "/content/icon-128.png"});
+                await chrome.action.setBadgeBackgroundColor({color: "#585858"});
+                await chrome.action.setBadgeText({text: "sync"});
+
                 const token = await api.getCsrfToken(cookies);
                 const response = await api.getTabBadges(token);
                 const badges = api.extractBadges(response);
+
+                await chrome.action.setBadgeBackgroundColor({color: "#ce3b28"});
                 const total = badges.MESSAGING + badges.NOTIFICATIONS + badges.MY_NETWORK;
-                if (lastBadge.MESSAGING < badges.MESSAGING
-                    || lastBadge.NOTIFICATIONS < badges.NOTIFICATIONS
-                    || lastBadge.MY_NETWORK < badges.MY_NETWORK) {
-                    // TODO notification API seems to be broken in Manifest v3
-                }
-                lastBadge = badges;
-                return chrome.action.setBadgeText({text: total.toString()});
+                return chrome.action.setBadgeText({text: total > 0 ? total.toString() : ""});
             }
         })
 });
 
-chrome.alarms.clearAll()
-    .then(_ => chrome.alarms.create('alarm', {periodInMinutes: CHECK_FREQUENCY}));
