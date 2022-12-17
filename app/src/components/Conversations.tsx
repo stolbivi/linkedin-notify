@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, ConversationsResponse, IAppRequest, MESSAGE_ID} from "../global";
+import {AppMessageType, ConversationsResponse, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {ConversationCard} from "./ConversationCard";
 import {Loader} from "./Loader";
@@ -11,10 +11,10 @@ export const Conversations: React.FC<Props> = ({}) => {
     const [conversations, setConversations] = useState([]);
     const [completed, setCompleted] = useState(false);
 
-    const messages = new Messages();
+    const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     useEffect(() => {
-        messages.runtimeMessage<IAppRequest, ConversationsResponse>(MESSAGE_ID, {type: AppMessageType.Conversations},
+        messages.request<IAppRequest, ConversationsResponse>({type: AppMessageType.Conversations},
             (r) => {
                 setConversations(r.conversations.map((c: any, i: number) =>
                     (<ConversationCard conversation={c} key={i}></ConversationCard>)

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
+import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 
 type Props = {
     notification: any
@@ -13,7 +13,7 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
     const [cardAction, setCardAction] = useState("");
     const [actions, setActions] = useState([]);
 
-    const messages = new Messages();
+    const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     const isToday = (someDate: Date) => {
         const today = new Date()
@@ -25,14 +25,18 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
     const onAction = (actionTarget: string, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (actionTarget && actionTarget.length > 0) {
             e.stopPropagation();
-            return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
-                {type: AppMessageType.OpenURL, payload: {url: `https://${DOMAIN}/` + actionTarget}});
+            return messages.request<IAppRequest, any>({
+                type: AppMessageType.OpenURL,
+                payload: {url: `https://${DOMAIN}/` + actionTarget}
+            });
         }
     }
 
     const onCardAction = () => {
-        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
-            {type: AppMessageType.OpenURL, payload: {url: `https://${DOMAIN}/` + cardAction}});
+        return messages.request<IAppRequest, any>({
+            type: AppMessageType.OpenURL,
+            payload: {url: `https://${DOMAIN}/` + cardAction}
+        });
     }
 
     useEffect(() => {

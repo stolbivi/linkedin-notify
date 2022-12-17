@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, IAppRequest, InvitationsResponse, MESSAGE_ID} from "../global";
+import {AppMessageType, IAppRequest, InvitationsResponse, MESSAGE_ID, VERBOSE} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {InvitationCard} from "./InvitationCard";
 import {Loader} from "./Loader";
@@ -11,10 +11,10 @@ export const Invitations: React.FC<Props> = ({}) => {
     const [invitations, setInvitations] = useState([]);
     const [completed, setCompleted] = useState(false);
 
-    const messages = new Messages();
+    const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     useEffect(() => {
-        messages.runtimeMessage<IAppRequest, InvitationsResponse>(MESSAGE_ID, {type: AppMessageType.Invitations},
+        messages.request<IAppRequest, InvitationsResponse>({type: AppMessageType.Invitations},
             (r) => {
                 setInvitations(r.invitations.map((v: any, i: number) =>
                     (<InvitationCard invitation={v} key={i}></InvitationCard>)

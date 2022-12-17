@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, IsLoggedResponse, MESSAGE_ID} from "../global";
+import {AppMessageType, IAppRequest, IsLoggedResponse, MESSAGE_ID, VERBOSE} from "../global";
 import {Notifications} from "./Notifications";
 import {Tabs, TabTypes} from "./Tabs";
 import {Conversations} from "./Conversations";
@@ -14,10 +14,10 @@ export const Main: React.FC<Props> = ({}) => {
     const [isLogged, setIsLogged] = useState(false);
     const [tab, setTab] = useState(0);
 
-    const messages = new Messages();
+    const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     useEffect(() => {
-        messages.runtimeMessage<IAppRequest, IsLoggedResponse>(MESSAGE_ID, {type: AppMessageType.IsLogged},
+        messages.request<IAppRequest, IsLoggedResponse>({type: AppMessageType.IsLogged},
             (r) => setIsLogged(r.isLogged))
             .then(/* nada */)
     }, []);
@@ -43,5 +43,4 @@ export const Main: React.FC<Props> = ({}) => {
             }
         </div>
     );
-}
-;
+};

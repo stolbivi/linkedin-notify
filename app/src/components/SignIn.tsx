@@ -1,16 +1,15 @@
 import React from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
+import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 
 type Props = {};
 
 export const SignIn: React.FC<Props> = ({}) => {
 
-    const messages = new Messages();
+    const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     const signIn = () => {
-        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
-            {type: AppMessageType.OpenURL, payload: {url: "https://" + DOMAIN}});
+        return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: "https://" + DOMAIN}});
     }
 
     return (

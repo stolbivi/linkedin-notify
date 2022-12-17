@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
+import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 
 type Props = {
     invitation: any
@@ -14,7 +14,7 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
     const [id, setId] = useState("");
     const [hideActions, setHideActions] = useState(false);
 
-    const messages = new Messages();
+    const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     const isToday = (someDate: Date) => {
         const today = new Date()
@@ -35,19 +35,17 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
     }, []);
 
     const onIgnore = () => {
-        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
-            {
-                type: AppMessageType.Fetch,
-                payload: {id: id, sharedSecret: invitation.sharedSecret, action: "ignore"}
-            }).then(_ => setHideActions(true));
+        return messages.request<IAppRequest, any>({
+            type: AppMessageType.HandleInvitation,
+            payload: {id: id, sharedSecret: invitation.sharedSecret, action: "ignore"}
+        }).then(_ => setHideActions(true));
     }
 
     const onAccept = () => {
-        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
-            {
-                type: AppMessageType.Fetch,
-                payload: {id: id, sharedSecret: invitation.sharedSecret, action: "accept"}
-            }).then(_ => setHideActions(true));
+        return messages.request<IAppRequest, any>({
+            type: AppMessageType.HandleInvitation,
+            payload: {id: id, sharedSecret: invitation.sharedSecret, action: "accept"}
+        }).then(_ => setHideActions(true));
     }
 
     // const onReply = () => {
@@ -55,11 +53,10 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
     // }
 
     const onOpenProfile = () => {
-        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
-            {
-                type: AppMessageType.OpenURL,
-                payload: {url: `https://${DOMAIN}/in/` + invitation.fromMember.publicIdentifier}
-            });
+        return messages.request<IAppRequest, any>({
+            type: AppMessageType.OpenURL,
+            payload: {url: `https://${DOMAIN}/in/` + invitation.fromMember.publicIdentifier}
+        });
     }
 
     return (

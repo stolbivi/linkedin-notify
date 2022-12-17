@@ -6,7 +6,6 @@ type Props = {
     conversation: any
 };
 
-
 export const ConversationCard: React.FC<Props> = ({conversation}) => {
 
     const [participant, setParticipant] = useState({} as any);
@@ -14,7 +13,7 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
     const [picture, setPicture] = useState("");
     const [deliveredAt, setDeliveredAt] = useState("");
 
-    const messages = new Messages();
+    const messages = new Messages(MESSAGE_ID, true);
 
     const isToday = (someDate: Date) => {
         const today = new Date()
@@ -24,14 +23,18 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
     }
 
     const onOpenProfile = () => {
-        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
-            {type: AppMessageType.OpenURL, payload: {url: participant.profileUrl}});
+        return messages.request<IAppRequest, any>({
+            type: AppMessageType.OpenURL,
+            payload: {url: participant.profileUrl}
+        });
     }
 
     const onOpenMessage = () => {
         const url = message.urn?.split(":").pop();
-        return messages.runtimeMessage<IAppRequest, any>(MESSAGE_ID,
-            {type: AppMessageType.OpenURL, payload: {url: `https://${DOMAIN}/messaging/thread/` + url}});
+        return messages.request<IAppRequest, any>({
+            type: AppMessageType.OpenURL,
+            payload: {url: `https://${DOMAIN}/messaging/thread/` + url}
+        });
     }
 
     useEffect(() => {

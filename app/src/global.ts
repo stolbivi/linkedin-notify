@@ -1,4 +1,8 @@
+import {TMessage} from "@stolbivi/pirojok/lib/chrome/Messages";
+
 export const DOMAIN = 'linkedin.com';
+export const MESSAGE_ID = 'linkedin-manager';
+export const VERBOSE = false;
 
 export enum AppMessageType {
     IsLogged,
@@ -7,10 +11,10 @@ export enum AppMessageType {
     Notifications,
     Invitations,
     Badges,
-    Fetch
+    HandleInvitation
 }
 
-export interface IAppRequest {
+export interface IAppRequest extends TMessage {
     type: AppMessageType
     payload?: any
 }
@@ -40,5 +44,3 @@ export interface Badges {
     MESSAGING: number
     MY_NETWORK: number
 }
-
-export const MESSAGE_ID = 'linkedin-notify-app';

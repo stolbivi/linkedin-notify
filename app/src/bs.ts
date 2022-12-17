@@ -1,9 +1,8 @@
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, Badges, DOMAIN, IAppRequest, MESSAGE_ID} from "./global";
+import {AppMessageType, Badges, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
-import Port = chrome.runtime.Port;
 
-const messages = new Messages();
+const messages = new Messages(MESSAGE_ID, VERBOSE);
 const api = new LinkedInAPI();
 
 // adding popup
@@ -38,73 +37,55 @@ const updateAction = async (logged: boolean) => {
 }
 
 // Main course below! //
-
-// listening to popup messages
-messages.onMessage<IAppRequest>(MESSAGE_ID,
-    (message: IAppRequest, port: Port) => {
-        console.debug('Message:', message);
-        switch (message.type) {
-            case AppMessageType.IsLogged:
-                return getCookies(DOMAIN)
-                    .then(cookies => api.isLogged(cookies))
-                    .then(async l => {
-                        await updateAction(l);
-                        port.postMessage({isLogged: l});
-                        return message;
-                    });
-            case AppMessageType.OpenURL:
-                return chrome.tabs.create({url: message.payload.url, selected: true})
-                    .then(_ => (message));
-            case AppMessageType.Conversations:
-                return getCookies(DOMAIN)
-                    .then(cookies => api.getCsrfToken(cookies))
-                    .then(async token => {
-                        const meResponse = await api.getMe(token);
-                        const profileUrn = api.extractProfileUrn(meResponse);
-                        const conversationResponse = await api.getConversations(token, profileUrn);
-                        const conversations = api.extractConversations(conversationResponse);
-                        port.postMessage({conversations});
-                        return message;
-                    });
-            case AppMessageType.Notifications:
-                return getCookies(DOMAIN)
-                    .then(cookies => api.getCsrfToken(cookies))
-                    .then(async token => {
-                        const notificationsResponse = await api.getNotifications(token);
-                        const notifications = api.extractNotifications(notificationsResponse);
-                        port.postMessage({notifications});
-                        return message;
-                    });
-            case AppMessageType.Invitations:
-                return getCookies(DOMAIN)
-                    .then(async cookies => api.getCsrfToken(cookies))
-                    .then(async token => {
-                        const invitationsResponse = await api.getInvitations(token);
-                        const invitations = api.extractInvitations(invitationsResponse);
-                        port.postMessage({invitations});
-                        return message;
-                    });
-            case AppMessageType.Badges:
-                return getCookies(DOMAIN)
-                    .then(cookies => api.getCsrfToken(cookies))
-                    .then(async token => {
-                        const badgesResponse = await api.getTabBadges(token);
-                        const badges = api.extractBadges(badgesResponse);
-                        port.postMessage({badges});
-                        return message;
-                    });
-            case AppMessageType.Fetch:
-                return getCookies(DOMAIN)
-                    .then(cookies => api.getCsrfToken(cookies))
-                    .then(async token => {
-                        await api.handleInvitation(token, message.payload);
-                        return message;
-                    });
-            default:
-                console.warn('Unsupported message type for:', message)
-                return Promise.resolve(message);
-        }
-    });
+messages.listen<IAppRequest, any>({
+    [AppMessageType.IsLogged]: () =>
+        getCookies(DOMAIN)
+            .then(cookies => api.isLogged(cookies))
+            .then(async l => {
+                await updateAction(l);
+                return {isLogged: l};
+            }),
+    [AppMessageType.OpenURL]: (message) =>
+        chrome.tabs.create({url: message.payload.url, selected: true}),
+    [AppMessageType.Conversations]: () =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const meResponse = await api.getMe(token);
+                const profileUrn = api.extractProfileUrn(meResponse);
+                const conversationResponse = await api.getConversations(token, profileUrn);
+                const conversations = api.extractConversations(conversationResponse);
+                return {conversations};
+            }),
+    [AppMessageType.Notifications]: () =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const notificationsResponse = await api.getNotifications(token);
+                const notifications = api.extractNotifications(notificationsResponse);
+                return {notifications};
+            }),
+    [AppMessageType.Invitations]: () =>
+        getCookies(DOMAIN)
+            .then(async cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const invitationsResponse = await api.getInvitations(token);
+                const invitations = api.extractInvitations(invitationsResponse);
+                return {invitations};
+            }),
+    [AppMessageType.Badges]: () =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const badgesResponse = await api.getTabBadges(token);
+                const badges = api.extractBadges(badgesResponse);
+                return {badges};
+            }),
+    [AppMessageType.HandleInvitation]: (message) =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(token => api.handleInvitation(token, message.payload))
+})
 
 // listening to cookies store events
 chrome.cookies.onChanged.addListener((changeInfo) => {

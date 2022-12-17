@@ -186,7 +186,7 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        });
+        }).then(_ => null);
     }
 
     private getRequest(token: string): any {
