@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {formatDate} from "../services/UIHelpers";
 
 type Props = {
     invitation: any
@@ -16,21 +17,13 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
-    const isToday = (someDate: Date) => {
-        const today = new Date()
-        return someDate.getDate() == today.getDate() &&
-            someDate.getMonth() == today.getMonth() &&
-            someDate.getFullYear() == today.getFullYear()
-    }
-
     useEffect(() => {
         if (invitation?.fromMember?.picture?.rootUrl) {
             setPicture(invitation?.fromMember?.picture?.rootUrl + invitation?.fromMember?.picture?.artifacts?.pop()?.path);
         } else {
             setPicture("https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q");
         }
-        const timestamp = new Date(invitation.sentTime);
-        setSentTime(isToday(timestamp) ? timestamp.toLocaleTimeString() : timestamp.toLocaleDateString());
+        setSentTime(formatDate(new Date(invitation.sentTime)));
         setId(invitation.urn.split(":").pop());
     }, []);
 

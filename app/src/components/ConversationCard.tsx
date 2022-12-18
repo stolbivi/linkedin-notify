@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
 import {Messages} from "@stolbivi/pirojok";
+import {formatDate} from "../services/UIHelpers";
 
 type Props = {
     conversation: any
@@ -14,13 +15,6 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
     const [deliveredAt, setDeliveredAt] = useState("");
 
     const messages = new Messages(MESSAGE_ID, true);
-
-    const isToday = (someDate: Date) => {
-        const today = new Date()
-        return someDate.getDate() == today.getDate() &&
-            someDate.getMonth() == today.getMonth() &&
-            someDate.getFullYear() == today.getFullYear()
-    }
 
     const onOpenProfile = () => {
         return messages.request<IAppRequest, any>({
@@ -47,8 +41,7 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
         }
         const m = conversation.messages.pop();
         setMessage(m);
-        const timestamp = new Date(m?.deliveredAt);
-        setDeliveredAt(isToday(timestamp) ? timestamp.toLocaleTimeString() : timestamp.toLocaleDateString());
+        setDeliveredAt(formatDate(new Date(m?.deliveredAt)));
     }, []);
 
     return (

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {formatDate} from "../services/UIHelpers";
 
 type Props = {
     notification: any
@@ -14,13 +15,6 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
     const [actions, setActions] = useState([]);
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
-
-    const isToday = (someDate: Date) => {
-        const today = new Date()
-        return someDate.getDate() == today.getDate() &&
-            someDate.getMonth() == today.getMonth() &&
-            someDate.getFullYear() == today.getFullYear()
-    }
 
     const markRead = () => messages.request<IAppRequest, any>({
         type: AppMessageType.MarkNotificationRead,
@@ -54,8 +48,7 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
             setPicture(notification.headerImage?.url);
         }
         setPublishedAt(notification.publishedAt);
-        const timestamp = new Date(notification.publishedAt);
-        setPublishedAt(isToday(timestamp) ? timestamp.toLocaleTimeString() : timestamp.toLocaleDateString());
+        setPublishedAt(formatDate(new Date(notification.publishedAt)));
         setCardAction(notification.cardAction);
         setActions(notification.actions.map((a: any, i: number) =>
             (<div className="notification-action"
