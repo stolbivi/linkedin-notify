@@ -15,6 +15,7 @@ export enum TabTypes {
 export const Tabs: React.FC<Props> = ({onTab}) => {
 
     const [badges, setBadges] = useState({} as Badges);
+    const [selected, setSelected] = useState(TabTypes.MyNetwork);
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
@@ -24,9 +25,17 @@ export const Tabs: React.FC<Props> = ({onTab}) => {
             .then(/* nada */)
     }, []);
 
+    const selectTab = (tab: TabTypes) => {
+        setSelected(tab);
+        onTab(tab);
+    }
+
+    const isSelected = (tab: TabTypes) => selected === tab;
+
     return (
         <div className="tabs">
-            <div className="tab-item" onClick={() => onTab(TabTypes.MyNetwork)}>
+            <div className={"tab-item" + (isSelected(TabTypes.MyNetwork) ? " tab-selected" : "")}
+                 onClick={() => selectTab(TabTypes.MyNetwork)}>
                 {badges.MY_NETWORK > 0 && <div className="tab-badge">{badges.MY_NETWORK}</div>}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24"
                      fill="currentColor"
@@ -36,7 +45,8 @@ export const Tabs: React.FC<Props> = ({onTab}) => {
                 </svg>
                 My Network
             </div>
-            <div className="tab-item" onClick={() => onTab(TabTypes.Messages)}>
+            <div className={"tab-item" + (isSelected(TabTypes.Messages) ? " tab-selected" : "")}
+                 onClick={() => selectTab(TabTypes.Messages)}>
                 {badges.MESSAGING > 0 && <div className="tab-badge">{badges.MESSAGING}</div>}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"
                      focusable="false">
@@ -45,7 +55,8 @@ export const Tabs: React.FC<Props> = ({onTab}) => {
                 </svg>
                 Messaging
             </div>
-            <div className="tab-item" onClick={() => onTab(TabTypes.Notifications)}>
+            <div className={"tab-item" + (isSelected(TabTypes.Notifications) ? " tab-selected" : "")}
+                 onClick={() => selectTab(TabTypes.Notifications)}>
                 {badges.NOTIFICATIONS > 0 && <div className="tab-badge">{badges.NOTIFICATIONS}</div>}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24"
                      fill="currentColor"
