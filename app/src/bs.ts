@@ -78,7 +78,15 @@ messages.listen<IAppRequest, any>({
     [AppMessageType.HandleInvitation]: (message) =>
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.handleInvitation(token, message.payload))
+            .then(token => api.handleInvitation(token, message.payload)),
+    [AppMessageType.MarkNotificationsSeen]: () =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(token => api.markNotificationsSeen(token)),
+    [AppMessageType.MarkNotificationRead]: (message) =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(token => api.markNotificationRead(token, message.payload))
 })
 
 // listening to cookies store events

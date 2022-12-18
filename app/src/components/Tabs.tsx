@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, Badges, BadgesResponse, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import React, {useState} from "react";
+import {Badges} from "../global";
 
 type Props = {
     onTab: (tab: number) => void
+    badges: Badges
 };
 
 export enum TabTypes {
@@ -12,18 +12,9 @@ export enum TabTypes {
     Notifications
 }
 
-export const Tabs: React.FC<Props> = ({onTab}) => {
+export const Tabs: React.FC<Props> = ({onTab, badges}) => {
 
-    const [badges, setBadges] = useState({} as Badges);
     const [selected, setSelected] = useState(TabTypes.MyNetwork);
-
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
-
-    useEffect(() => {
-        messages.request<IAppRequest, BadgesResponse>({type: AppMessageType.Badges},
-            (r) => setBadges(r.badges))
-            .then(/* nada */)
-    }, []);
 
     const selectTab = (tab: TabTypes) => {
         setSelected(tab);

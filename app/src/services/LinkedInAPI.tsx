@@ -126,6 +126,7 @@ export class LinkedInAPI {
         const result = elements.map(e => ({
             read: e.read,
             publishedAt: e.publishedAt,
+            entityUrn: e.entityUrn,
             headerImage: getHeaderImage(e.headerImage),
             headline: e.headline?.text,
             subHeadline: e.subHeadline?.text,
@@ -183,6 +184,32 @@ export class LinkedInAPI {
                 "csrf-token": token,
             },
             "body": `{\"invitationId\":\"${invitation.id}\",\"invitationSharedSecret\":\"${invitation.sharedSecret}\",\"isGenericInvitation\":false}`,
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(_ => null);
+    }
+
+    public markNotificationsSeen(token: string) {
+        return fetch(LinkedInAPI.BASE + `voyagerNotificationsDashBadge?action=markAllItemsAsSeen`, {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token,
+            },
+            "body": `{\"until\": ${new Date().getTime()}}`,
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(_ => null);
+    }
+
+    public markNotificationRead(token: string, entityUrn: string) {
+        return fetch(LinkedInAPI.BASE + `voyagerNotificationsDashBadge?action=markItemAsRead`, {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token,
+            },
+            "body": `{\"item\": \"${entityUrn}\"}`,
             "method": "POST",
             "mode": "cors",
             "credentials": "include"

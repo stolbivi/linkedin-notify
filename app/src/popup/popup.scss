@@ -19,6 +19,7 @@ body {
 
 .sign-in {
   font-size: 16px;
+  background-color: white;
   color: rgb(10, 102, 194);
   border-color: rgb(10, 102, 194);
   border-width: 1px;
@@ -51,7 +52,7 @@ body {
 }
 
 .has-unread {
-  background-color: #e2f0fd;
+  background-color: #e2f0fd !important;
 }
 
 .base-card {

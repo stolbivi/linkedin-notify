@@ -11,7 +11,9 @@ export enum AppMessageType {
     Notifications,
     Invitations,
     Badges,
-    HandleInvitation
+    HandleInvitation,
+    MarkNotificationsSeen,
+    MarkNotificationRead,
 }
 
 export interface IAppRequest extends TMessage {

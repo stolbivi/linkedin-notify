@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, IsLoggedResponse, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, Badges, BadgesResponse, IAppRequest, IsLoggedResponse, MESSAGE_ID, VERBOSE} from "../global";
 import {Notifications} from "./Notifications";
 import {Tabs, TabTypes} from "./Tabs";
 import {Conversations} from "./Conversations";
@@ -11,6 +11,7 @@ type Props = {};
 
 export const Main: React.FC<Props> = ({}) => {
 
+    const [badges, setBadges] = useState({} as Badges);
     const [isLogged, setIsLogged] = useState(false);
     const [tab, setTab] = useState(0);
 
@@ -19,6 +20,9 @@ export const Main: React.FC<Props> = ({}) => {
     useEffect(() => {
         messages.request<IAppRequest, IsLoggedResponse>({type: AppMessageType.IsLogged},
             (r) => setIsLogged(r.isLogged))
+            .then(/* nada */);
+        messages.request<IAppRequest, BadgesResponse>({type: AppMessageType.Badges},
+            (r) => setBadges(r.badges))
             .then(/* nada */)
     }, []);
 
@@ -27,7 +31,7 @@ export const Main: React.FC<Props> = ({}) => {
             {isLogged === false
                 ? <SignIn/>
                 : <div className="w-100 d-flex flex-column justify-content-center align-items-start">
-                    <Tabs onTab={setTab}/>
+                    <Tabs onTab={setTab} badges={badges}/>
                     <div className="scroll">
                         {
                             tab === TabTypes.MyNetwork && <Invitations/>
@@ -36,7 +40,7 @@ export const Main: React.FC<Props> = ({}) => {
                             tab === TabTypes.Messages && <Conversations/>
                         }
                         {
-                            tab === TabTypes.Notifications && <Notifications/>
+                            tab === TabTypes.Notifications && <Notifications setBadges={setBadges}/>
                         }
                     </div>
                 </div>

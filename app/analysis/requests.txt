@@ -34,3 +34,9 @@ https://www.linkedin.com/messaging/thread/2-NmIwZTliOGQtYmZmMi00NWJlLTgxZGUtOGZk
 https://www.linkedin.com/voyager/api/relationships/invitations/7008812365320241152?action=accept
 
 {invitationId: "7008812365320241152", invitationSharedSecret: "okgr1Sob", isGenericInvitation: false}
+
+https://www.linkedin.com/voyager/api/voyagerNotificationsDashBadge?action=markAllItemsAsSeen
+{until: 1671329808368}
+
+https://www.linkedin.com/voyager/api/voyagerNotificationsDashBadge?action=markItemAsRead
+{item: "urn:li:fsd_notificationCard:(EDITORIAL_EVENING_RUNDOWN_INAPP,urn:li:none)"}

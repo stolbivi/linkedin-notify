@@ -22,9 +22,15 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
             someDate.getFullYear() == today.getFullYear()
     }
 
+    const markRead = () => messages.request<IAppRequest, any>({
+        type: AppMessageType.MarkNotificationRead,
+        payload: notification.entityUrn
+    });
+
     const onAction = (actionTarget: string, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (actionTarget && actionTarget.length > 0) {
             e.stopPropagation();
+            markRead().then(/* nada */);
             return messages.request<IAppRequest, any>({
                 type: AppMessageType.OpenURL,
                 payload: {url: `https://${DOMAIN}/` + actionTarget}
@@ -33,6 +39,7 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
     }
 
     const onCardAction = () => {
+        markRead().then(/* nada */);
         return messages.request<IAppRequest, any>({
             type: AppMessageType.OpenURL,
             payload: {url: `https://${DOMAIN}/` + cardAction}
