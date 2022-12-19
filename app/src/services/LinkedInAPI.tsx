@@ -309,6 +309,19 @@ export class LinkedInAPI {
         }).then(_ => null);
     }
 
+    public repost(token: string, postId: string) {
+        return fetch("https://www.linkedin.com/voyager/api/contentcreation/normShares", {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token,
+            },
+            "body": `{\"visibleToConnectionsOnly\":false,\"externalAudienceProviders\":[],\"commentaryV2\":{\"text\":\"\",\"attributes\":[]},\"origin\":\"SHARE_AS_IS\",\"allowedCommentersScope\":\"NONE\",\"postState\":\"PUBLISHED\",\"parentUrn\":\"urn:li:share:${postId}\"}`,
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(_ => true);
+    }
+
     private getRequest(token: string): any {
         return {
             "headers": {

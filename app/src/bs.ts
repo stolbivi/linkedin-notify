@@ -1,5 +1,5 @@
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "./global";
+import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, POST_ID, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 
 const messages = new Messages(MESSAGE_ID, VERBOSE);
@@ -101,7 +101,17 @@ messages.listen<IAppRequest, any>({
     [AppMessageType.HandleInvitation]: (message) =>
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.handleInvitation(token, message.payload))
+            .then(token => api.handleInvitation(token, message.payload)),
+    [AppMessageType.CheckUnlocked]: () => new Promise((res) => {
+        chrome.storage.local.get(["unlocked"], (result) => {
+            res({unlocked: result["unlocked"] === true})
+        });
+    }),
+    [AppMessageType.Unlock]: () =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(token => api.repost(token, POST_ID))
+            .then(r => new Promise((res) => chrome.storage.local.set({unlocked: true}, () => res(r))))
 })
 
 // listening to cookies store events

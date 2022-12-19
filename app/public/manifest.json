@@ -16,7 +16,8 @@
   },
   "permissions": [
     "cookies",
-    "alarms"
+    "alarms",
+    "storage"
   ],
   "host_permissions": [
     "*://*.linkedin.com/"

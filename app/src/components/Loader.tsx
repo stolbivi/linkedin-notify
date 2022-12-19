@@ -7,7 +7,7 @@ type Props = {
 export const Loader: React.FC<Props> = ({show}) => {
 
     return (
-        <div className="w-100">
+        <div className="w-100 ">
             {show && <div className="loader w-100 p-5 d-flex justify-content-center">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60" focusable="false" fill="currentColor">
                 <g>
