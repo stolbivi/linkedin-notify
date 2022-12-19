@@ -37,7 +37,7 @@ export const Main: React.FC<Props> = ({}) => {
                             tab === TabTypes.MyNetwork && <Invitations/>
                         }
                         {
-                            tab === TabTypes.Messages && <Conversations/>
+                            tab === TabTypes.Messages && <Conversations setBadges={setBadges}/>
                         }
                         {
                             tab === TabTypes.Notifications && <Notifications setBadges={setBadges}/>

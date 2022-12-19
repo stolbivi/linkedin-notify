@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
+import {AppMessageType, Badges, BadgesResponse, IAppRequest, MESSAGE_ID} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {formatDate} from "../services/UIHelpers";
 
 type Props = {
     conversation: any
+    getDetails: (conversation: any) => void
+    setBadges: (badges: Badges) => void
 };
 
-export const ConversationCard: React.FC<Props> = ({conversation}) => {
+export const ConversationCard: React.FC<Props> = ({conversation, getDetails, setBadges}) => {
 
     const [participant, setParticipant] = useState({} as any);
     const [message, setMessage] = useState({} as any);
@@ -23,12 +25,15 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
         });
     }
 
-    const onOpenMessage = () => {
-        const url = message.urn?.split(":").pop();
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.OpenURL,
-            payload: {url: `https://${DOMAIN}/messaging/thread/` + url}
-        });
+    const onOpenMessage = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation();
+        messages.request<IAppRequest, any>({
+            type: AppMessageType.ConversationAck,
+            payload: conversation.entityUrn
+        }).then(_ => messages.request<IAppRequest, BadgesResponse>({type: AppMessageType.Badges},
+            (r) => setBadges(r.badges))
+            .then(/* nada */));
+        getDetails({entityUrn: conversation.entityUrn, syncToken: conversation.syncToken});
     }
 
     useEffect(() => {
@@ -42,10 +47,11 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
         const m = conversation.messages.pop();
         setMessage(m);
         setDeliveredAt(formatDate(new Date(m?.deliveredAt)));
-    }, []);
+    }, [conversation]);
 
     return (
-        <div className={"conversation-card" + (conversation.unreadCount > 0 ? " has-unread" : "")}>
+        <div className={"conversation-card" + (conversation.unreadCount > 0 ? " has-unread" : "")}
+             onClick={(e) => onOpenMessage(e)}>
             <div className="card-image" onClick={onOpenProfile}>
                 <img src={picture}/>
             </div>
@@ -56,7 +62,7 @@ export const ConversationCard: React.FC<Props> = ({conversation}) => {
                     <div className="card-timestamp">{deliveredAt}</div>
                 </div>
                 <div className="w-100 d-flex flex-row align-items-end">
-                    <div className="card-message" onClick={onOpenMessage}>{message?.body}</div>
+                    <div className="card-message">{message?.body}</div>
                     {conversation.unreadCount > 0 &&
                     <div className="card-badge">{conversation.unreadCount}</div>
                     }

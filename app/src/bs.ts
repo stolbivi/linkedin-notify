@@ -35,12 +35,20 @@ getCookies(DOMAIN)
     });
 
 messages.listen<IAppRequest, any>({
+    [AppMessageType.OpenURL]: (message) =>
+        chrome.tabs.create({url: message.payload.url, selected: true}),
     [AppMessageType.IsLogged]: () =>
         getCookies(DOMAIN)
             .then(cookies => api.isLogged(cookies))
             .then(logged => ({isLogged: logged})),
-    [AppMessageType.OpenURL]: (message) =>
-        chrome.tabs.create({url: message.payload.url, selected: true}),
+    [AppMessageType.Badges]: () =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const badgesResponse = await api.getTabBadges(token);
+                const badges = api.extractBadges(badgesResponse);
+                return {badges};
+            }),
     [AppMessageType.Conversations]: () =>
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
@@ -51,6 +59,18 @@ messages.listen<IAppRequest, any>({
                 const conversations = api.extractConversations(conversationResponse);
                 return {conversations};
             }),
+    [AppMessageType.ConversationDetails]: (message) =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const detailsResponse = await api.getConversationDetails(token, message.payload);
+                const details = await api.extractConversationDetails(detailsResponse);
+                return {details};
+            }),
+    [AppMessageType.ConversationAck]: (message) =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(token => api.markConversationRead(token, message.payload)),
     [AppMessageType.Notifications]: () =>
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
@@ -59,6 +79,14 @@ messages.listen<IAppRequest, any>({
                 const notifications = api.extractNotifications(notificationsResponse);
                 return {notifications};
             }),
+    [AppMessageType.MarkNotificationsSeen]: () =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(token => api.markNotificationsSeen(token)),
+    [AppMessageType.MarkNotificationRead]: (message) =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(token => api.markNotificationRead(token, message.payload)),
     [AppMessageType.Invitations]: () =>
         getCookies(DOMAIN)
             .then(async cookies => api.getCsrfToken(cookies))
@@ -67,26 +95,10 @@ messages.listen<IAppRequest, any>({
                 const invitations = api.extractInvitations(invitationsResponse);
                 return {invitations};
             }),
-    [AppMessageType.Badges]: () =>
-        getCookies(DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const badgesResponse = await api.getTabBadges(token);
-                const badges = api.extractBadges(badgesResponse);
-                return {badges};
-            }),
     [AppMessageType.HandleInvitation]: (message) =>
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.handleInvitation(token, message.payload)),
-    [AppMessageType.MarkNotificationsSeen]: () =>
-        getCookies(DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.markNotificationsSeen(token)),
-    [AppMessageType.MarkNotificationRead]: (message) =>
-        getCookies(DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.markNotificationRead(token, message.payload))
+            .then(token => api.handleInvitation(token, message.payload))
 })
 
 // listening to cookies store events

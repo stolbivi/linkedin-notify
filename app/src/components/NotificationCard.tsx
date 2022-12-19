@@ -16,6 +16,23 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
+    useEffect(() => {
+        if (notification.headerImage?.rootUrl) {
+            setPicture(notification.headerImage?.rootUrl + notification.headerImage?.artifacts?.pop()?.path);
+        }
+        if (notification.headerImage?.url) {
+            setPicture(notification.headerImage?.url);
+        }
+        setPublishedAt(notification.publishedAt);
+        setPublishedAt(formatDate(new Date(notification.publishedAt)));
+        setCardAction(notification.cardAction);
+        setActions(notification.actions.map((a: any, i: number) =>
+            (<div className="notification-action"
+                  onClick={(e) => onAction(a.actionTarget, e)}
+                  key={i}>{a.displayText}</div>)
+        ));
+    }, [notification]);
+
     const markRead = () => messages.request<IAppRequest, any>({
         type: AppMessageType.MarkNotificationRead,
         payload: notification.entityUrn
@@ -39,23 +56,6 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
             payload: {url: `https://${DOMAIN}/` + cardAction}
         });
     }
-
-    useEffect(() => {
-        if (notification.headerImage?.rootUrl) {
-            setPicture(notification.headerImage?.rootUrl + notification.headerImage?.artifacts?.pop()?.path);
-        }
-        if (notification.headerImage?.url) {
-            setPicture(notification.headerImage?.url);
-        }
-        setPublishedAt(notification.publishedAt);
-        setPublishedAt(formatDate(new Date(notification.publishedAt)));
-        setCardAction(notification.cardAction);
-        setActions(notification.actions.map((a: any, i: number) =>
-            (<div className="notification-action"
-                  onClick={(e) => onAction(a.actionTarget, e)}
-                  key={i}>{a.displayText}</div>)
-        ));
-    }, []);
 
     return (
         <div className={"notification-card" + (notification.read === false ? " has-unread" : "")}

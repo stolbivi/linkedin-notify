@@ -5,15 +5,17 @@ export const MESSAGE_ID = 'linkedin-manager';
 export const VERBOSE = false;
 
 export enum AppMessageType {
-    IsLogged,
     OpenURL,
-    Conversations,
-    Notifications,
-    Invitations,
+    IsLogged,
     Badges,
-    HandleInvitation,
+    Conversations,
+    ConversationDetails,
+    ConversationAck,
+    Notifications,
     MarkNotificationsSeen,
     MarkNotificationRead,
+    Invitations,
+    HandleInvitation,
 }
 
 export interface IAppRequest extends TMessage {

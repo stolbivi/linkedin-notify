@@ -16,7 +16,6 @@ export class LinkedInAPI {
     public static readonly THE_COOKIE = 'li_at';
     private static readonly BASE = 'https://www.linkedin.com/voyager/api/';
     private static readonly CSRF = 'JSESSIONID';
-    private static readonly MAGIC_NUMBER = 'd5089df1b5a665ee527be74b9ab1859e';
 
     public isLogged(cookies: Cookie[]): boolean {
         const theCookie = cookies.find(c => c.name === LinkedInAPI.THE_COOKIE);
@@ -48,7 +47,7 @@ export class LinkedInAPI {
     }
 
     public getConversations(token: string, profileUrn: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerConversations.${LinkedInAPI.MAGIC_NUMBER}&variables=(mailboxUrn:urn%3Ali%3Afsd_profile%3A${profileUrn})`, this.getRequest(token))
+        return fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerConversations.d5089df1b5a665ee527be74b9ab1859e&variables=(mailboxUrn:urn%3Ali%3Afsd_profile%3A${this.encode(profileUrn)})`, this.getRequest(token))
             .then(response => response.json());
     }
 
@@ -76,15 +75,75 @@ export class LinkedInAPI {
             }));
         }
 
-        const elements = response.data?.messengerConversationsBySyncToken?.elements as Array<any>;
+        const conversations = response.data?.messengerConversationsBySyncToken;
+        const elements = conversations?.elements as Array<any>;
         const result = elements.map(e => ({
             groupChat: e.groupChat,
             unreadCount: e.unreadCount,
+            entityUrn: e.entityUrn,
+            syncToken: conversations?.metadata?.newSyncToken,
             lastReadAt: e.lastReadAt,
             conversationParticipants: getParticipants(e.conversationParticipants),
             messages: getMessages(e.messages?.elements)
         }));
         return result;
+    }
+
+    public getConversationDetails(token: string, conversation: any): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerMessages.08934c39ffb80ef0ba3206c05dd01362&variables=(conversationUrn:${this.encode(conversation.entityUrn)})`, this.getRequest(token))
+            .then(response => response.json());
+    }
+
+    public extractConversationDetails(response: any): Array<any> {
+        function getSender(s: any) {
+            const m = s?.participantType?.member;
+            if (m) {
+                return {
+                    profileUrl: m.profileUrl,
+                    firstName: m.firstName?.text,
+                    lastName: m.lastName?.text,
+                    distance: m.distance,
+                    headline: m.headline?.text,
+                    profilePicture: {
+                        rootUrl: m.profilePicture?.rootUrl,
+                        artifacts: extractArtifacts(m.profilePicture?.artifacts)
+                    }
+                }
+            }
+        }
+
+        const elements = response.data?.messengerMessagesBySyncToken?.elements as Array<any>;
+        const result = elements.map(e => ({
+            text: e?.body?.text ? e?.body?.text : "This message contains media objects, please open original",
+            openOriginal: !(e?.body?.text),
+            showPicture: true,
+            backendUrn: e.backendUrn,
+            backendConversationUrn: e.backendConversationUrn,
+            deliveredAt: e.deliveredAt,
+            entityUrn: e.entityUrn,
+            sender: getSender(e.sender),
+            conversation: e.conversation?.entityUrn
+        }));
+        result.sort((a, b) => a.deliveredAt - b.deliveredAt);
+        result.forEach((e, index, arr) => {
+            if (index > 0 && arr[index - 1].sender?.profileUrl === e.sender?.profileUrl) {
+                e.showPicture = false;
+            }
+        })
+        return result;
+    }
+
+    public markConversationRead(token: string, entityUrn: string) {
+        return fetch(LinkedInAPI.BASE + `voyagerMessagingDashMessengerConversations?ids=List(${this.encode(entityUrn)})`, {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token,
+            },
+            "body": `{\"entities\":{\"${entityUrn}\":{\"patch\":{\"$set\":{\"read\":true}}}}}`,
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(_ => null);
     }
 
     public getNotifications(token: string): Promise<any> {
@@ -227,6 +286,12 @@ export class LinkedInAPI {
             "mode": "cors",
             "credentials": "include"
         }
+    }
+
+    private encode(src: string): string {
+        return encodeURIComponent(src)
+            .replace("(", "%28")
+            .replace(")", "%29");
     }
 
 }

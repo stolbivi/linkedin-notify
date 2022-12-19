@@ -25,7 +25,7 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
         }
         setSentTime(formatDate(new Date(invitation.sentTime)));
         setId(invitation.urn.split(":").pop());
-    }, []);
+    }, [invitation]);
 
     const onIgnore = () => {
         return messages.request<IAppRequest, any>({
