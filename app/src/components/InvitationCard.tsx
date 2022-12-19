@@ -41,10 +41,6 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
         }).then(_ => setHideActions(true));
     }
 
-    // const onReply = () => {
-    //     console.log("onReply");
-    // }
-
     const onOpenProfile = () => {
         return messages.request<IAppRequest, any>({
             type: AppMessageType.OpenURL,
@@ -53,7 +49,7 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
     }
 
     return (
-        <div className={"invitation-card" + (invitation.unseen === true ? " has-unread" : "")}>
+        <div className={"invitation-card bordered-card" + (invitation.unseen === true ? " has-unread" : "")}>
             <div className="card-image">
                 <img src={picture}/>
             </div>

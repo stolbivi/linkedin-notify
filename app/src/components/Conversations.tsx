@@ -44,9 +44,13 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
     return (
         <div className="w-100">
             <Loader show={!completed}/>
-            {completed && conversations.length == 0 && <div className="no-data">No data</div>}
-            {completed && !showDetails && conversations}
-            {completed && showDetails && <ConversationDetails details={details} setShowDetails={setShowDetails}/>}
+            <div className="w-100" hidden={!completed}>
+                {conversations.length == 0 && <div className="no-data">No data</div>}
+                <div className="w-100" hidden={showDetails}>{conversations}</div>
+                <div className="w-100" hidden={!showDetails}>
+                    <ConversationDetails details={details} setShowDetails={setShowDetails}/>
+                </div>
+            </div>
         </div>
     );
 };

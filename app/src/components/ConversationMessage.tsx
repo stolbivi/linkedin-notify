@@ -32,7 +32,7 @@ export const ConversationMessage: React.FC<Props> = ({message, onReply}) => {
     }
 
     return (
-        <div className="message-card">
+        <div className={"message-card" + (message.showPicture ? " bordered-card" : "")}>
             <div className="message-image" onClick={onOpenProfile}>
                 {message.showPicture && <img src={picture}/>}
                 {!message.showPicture && <div className="image-space"></div>}

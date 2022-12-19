@@ -32,8 +32,6 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails}) 
         });
     }
 
-    // TODO mark message as seen
-
     return (
         <div className="details">
             <div className="detail-header">

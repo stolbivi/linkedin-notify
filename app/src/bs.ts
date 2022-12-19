@@ -70,7 +70,10 @@ messages.listen<IAppRequest, any>({
     [AppMessageType.ConversationAck]: (message) =>
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.markConversationRead(token, message.payload)),
+            .then(async token => {
+                await api.markConversationRead(token, message.payload);
+                await api.markAllMessageAsSeen(token, message.payload)
+            }),
     [AppMessageType.Notifications]: () =>
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
@@ -82,7 +85,7 @@ messages.listen<IAppRequest, any>({
     [AppMessageType.MarkNotificationsSeen]: () =>
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.markNotificationsSeen(token)),
+            .then(token => api.markAllNotificationsAsSeen(token)),
     [AppMessageType.MarkNotificationRead]: (message) =>
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))

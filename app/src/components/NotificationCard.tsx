@@ -58,7 +58,7 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
     }
 
     return (
-        <div className={"notification-card" + (notification.read === false ? " has-unread" : "")}
+        <div className={"notification-card bordered-card" + (notification.read === false ? " has-unread" : "")}
              onClick={onCardAction}>
             {picture.length > 0 && <div className="card-image">
                 <img src={picture}/>
