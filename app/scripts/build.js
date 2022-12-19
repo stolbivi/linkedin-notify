@@ -20,7 +20,9 @@ function formatDate(date) {
     const ye = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
     const mo = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
     const da = new Intl.DateTimeFormat('en', {day: '2-digit'}).format(date);
-    return (`${ye}-${mo}-${da}`);
+    const min = new Intl.DateTimeFormat('en', {minute: 'numeric'}).format(date);
+    const sec = new Intl.DateTimeFormat('en', {second: 'numeric'}).format(date);
+    return (`${ye}-${mo}-${da}-${min}${sec}`);
 }
 
 async function pack() {
