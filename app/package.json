@@ -1,6 +1,6 @@
 {
-  "name": "LinkedIn Notify",
-  "version": "0.0.2",
+  "name": "LinkedIn Manager",
+  "version": "0.0.3",
   "description": "Extension to monitor activity on your LinkedIn profile",
   "scripts": {
     "prettifier": "npx prettier --write '(tests|src)/**/*.(ts|tsx|js|jsx)'",

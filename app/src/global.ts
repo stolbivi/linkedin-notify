@@ -3,7 +3,7 @@ import {TMessage} from "@stolbivi/pirojok/lib/chrome/Messages";
 export const DOMAIN = 'linkedin.com';
 export const MESSAGE_ID = 'linkedin-manager';
 export const VERBOSE = false;
-export const POST_ID = "7010255690174726144";
+export const POST_ID = "7010927250069934081";
 
 export enum AppMessageType {
     OpenURL,
