@@ -1,6 +1,9 @@
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, POST_ID, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
+import {Configuration, OpenAIApi} from "openai";
+import fetchAdapter from "@vespaiach/axios-fetch-adapter";
+import "regenerator-runtime/runtime.js";
 
 const messages = new Messages(MESSAGE_ID, VERBOSE);
 const api = new LinkedInAPI();
@@ -150,4 +153,28 @@ chrome.alarms.onAlarm.addListener(a => {
             }
         })
 });
+
+async function testAI() {
+    try {
+        const openai = new OpenAIApi(new Configuration({
+            apiKey: "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",
+        }));
+        const request = {
+            model: "text-davinci-003",
+            prompt: "Give me a test completion, please",
+            temperature: 0,
+            max_tokens: 100,
+        };
+        // @ts-ignore
+        const completion = await openai.createCompletion(request, {adapter: fetchAdapter});
+        return Promise.resolve({response: completion.data.choices});
+    } catch (error) {
+        const message = error.response
+            ? {data: error.response.data, status: error.response.status}
+            : {message: error.message};
+        return Promise.resolve(message);
+    }
+}
+
+testAI().then(r => console.log(JSON.stringify(r)))
 
