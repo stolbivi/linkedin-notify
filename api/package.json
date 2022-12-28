@@ -1,12 +1,11 @@
 {
-  "name": "LinkedIn Manager API",
+  "name": "linkedin-manager-api",
   "version": "0.0.3",
   "description": "API for extension to monitor activity on your LinkedIn profile",
   "main": "dist/app.js",
   "scripts": {
     "init": "export SET NODE_OPTIONS=--openssl-legacy-provider",
-    "tsoa": "npx tsoa spec-and-routes",
-    "build": "tsc",
+    "build": "npx tsoa spec-and-routes && tsc",
     "start": "npm run init && node .",
     "serve": "npm run init && npm run tsoa && nodemon src/app.ts"
   },
