@@ -134,27 +134,6 @@ export class LinkedInAPI {
     }
 
     public markConversationRead(token: string, entityUrn: string) {
-        fetch("https://www.linkedin.com/voyager/api/messaging/badge?action=markItemsAsSeen", {
-            "headers": {
-                "accept": "application/vnd.linkedin.normalized+json+2.1",
-                "content-type": "application/json; charset=UTF-8",
-                "csrf-token": "ajax:6774881379868013284",
-                "sec-ch-ua": "\"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"108\", \"Google Chrome\";v=\"108\"",
-                "sec-ch-ua-mobile": "?0",
-                "sec-ch-ua-platform": "\"macOS\"",
-                "x-li-lang": "en_US",
-                "x-li-page-instance": "urn:li:page:messaging_thread;ad1fdb20-a287-4413-9a82-6d63e1ac2671",
-                "x-li-track": "{\"clientVersion\":\"1.11.5633\",\"mpVersion\":\"1.11.5633\",\"osName\":\"web\",\"timezoneOffset\":-5,\"timezone\":\"America/New_York\",\"deviceFormFactor\":\"DESKTOP\",\"mpName\":\"voyager-web\",\"displayDensity\":1,\"displayWidth\":1440,\"displayHeight\":900}",
-                "x-restli-protocol-version": "2.0.0"
-            },
-            "referrer": "https://www.linkedin.com/messaging/thread/2-MDNiYzgzMzgtNWVlNS00YWZkLTk1OWItM2FkMTIyMWQ0NWZiXzAxMg==/",
-            "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": "{\"items\":[\"urn:li:msg_conversation:(urn:li:fsd_profile:ACoAAD-41IsBDrmZmrQ9egCK7qVrpoudB-89ebA,2-YTY5MDhmM2YtOGY5My00ODQzLWE4ZTEtNzIzNjczN2ViNWI4XzAxMg==)\"]}",
-            "method": "POST",
-            "mode": "cors",
-            "credentials": "omit"
-        });
-
         return fetch(LinkedInAPI.BASE + `voyagerMessagingDashMessengerConversations?ids=List(${this.encode(entityUrn)})`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",

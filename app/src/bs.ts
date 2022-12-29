@@ -1,9 +1,11 @@
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, POST_ID, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
+import {BackendAPI} from "./services/BackendAPI";
 
 const messages = new Messages(MESSAGE_ID, VERBOSE);
 const api = new LinkedInAPI();
+const backEndAPI = new BackendAPI();
 
 // adding popup
 chrome.action.onClicked.addListener(() => {
@@ -111,7 +113,9 @@ messages.listen<IAppRequest, any>({
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(token => api.repost(token, POST_ID))
-            .then(r => new Promise((res) => chrome.storage.local.set({unlocked: true}, () => res(r))))
+            .then(r => new Promise((res) => chrome.storage.local.set({unlocked: true}, () => res(r)))),
+    [AppMessageType.Completion]: (message) =>
+        backEndAPI.getCompletion(message.payload)
 })
 
 // listening to cookies store events

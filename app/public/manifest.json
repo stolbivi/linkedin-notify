@@ -1,6 +1,6 @@
 {
   "name": "__MSG_name__",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "__MSG_description__",
   "icons": {
     "128": "content/icon-128.png"
@@ -8,6 +8,21 @@
   "background": {
     "service_worker": "scripts/bs.js"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.linkedin.com/*",
+        "*://linkedin.com/*"
+      ],
+      "js": [
+        "content_scripts/inpage.js"
+      ],
+      "css" : [
+        "content/inpage.css"
+      ],
+      "run_at": "document_start"
+    }
+  ],
   "action": {
     "default_icon": {
       "128": "content/icon-128-logout.png"
@@ -20,7 +35,8 @@
     "storage"
   ],
   "host_permissions": [
-    "*://*.linkedin.com/"
+    "*://*.linkedin.com/",
+    "*://linkedin-manager-api.herokuapp.com/"
   ],
   "default_locale": "en",
   "manifest_version": 3

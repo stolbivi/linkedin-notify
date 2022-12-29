@@ -19,6 +19,7 @@ export enum AppMessageType {
     HandleInvitation,
     CheckUnlocked,
     Unlock,
+    Completion,
 }
 
 export interface IAppRequest extends TMessage {
