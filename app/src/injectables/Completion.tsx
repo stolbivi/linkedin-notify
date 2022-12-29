@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+// @ts-ignore
+import stylesheet from "./Completion.scss";
 
 type Props = {};
 
@@ -69,8 +71,11 @@ export const Completion: React.FC<Props> = ({}) => {
     }
 
     return (
-        <div className={getClass()} onClick={onComplete} title="Use AI assist to complete the post">
-            <span>AI</span>
-        </div>
+        <React.Fragment>
+            <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
+            <div className={getClass()} onClick={onComplete} title="Use AI assist to complete the post">
+                <span>AI</span>
+            </div>
+        </React.Fragment>
     );
 };

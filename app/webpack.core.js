@@ -58,6 +58,26 @@ const initEntry = (dist, inputTs, outputJs) => {
   };
 };
 
+const addCSSInlineModules = (object) => {
+  object.module.rules.push({
+    test: /\.(s[ac]ss|css)$/i,
+    use: [
+      {
+        loader: 'to-string-loader',
+      },
+      {
+        loader: "css-loader",
+        options: {
+          importLoaders: 1,
+        },
+      },
+      "postcss-loader",
+      "sass-loader",
+    ],
+  });
+  return object;
+};
+
 const addCSSModules = (object, outputCss) => {
   object.module.rules.push({
     test: /\.(s[ac]ss|css)$/i,
@@ -111,6 +131,7 @@ const addHTMLModules = (object, template, outputHtml, outputCss) => {
 
 module.exports = {
   initEntry: initEntry,
+  addCSSInlineModules: addCSSInlineModules,
   addCSSModules: addCSSModules,
   addHTMLModules: addHTMLModules,
 };

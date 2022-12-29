@@ -1,6 +1,6 @@
 {
   "name": "__MSG_name__",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "__MSG_description__",
   "icons": {
     "128": "content/icon-128.png"
@@ -16,9 +16,6 @@
       ],
       "js": [
         "content_scripts/inpage.js"
-      ],
-      "css" : [
-        "content/inpage.css"
       ],
       "run_at": "document_start"
     }
