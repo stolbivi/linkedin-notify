@@ -32,7 +32,8 @@ export const Completion: React.FC<Props> = ({}) => {
         if (position < text.length) {
             setTimeout(() => {
                 editable.innerText = text.substring(0, position);
-                simulateTyping(text, position + 1);
+                const newPosition = position + 3;
+                simulateTyping(text, newPosition > text.length ? text.length : newPosition);
             }, 5);
         } else {
             setInProgress(false)
@@ -49,7 +50,7 @@ export const Completion: React.FC<Props> = ({}) => {
             payload: text
         }, (r) => {
             if (r.response[0] || r.response[0].text) {
-                const result = r.response[0].text.replace(/\n\s*\n/g, ' ').trim();
+                const result = r.response[0].text.replace(/^\s+|\s+$/g, '');
                 simulateTyping(result, 0);
             } else {
                 console.error(JSON.stringify(r.rsponse));
@@ -68,7 +69,7 @@ export const Completion: React.FC<Props> = ({}) => {
     }
 
     return (
-        <div className={getClass()} onClick={onComplete}>
+        <div className={getClass()} onClick={onComplete} title="Use AI assist to complete the post">
             <span>AI</span>
         </div>
     );
