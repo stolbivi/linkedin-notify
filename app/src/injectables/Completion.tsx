@@ -20,9 +20,9 @@ export const Completion: React.FC<Props> = ({}) => {
         const textDiv = document.getElementsByClassName("ql-editor");
         if (textDiv && textDiv[0]) {
             setEditable(textDiv[0]);
-            textDiv[0].addEventListener("input", (e: InputEvent) => {
+            textDiv[0].addEventListener("keyup", (e: InputEvent) => {
                 // @ts-ignore
-                const text = e.target.innerText;
+                const text = e.target.innerText.trim();
                 setDisabled(text.length === 0);
                 setText(text);
             }, false);
@@ -34,9 +34,8 @@ export const Completion: React.FC<Props> = ({}) => {
         if (position < text.length) {
             setTimeout(() => {
                 editable.innerText = text.substring(0, position);
-                const newPosition = position + 3;
-                simulateTyping(text, newPosition > text.length ? text.length : newPosition);
-            }, 5);
+                simulateTyping(text, position + 3);
+            }, 1);
         } else {
             setInProgress(false)
         }
