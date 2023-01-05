@@ -1,4 +1,5 @@
 import {Controller, Get, Query, Route} from "tsoa";
+import * as cheerio from 'cheerio';
 import * as Countries from "../data/countries.json"
 import * as Cities from "../data/cities.json"
 import * as States from "../data/states.json"
@@ -37,7 +38,7 @@ export class GlassDoorController extends Controller {
             const record = entry[country];
             this.cities[country][record.city] = record.code;
         }
-        console.debug('Loaded cities:', Object.keys(this.cities).length);
+        console.debug('Loaded city root levels:', Object.keys(this.cities).length);
     }
 
     private getCountryURL(role: string, countryCode: number) {
@@ -49,8 +50,22 @@ export class GlassDoorController extends Controller {
     }
 
     private extractSalary(text: string, countryCode: number, cityCode: number) {
+        const $ = cheerio.load(text);
+        const formattedPay = $('span[data-test=formatted-pay]').text();
+        const payPeriodAnnual = $('span[data-test=pay-period-ANNUAL]')
+            .map((_, e) => $(e).text()).toArray();
+        const allSpansM0 = $('span.m-0')
+            .map((_, e) => $(e).text()).toArray();
+        const payDistribution = [allSpansM0[3], allSpansM0[1], allSpansM0[2], allSpansM0[4]];
+        const note = $('span .m-0').text();
+        const result = {
+            formattedPay,
+            payPeriodAnnual,
+            payDistribution,
+            note
+        }
         return {
-            result: "",
+            result,
             countryCode,
             cityCode
         };

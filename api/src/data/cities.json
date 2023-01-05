@@ -1123,6 +1123,7 @@
   {"NY":{"city":"Kingston","code":450}},
   {"NY":{"city":"Malone","code":521}},
   {"NY":{"city":"New York City","code":615}},
+  {"NY":{"city":"New York","code":615, "original": "New York City"}},
   {"NY":{"city":"Ogdensburg","code":634}},
   {"NY":{"city":"Olean","code":638}},
   {"NY":{"city":"Oneonta","code":641}},
