@@ -3,12 +3,15 @@ import bodyParser from "body-parser";
 import swaggerUi from "swagger-ui-express";
 import Swagger from "./autogen/swagger.json";
 import {RegisterRoutes} from "./autogen/routes";
+import {Dictionary} from "./data/dictionary";
 
 require("dotenv").config();
 
 (async () => {
     try {
         console.log("Starting the http server");
+
+        Dictionary.loadDictionary();
 
         const app = express();
         app.use(bodyParser.urlencoded({extended: true}));

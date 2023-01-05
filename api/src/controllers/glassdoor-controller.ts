@@ -1,44 +1,17 @@
 import {Controller, Get, Query, Route} from "tsoa";
+import {Cache} from "../data/cache";
 import * as cheerio from 'cheerio';
-import * as Countries from "../data/countries.json"
-import * as Cities from "../data/cities.json"
 import * as States from "../data/states.json"
+import {Dictionary} from "../data/dictionary";
 
 
 @Route("/salary")
 export class GlassDoorController extends Controller {
 
     private readonly BASE = 'https://www.glassdoor.com/Salaries';
-    private countries = {} as { [index: string]: number };
-    private cities = {} as { [index: string]: { [index: string]: number } };
 
     constructor() {
         super();
-        this.loadDictionary();
-    }
-
-    private loadDictionary() {
-        console.log('Loading dictionaries started');
-        // countries
-        for (let i = 0; i < Object.keys(Countries).length; i++) {
-            this.countries[Countries[i]] = i + 1
-        }
-        console.log('Loaded countries:', Object.keys(this.countries).length);
-        // cities
-        for (let i = 0; i < Object.keys(Cities).length; i++) {
-            const entry = Cities[i];
-            if (!entry) {
-                continue;
-            }
-            const country = Object.keys(entry)[0].toString();
-            if (!this.cities[country]) {
-                this.cities[country] = {}
-            }
-            // @ts-ignore
-            const record = entry[country];
-            this.cities[country][record.city] = record.code;
-        }
-        console.debug('Loaded city root levels:', Object.keys(this.cities).length);
     }
 
     private getCountryURL(role: string, countryCode: number) {
@@ -71,33 +44,65 @@ export class GlassDoorController extends Controller {
         };
     }
 
-    @Get("country")
-    public async getSalary(@Query() role: string,
-                           @Query() country: string,
-                           @Query() state?: string,
-                           @Query() city?: string): Promise<any> {
-        console.log('Getting salary for:', role, country, state, city);
-        const countryCode = this.countries[country];
-        if (!countryCode) {
-            this.setStatus(422);
-            return Promise.resolve(`Country nod found: ${country}`);
-        }
+    private extractUrl(role: string, state: string, country: string, city: string, countryCode: number) {
         const roleNormalized = role.toLowerCase().split(" ").join("-");
         // trying to resolve city and state
         let cityCode: number;
         if (state) {
             // @ts-ignore
             const stateCode = States[state];
-            const cityBucket = this.cities[stateCode ? stateCode : country];
+            const cityBucket = Dictionary.cities[stateCode ? stateCode : country];
             if (cityBucket) {
                 cityCode = cityBucket[city];
             }
         }
         const url = cityCode ? this.getCityURL(roleNormalized, cityCode)
             : this.getCountryURL(roleNormalized, countryCode);
-        return fetch(url, this.getRequest())
-            .then(response => response.text())
-            .then(text => this.extractSalary(text, countryCode, cityCode))
+        return {cityCode, url};
+    }
+
+    @Get("get")
+    public async getSalary(@Query() role: string,
+                           @Query() country: string,
+                           @Query() state?: string,
+                           @Query() city?: string): Promise<any> {
+        console.log('Getting salary for:', role, country, state, city);
+        const countryCode = Dictionary.countries[country];
+        if (!countryCode) {
+            this.setStatus(422);
+            return Promise.resolve(`Country not found: ${country}`);
+        }
+        let {cityCode, url} = this.extractUrl(role, state, country, city, countryCode);
+        if (Cache.instance.has(url)) {
+            console.log("Returning cached value for:", url);
+            return Promise.resolve(Cache.instance.get(url));
+        } else {
+            console.log("No cached value for:", url);
+            return fetch(url, this.getRequest())
+                .then(response => response.text())
+                .then(text => {
+                    const result = this.extractSalary(text, countryCode, cityCode)
+                    Cache.instance.set(url, result);
+                    return result;
+                });
+        }
+    }
+
+    @Get("evoke")
+    public async evokeCache(@Query() role: string,
+                            @Query() country: string,
+                            @Query() state?: string,
+                            @Query() city?: string): Promise<any> {
+        const countryCode = Dictionary.countries[country];
+        if (!countryCode) {
+            this.setStatus(422);
+            return Promise.resolve(`Country not found: ${country}`);
+        }
+        let {url} = this.extractUrl(role, state, country, city, countryCode);
+        if (Cache.instance.has(url)) {
+            console.log("Evoking cached value for:", url);
+            Cache.instance.del(url);
+        }
     }
 
     private getRequest(): any {
