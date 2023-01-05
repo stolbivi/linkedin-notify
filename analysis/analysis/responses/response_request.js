@@ -1,0 +1,25 @@
+fetch("https://www.glassdoor.co.uk/graph", {
+    "headers": {
+        "accept": "*/*",
+        "accept-language": "en-US,en;q=0.9,ru;q=0.8",
+        "apollographql-client-name": "salary-search",
+        "apollographql-client-version": "10.0.59",
+        "cache-control": "no-cache",
+        "content-type": "application/json",
+        "gd-csrf-token": "bIt21Ys01s1L_ZOH1NbNEA:yQRbMLSSPEEzavXDMF8_RrWq6hUIJKccmXooWqLmNAj6l-T3gxLPavWJbcCytNSeFKgs6HlNuUckqmDizwxjYQ:dBi4L0kmlod2EIqP4Pj3pnsLoNRsnysH1cNir1Egem8",
+        "pragma": "no-cache",
+        "sec-ch-ua": "\"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"108\", \"Google Chrome\";v=\"108\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"macOS\"",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "x-gd-dos2-experiments-json": "{\"content_indeed\":{\"treatment\":\"apply_t1\",\"experiment\":\"PROD_test\",\"params\":{\"apply\":\"true\"}}}"
+    },
+    "referrer": "https://www.glassdoor.co.uk/",
+    "referrerPolicy": "origin",
+    "body": "[{\"operationName\":\"SalarySearchFAQsQuery\",\"variables\":{\"domain\":\"glassdoor.co.uk\",\"locale\":\"en-GB\",\"gdId\":\"7bf40504-1ec1-4cbd-98c3-3be779b39cba\",\"ip\":\"32.221.242.228, 172.70.175.110,10.0.195.230, 10.0.218.17\",\"userId\":-1,\"jobTitle\":\"researcher\",\"hasJobTitle\":true,\"cityId\":null,\"metroId\":null,\"stateId\":2697,\"countryId\":null,\"industryId\":0,\"urlData\":{\"url\":\"https://www.glassdoor.co.uk/Salaries/connecticut-researcher-salary-SRCH_IL.0,11_IS2697_KO12,22.htm?clickSource=searchBtn\",\"searchParams\":[{\"type\":\"IL\",\"value\":\"connecticut\"},{\"type\":\"IS\",\"value\":\"2697\"},{\"type\":\"KO\",\"value\":\"researcher\"}],\"pagePrefix\":\"IP\",\"payPeriodFilter\":null,\"decodedJobTitle\":\"researcher\"},\"useUgcSearch2ForSalaries\":\"true\",\"enableV3Estimates\":false},\"query\":\"query SalarySearchFAQsQuery($cityId: Int, $metroId: Int, $stateId: Int, $countryId: Int, $jobTitle: String!, $hasJobTitle: Boolean!, $industryId: Int!, $domain: String, $locale: String, $gdId: String, $ip: String, $userId: Int, $enableV3Estimates: Boolean, $useUgcSearch2ForSalaries: String) {\\n  occMedianSalary(\\n    location: {cityId: $cityId, metroId: $metroId, stateId: $stateId, countryId: $countryId}\\n    jobTitle: {text: $jobTitle}\\n    industry: {id: $industryId}\\n    context: {domain: $domain, locale: $locale, gdId: $gdId, ip: $ip, userId: $userId, params: [{key: \\\"useUgcSearch2\\\", value: $useUgcSearch2ForSalaries}]}\\n    enableV3Estimates: $enableV3Estimates\\n  ) @include(if: $hasJobTitle) {\\n    confidence\\n    jobTitle {\\n      text\\n      __typename\\n    }\\n    nationalJobTitle {\\n      id\\n      text\\n      __typename\\n    }\\n    nationalSalariesCount\\n    nationalLow\\n    nationalMedian\\n    nationalHigh\\n    links {\\n      salarySearchUrl\\n      nationalSalarySearchUrl\\n      __typename\\n    }\\n    salariesCount\\n    low\\n    median\\n    high\\n    queryLocation {\\n      id\\n      name\\n      longName\\n      seoAlias\\n      __typename\\n    }\\n    currency {\\n      symbol\\n      code\\n      __typename\\n    }\\n    nationalCurrency {\\n      code\\n      symbol\\n      __typename\\n    }\\n    payPeriod\\n    __typename\\n  }\\n}\\n\"},{\"operationName\":\"SalariesFeaturedJobsQuery\",\"variables\":{\"adSlotName\":\"search-salaries-lf-main-top\",\"numPerPage\":6,\"locationType\":\"STATE\",\"locationId\":2697,\"cityId\":null,\"metroId\":null,\"stateId\":2697,\"countryId\":null,\"keyword\":\"researcher\"},\"query\":\"query SalariesFeaturedJobsQuery($keyword: String!, $locationType: LocationTypeEnum, $locationId: Int!, $adSlotName: String!, $numPerPage: Int!) {\\n  jobListings(\\n    contextHolder: {adSlotName: $adSlotName, searchParams: {numPerPage: $numPerPage, searchType: FJ, skipFeaturedJobs: true, skipUrgencyLabel: true, locationType: $locationType, locationId: $locationId, keyword: $keyword}}\\n  ) {\\n    jobListings {\\n      jobview {\\n        job {\\n          listingId\\n          __typename\\n        }\\n        overview {\\n          id\\n          name\\n          squareLogoUrl(size: SMALL)\\n          __typename\\n        }\\n        rating {\\n          starRating\\n          __typename\\n        }\\n        header {\\n          ageInDays\\n          jobLink\\n          jobTitleText\\n          locationName\\n          payCurrency\\n          payPeriod\\n          payPercentile10\\n          payPercentile90\\n          salarySource\\n          __typename\\n        }\\n        __typename\\n      }\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"},{\"operationName\":\"RecordPageViewMutation\",\"variables\":{\"metaData\":[{\"key\":\"employer\"}],\"pageIdent\":\"INFOSITE_SALARY_BY_COMPANY\"},\"query\":\"mutation RecordPageViewMutation($metaData: [KeyValuePair]!, $pageIdent: String!) {\\n  recordPageView(pageIdent: $pageIdent, metaData: $metaData) {\\n    totalCount\\n    __typename\\n  }\\n}\\n\"}]",
+    "method": "POST",
+    "mode": "cors",
+    "credentials": "include"
+});

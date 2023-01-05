@@ -1,0 +1,5 @@
+Country specific
+https://www.glassdoor.com/Salaries/security-researcher-salary-SRCH_IN2_KO0,19.htm
+
+Location specific:
+https://www.glassdoor.com/Salaries/penetration-tester-salary-SRCH_IM12_KO0,18.htm

@@ -3,7 +3,7 @@ import {Configuration, OpenAIApi} from "openai";
 
 
 @Route("/api")
-export class RecordsController extends Controller {
+export class AIController extends Controller {
 
     private openai;
     private model = process.env.AI_MODEL;
