@@ -65,12 +65,16 @@ export const Completion: React.FC<Props> = ({}) => {
             type: AppMessageType.Completion,
             payload: text
         }, (r) => {
+            if (r.error) {
+                setInProgress(false);
+                return;
+            }
             if (r.response[0] || r.response[0].text) {
                 const result = r.response[0].text.replace(/^\s+|\s+$/g, '');
                 simulateTyping(result, 0);
             } else {
                 console.error(JSON.stringify(r.rsponse));
-                setInProgress(false)
+                setInProgress(false);
             }
         });
     }

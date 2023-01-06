@@ -28,7 +28,12 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
             type: AppMessageType.SalaryPill,
             payload: id
         }, (r) => {
-            setSalary(r);
+            console.log(r);
+            if (r.error) {
+                setSalary({result: {formattedPay: "N/A", note: ""}});
+            } else {
+                setSalary(r);
+            }
             setCompleted(true);
         }).then(/* nada */);
     }, []);

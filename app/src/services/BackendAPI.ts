@@ -4,14 +4,31 @@ export class BackendAPI {
     private static readonly BASE = 'http://localhost:8080/api/';
 
     public getCompletion(prompt: string): Promise<any> {
-        return fetch(`${BackendAPI.BASE}completion?prompt=${encodeURIComponent(prompt)}`, this.getRequest("GET"))
-            .then(response => response.json());
+        try {
+            return fetch(`${BackendAPI.BASE}completion?prompt=${encodeURIComponent(prompt)}`, this.getRequest("GET"))
+                .then(response => response.json())
+                .catch(error => {
+                    console.error(error);
+                    return {error};
+                })
+        } catch (error) {
+            console.error(error);
+            return Promise.resolve({error});
+        }
     }
 
     public getSalary(request: any): Promise<any> {
-        console.log("Getting salary for:", request);
-        return fetch(`${BackendAPI.BASE}salary`, this.getRequest("POST", request))
-            .then(response => response.json());
+        try {
+            return fetch(`${BackendAPI.BASE}salary`, this.getRequest("POST", request))
+                .then(response => response.json())
+                .catch(error => {
+                    console.error(error);
+                    return {error};
+                })
+        } catch (error) {
+            console.error(error);
+            return Promise.resolve({error});
+        }
     }
 
     private getRequest(method: "GET" | "POST", body?: any): any {
