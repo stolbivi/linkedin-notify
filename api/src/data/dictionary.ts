@@ -1,5 +1,6 @@
 import * as Countries from "./countries.json";
 import * as Cities from "./cities.json";
+import * as Synonyms from "./synonyms.json";
 
 export class Dictionary {
 
@@ -34,6 +35,14 @@ export class Dictionary {
             // @ts-ignore
             const record = entry[country];
             Dictionary._cities[country][record.city] = record.code;
+            // @ts-ignore
+            const countrySyn = Synonyms[country];
+            if (countrySyn) {
+                if (!Dictionary._cities[countrySyn]) {
+                    Dictionary._cities[countrySyn] = {}
+                }
+                Dictionary._cities[countrySyn][record.city] = record.code;
+            }
         }
         console.debug('Loaded city root levels:', Object.keys(Dictionary._cities).length);
     }

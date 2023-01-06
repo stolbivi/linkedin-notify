@@ -3,12 +3,11 @@ import ReactDOM from "react-dom";
 import {DynamicUI} from "@stolbivi/pirojok";
 import {Completion} from "./injectables/Completion";
 import root from 'react-shadow';
+import {SalaryPill} from "./injectables/SalaryPill";
 
 console.debug('LinkedIn Manager extension engaged');
 
 const dynamicUI = new DynamicUI();
-
-const CONTAINER_TAG = "lnmanager-completion";
 
 const inject = (target: any, tagName: string, action: "before" | "after", injectable: JSX.Element) => {
     if (document.getElementsByTagName(tagName).length === 0) {
@@ -23,12 +22,23 @@ dynamicUI.watch(document, {
     subtree: true,
     childList: true,
     onAdd: (_: Node) => {
+        // injecting Completion into post message element
         const modalElement = document.getElementById('artdeco-modal-outlet');
         if (modalElement) {
             const actions = modalElement.getElementsByClassName("share-box_actions");
             if (actions && actions.length > 0) {
-                inject(actions[0], CONTAINER_TAG, "before", <Completion/>);
+                inject(actions[0], "lnmanager-completion", "before", <Completion/>);
             }
         }
+        // injecting Salary pill into profile
+        const profileActions = document.getElementsByClassName('pv-top-card-v2-ctas');
+        if (profileActions && profileActions.length > 0) {
+            const actions = profileActions[0].getElementsByClassName("pvs-profile-actions");
+            if (actions && actions.length > 0) {
+                inject(actions[0], "lnmanager-salary", "after",
+                    <SalaryPill url={window.location.href}/>);
+            }
+        }
+        // injecting Salary pill into profile
     },
 });

@@ -20,6 +20,7 @@ export enum AppMessageType {
     CheckUnlocked,
     Unlock,
     Completion,
+    SalaryPill,
 }
 
 export interface IAppRequest extends TMessage {

@@ -115,7 +115,19 @@ messages.listen<IAppRequest, any>({
             .then(token => api.repost(token, POST_ID))
             .then(r => new Promise((res) => chrome.storage.local.set({unlocked: true}, () => res(r)))),
     [AppMessageType.Completion]: (message) =>
-        backEndAPI.getCompletion(message.payload)
+        backEndAPI.getCompletion(message.payload),
+    [AppMessageType.SalaryPill]: (message) =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const profileResponse = await api.getExperienceRange(token, message.payload);
+                const lastExperience = api.extractExperienceRange(profileResponse);
+                const titleResponse = await api.getTitle(token, lastExperience.urn);
+                const title = api.extractTitle(titleResponse);
+                const organizationResponse = await api.getOrganization(token, lastExperience.universalName);
+                const organization = api.extractOrganization(organizationResponse);
+                return backEndAPI.getSalary({...title, ...lastExperience, ...organization});
+            }),
 })
 
 // listening to cookies store events

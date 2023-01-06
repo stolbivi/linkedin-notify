@@ -1,11 +1,33 @@
-import {Controller, Get, Query, Route} from "tsoa";
+import {Body, Controller, Post, Route} from "tsoa";
 import {Cache} from "../data/cache";
 import * as cheerio from 'cheerio';
 import * as States from "../data/states.json"
 import {Dictionary} from "../data/dictionary";
+import * as Synonyms from "../data/synonyms.json";
+import moment from 'moment';
 
+interface SalaryRequestBase {
+    title: string
+    country: string
+    state: string
+    city: string
+}
 
-@Route("/salary")
+interface SalaryRequest extends SalaryRequestBase {
+    urn: string
+    name: string
+    universalName: string
+    entityUrn: string
+    url: string
+    startMonth: number
+    startYear: number
+    endMonth?: number
+    endYear?: number
+}
+
+const GROWTH_FACTOR = 1.05;
+
+@Route("/api")
 export class GlassDoorController extends Controller {
 
     private readonly BASE = 'https://www.glassdoor.com/Salaries';
@@ -22,9 +44,19 @@ export class GlassDoorController extends Controller {
         return `${this.BASE}/${role}-salary-SRCH_IM${cityCode}_KO0,${role.length}.htm`;
     }
 
-    private extractSalary(text: string, countryCode: number, cityCode: number) {
+    private extractSalary(title: string, text: string) {
         const $ = cheerio.load(text);
         const formattedPay = $('span[data-test=formatted-pay]').text();
+        if (formattedPay === "") {
+            console.log('No data found for current request');
+            return {
+                notFound: true,
+                result: {
+                    formattedPay: "Not found",
+                    note: `There's no salary data found for ${title} at employer's location. The title might be uncommon`
+                }
+            };
+        }
         const payPeriodAnnual = $('span[data-test=pay-period-ANNUAL]')
             .map((_, e) => $(e).text()).toArray();
         const allSpansM0 = $('span.m-0')
@@ -37,72 +69,116 @@ export class GlassDoorController extends Controller {
             payDistribution,
             note
         }
-        return {
-            result,
-            countryCode,
-            cityCode
-        };
+        return {result};
     }
 
-    private extractUrl(role: string, state: string, country: string, city: string, countryCode: number) {
-        const roleNormalized = role.toLowerCase().split(" ").join("-");
-        // trying to resolve city and state
-        let cityCode: number;
-        if (state) {
-            // @ts-ignore
-            const stateCode = States[state];
-            const cityBucket = Dictionary.cities[stateCode ? stateCode : country];
+    private extractUrls(body: SalaryRequestBase) {
+        function getCityCode(state: string, city: string) {
+            let cityBucket = Dictionary.cities[state];
             if (cityBucket) {
-                cityCode = cityBucket[city];
+                return cityBucket[city];
             }
         }
-        const url = cityCode ? this.getCityURL(roleNormalized, cityCode)
-            : this.getCountryURL(roleNormalized, countryCode);
-        return {cityCode, url};
+
+        let countryCode = Dictionary.countries[body.country];
+        if (!countryCode) {
+            // @ts-ignore
+            if (Synonyms[body.country]) {
+                // @ts-ignore
+                const countrySyn = Synonyms[body.country];
+                countryCode = Dictionary.countries[countrySyn];
+                if (!countryCode) {
+                    throw Error(`Country not found: ${body.country}`);
+                }
+            }
+        }
+        const roleNormalized = body.title.toLowerCase().split(" ").join("-");
+        const countryUrl = this.getCountryURL(roleNormalized, countryCode);
+        // trying to resolve city and state
+        let cityCode: number;
+        const state = body.state ? body.state : body.city;
+        if (state) {
+            cityCode = getCityCode(state, body.city);
+            if (!cityCode) {
+                // @ts-ignore
+                cityCode = getCityCode(States[state], body.city);
+            }
+            if (!cityCode) {
+                // @ts-ignore
+                cityCode = getCityCode(body.country, body.city);
+            }
+        }
+        const cityUrl = cityCode ? this.getCityURL(roleNormalized, cityCode) : null;
+        return {cityUrl: cityUrl, countryUrl: countryUrl};
     }
 
-    @Get("get")
-    public async getSalary(@Query() role: string,
-                           @Query() country: string,
-                           @Query() state?: string,
-                           @Query() city?: string): Promise<any> {
-        console.log('Getting salary for:', role, country, state, city);
-        const countryCode = Dictionary.countries[country];
-        if (!countryCode) {
-            this.setStatus(422);
-            return Promise.resolve(`Country not found: ${country}`);
-        }
-        let {cityCode, url} = this.extractUrl(role, state, country, city, countryCode);
+    private async verify(title: string, url: string) {
         if (Cache.instance.has(url)) {
             console.log("Returning cached value for:", url);
-            return Promise.resolve(Cache.instance.get(url));
+            return Cache.instance.get(url);
         } else {
             console.log("No cached value for:", url);
             return fetch(url, this.getRequest())
                 .then(response => response.text())
                 .then(text => {
-                    const result = this.extractSalary(text, countryCode, cityCode)
+                    const result = this.extractSalary(title, text)
                     Cache.instance.set(url, result);
                     return result;
                 });
         }
     }
 
-    @Get("evoke")
-    public async evokeCache(@Query() role: string,
-                            @Query() country: string,
-                            @Query() state?: string,
-                            @Query() city?: string): Promise<any> {
-        const countryCode = Dictionary.countries[country];
-        if (!countryCode) {
+    @Post("salary")
+    public async getSalary(@Body() body: SalaryRequest): Promise<any> {
+        function extractValue(original: string) {
+            // @ts-ignore
+            let {value, symbol} = isNaN(original[0])
+                ? {value: original.slice(1), symbol: original[0]}
+                : {value: original, symbol: undefined};
+            value = value.replace(",", "").replace("K", "000");
+            return {value: Number(value), symbol};
+        }
+
+        console.log('Getting salary for:', body);
+        try {
+            let {cityUrl, countryUrl} = this.extractUrls(body);
+            let result = await this.verify(body.title, cityUrl) as any;
+            if (result.notFound) {
+                result = await this.verify(body.title, countryUrl);
+            }
+            if (!result.notFound) {
+                // adding projections based on experience
+                const {value: original, symbol} = extractValue(result.result.formattedPay);
+                let startingMoment = moment([body.startYear, body.startMonth - 1, 1]);
+                const experienceYears = moment().diff(startingMoment, 'years');
+                if (experienceYears > 0) {
+                    const newPay = Number((original * Math.pow(GROWTH_FACTOR, experienceYears)).toFixed(0));
+                    const {value: max} = extractValue([...result.result.payDistribution].pop());
+                    const progressivePay = Math.min(newPay, max);
+                    result.result.progressivePay = symbol
+                        ? `${symbol}${progressivePay.toLocaleString()}`
+                        : progressivePay.toLocaleString();
+                }
+            }
+            return Promise.resolve(result);
+        } catch (error) {
             this.setStatus(422);
-            return Promise.resolve(`Country not found: ${country}`);
+            return Promise.resolve(error);
         }
-        let {url} = this.extractUrl(role, state, country, city, countryCode);
-        if (Cache.instance.has(url)) {
-            console.log("Evoking cached value for:", url);
-            Cache.instance.del(url);
+    }
+
+    @Post("evoke")
+    public async evokeCache(@Body() body: SalaryRequest): Promise<any> {
+        function evoke(url: string) {
+            if (Cache.instance.has(url)) {
+                console.log("Evoking cached value for:", url);
+                Cache.instance.del(url);
+            }
         }
+
+        let {cityUrl, countryUrl} = this.extractUrls(body);
+        evoke(cityUrl);
+        evoke(countryUrl);
     }
 
     private getRequest(): any {

@@ -1,0 +1,19 @@
+.salary-pill {
+  font-size: 16px;
+  color: rgb(28, 194, 10);
+  border: 1px solid rgb(28, 194, 10);
+  border-radius: 50px;
+  padding: 0.25em 0.75em;
+  margin: 0em 0.5em;
+  user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(222, 255, 219) !important;
+  }
+
+  & svg {
+    height: 24px;
+    color: rgb(28, 194, 10);
+  }
+}

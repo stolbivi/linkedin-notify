@@ -1,0 +1,157 @@
+{
+  "data": {
+    "_recipeType": "com.linkedin.64e2aba16707df82b227b7dad9f77f0b",
+    "_type": "com.linkedin.64e2aba16707df82b227b7dad9f77f0b",
+    "organizationDashCompaniesByUniversalName": {
+      "_type": "com.linkedin.restli.common.CollectionResponse",
+      "_recipeType": "com.linkedin.c625dc47da6993141aad45afd72f62fc",
+      "elements": [
+        {
+          "_type": "com.linkedin.voyager.dash.organization.Company",
+          "groupedLocations": [
+            {
+              "_type": "com.linkedin.voyager.dash.organization.LocationGroup",
+              "localizedName": "San Francisco",
+              "locations": [
+                {
+                  "streetAddressOptOut": false,
+                  "_type": "com.linkedin.voyager.dash.organization.Location",
+                  "description": "San Francisco",
+                  "address": {
+                    "country": "US",
+                    "geographicArea": "CA",
+                    "city": "San Francisco",
+                    "postalCode": "94111",
+                    "_type": "com.linkedin.common.Address",
+                    "_recipeType": "com.linkedin.000f5b60bbdc9f8c1e2aa1d9c7133e0b",
+                    "line2": "Suite 100",
+                    "line1": "921 Front Street"
+                  },
+                  "_recipeType": "com.linkedin.f755c5660f94aaf376dc360c50ecce96",
+                  "headquarter": true
+                }
+              ],
+              "_recipeType": "com.linkedin.09033b8aaf36c6922fe6db0e24d6c50f",
+              "latLong": {
+                "_type": "com.linkedin.common.LatLong",
+                "_recipeType": "com.linkedin.a47fcf68f4aa53ef7ccdf1e2b849fcf0",
+                "latitude": 37.39271,
+                "longitude": -122.042
+              }
+            }
+          ],
+          "_recipeType": "com.linkedin.deda2ebf199bcf4a621c193e1e8faad8",
+          "entityUrn": "urn:li:fsd_company:2784151"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "webMetadata": {
+      "microSchema": {
+        "isGraphQL": true,
+        "version": "2.1",
+        "types": {
+          "com.linkedin.64e2aba16707df82b227b7dad9f77f0b": {
+            "fields": {
+              "organizationDashCompaniesByUniversalName": {
+                "type": "com.linkedin.c625dc47da6993141aad45afd72f62fc"
+              }
+            },
+            "baseType": "com.linkedin.graphql.Query"
+          },
+          "com.linkedin.09033b8aaf36c6922fe6db0e24d6c50f": {
+            "fields": {
+              "locations": {
+                "type": {
+                  "array": "com.linkedin.f755c5660f94aaf376dc360c50ecce96"
+                }
+              },
+              "latLong": {
+                "type": "com.linkedin.a47fcf68f4aa53ef7ccdf1e2b849fcf0"
+              },
+              "localizedName": {
+                "type": "string"
+              }
+            },
+            "baseType": "com.linkedin.voyager.dash.organization.LocationGroup"
+          },
+          "com.linkedin.000f5b60bbdc9f8c1e2aa1d9c7133e0b": {
+            "fields": {
+              "geographicArea": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "line2": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "line1": {
+                "type": "string"
+              },
+              "postalCode": {
+                "type": "string"
+              }
+            },
+            "baseType": "com.linkedin.common.Address"
+          },
+          "com.linkedin.deda2ebf199bcf4a621c193e1e8faad8": {
+            "fields": {
+              "entityUrn": {
+                "type": "com.linkedin.voyager.dash.common.CompanyUrn"
+              },
+              "groupedLocations": {
+                "type": {
+                  "array": "com.linkedin.09033b8aaf36c6922fe6db0e24d6c50f"
+                }
+              }
+            },
+            "baseType": "com.linkedin.voyager.dash.organization.Company"
+          },
+          "com.linkedin.f755c5660f94aaf376dc360c50ecce96": {
+            "fields": {
+              "streetAddressOptOut": {
+                "type": "boolean"
+              },
+              "description": {
+                "type": "string"
+              },
+              "address": {
+                "type": "com.linkedin.000f5b60bbdc9f8c1e2aa1d9c7133e0b"
+              },
+              "headquarter": {
+                "type": "boolean"
+              }
+            },
+            "baseType": "com.linkedin.voyager.dash.organization.Location"
+          },
+          "com.linkedin.a47fcf68f4aa53ef7ccdf1e2b849fcf0": {
+            "fields": {
+              "latitude": {
+                "type": "float"
+              },
+              "longitude": {
+                "type": "float"
+              }
+            },
+            "baseType": "com.linkedin.common.LatLong"
+          },
+          "com.linkedin.c625dc47da6993141aad45afd72f62fc": {
+            "fields": {
+              "elements": {
+                "type": {
+                  "array": "com.linkedin.deda2ebf199bcf4a621c193e1e8faad8"
+                }
+              }
+            },
+            "baseType": "com.linkedin.restli.common.CollectionResponse"
+          }
+        }
+      }
+    }
+  }
+}

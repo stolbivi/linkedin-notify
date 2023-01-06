@@ -6,7 +6,7 @@ import stylesheet from "./Completion.scss";
 
 type Props = {};
 
-const SCROLL_END = 100000; // just veri big number to cover
+const SCROLL_END = 100000; // just very big number to cover
 
 export const Completion: React.FC<Props> = ({}) => {
 

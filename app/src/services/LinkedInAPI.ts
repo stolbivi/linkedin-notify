@@ -1,5 +1,6 @@
 import Cookie = chrome.cookies.Cookie;
 import {Badges} from "../global";
+import * as JSONPath from "jsonpath";
 
 function extractArtifacts(artifacts: Array<any>) {
     return artifacts ?
@@ -25,6 +26,51 @@ export class LinkedInAPI {
     public getCsrfToken(cookies: Cookie[]): string {
         const token = cookies.find(c => c.name === LinkedInAPI.CSRF);
         return token?.value.replace(/['"]+/g, '');
+    }
+
+    public extractExperienceRange(response: any): any {
+        const urn = response.elements[0].entityUrn?.split(":").pop();
+        const element = response.elements[0]?.profileTopPosition?.elements[0];
+        const {month: startMonth, year: startYear} = element.dateRange.start ?? {};
+        const {month: endMonth, year: endYear} = element.dateRange.end ?? {};
+        const {entityUrn, name, universalName, url} = element.company;
+        return {urn, name, universalName, startMonth, entityUrn, url, startYear, endMonth, endYear};
+    }
+
+    public getExperienceRange(token: string, id: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `identity/dash/profiles?q=memberIdentity&memberIdentity=${id}&decorationId=com.linkedin.voyager.dash.deco.identity.profile.TopCardSupplementary-116`, this.getRequest(token))
+            .then(response => response.json());
+    }
+
+    public extractOrganization(response: any): any {
+        const element = response.data?.organizationDashCompaniesByUniversalName?.elements[0];
+        const locations = element?.groupedLocations[0]?.locations;
+        if (locations.length > 0) {
+            const location = locations[0];
+            let {country, geographicArea: state, city} = location.address;
+            if (!state) {
+                state = city;
+            }
+            return {country, state, city};
+        }
+        return {};
+    }
+
+    public getOrganization(token: string, universalName: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `graphql?includeWebMetadata=true&variables=(universalName:${universalName})&&queryId=voyagerOrganizationDashCompanies.b106540fe89e1f445200ecb8f7d907c4`, this.getRequest(token))
+            .then(response => response.json());
+    }
+
+    public extractTitle(response: any): any {
+        const action = JSONPath.query(response, "$..pagedListComponent..components.entityComponent.textActionTarget").shift();
+        const query = action ? "$..pagedListComponent..pagedListComponent..entityComponent.title.text" : "$..pagedListComponent..entityComponent.title.text";
+        const titles = JSONPath.query(response, query);
+        return {title: titles.shift().toString().trim()};
+    }
+
+    public getTitle(token: string, urn: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `graphql?includeWebMetadata=true&variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${urn},sectionType:experience)&&queryId=voyagerIdentityDashProfileComponents.f282c5d09ccfcf57303f170922b0c0fc`, this.getRequest(token))
+            .then(response => response.json());
     }
 
     public getMe(token: string): Promise<any> {
