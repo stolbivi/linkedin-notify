@@ -6,28 +6,38 @@ export class BackendAPI {
     public getCompletion(prompt: string): Promise<any> {
         try {
             return fetch(`${BackendAPI.BASE}completion?prompt=${encodeURIComponent(prompt)}`, this.getRequest("GET"))
-                .then(response => response.json())
+                .then(async response => {
+                    if (!response.ok) {
+                        throw new Error(await response.text());
+                    }
+                    return response.json();
+                })
                 .catch(error => {
                     console.error(error);
-                    return {error};
+                    return {error: error.message};
                 })
         } catch (error) {
             console.error(error);
-            return Promise.resolve({error});
+            return Promise.resolve({error: error.message});
         }
     }
 
     public getSalary(request: any): Promise<any> {
         try {
             return fetch(`${BackendAPI.BASE}salary`, this.getRequest("POST", request))
-                .then(response => response.json())
+                .then(async response => {
+                    if (!response.ok) {
+                        throw new Error(await response.text());
+                    }
+                    return response.json();
+                })
                 .catch(error => {
                     console.error(error);
-                    return {error};
+                    return {error: error.message};
                 })
         } catch (error) {
             console.error(error);
-            return Promise.resolve({error});
+            return Promise.resolve({error: error.message});
         }
     }
 

@@ -57,3 +57,9 @@ export interface Badges {
     MESSAGING: number
     MY_NETWORK: number
 }
+
+export const extractIdFromUrl = (url: string) => {
+    const path = url.split("?")[0];
+    const parts = path.split("/");
+    return parts.filter(e => e !== "").pop();
+}

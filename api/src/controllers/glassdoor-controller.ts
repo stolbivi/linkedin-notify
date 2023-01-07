@@ -80,16 +80,17 @@ export class GlassDoorController extends Controller {
             }
         }
 
-        let countryCode = Dictionary.countries[body.country];
+        let country = body.country;
+        let countryCode = Dictionary.countries[country];
         if (!countryCode) {
             // @ts-ignore
-            if (Synonyms[body.country]) {
+            if (Synonyms[country]) {
                 // @ts-ignore
-                const countrySyn = Synonyms[body.country];
-                countryCode = Dictionary.countries[countrySyn];
-                if (!countryCode) {
-                    throw Error(`Country not found: ${body.country}`);
-                }
+                country = Synonyms[country];
+                countryCode = Dictionary.countries[country];
+            }
+            if (!countryCode) {
+                throw Error(`Country not found: ${body.country}`);
             }
         }
         const roleNormalized = body.title.toLowerCase().split(" ").join("-");
@@ -105,7 +106,7 @@ export class GlassDoorController extends Controller {
             }
             if (!cityCode) {
                 // @ts-ignore
-                cityCode = getCityCode(body.country, body.city);
+                cityCode = getCityCode(country, body.city);
             }
         }
         const cityUrl = cityCode ? this.getCityURL(roleNormalized, cityCode) : null;
@@ -162,8 +163,8 @@ export class GlassDoorController extends Controller {
             }
             return Promise.resolve(result);
         } catch (error) {
-            this.setStatus(422);
-            return Promise.resolve(error);
+            this.setStatus(500);
+            return Promise.resolve(error.message);
         }
     }
 

@@ -35,7 +35,7 @@ export class AIController extends Controller {
             const message = error.response
                 ? {data: error.response.data, status: error.response.status}
                 : {message: error.message};
-            this.setStatus(422);
+            this.setStatus(500);
             return Promise.resolve(message);
         }
     }

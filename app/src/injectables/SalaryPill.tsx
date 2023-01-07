@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
 import {Loader} from "../components/Loader";
@@ -16,21 +16,15 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
     const [salary, setSalary] = useState({result: {formattedPay: ".", note: ""}} as any);
     const [completed, setCompleted] = useState(false);
 
-    const extractId = (url: string) => {
-        const path = url.split("?")[0];
-        const parts = path.split("/");
-        return parts.filter(e => e !== "").pop();
-    }
-
     useEffect(() => {
-        const id = extractId(url);
+        const id = extractIdFromUrl(url);
         messages.request<IAppRequest, any>({
             type: AppMessageType.SalaryPill,
             payload: id
         }, (r) => {
-            console.log(r);
             if (r.error) {
-                setSalary({result: {formattedPay: "N/A", note: ""}});
+                console.error(r.error);
+                setSalary({result: {formattedPay: "N/A", note: r.error}});
             } else {
                 setSalary(r);
             }
