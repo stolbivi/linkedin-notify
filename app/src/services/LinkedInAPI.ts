@@ -43,10 +43,10 @@ export class LinkedInAPI {
     }
 
     public extractOrganization(response: any): any {
-        const element = response.data?.organizationDashCompaniesByUniversalName?.elements[0];
-        const locations = element?.groupedLocations[0]?.locations;
-        if (locations.length > 0) {
-            const location = locations[0];
+        const allLocations = JSONPath.query(response, "$..locations").flatMap(l => l);
+        const headquarters = allLocations.filter((l: any) => l.headquarter === true);
+        if (headquarters.length > 0) {
+            const location = headquarters[0];
             let {country, geographicArea: state, city} = location.address;
             if (!state) {
                 state = city;
