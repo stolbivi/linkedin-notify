@@ -33,7 +33,7 @@
   ],
   "host_permissions": [
     "*://*.linkedin.com/",
-    "*://linkedin-manager-api.herokuapp.com/",
+    "*://api.lnmanager.com/",
     "*://localhost/"
   ],
   "default_locale": "en",
