@@ -120,13 +120,19 @@ messages.listen<IAppRequest, any>({
         getCookies(DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {
-                const profileResponse = await api.getExperienceRange(token, message.payload);
-                const lastExperience = api.extractExperienceRange(profileResponse);
-                const titleResponse = await api.getTitle(token, lastExperience.urn);
+                const locationResponse = await api.getLocation(token, message.payload);
+                const location = api.extractLocation(locationResponse);
+                const experienceResponse = await api.getExperience(token, message.payload);
+                const experience = api.extractExperience(experienceResponse);
+                const titleResponse = await api.getTitle(token, experience.urn);
                 const title = api.extractTitle(titleResponse);
-                const organizationResponse = await api.getOrganization(token, lastExperience.universalName);
-                const organization = api.extractOrganization(organizationResponse);
-                return backEndAPI.getSalary({...title, ...lastExperience, ...organization});
+                let request = {...title, ...experience, location};
+                if (experience.company?.universalName) {
+                    const organizationResponse = await api.getOrganization(token, experience.company?.universalName);
+                    const organization = api.extractOrganization(organizationResponse);
+                    request = {...request, organization}
+                }
+                return backEndAPI.getSalary(request);
             }),
 })
 

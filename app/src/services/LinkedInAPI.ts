@@ -12,6 +12,20 @@ function extractArtifacts(artifacts: Array<any>) {
         : [];
 }
 
+export interface Experience {
+    urn: string
+    startMonth: number
+    startYear: number
+    endMonth?: number
+    endYear?: number
+    company?: {
+        name: string
+        universalName: string
+        entityUrn: string
+        url: string
+    }
+}
+
 export class LinkedInAPI {
 
     public static readonly THE_COOKIE = 'li_at';
@@ -28,21 +42,28 @@ export class LinkedInAPI {
         return token?.value.replace(/['"]+/g, '');
     }
 
-    public extractExperienceRange(response: any): any {
+    public extractExperience(response: any): Experience {
         const urn = response.elements[0].entityUrn?.split(":").pop();
         const element = response.elements[0]?.profileTopPosition?.elements[0];
         const {month: startMonth, year: startYear} = element.dateRange.start ?? {};
         const {month: endMonth, year: endYear} = element.dateRange.end ?? {};
-        const {entityUrn, name, universalName, url} = element.company;
-        return {urn, name, universalName, startMonth, entityUrn, url, startYear, endMonth, endYear};
+        let result = {urn, startMonth, startYear, endMonth, endYear} as Experience;
+        if (element.company) {
+            const {entityUrn, name, universalName, url} = element.company;
+            result = {
+                ...result,
+                company: {name, universalName, entityUrn, url}
+            };
+        }
+        return result;
     }
 
-    public getExperienceRange(token: string, id: string): Promise<any> {
+    public getExperience(token: string, id: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + `identity/dash/profiles?q=memberIdentity&memberIdentity=${id}&decorationId=com.linkedin.voyager.dash.deco.identity.profile.TopCardSupplementary-116`, this.getRequest(token))
             .then(response => response.json());
     }
 
-    public extractOrganization(response: any): any {
+    public extractOrganization(response: any): Location {
         const allLocations = JSONPath.query(response, "$..locations").flatMap(l => l);
         const headquarters = allLocations.filter((l: any) => l.headquarter === true);
         if (headquarters.length > 0) {
@@ -51,9 +72,9 @@ export class LinkedInAPI {
             if (!state) {
                 state = city;
             }
-            return {country, state, city};
+            // @ts-ignore
+            return {city, state, country};
         }
-        return {};
     }
 
     public getOrganization(token: string, universalName: string): Promise<any> {
@@ -70,6 +91,46 @@ export class LinkedInAPI {
 
     public getTitle(token: string, urn: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + `graphql?includeWebMetadata=true&variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${urn},sectionType:experience)&&queryId=voyagerIdentityDashProfileComponents.f282c5d09ccfcf57303f170922b0c0fc`, this.getRequest(token))
+            .then(response => response.json());
+    }
+
+    public extractLocation(response: any): any {
+        const {
+            country: countryName,
+            defaultLocalizedNameWithoutCountryName: locationName
+        } = JSONPath.query(response, "$..geoLocation.geo").shift() as any;
+        if (countryName) {
+            const country = countryName.defaultLocalizedName;
+            let location = locationName;
+            if (location.indexOf(",") > 0) {
+                location = locationName.split(",")
+                    .map((t: string) => t.trim())
+                    .filter((l: string) => l !== "");
+            }
+            if (Array.isArray(location)) {
+                return {
+                    city: location[0],
+                    state: location.length > 1 ? location[1] : null,
+                    country
+                }
+            } else {
+                return {
+                    city: location,
+                    state: null,
+                    country
+                }
+            }
+        } else {
+            return {
+                city: null,
+                state: null,
+                country: locationName
+            }
+        }
+    }
+
+    public getLocation(token: string, id: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `identity/dash/profiles?decorationId=com.linkedin.voyager.dash.deco.identity.profile.WebTopCardCore-11&memberIdentity=${id}&q=memberIdentity`, this.getRequest(token))
             .then(response => response.json());
     }
 

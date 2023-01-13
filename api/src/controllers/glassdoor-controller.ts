@@ -4,33 +4,48 @@ import * as cheerio from 'cheerio';
 import * as States from "../data/states.json"
 import {Dictionary} from "../data/dictionary";
 import * as Synonyms from "../data/synonyms.json";
+import * as RemovalsLocation from "../data/removals_location.json";
+import * as DividersTitle from "../data/dividers_title.json";
+import * as RemovalsTitle from "../data/removals_title.json";
 import moment from 'moment';
 import axios from "axios";
 
 const url = require("url");
 
+type Nullable<T> = T | null;
+
+export interface Location {
+    city: Nullable<string>
+    state: Nullable<string>
+    country: Nullable<string>
+}
+
+export interface LocationExtended {
+    city: string
+    stateSynonyms: Array<string>
+    countrySynonyms: Array<string>
+    countryCode?: number
+    cityCode?: number
+}
+
 interface SalaryRequestBase {
     title: string
-    country: string
-    state: string
-    city: string
+    location: Location
+    organization?: Location
 }
 
 interface SalaryRequest extends SalaryRequestBase {
     urn: string
-    name: string
-    universalName: string
-    entityUrn: string
-    url: string
     startMonth: number
     startYear: number
     endMonth?: number
     endYear?: number
-}
-
-interface TestGetRequest {
-    url: string
-    headers?: any
+    company?: {
+        name: string
+        universalName: string
+        entityUrn: string
+        url: string
+    }
 }
 
 const GROWTH_FACTOR = 1.05;
@@ -57,18 +72,22 @@ export class GlassDoorController extends Controller {
         return `${this.BASE}/${role}-salary-SRCH_IM${cityCode}_KO0,${role.length}.htm`;
     }
 
+    private getNotFoundMessage(note: string): any {
+        return {
+            notFound: true,
+            result: {
+                formattedPay: "Not found",
+                note
+            }
+        }
+    }
+
     private extractSalary(title: string, text: string) {
         const $ = cheerio.load(text);
         const formattedPay = $('span[data-test=formatted-pay]').text();
         if (formattedPay === "") {
             console.log('No data found for current request');
-            return {
-                notFound: true,
-                result: {
-                    formattedPay: "Not found",
-                    note: `There's no salary data found for ${title} at employer's location. The title might be uncommon`
-                }
-            };
+            return this.getNotFoundMessage(`There's no salary data found for ${title} at employer's location. The title might be uncommon`);
         }
         const payPeriodAnnual = $('span[data-test=pay-period-ANNUAL]')
             .map((_, e) => $(e).text()).toArray();
@@ -85,7 +104,49 @@ export class GlassDoorController extends Controller {
         return {result};
     }
 
-    private extractUrls(body: SalaryRequestBase) {
+    private removeTokens(name: string) {
+        let result = name;
+        if (result) {
+            for (let i = 0; i < Object.keys(RemovalsLocation).length; i++) {
+                result = result.replace(RemovalsLocation[i], "");
+            }
+            result = result.trim();
+        }
+        return result;
+
+    }
+
+    private extendLocation(location: Location): LocationExtended {
+        const result = {
+            city: this.removeTokens(location.city),
+            stateSynonyms: [location.state],
+            countrySynonyms: [location.country]
+        }
+        // @ts-ignore
+        if (Synonyms[location.country]) {
+            // @ts-ignore
+            result.countrySynonyms.push(Synonyms[location.country]);
+        }
+        // @ts-ignore
+        if (States[location.state]) {
+            // @ts-ignore
+            result.stateSynonyms.push(States[location.state]);
+        }
+        result.stateSynonyms.push(...result.countrySynonyms);
+        return result;
+    }
+
+    private resolveCodes(pLocation: LocationExtended, oLocation?: LocationExtended): LocationExtended {
+        function addCountryCode(l: LocationExtended) {
+            let codes = l.countrySynonyms.map(c => Dictionary.countries[c]).filter(c => !!c);
+            if (codes && codes.length > 0) {
+                l.countryCode = codes.shift();
+                return l;
+            } else {
+                throw Error(`Country not found`);
+            }
+        }
+
         function getCityCode(state: string, city: string) {
             let cityBucket = Dictionary.cities[state];
             if (cityBucket) {
@@ -93,37 +154,67 @@ export class GlassDoorController extends Controller {
             }
         }
 
-        let country = body.country;
-        let countryCode = Dictionary.countries[country];
-        if (!countryCode) {
-            // @ts-ignore
-            if (Synonyms[country]) {
-                // @ts-ignore
-                country = Synonyms[country];
-                countryCode = Dictionary.countries[country];
+        function addCityCode(l: LocationExtended) {
+            let codes = l.stateSynonyms.map(s => getCityCode(s, l.city)).filter(c => !!c);
+            if (codes && codes.length > 0) {
+                l.cityCode = codes.shift();
             }
-            if (!countryCode) {
-                throw Error(`Country not found: ${body.country}`);
+            return l;
+        }
+
+        if (oLocation) {
+            let intersection = pLocation.countrySynonyms.filter(x => oLocation.countrySynonyms.includes(x));
+            // if HQ country matches persons country, using organization country
+            if (Array.isArray(intersection) && intersection.length > 0) {
+                let location = addCityCode(addCountryCode(oLocation));
+                if (!location.cityCode) {
+                    return addCityCode(addCountryCode(pLocation));
+                } else {
+                    return location;
+                }
             }
         }
-        const roleNormalized = body.title.toLowerCase().split(" ").join("-");
-        const countryUrl = this.getCountryURL(roleNormalized, countryCode);
-        // trying to resolve city and state
-        let cityCode: number;
-        const state = body.state ? body.state : body.city;
-        if (state) {
-            cityCode = getCityCode(state, body.city);
-            if (!cityCode) {
-                // @ts-ignore
-                cityCode = getCityCode(States[state], body.city);
+        return addCityCode(addCountryCode(pLocation));
+    }
+
+    private normalizeRole(title: string) {
+        function trimBy(div: string, title: string) {
+            if (title.indexOf(div) >= 0) {
+                return result.split(div)
+                    .filter(t => t !== "")
+                    .shift()
+                    .trim();
             }
-            if (!cityCode) {
-                // @ts-ignore
-                cityCode = getCityCode(country, body.city);
+            return title;
+        }
+
+        let result = title.toLowerCase();
+        for (let i = 0; i < Object.keys(DividersTitle).length; i++) {
+            const exp = DividersTitle[i];
+            if (exp) {
+                result = trimBy(exp, result);
             }
         }
-        const cityUrl = cityCode ? this.getCityURL(roleNormalized, cityCode) : null;
-        return {cityUrl: cityUrl, countryUrl: countryUrl};
+        for (let i = 0; i < Object.keys(RemovalsTitle).length; i++) {
+            const exp = RemovalsTitle[i];
+            if (exp) {
+                result = result.replace(new RegExp(exp, "g"), "").trim();
+            }
+        }
+        result = result.split(" ").join("-");
+        return result;
+    }
+
+    private extractParameters(body: SalaryRequestBase) {
+        let personLocation = this.extendLocation(body.location)
+        let organizationLocation = body.organization ? this.extendLocation(body.organization) : undefined;
+        let resolvedLocation = this.resolveCodes(personLocation, organizationLocation);
+        const roleNormalized = this.normalizeRole(body.title);
+        return {
+            cityCode: resolvedLocation.cityCode,
+            countryCode: resolvedLocation.countryCode,
+            title: roleNormalized
+        };
     }
 
     private async verify(title: string, url: string) {
@@ -170,12 +261,27 @@ export class GlassDoorController extends Controller {
             return {value: Number(value), symbol};
         }
 
+        const verifyWithCodes = async (cityCode: number, countryCode: number, title: string, result: any) => {
+            const countryUrl = this.getCountryURL(title, countryCode);
+            const cityUrl = cityCode ? this.getCityURL(title, cityCode) : null;
+            if (cityUrl) {
+                result = await this.verify(body.title, cityUrl);
+            }
+            if (countryUrl && result.notFound) {
+                result = await this.verify(body.title, countryUrl);
+            }
+            return result;
+        }
+
         console.log('Getting salary for:', body);
         try {
-            let {cityUrl, countryUrl} = this.extractUrls(body);
-            let result = await this.verify(body.title, cityUrl) as any;
-            if (result.notFound) {
-                result = await this.verify(body.title, countryUrl);
+            let result = this.getNotFoundMessage('Something went wrong :(');
+            let {cityCode, countryCode, title} = this.extractParameters(body);
+            while (result.notFound && title.length > 0) {
+                result = await verifyWithCodes(cityCode, countryCode, title, result);
+                const titleTokens = title.split("-");
+                titleTokens.pop();
+                title = titleTokens.join("-");
             }
             if (!result.notFound) {
                 // adding projections based on experience
@@ -195,47 +301,6 @@ export class GlassDoorController extends Controller {
         } catch (error) {
             this.setStatus(500);
             return Promise.resolve(error.message);
-        }
-    }
-
-    @Post("evoke")
-    public async evokeCache(@Body() body: SalaryRequest): Promise<any> {
-        function evoke(url: string) {
-            if (Cache.instance.has(url)) {
-                console.log("Evoking cached value for:", url);
-                Cache.instance.del(url);
-            }
-        }
-
-        let {cityUrl, countryUrl} = this.extractUrls(body);
-        evoke(cityUrl);
-        evoke(countryUrl);
-    }
-
-    @Post("test-get")
-    public async testGet(@Body() body: TestGetRequest): Promise<any> {
-        console.log("Testing get for:", body);
-        try {
-            return axios.get(body.url, {
-                headers: body.headers ? body.headers : this.getRequestHeaders(),
-                proxy: {
-                    protocol: 'http',
-                    host: this.proxyUrl.hostname,
-                    port: this.proxyUrl.port,
-                    auth: {username: this.proxyAuth[0], password: this.proxyAuth[1]}
-                }
-            })
-                .then(response => {
-                    return response.data;
-                }).then(text => {
-                    return text;
-                }).catch(error => {
-                    console.error(error);
-                    return {error: error.message};
-                })
-        } catch (error) {
-            console.error(error);
-            return Promise.resolve({error: error.message});
         }
     }
 

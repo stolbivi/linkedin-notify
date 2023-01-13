@@ -58,6 +58,12 @@ export interface Badges {
     MY_NETWORK: number
 }
 
+export interface Location {
+    city: string
+    state: string
+    country: string
+}
+
 export const extractIdFromUrl = (url: string) => {
     const path = url.split("?")[0];
     const parts = path.split("/");

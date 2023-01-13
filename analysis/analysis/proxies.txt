@@ -1,3 +1,0 @@
-https://api.ipify.org/?format=json
-# bare heroku
-{"ip": "3.89.96.16"}

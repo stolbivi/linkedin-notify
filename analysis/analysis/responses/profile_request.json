@@ -1,9 +1,0 @@
-{
-  "request": "/voyager/api/identity/dash/profiles?q=memberIdentity&memberIdentity=pauk-zekvakuk-23704725a&decorationId=com.linkedin.voyager.dash.deco.identity.profile.WebTopCardCore-10",
-  "status": 200,
-  "body": "bpr-guid-28893200",
-  "method": "GET",
-  "headers": {
-    "x-li-uuid": "AAXxDg9/zX5aLRPnNUYcrA=="
-  }
-}
