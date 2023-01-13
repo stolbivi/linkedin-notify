@@ -45,8 +45,8 @@ export class LinkedInAPI {
     public extractExperience(response: any): Experience {
         const urn = response.elements[0].entityUrn?.split(":").pop();
         const element = response.elements[0]?.profileTopPosition?.elements[0];
-        const {month: startMonth, year: startYear} = element.dateRange.start ?? {};
-        const {month: endMonth, year: endYear} = element.dateRange.end ?? {};
+        const {month: startMonth, year: startYear} = element.dateRange?.start ?? {};
+        const {month: endMonth, year: endYear} = element.dateRange?.end ?? {};
         let result = {urn, startMonth, startYear, endMonth, endYear} as Experience;
         if (element.company) {
             const {entityUrn, name, universalName, url} = element.company;

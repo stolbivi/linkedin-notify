@@ -36,10 +36,10 @@ interface SalaryRequestBase {
 
 interface SalaryRequest extends SalaryRequestBase {
     urn: string
-    startMonth: number
-    startYear: number
-    endMonth?: number
-    endYear?: number
+    startMonth?: Nullable<number>
+    startYear?: Nullable<number>
+    endMonth?: Nullable<number>
+    endYear?: Nullable<number>
     company?: {
         name: string
         universalName: string
@@ -253,12 +253,15 @@ export class GlassDoorController extends Controller {
     @Post("salary")
     public async getSalary(@Body() body: SalaryRequest): Promise<any> {
         function extractValue(original: string) {
-            // @ts-ignore
-            let {value, symbol} = isNaN(original[0])
-                ? {value: original.slice(1), symbol: original[0]}
-                : {value: original, symbol: undefined};
-            value = value.replace(",", "").replace("K", "000");
-            return {value: Number(value), symbol};
+            let value = original.replace("K", "000");
+            const match = value.match("([^0-9,])+");
+            let symbol = "";
+            if (match) {
+                symbol = match[0];
+                value = value.substring(match[0].length);
+            }
+            value = value.replace(",", "");
+            return {value: Number(value), symbol}
         }
 
         const verifyWithCodes = async (cityCode: number, countryCode: number, title: string, result: any) => {
@@ -286,15 +289,18 @@ export class GlassDoorController extends Controller {
             if (!result.notFound) {
                 // adding projections based on experience
                 const {value: original, symbol} = extractValue(result.result.formattedPay);
-                let startingMoment = moment([body.startYear, body.startMonth - 1, 1]);
-                const experienceYears = moment().diff(startingMoment, 'years');
-                if (experienceYears > 0) {
-                    const newPay = Number((original * Math.pow(GROWTH_FACTOR, experienceYears)).toFixed(0));
-                    const {value: max} = extractValue([...result.result.payDistribution].pop());
-                    const progressivePay = Math.min(newPay, max);
-                    result.result.progressivePay = symbol
-                        ? `${symbol}${progressivePay.toLocaleString()}`
-                        : progressivePay.toLocaleString();
+                if (body.startYear) {
+                    const startMonth = body.startMonth ? body.startMonth : 1;
+                    let startingMoment = moment([body.startYear, startMonth - 1, 1]);
+                    const experienceYears = moment().diff(startingMoment, 'years');
+                    if (experienceYears > 0) {
+                        const newPay = Number((original * Math.pow(GROWTH_FACTOR, experienceYears)).toFixed(0));
+                        const {value: max} = extractValue([...result.result.payDistribution].pop());
+                        const progressivePay = Math.min(newPay, max);
+                        result.result.progressivePay = symbol
+                            ? `${symbol}${progressivePay.toLocaleString()}`
+                            : progressivePay.toLocaleString();
+                    }
                 }
             }
             return Promise.resolve(result);
