@@ -4,6 +4,7 @@ export const DOMAIN = 'linkedin.com';
 export const MESSAGE_ID = 'linkedin-manager';
 export const VERBOSE = false;
 export const POST_ID = "7010927250069934081";
+export const MAPS_KEY = "AIzaSyDewx7AbMwkRxcyYA9zQ1RTIAsDyWR4svo";
 
 export enum AppMessageType {
     OpenURL,
@@ -21,6 +22,7 @@ export enum AppMessageType {
     Unlock,
     Completion,
     SalaryPill,
+    Map,
 }
 
 export interface IAppRequest extends TMessage {

@@ -1,8 +1,8 @@
 export class BackendAPI {
 
-    private static readonly BASE = 'https://api.lnmanager.com/api/';
+    // private static readonly BASE = 'https://api.lnmanager.com/api/';
     // private static readonly BASE = 'https://linkedin-manager-api.herokuapp.com/api/';
-    // private static readonly BASE = 'http://localhost:8080/api/';
+    private static readonly BASE = 'http://localhost:8080/api/';
 
     public getCompletion(prompt: string): Promise<any> {
         try {

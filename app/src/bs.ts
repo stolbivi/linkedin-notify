@@ -2,10 +2,12 @@ import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, POST_ID, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
+import {MapsAPI} from "./services/MapsAPI";
 
 const messages = new Messages(MESSAGE_ID, VERBOSE);
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
+const mapsAPI = new MapsAPI();
 
 // adding popup
 chrome.action.onClicked.addListener(() => {
@@ -134,6 +136,18 @@ messages.listen<IAppRequest, any>({
                 }
                 return backEndAPI.getSalary(request);
             }),
+    [AppMessageType.Map]: (message) =>
+        getCookies(DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const locationResponse = await api.getLocation(token, message.payload);
+                return api.extractLocation(locationResponse);
+            })
+            .then(location => {
+                const {city, state, country} = location;
+                const address = [city, state, country].filter(a => !!a && a !== "")
+                return mapsAPI.getGeocode(address.join(", "));
+            })
 })
 
 // listening to cookies store events

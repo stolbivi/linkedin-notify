@@ -5,13 +5,17 @@ import {Completion} from "./injectables/Completion";
 import root from 'react-shadow';
 import {SalaryPill} from "./injectables/SalaryPill";
 import {extractIdFromUrl} from "./global";
+import {Maps} from "./injectables/Maps";
 
 console.debug('LinkedIn Manager extension engaged');
 
 const dynamicUI = new DynamicUI();
 
-const inject = (target: any, tagName: string, action: "before" | "after", injectable: JSX.Element) => {
+const inject = (target: any, tagName: string, action: "before" | "after", injectable: JSX.Element, onBefore?: () => void) => {
     if (document.getElementsByTagName(tagName).length === 0) {
+        if (onBefore) {
+            onBefore();
+        }
         let container = document.createElement(tagName);
         container.id = tagName;
         target[action](container);
@@ -58,6 +62,22 @@ dynamicUI.watch(document, {
                     }
                 })
             }
+        }
+        //injecting map
+        const profileBackground = document.getElementsByClassName('live-video-hero-image');
+        if (profileBackground && profileBackground.length > 0) {
+            const receiver = profileBackground[0];
+            // @ts-ignore
+            receiver.style.height = "200px";
+            const lastChild = receiver.lastChild;
+            inject(lastChild, `lnmanager-maps`, "after",
+                <Maps url={window.location.href}/>,
+                () => {
+                    for (let i = 0; i < receiver.children.length; i++) {
+                        const child = receiver.children[i] as HTMLElement;
+                        child.style["display"] = "none";
+                    }
+                });
         }
     },
 });

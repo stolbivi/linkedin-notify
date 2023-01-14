@@ -1,6 +1,6 @@
 {
   "name": "__MSG_name__",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "__MSG_description__",
   "icons": {
     "128": "content/icon-128.png"
@@ -32,9 +32,21 @@
     "storage"
   ],
   "host_permissions": [
+    "*://localhost/",
     "*://*.linkedin.com/",
     "*://api.lnmanager.com/",
-    "*://localhost/"
+    "*://maps.googleapis.com/"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "maps/*.html"
+      ],
+      "matches": [
+        "*://*.linkedin.com/*",
+        "*://linkedin.com/*"
+      ]
+    }
   ],
   "default_locale": "en",
   "manifest_version": 3
