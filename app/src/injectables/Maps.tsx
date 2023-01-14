@@ -25,7 +25,7 @@ export const Maps: React.FC<Props> = ({url}) => {
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="iframe-container">
-                <iframe height="200" ref={iframeContainer} src={src}></iframe>
+                <iframe scrolling="no" height="200" ref={iframeContainer} src={src}></iframe>
             </div>
         </React.Fragment>
     );
