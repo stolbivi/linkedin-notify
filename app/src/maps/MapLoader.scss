@@ -4,6 +4,49 @@
   padding: 0px;
   margin: 0px;
   border: 0px;
+  position: relative;
+  overflow: hidden;
+
+  &:before, &:after, .map-sub-container:before, .map-sub-container:after {
+    position: absolute;
+    display: block;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+    content: '';
+    z-index: 5;
+  }
+
+  &:before {
+    top: -5px;
+    left: 0;
+    right: 0;
+    height: 5px;
+  }
+
+  &:after {
+    right: -5px;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+  }
+
+  .map-sub-container:before {
+    bottom: -5px;
+    left: 0;
+    right: 0;
+    height: 5px;
+  }
+
+  .map-sub-container:after {
+    left: -5px;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+  }
+
+  .map-sub-container {
+    width: inherit;
+    height: inherit;
+  }
 
   iframe {
     width: 100%;

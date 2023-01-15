@@ -36,7 +36,9 @@ export const MapsLoader: React.FC<Props> = ({}) => {
 
     return (
         <div className="map-loader">
-            <iframe scrolling="no" height="200" ref={mapContainer} src={src}></iframe>
+            <div className="map-sub-container">
+                <iframe scrolling="no" height="200" ref={mapContainer} src={src}></iframe>
+            </div>
         </div>
     );
 
