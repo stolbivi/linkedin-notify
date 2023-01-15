@@ -7,10 +7,42 @@
   position: relative;
   overflow: hidden;
 
+
+  .timezone-container {
+    z-index: 10;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .timezone {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      color: #585858;
+      border: 1px solid #585858;
+      background-color: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(10px);
+      border-radius: 5px;
+      padding: 0.5em 0.5em;
+      user-select: none;
+      cursor: pointer;
+
+      svg {
+        width: 16px;
+        height: 16px;
+        padding-right: 0.25em;
+      }
+    }
+  }
+
   &:before, &:after, .map-sub-container:before, .map-sub-container:after {
     position: absolute;
     display: block;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.15);
     content: '';
     z-index: 5;
   }
@@ -30,7 +62,7 @@
   }
 
   .map-sub-container:before {
-    bottom: -5px;
+    bottom: -3px;
     left: 0;
     right: 0;
     height: 5px;

@@ -143,10 +143,16 @@ messages.listen<IAppRequest, any>({
                 const locationResponse = await api.getLocation(token, message.payload);
                 return api.extractLocation(locationResponse);
             })
-            .then(location => {
+            .then(async location => {
                 const {city, state, country} = location;
                 const address = [city, state, country].filter(a => !!a && a !== "")
-                return mapsAPI.getGeocode(address.join(", "));
+                const geo = await mapsAPI.getGeocode(address.join(", "));
+                const {lat, lng} = geo.results[0].geometry.location;
+                return {lat, lng, city};
+            })
+            .then(async geo => {
+                const tz = await backEndAPI.getTz(geo.lat, geo.lng);
+                return {tz: tz, geo};
             })
 })
 
