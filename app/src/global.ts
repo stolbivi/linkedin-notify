@@ -6,6 +6,11 @@ export const VERBOSE = false;
 export const POST_ID = "7010927250069934081";
 export const MAPS_KEY = "AIzaSyDewx7AbMwkRxcyYA9zQ1RTIAsDyWR4svo";
 
+// export const BACKEND_BASE = 'http://localhost:8080';
+export const BACKEND_BASE = 'https://api.lnmanager.com';
+export const BACKEND_API = `${BACKEND_BASE}/api/`;
+export const BACKEND_STATIC = `${BACKEND_BASE}/static/`;
+
 export enum AppMessageType {
     OpenURL,
     IsLogged,

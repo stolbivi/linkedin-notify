@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps</title>
+    <style>
+        #map {
+            height: 100%;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script>
+        function initMap() {
+            const searchParams = new URLSearchParams(window.location.search);
+            const center = {lat: Number(searchParams.get("lat")), lng: Number(searchParams.get("lng"))};
+            const zoom = Number(searchParams.get("zoom"));
+
+            new google.maps.Map(document.getElementById("map"), {
+                zoom,
+                center,
+                disableDefaultUI: false,
+                fullscreenControl: true,
+                mapTypeControl: true,
+                gestureHandling: "greedy",
+                zoomControl: true,
+                zoomControlOptions: {
+                    position: google.maps.ControlPosition.Right_RIGHT,
+                },
+            });
+        }
+
+        window.initMap = initMap;
+    </script>
+</head>
+<body>
+<div id="map"></div>
+<script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDewx7AbMwkRxcyYA9zQ1RTIAsDyWR4svo&callback=initMap&v=weekly"
+        defer
+></script>
+</body>
+</html>

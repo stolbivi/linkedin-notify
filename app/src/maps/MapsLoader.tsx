@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, IAppRequest, MAPS_KEY, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, BACKEND_STATIC, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import "./MapLoader.scss";
 import {Clock} from "../icons/Clock";
@@ -24,7 +24,6 @@ export const MapsLoader: React.FC<Props> = ({}) => {
     const [city, setCity] = useState<string>();
 
     const mapContainer = React.createRef<HTMLIFrameElement>();
-    const ZOOM = 8;
 
     const updateTime = (tz: any) => {
         const utc = moment.utc();
@@ -50,7 +49,7 @@ export const MapsLoader: React.FC<Props> = ({}) => {
                 // setting map
                 const {lat, lng, city} = r.geo;
                 setCity(city);
-                setSrc(`https://www.google.com/maps/embed/v1/place?q=${lat},${lng}&key=${MAPS_KEY}&zoom=${ZOOM}`);
+                setSrc(`${BACKEND_STATIC}map.html?lat=${lat}&lng=${lng}&zoom=8`);
                 // setting time
                 setInterval(() => updateTime(r.tz), 1000);
             } else {
@@ -63,8 +62,8 @@ export const MapsLoader: React.FC<Props> = ({}) => {
         <div className="map-loader">
             {tz && city &&
             <div className="timezone-container">
-                <div className="timezone" title={tz.timeFull}>
-                    <Clock/><span>{`${city} - ${tz.timeFormatted}`}</span>
+                <div className="timezone" title={`${city} - ${tz.timeFull}`}>
+                    <Clock/><span>{tz.timeFormatted}</span>
                 </div>
             </div>}
             <div className="map-sub-container">
