@@ -6,9 +6,7 @@ import moment from "moment-timezone";
 export class GeoController extends Controller {
 
     private store = new Map();
-    private readonly FORMAT = "DD.MM.YYYY HH:mm:ss ZZ";
-    private readonly FORMAT_TIME = "HH:mm ZZ";
-    private readonly FORMAT_DDDD = "dddd";
+    private readonly FORMAT_TZ = "ZZ";
 
     constructor() {
         super();
@@ -22,13 +20,13 @@ export class GeoController extends Controller {
         console.log(`${new Date().toLocaleTimeString()} Finding timezone:`, lat, lng);
         try {
             const timezones = find(lat, lng);
-            const timeFull = moment.tz(timezones[0]).format(this.FORMAT);
-            const time = moment.tz(timezones[0]).format(this.FORMAT_TIME);
-            const dayOfWeek = moment.tz(timezones[0]).format(this.FORMAT_DDDD);
+            const timeZoned = moment.tz(timezones[0]);
+            const utcOffset = timeZoned.utcOffset();
+            const timeZoneFormatted = timeZoned.format(this.FORMAT_TZ);
             return Promise.resolve({
                 timezones,
-                timeFull,
-                timeFormatted: `${dayOfWeek.substring(0, 3)}, ${time}`
+                timeZoneFormatted,
+                utcOffset
             });
         } catch (error) {
             const message = error.response
