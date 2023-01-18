@@ -20,10 +20,10 @@
             const center = {lat: Number(searchParams.get("lat")), lng: Number(searchParams.get("lng"))};
             const zoom = Number(searchParams.get("zoom"));
 
-            new google.maps.Map(document.getElementById("map"), {
+            const map = new google.maps.Map(document.getElementById("map"), {
                 zoom,
                 center,
-                disableDefaultUI: false,
+                disableDefaultUI: true,
                 fullscreenControl: true,
                 mapTypeControl: true,
                 gestureHandling: "greedy",
@@ -31,6 +31,12 @@
                 zoomControlOptions: {
                     position: google.maps.ControlPosition.Right_RIGHT,
                 },
+            });
+
+            new google.maps.Marker({
+                position: center,
+                map: map,
+                title: "Pinpoint Location",
             });
         }
 

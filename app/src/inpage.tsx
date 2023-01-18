@@ -64,20 +64,22 @@ dynamicUI.watch(document, {
             }
         }
         //injecting map
-        const profileBackground = document.getElementsByClassName('live-video-hero-image');
-        if (profileBackground && profileBackground.length > 0) {
-            const receiver = profileBackground[0];
-            // @ts-ignore
-            receiver.style.height = "200px";
-            const lastChild = receiver.lastChild;
-            inject(lastChild, `lnmanager-maps`, "after",
-                <Maps url={window.location.href}/>,
-                () => {
-                    for (let i = 0; i < receiver.children.length; i++) {
-                        const child = receiver.children[i] as HTMLElement;
-                        child.style["display"] = "none";
-                    }
-                });
+        if (window.location.href.indexOf("/in/") > 0) {
+            const profileBackground = document.getElementsByClassName('live-video-hero-image');
+            if (profileBackground && profileBackground.length > 0) {
+                const receiver = profileBackground[0];
+                // @ts-ignore
+                receiver.style.height = "200px";
+                const lastChild = receiver.lastChild;
+                inject(lastChild, `lnmanager-maps`, "after",
+                    <Maps url={window.location.href}/>,
+                    () => {
+                        for (let i = 0; i < receiver.children.length; i++) {
+                            const child = receiver.children[i] as HTMLElement;
+                            child.style["display"] = "none";
+                        }
+                    });
+            }
         }
     },
 });

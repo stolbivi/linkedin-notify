@@ -8,36 +8,29 @@
   overflow: hidden;
 
 
-  .timezone-container {
+  .timezone {
+    top: 10px;
     z-index: 10;
     position: absolute;
-    left: 0px;
-    right: 0px;
-    top: 10px;
     display: flex;
     align-items: center;
+    color: rgb(86, 86, 86);
+    user-select: none;
+    cursor: pointer;
+    background: none padding-box padding-box rgb(255, 255, 255);
+    border: 0px;
+    padding: 0px 17px;
+    height: 40px;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 18px;
+    border-radius: 2px;
+    box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
+    margin-left: 185px;
 
-    .timezone {
-      display: flex;
-      align-items: center;
-      color: rgb(86, 86, 86);
-      user-select: none;
-      cursor: pointer;
-      background: none padding-box padding-box rgb(255, 255, 255);
-      border: 0px;
-      padding: 0px 17px;
-      height: 40px;
-      font-family: Roboto, Arial, sans-serif;
-      font-size: 18px;
-      border-radius: 2px;
-      box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
-      margin-left: 185px;
-
-      svg {
-        width: 16px;
-        height: 16px;
-        padding-right: 0.25em;
-      }
+    svg {
+      width: 16px;
+      height: 16px;
+      padding-right: 0.25em;
     }
   }
 

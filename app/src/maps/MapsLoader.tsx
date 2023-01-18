@@ -61,10 +61,8 @@ export const MapsLoader: React.FC<Props> = ({}) => {
     return (
         <div className="map-loader">
             {tz && city &&
-            <div className="timezone-container">
-                <div className="timezone" title={`${city} - ${tz.timeFull}`}>
-                    <Clock/><span>{tz.timeFormatted}</span>
-                </div>
+            <div className="timezone" title={`${city} - ${tz.timeFull}`}>
+                <Clock/><span>{tz.timeFormatted}</span>
             </div>}
             <div className="map-sub-container">
                 <iframe scrolling="no" height="200" ref={mapContainer} src={src}></iframe>
