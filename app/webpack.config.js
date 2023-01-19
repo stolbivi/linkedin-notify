@@ -1,20 +1,27 @@
-const {initEntry, addCSSInlineModules, addHTMLModules} = require("./webpack.core");
+const {tsEntry, withCSSInlined, withHTML} = require("./webpack.core");
 
 const DIST = "dist";
 
-module.exports = function (_env, argv) {
+module.exports = function (env, argv) {
+    const pathToEnv = `env/${env.env}.env`;
+    console.log('Environment:', env, 'using env file', pathToEnv);
+    require("dotenv").config({path: pathToEnv});
+    const definitions = {
+        'process.env.BACKEND_BASE': process.env.BACKEND_BASE
+    }
+    console.log('Definitions:', definitions);
     return [
-        addHTMLModules(
-            initEntry(DIST, "./src/popup/popup.tsx", "popup.js"),
+        withHTML(
+            tsEntry(DIST, "./src/popup/popup.tsx", "popup.js"),
             "./src/popup/popup.html", "popup.html", "popup.css"
         ),
-        addHTMLModules(
-            initEntry(DIST, "./src/maps/loader.tsx", "maps/loader.js"),
+        withHTML(
+            tsEntry(DIST, "./src/maps/loader.tsx", "maps/loader.js"),
             "./src/maps/loader.html", "maps/loader.html", "maps/loader.css"
         ),
-        addCSSInlineModules(
-            initEntry(DIST, "./src/inpage.tsx", "content_scripts/inpage.js")
+        withCSSInlined(
+            tsEntry(DIST, "./src/inpage.tsx", "content_scripts/inpage.js")
         ),
-        initEntry(DIST, "./src/bs.ts", "scripts/bs.js"),
+        tsEntry(DIST, "./src/bs.ts", "scripts/bs.js", definitions),
     ];
 };

@@ -1,11 +1,11 @@
-const {initEntry, addHTMLModules} = require("./webpack.core");
+const {tsEntry, withHTML} = require("./webpack.core");
 
 const DIST = "public";
 
-module.exports = function (_env, argv) {
+module.exports = function (env, argv) {
     return [
-        addHTMLModules(
-            initEntry(DIST, "./src/ui/index.tsx", "index.js"),
+        withHTML(
+            tsEntry(DIST, "./src/ui/index.tsx", "index.js"),
             "./src/ui/index.html", "index.html", "index.css"
         )
     ];
