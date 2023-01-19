@@ -1,9 +1,11 @@
-import {Controller, Get, Query, Route} from "tsoa";
+import {Get, Query, Request, Route} from "tsoa";
 import {find, setCache} from "geo-tz";
 import moment from "moment-timezone";
+import express from "express";
+import {BaseController} from "./base-controller";
 
 @Route("/api")
-export class GeoController extends Controller {
+export class GeoController extends BaseController {
 
     private store = new Map();
     private readonly FORMAT_TZ = "ZZ";
@@ -13,40 +15,51 @@ export class GeoController extends Controller {
         setCache({store: this.store, preload: false});
     }
 
-    @Get("find")
-    public async find(@Query() lat: number,
-                      @Query() lng: number
+    @Get("tz")
+    public async tz(@Query() lat: number,
+                    @Query() lng: number,
+                    @Request() request?: express.Request
     ): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+        }
+
         console.log(`${new Date().toLocaleTimeString()} Finding timezone:`, lat, lng);
         try {
             const timezones = find(lat, lng);
             const timeZoned = moment.tz(timezones[0]);
             const utcOffset = timeZoned.utcOffset();
             const timeZoneFormatted = timeZoned.format(this.FORMAT_TZ);
-            return Promise.resolve({
+            let message: any = {
                 timezones,
                 timeZoneFormatted,
                 utcOffset
-            });
-        } catch (error) {
-            const message = error.response
-                ? {data: error.response.data, status: error.response.status}
-                : {message: error.message};
-            this.setStatus(500);
+            }
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
             return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
         }
     }
 
     @Get("cacheSize")
-    public async cacheSize(): Promise<any> {
+    public async cacheSize(@Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+        }
+
         try {
-            return Promise.resolve({response: this.store.size});
-        } catch (error) {
-            const message = error.response
-                ? {data: error.response.data, status: error.response.status}
-                : {message: error.message};
-            this.setStatus(500);
+            let message: any = {response: this.store.size};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
             return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
         }
     }
 

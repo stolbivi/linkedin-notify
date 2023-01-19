@@ -19,7 +19,7 @@ export class BackendAPI extends BaseAPI {
 
     public getTz(lat: number, lng: number): Promise<any> {
         return this.fetchRequest(
-            `${BACKEND_API}find?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`,
+            `${BACKEND_API}tz?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`,
             this.getRequest("GET")
         );
     }

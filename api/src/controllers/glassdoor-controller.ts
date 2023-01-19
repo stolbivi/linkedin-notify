@@ -1,4 +1,4 @@
-import {Body, Controller, Post, Route} from "tsoa";
+import {Body, Post, Request, Route} from "tsoa";
 import {Cache} from "../data/cache";
 import * as cheerio from 'cheerio';
 import * as States from "../data/states.json"
@@ -9,6 +9,8 @@ import * as DividersTitle from "../data/dividers_title.json";
 import * as RemovalsTitle from "../data/removals_title.json";
 import moment from 'moment';
 import axios from "axios";
+import {BaseController} from "./base-controller";
+import express from "express";
 
 const url = require("url");
 
@@ -51,7 +53,7 @@ interface SalaryRequest extends SalaryRequestBase {
 const GROWTH_FACTOR = 1.05;
 
 @Route("/api")
-export class GlassDoorController extends Controller {
+export class GlassDoorController extends BaseController {
 
     private readonly BASE = 'https://www.glassdoor.com/Salaries';
     private readonly proxyUrl: any;
@@ -251,7 +253,14 @@ export class GlassDoorController extends Controller {
     }
 
     @Post("salary")
-    public async getSalary(@Body() body: SalaryRequest): Promise<any> {
+    public async getSalary(@Body() body: SalaryRequest,
+                           @Request() request?: express.Request
+    ): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+        }
+
         function extractValue(original: string) {
             let value = original.replace("K", "000");
             const match = value.match("([^0-9,])+");
@@ -303,10 +312,12 @@ export class GlassDoorController extends Controller {
                     }
                 }
             }
+            if (request?.user) {
+                result = {...result, user: request.user};
+            }
             return Promise.resolve(result);
         } catch (error) {
-            this.setStatus(500);
-            return Promise.resolve(error.message);
+            return this.handleError(error, request);
         }
     }
 
