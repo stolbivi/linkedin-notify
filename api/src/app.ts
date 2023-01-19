@@ -14,7 +14,8 @@ require("dotenv").config();
         Dictionary.loadDictionary();
 
         const app = express();
-        app.use('/static', express.static('static'))
+        app.use('/', express.static('public'));
+        app.use('/static', express.static('static'));
         app.use(bodyParser.urlencoded({extended: true}));
         app.use(bodyParser.json());
 

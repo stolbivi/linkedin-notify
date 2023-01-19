@@ -4,6 +4,7 @@
     "resolveJsonModule": true,
     "module": "commonjs",
     "esModuleInterop": true,
+    "jsx": "preserve",
     "target": "es6",
     "noImplicitAny": true,
     "moduleResolution": "node",
@@ -11,10 +12,14 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*"]
+      "*": [
+        "node_modules/*"
+      ]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }
