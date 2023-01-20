@@ -1,4 +1,4 @@
-import {Get, Query, Request, Route} from "tsoa";
+import {Get, Query, Request, Route, Tags} from "tsoa";
 import {Configuration, OpenAIApi} from "openai";
 import express from "express";
 import {BaseController} from "./base-controller";
@@ -19,6 +19,7 @@ export class AIController extends BaseController {
         }))
     }
 
+    @Tags("AI")
     @Get("completion")
     public async completion(@Query() prompt: string,
                             @Query() temperature?: number,

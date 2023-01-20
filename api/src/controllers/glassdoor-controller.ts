@@ -1,4 +1,4 @@
-import {Body, Post, Request, Route} from "tsoa";
+import {Body, Post, Request, Route, Tags} from "tsoa";
 import {Cache} from "../data/cache";
 import * as cheerio from 'cheerio';
 import * as States from "../data/states.json"
@@ -252,6 +252,7 @@ export class GlassDoorController extends BaseController {
         }
     }
 
+    @Tags("Salary")
     @Post("salary")
     public async getSalary(@Body() body: SalaryRequest,
                            @Request() request?: express.Request

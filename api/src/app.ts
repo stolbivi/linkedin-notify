@@ -2,30 +2,23 @@ import express, {NextFunction, Request as ExRequest, Response as ExResponse} fro
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session, {MemoryStore} from "express-session";
-import passport from "passport";
+import passport, {Profile} from "passport";
 import swaggerUi from "swagger-ui-express";
 import Swagger from "./autogen/swagger.json";
 import {RegisterRoutes} from "./autogen/routes";
 import {Dictionary} from "./data/dictionary";
 import {Strategy} from "passport-linkedin-oauth2";
+import {UserService} from "./persistence/user-model";
 
 require("dotenv").config();
-
-interface Profile {
-    id: string
-    name: {
-        givenName: string
-        familyName: string
-    }
-    displayName: string
-    emails: [{ value: string }]
-}
 
 (async () => {
     try {
         console.log("Starting the http server");
 
         Dictionary.loadDictionary();
+
+        const userService = new UserService();
 
         // initial passport setup
         passport.use(new Strategy({
@@ -34,15 +27,24 @@ interface Profile {
             callbackURL: process.env.LINKEDIN_CALLBACK_URL,
             scope: ['r_emailaddress', 'r_liteprofile'],
         }, (accessToken, refreshToken, profile, done) => {
-            process.nextTick(() => done(null, profile)); // can add DB lookup here if requires additional data ro pass to serialization
+            try {
+                userService.findOrCreate(profile)
+                    .then(user => process.nextTick(() => done(null, user)))
+                    .catch(error => {
+                        console.error(error);
+                        process.nextTick(() => done(error, null));
+                    })
+            } catch (error) {
+                console.error(error);
+                process.nextTick(() => done(error, null));
+            }
         }));
         passport.serializeUser((user: Profile, done: any) => {
-            console.log('Serializing', user.id);
             done(null, user.id); // second argument is passed as req.session.passport.user, also used in session store as key
         });
-        passport.deserializeUser((id: string, done: any) => {
-            console.log('Deserializing', id);
-            done(null, {id, test: "YO"}); // second argument is passed as req.user
+        passport.deserializeUser(async (id: string, done: any) => {
+            const user = await userService.findById(id);
+            done(null, user); // second argument is passed as req.user
         });
 
         const app = express();

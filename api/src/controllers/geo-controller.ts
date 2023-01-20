@@ -1,4 +1,4 @@
-import {Get, Query, Request, Route} from "tsoa";
+import {Get, Query, Request, Route, Tags} from "tsoa";
 import {find, setCache} from "geo-tz";
 import moment from "moment-timezone";
 import express from "express";
@@ -15,6 +15,7 @@ export class GeoController extends BaseController {
         setCache({store: this.store, preload: false});
     }
 
+    @Tags("Timezone")
     @Get("tz")
     public async tz(@Query() lat: number,
                     @Query() lng: number,
@@ -45,6 +46,7 @@ export class GeoController extends BaseController {
         }
     }
 
+    @Tags("Timezone")
     @Get("cacheSize")
     public async cacheSize(@Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
