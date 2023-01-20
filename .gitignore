@@ -3,4 +3,6 @@
 **/dist*
 /api/src/autogen
 /api/public/*.*
+/api/.env
+/api/prod.env
 .idea
