@@ -18,7 +18,7 @@ export class UserController extends BaseController {
                           @Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
-            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+            return Promise.resolve("Please, sign in to use premium features");
         }
 
         try {
@@ -39,7 +39,7 @@ export class UserController extends BaseController {
                              @Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
-            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+            return Promise.resolve("Please, sign in to use premium features");
         }
 
         try {
@@ -61,7 +61,7 @@ export class UserController extends BaseController {
     ): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
-            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+            return Promise.resolve("Please, sign in to use premium features");
         }
 
         try {
@@ -84,7 +84,7 @@ export class UserController extends BaseController {
     ): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
-            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+            return Promise.resolve("Please, sign in to use premium features");
         }
 
         try {
@@ -106,12 +106,31 @@ export class UserController extends BaseController {
     ): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
-            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+            return Promise.resolve("Please, sign in to use premium features");
         }
 
         try {
             await UserModel.delete(id);
             let message: any = {response: id, status: "Deleted"};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
+    @Tags("Features")
+    @Get("user/features")
+    public async getFeatures(@Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            let message = {};
             if (request?.user) {
                 message = {...message, user: request.user};
             }

@@ -31,3 +31,11 @@
   color: rgba(0, 0, 0, 0.3);
   cursor: not-allowed;
 }
+
+.disabled {
+  background-color: rgb(10, 102, 194);
+  color: white;
+  cursor: pointer;
+  opacity: 0.75;
+  filter: grayscale(1);
+}

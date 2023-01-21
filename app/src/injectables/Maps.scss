@@ -7,4 +7,12 @@
     border: 0px;
   }
 
+  .sign-in {
+    cursor: pointer;
+    user-select: none;
+    margin-top: 2em;
+    justify-content: center;
+    display: flex;
+  }
+
 }

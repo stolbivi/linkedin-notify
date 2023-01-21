@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
+import {AppMessageType, LINKEDIN_DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {ConversationMessage} from "./ConversationMessage";
 
@@ -28,7 +28,7 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails}) 
         const url = details.pop().backendConversationUrn.split(":").pop();
         return messages.request<IAppRequest, any>({
             type: AppMessageType.OpenURL,
-            payload: {url: `https://${DOMAIN}/messaging/thread/` + url}
+            payload: {url: `https://${LINKEDIN_DOMAIN}/messaging/thread/` + url}
         });
     }
 

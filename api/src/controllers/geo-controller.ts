@@ -23,7 +23,7 @@ export class GeoController extends BaseController {
     ): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
-            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+            return Promise.resolve("Please, sign in to use premium features");
         }
 
         console.log(`${new Date().toLocaleTimeString()} Finding timezone:`, lat, lng);
@@ -51,7 +51,7 @@ export class GeoController extends BaseController {
     public async cacheSize(@Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
-            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+            return Promise.resolve("Please, sign in to use premium features");
         }
 
         try {

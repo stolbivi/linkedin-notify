@@ -5,7 +5,8 @@ export class BaseAPI {
             return fetch(input, request)
                 .then(async response => {
                     if (!response.ok) {
-                        throw new Error(await response.text());
+                        const error = await response.text();
+                        return {error, status: response.status}
                     }
                     return response.json();
                 })
@@ -28,7 +29,7 @@ export class BaseAPI {
             "body": body ? JSON.stringify(body) : null,
             "method": method,
             "mode": "cors",
-            "credentials": "omit"
+            "credentials": "include"
         }
     }
 

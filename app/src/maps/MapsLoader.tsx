@@ -22,6 +22,7 @@ export const MapsLoader: React.FC<Props> = ({}) => {
     const [src, setSrc] = useState<string>();
     const [tz, setTz] = useState<Tz>();
     const [city, setCity] = useState<string>();
+    const [disabled, setDisabled] = useState<boolean>(false);
 
     const mapContainer = React.createRef<HTMLIFrameElement>();
 
@@ -42,10 +43,10 @@ export const MapsLoader: React.FC<Props> = ({}) => {
             return;
         }
         messages.request<IAppRequest, any>({
-            type: AppMessageType.Map,
+            type: AppMessageType.Tz,
             payload: searchParams.get("id")
         }, (r) => {
-            if (r.geo) {
+            if (r.geo && r.tz?.utcOffset) {
                 // setting map
                 const {lat, lng, city} = r.geo;
                 setCity(city);
@@ -53,19 +54,25 @@ export const MapsLoader: React.FC<Props> = ({}) => {
                 // setting time
                 setInterval(() => updateTime(r.tz), 1000);
             } else {
-                console.error(r);
+                if (r.error) {
+                    setDisabled(true);
+                }
             }
         }).then(/* nada */);
     }, [])
 
     return (
         <div className="map-loader">
-            {tz && city &&
-            <div className="timezone" title={`${city} - ${tz.timeFull}`}>
-                <Clock/><span>{tz.timeFormatted}</span>
-            </div>}
             <div className="map-sub-container">
-                <iframe scrolling="no" height="200" ref={mapContainer} src={src}></iframe>
+                {!disabled &&
+                <React.Fragment>
+                    {tz?.timeFormatted && city &&
+                    <div className="timezone" title={`${city} - ${tz.timeFull}`}>
+                        <Clock/><span>{tz.timeFormatted}</span>
+                    </div>}
+                    <iframe scrolling="no" height="200" ref={mapContainer} src={src}></iframe>
+                </React.Fragment>
+                }
             </div>
         </div>
     );

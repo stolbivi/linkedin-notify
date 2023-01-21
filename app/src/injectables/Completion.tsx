@@ -1,33 +1,49 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, BACKEND_SIGN_IN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+
 // @ts-ignore
 import stylesheet from "./Completion.scss";
 
-type Props = {};
+type Props = {
+    disabled?: boolean
+};
 
 const SCROLL_END = 100000; // just very big number to cover
 
-export const Completion: React.FC<Props> = ({}) => {
+export const Completion: React.FC<Props> = ({disabled}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     // @ts-ignore
-    const [disabled, setDisabled] = useState(true);
+    const [disabledInternal, setDisabledInternal] = useState(disabled);
+    const [textEmpty, setTextEmpty] = useState(true);
     const [inProgress, setInProgress] = useState(false);
     const [editable, setEditable] = useState(null);
     const [modal, setModal] = useState(null);
     const [scrollable, setScrollable] = useState(null);
-    const [text, setText] = useState("");
+    const [text, setText] = useState<string>("");
+    const [title, setTitle] = useState<string>();
+
+    const updateWithText = (element: any) => {
+        element = element.target ?? element;
+        if (disabledInternal) {
+            setTextEmpty(true);
+            setTitle("Please, sign in to use premium features");
+        } else {
+            const text = element.innerText.trim();
+            setText(text);
+            setTextEmpty(text.length === 0);
+        }
+    }
 
     useEffect(() => {
-        function listener(e: InputEvent) {
-            // @ts-ignore
-            const text = e.target.innerText.trim();
-            setDisabled(text.length === 0);
-            setText(text);
+        if (disabledInternal) {
+            setTitle("Please, sign in to use premium features");
+            return;
         }
 
+        setTitle("Use AI assist to complete the post");
         const textDiv = document.getElementsByClassName("ql-editor");
         const modalDiv = document.getElementsByClassName("artdeco-modal");
         const scrollableDiv = document.getElementsByClassName("share-creation-state__content-scrollable");
@@ -35,8 +51,9 @@ export const Completion: React.FC<Props> = ({}) => {
             setEditable(textDiv[0]);
             setModal(modalDiv[0]);
             setScrollable(scrollableDiv[0]);
-            textDiv[0].addEventListener("keyup", listener, false);
-            textDiv[0].addEventListener("paste", listener, false);
+            textDiv[0].addEventListener("keyup", updateWithText, false);
+            textDiv[0].addEventListener("paste", updateWithText, false);
+            updateWithText(textDiv[0]);
         }
     }, []);
 
@@ -56,8 +73,11 @@ export const Completion: React.FC<Props> = ({}) => {
         }
     }
 
-    const onComplete = () => {
-        if (disabled || inProgress) {
+    const onClick = () => {
+        if (disabledInternal) {
+            return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
+        }
+        if (textEmpty || inProgress) {
             return;
         }
         setInProgress(true);
@@ -66,7 +86,12 @@ export const Completion: React.FC<Props> = ({}) => {
             payload: text
         }, (r) => {
             if (r.error) {
+                console.error(r.error);
                 setInProgress(false);
+                if (r.status === 403) {
+                    setDisabledInternal(true);
+                    setTitle("Please, sign in to use premium features");
+                }
                 return;
             }
             if (r.response[0] || r.response[0].text) {
@@ -82,16 +107,19 @@ export const Completion: React.FC<Props> = ({}) => {
     // check is post is populated
 
     const getClass = () => {
+        if (disabledInternal) {
+            return "action-base disabled";
+        }
         if (inProgress) {
             return "action-base complete-progress";
         }
-        return "action-base" + (disabled ? " complete-disabled" : " complete");
+        return "action-base" + (textEmpty ? " complete-disabled" : " complete");
     }
 
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className={getClass()} onClick={onComplete} title="Use AI assist to complete the post">
+            <div className={getClass()} onClick={onClick} title={title}>
                 <span>AI</span>
             </div>
         </React.Fragment>

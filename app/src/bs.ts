@@ -1,5 +1,5 @@
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, POST_ID, VERBOSE} from "./global";
+import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID, POST_ID, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
@@ -30,7 +30,7 @@ const getCookies = async (domain: string) => chrome.cookies.getAll({domain})
 
 // Main course below! //
 
-getCookies(DOMAIN)
+getCookies(LINKEDIN_DOMAIN)
     .then(cookies => api.isLogged(cookies))
     .then(logged => {
         if (logged) {
@@ -42,11 +42,11 @@ messages.listen<IAppRequest, any>({
     [AppMessageType.OpenURL]: (message) =>
         chrome.tabs.create({url: message.payload.url, selected: true}),
     [AppMessageType.IsLogged]: () =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.isLogged(cookies))
             .then(logged => ({isLogged: logged})),
     [AppMessageType.Badges]: () =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {
                 const badgesResponse = await api.getTabBadges(token);
@@ -54,7 +54,7 @@ messages.listen<IAppRequest, any>({
                 return {badges};
             }),
     [AppMessageType.Conversations]: () =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {
                 const meResponse = await api.getMe(token);
@@ -64,7 +64,7 @@ messages.listen<IAppRequest, any>({
                 return {conversations};
             }),
     [AppMessageType.ConversationDetails]: (message) =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {
                 const detailsResponse = await api.getConversationDetails(token, message.payload);
@@ -72,14 +72,14 @@ messages.listen<IAppRequest, any>({
                 return {details};
             }),
     [AppMessageType.ConversationAck]: (message) =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {
                 await api.markConversationRead(token, message.payload);
                 await api.markAllMessageAsSeen(token, message.payload)
             }),
     [AppMessageType.Notifications]: () =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {
                 const notificationsResponse = await api.getNotifications(token);
@@ -87,15 +87,15 @@ messages.listen<IAppRequest, any>({
                 return {notifications};
             }),
     [AppMessageType.MarkNotificationsSeen]: () =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(token => api.markAllNotificationsAsSeen(token)),
     [AppMessageType.MarkNotificationRead]: (message) =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(token => api.markNotificationRead(token, message.payload)),
     [AppMessageType.Invitations]: () =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(async cookies => api.getCsrfToken(cookies))
             .then(async token => {
                 const invitationsResponse = await api.getInvitations(token);
@@ -103,7 +103,7 @@ messages.listen<IAppRequest, any>({
                 return {invitations};
             }),
     [AppMessageType.HandleInvitation]: (message) =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(token => api.handleInvitation(token, message.payload)),
     [AppMessageType.CheckUnlocked]: () => new Promise((res) => {
@@ -112,14 +112,14 @@ messages.listen<IAppRequest, any>({
         });
     }),
     [AppMessageType.Unlock]: () =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(token => api.repost(token, POST_ID))
             .then(r => new Promise((res) => chrome.storage.local.set({unlocked: true}, () => res(r)))),
     [AppMessageType.Completion]: (message) =>
         backEndAPI.getCompletion(message.payload),
     [AppMessageType.SalaryPill]: (message) =>
-        getCookies(DOMAIN)
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {
                 const locationResponse = await api.getLocation(token, message.payload);
@@ -136,8 +136,8 @@ messages.listen<IAppRequest, any>({
                 }
                 return backEndAPI.getSalary(request);
             }),
-    [AppMessageType.Map]: (message) =>
-        getCookies(DOMAIN)
+    [AppMessageType.Tz]: (message) =>
+        getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {
                 const locationResponse = await api.getLocation(token, message.payload);
@@ -152,8 +152,11 @@ messages.listen<IAppRequest, any>({
             })
             .then(async geo => {
                 const tz = await backEndAPI.getTz(geo.lat, geo.lng);
-                return {tz: tz, geo};
-            })
+                return {tz, geo};
+            }),
+    [AppMessageType.Features]: () =>
+        backEndAPI.getFeatures()
+
 })
 
 // listening to cookies store events
@@ -173,7 +176,7 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
 chrome.alarms.onAlarm.addListener(a => {
     // double check logging since logout can happen between moment alarm is cancelled and fired
     console.debug('Firing:', a);
-    return getCookies(DOMAIN)
+    return getCookies(LINKEDIN_DOMAIN)
         .then(async cookies => {
             const l = await api.isLogged(cookies);
             if (l) {

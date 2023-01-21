@@ -28,7 +28,7 @@ export class AIController extends BaseController {
     ): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
-            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+            return Promise.resolve("Please, sign in to use premium features");
         }
 
         console.log(`${new Date().toLocaleTimeString()} Running completion query for:`, prompt, temperature, maxTokens);

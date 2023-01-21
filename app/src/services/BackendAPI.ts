@@ -24,4 +24,11 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
+    public getFeatures(): Promise<any> {
+        return this.fetchRequest(
+            `${BACKEND_API}user/features`,
+            this.getRequest("GET")
+        );
+    }
+
 }

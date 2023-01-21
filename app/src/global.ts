@@ -1,12 +1,13 @@
 import {TMessage} from "@stolbivi/pirojok/lib/chrome/Messages";
 
-export const DOMAIN = 'linkedin.com';
+export const LINKEDIN_DOMAIN = 'linkedin.com';
 export const MESSAGE_ID = 'linkedin-manager';
 export const VERBOSE = false;
 export const POST_ID = "7010927250069934081";
 export const MAPS_KEY = "AIzaSyDewx7AbMwkRxcyYA9zQ1RTIAsDyWR4svo";
 
 // env variables are interpolated
+export const BACKEND_SIGN_IN = `${process.env.BACKEND_BASE}/auth/linkedin`;
 export const BACKEND_API = `${process.env.BACKEND_BASE}/api/`;
 export const BACKEND_STATIC = `${process.env.BACKEND_BASE}/static/`;
 
@@ -26,7 +27,8 @@ export enum AppMessageType {
     Unlock,
     Completion,
     SalaryPill,
-    Map,
+    Tz,
+    Features,
 }
 
 export interface IAppRequest extends TMessage {

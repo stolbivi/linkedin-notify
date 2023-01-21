@@ -17,3 +17,8 @@
     color: rgb(28, 194, 10);
   }
 }
+
+.disabled {
+  opacity: 0.75;
+  filter: grayscale(1);
+}

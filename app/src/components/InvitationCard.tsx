@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, LINKEDIN_DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {formatDate} from "../services/UIHelpers";
 
 type Props = {
@@ -44,7 +44,7 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
     const onOpenProfile = () => {
         return messages.request<IAppRequest, any>({
             type: AppMessageType.OpenURL,
-            payload: {url: `https://${DOMAIN}/in/` + invitation.fromMember.publicIdentifier}
+            payload: {url: `https://${LINKEDIN_DOMAIN}/in/` + invitation.fromMember.publicIdentifier}
         });
     }
 

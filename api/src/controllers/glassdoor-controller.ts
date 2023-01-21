@@ -56,14 +56,21 @@ const GROWTH_FACTOR = 1.05;
 export class GlassDoorController extends BaseController {
 
     private readonly BASE = 'https://www.glassdoor.com/Salaries';
-    private readonly proxyUrl: any;
-    private readonly proxyAuth: string;
+    private readonly proxy;
 
     constructor() {
         super();
-        this.proxyUrl = url.parse(process.env.FIXIE_URL);
-        this.proxyAuth = this.proxyUrl.auth.split(':');
-        console.log('Using proxy URL:', this.proxyUrl);
+        const proxyUrl = url.parse(process.env.FIXIE_URL);
+        if (proxyUrl.host) {
+            console.log('Using proxy URL:', proxyUrl);
+            const proxyAuth = proxyUrl.auth.split(':');
+            this.proxy = {
+                protocol: 'http',
+                host: proxyUrl.hostname,
+                port: proxyUrl.port,
+                auth: {username: proxyAuth[0], password: proxyAuth[1]}
+            }
+        }
     }
 
     private getCountryURL(role: string, countryCode: number) {
@@ -228,12 +235,7 @@ export class GlassDoorController extends BaseController {
             try {
                 return axios.get(url, {
                     headers: this.getRequestHeaders(),
-                    proxy: {
-                        protocol: 'http',
-                        host: this.proxyUrl.hostname,
-                        port: this.proxyUrl.port,
-                        auth: {username: this.proxyAuth[0], password: this.proxyAuth[1]}
-                    }
+                    proxy: this.proxy ?? undefined
                 })
                     .then(response => {
                         return response.data;
@@ -259,7 +261,7 @@ export class GlassDoorController extends BaseController {
     ): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
-            return Promise.resolve("Unauthorized access. Try to sign in with LinkedIn first");
+            return Promise.resolve("Please, sign in to use premium features");
         }
 
         function extractValue(original: string) {
@@ -286,7 +288,6 @@ export class GlassDoorController extends BaseController {
             return result;
         }
 
-        console.log('Getting salary for:', body);
         try {
             let result = this.getNotFoundMessage('Something went wrong :(');
             let {cityCode, countryCode, title} = this.extractParameters(body);

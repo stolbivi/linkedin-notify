@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, LINKEDIN_DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {formatDate} from "../services/UIHelpers";
 
 type Props = {
@@ -44,7 +44,7 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
             markRead().then(/* nada */);
             return messages.request<IAppRequest, any>({
                 type: AppMessageType.OpenURL,
-                payload: {url: `https://${DOMAIN}/` + actionTarget}
+                payload: {url: `https://${LINKEDIN_DOMAIN}/` + actionTarget}
             });
         }
     }
@@ -53,7 +53,7 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
         markRead().then(/* nada */);
         return messages.request<IAppRequest, any>({
             type: AppMessageType.OpenURL,
-            payload: {url: `https://${DOMAIN}/` + cardAction}
+            payload: {url: `https://${LINKEDIN_DOMAIN}/` + cardAction}
         });
     }
 

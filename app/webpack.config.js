@@ -11,17 +11,17 @@ module.exports = function (env, argv) {
     }
     console.log('Definitions:', definitions);
     return [
+        tsEntry(DIST, "./src/bs.ts", "scripts/bs.js", definitions),
+        withCSSInlined(
+            tsEntry(DIST, "./src/inpage.tsx", "content_scripts/inpage.js", definitions)
+        ),
         withHTML(
-            tsEntry(DIST, "./src/popup/popup.tsx", "popup.js"),
+            tsEntry(DIST, "./src/popup/popup.tsx", "popup.js", definitions),
             "./src/popup/popup.html", "popup.html", "popup.css"
         ),
         withHTML(
-            tsEntry(DIST, "./src/maps/loader.tsx", "maps/loader.js"),
+            tsEntry(DIST, "./src/maps/loader.tsx", "maps/loader.js", definitions),
             "./src/maps/loader.html", "maps/loader.html", "maps/loader.css"
         ),
-        withCSSInlined(
-            tsEntry(DIST, "./src/inpage.tsx", "content_scripts/inpage.js")
-        ),
-        tsEntry(DIST, "./src/bs.ts", "scripts/bs.js", definitions),
     ];
 };
