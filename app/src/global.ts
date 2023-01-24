@@ -29,6 +29,7 @@ export enum AppMessageType {
     SalaryPill,
     Tz,
     Features,
+    SetFeatures
 }
 
 export interface IAppRequest extends TMessage {
@@ -66,10 +67,13 @@ export interface Badges {
     MY_NETWORK: number
 }
 
-export interface Location {
-    city: string
-    state: string
-    country: string
+export interface Feature {
+    type: string
+    authors?: string[]
+}
+
+export interface Features {
+    features: Feature[]
 }
 
 export const extractIdFromUrl = (url: string) => {

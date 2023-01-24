@@ -4,8 +4,9 @@ import {DynamicUI, Messages} from "@stolbivi/pirojok";
 import {Completion} from "./injectables/Completion";
 import root from 'react-shadow';
 import {SalaryPill} from "./injectables/SalaryPill";
-import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "./global";
+import {AppMessageType, extractIdFromUrl, Feature, IAppRequest, MESSAGE_ID, VERBOSE} from "./global";
 import {Maps} from "./injectables/Maps";
+import {AutoFeature} from "./injectables/AutoFeature";
 
 console.debug('LinkedIn Manager extension engaged');
 
@@ -18,7 +19,8 @@ messages.request<IAppRequest, any>({
     injectUI(r);
 }).then(/* nada */);
 
-const inject = (target: any, tagName: string, action: "before" | "after", injectable: JSX.Element, onBefore?: () => void) => {
+const inject = (target: any, tagName: string, action: "before" | "after",
+                injectable: JSX.Element | (() => Promise<JSX.Element>), onBefore?: () => void) => {
     if (document.getElementsByTagName(tagName).length === 0) {
         if (onBefore) {
             onBefore();
@@ -26,11 +28,16 @@ const inject = (target: any, tagName: string, action: "before" | "after", inject
         let container = document.createElement(tagName);
         container.id = tagName;
         target[action](container);
-        ReactDOM.render(<root.div mode={'open'}>{injectable}</root.div>, container);
+        if (typeof injectable === "function") {
+            injectable().then(toInject => ReactDOM.render(<root.div mode={'open'}>{toInject}</root.div>, container));
+        } else {
+            ReactDOM.render(<root.div mode={'open'}>{injectable}</root.div>, container)
+        }
     }
 };
 
 const isDisabled = (response: any) => !!response.error;
+const getFeatures = (response: any): Feature[] => response.response?.features ?? [];
 
 const injectUI = (response: any) => {
     dynamicUI.watch(document, {
@@ -93,6 +100,50 @@ const injectUI = (response: any) => {
                             });
                     }
                 }
+            }
+
+            // inject auto features
+            if (window.location.href.indexOf("/feed/") > 0) {
+                const updateDivs = document.querySelectorAll('div[data-id*="urn:li:activity:"]');
+                updateDivs.forEach(updateDiv => {
+                    const titles = updateDiv.getElementsByClassName("update-components-actor");
+                    if (titles && titles.length > 0) {
+                        const aElements = titles[0].getElementsByTagName("a");
+                        if (aElements && aElements.length > 0) {
+                            const dataId = updateDiv.getAttribute("data-id");
+                            const activityId = dataId.split(":").pop().trim();
+                            const url = aElements[0].getAttribute("href");
+
+                            async function getAutoFeatures() {
+                                return new Promise<JSX.Element>((res) => {
+                                    messages.request<IAppRequest, any>({
+                                        type: AppMessageType.Features
+                                    }, (r) => {
+                                        const features = getFeatures(r);
+                                        const disabled = isDisabled(r);
+                                        res(
+                                            <div className="d-flex" style={{paddingRight: "1em"}}>
+                                                <AutoFeature disabled={disabled}
+                                                             activityId={activityId}
+                                                             url={url}
+                                                             features={features}
+                                                             feature={"like"}/>
+                                                <AutoFeature disabled={disabled}
+                                                             activityId={activityId}
+                                                             url={url}
+                                                             features={features}
+                                                             feature={"repost"}/>
+                                            </div>
+                                        );
+                                    }).then(/* nada */);
+                                })
+                            }
+
+                            inject(titles[0].lastChild, `lnmanager-auto-${activityId}`, "after",
+                                () => getAutoFeatures());
+                        }
+                    }
+                })
             }
         },
     });

@@ -1,0 +1,44 @@
+.auto-pill-base {
+  font-size: 14px;
+  border-radius: 50px;
+  padding: 0.15em 0.5em;
+  margin: 0em 0.1em;
+  user-select: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+
+  & svg {
+    width: 14px;
+    padding-left: 0.15em;
+  }
+}
+
+.auto-pill-on {
+  @extend .auto-pill-base;
+  background-color: rgb(10, 102, 194);
+  color: white;
+
+  &:hover {
+    background-color: rgb(6, 68, 129) !important;
+  }
+
+}
+
+.auto-pill-off {
+  @extend .auto-pill-base;
+  background-color: rgb(88, 88, 88);
+  color: white;
+
+  &:hover {
+    background-color: rgb(58, 58, 58) !important;
+  }
+
+}
+
+.disabled {
+  opacity: 0.75;
+  filter: grayscale(1);
+}

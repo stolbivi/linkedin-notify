@@ -155,8 +155,9 @@ messages.listen<IAppRequest, any>({
                 return {tz, geo};
             }),
     [AppMessageType.Features]: () =>
-        backEndAPI.getFeatures()
-
+        backEndAPI.getFeatures(),
+    [AppMessageType.SetFeatures]: (message) =>
+        backEndAPI.setFeatures(message.payload)
 })
 
 // listening to cookies store events

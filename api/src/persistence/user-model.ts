@@ -4,10 +4,24 @@ const dynamoose = require("dynamoose");
 
 require("dotenv").config();
 
+export interface Feature {
+    type: string
+    authors?: string[]
+}
+
+export interface FeatureRequest {
+    author: string
+    type: string
+    action: string
+}
+
 export interface User {
     firstName: String
     lastName: String
     email: String
+    features?: Feature[]
+    createdAt?: string
+    updatedAt?: string
 }
 
 export interface UserWithId extends User {
@@ -35,6 +49,21 @@ const userSchema = new dynamoose.Schema({
     lastName: {
         type: String,
         required: true
+    },
+    features: {
+        type: Array,
+        schema: [{
+            type: Object,
+            schema: {
+                type: String,
+                authors: {
+                    type: Array,
+                    schema: [String],
+                    required: false
+                }
+            }
+        }],
+        required: false
     },
 }, {
     "saveUnknown": true,

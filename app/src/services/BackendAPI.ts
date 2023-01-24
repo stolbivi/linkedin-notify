@@ -26,8 +26,15 @@ export class BackendAPI extends BaseAPI {
 
     public getFeatures(): Promise<any> {
         return this.fetchRequest(
-            `${BACKEND_API}user/features`,
+            `${BACKEND_API}features`,
             this.getRequest("GET")
+        );
+    }
+
+    public setFeatures(features: any): Promise<any> {
+        return this.fetchRequest(
+            `${BACKEND_API}features`,
+            this.getRequest("POST", features)
         );
     }
 
