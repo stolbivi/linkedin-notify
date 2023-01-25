@@ -122,7 +122,7 @@ const injectUI = (response: any) => {
                                         const features = getFeatures(r);
                                         const disabled = isDisabled(r);
                                         res(
-                                            <div className="d-flex" style={{paddingRight: "1em"}}>
+                                            <div style={{paddingRight: "1em", display: "flex"}}>
                                                 <AutoFeature disabled={disabled}
                                                              activityId={activityId}
                                                              url={url}

@@ -1,5 +1,9 @@
 import {BaseAPI} from "./BaseAPI";
-import {BACKEND_API} from "../global";
+import {BACKEND_API, Features} from "../global";
+
+export interface Response<T> {
+    response: T
+}
 
 export class BackendAPI extends BaseAPI {
 
@@ -24,14 +28,14 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public getFeatures(): Promise<any> {
+    public getFeatures(): Promise<Response<Features>> {
         return this.fetchRequest(
             `${BACKEND_API}features`,
             this.getRequest("GET")
         );
     }
 
-    public setFeatures(features: any): Promise<any> {
+    public setFeatures(features: any): Promise<Response<Features>> {
         return this.fetchRequest(
             `${BACKEND_API}features`,
             this.getRequest("POST", features)

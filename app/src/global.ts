@@ -3,7 +3,7 @@ import {TMessage} from "@stolbivi/pirojok/lib/chrome/Messages";
 export const LINKEDIN_DOMAIN = 'linkedin.com';
 export const MESSAGE_ID = 'linkedin-manager';
 export const VERBOSE = false;
-export const POST_ID = "7010927250069934081";
+export const SHARE_URN = "urn:li:share:7010927250069934081";
 export const MAPS_KEY = "AIzaSyDewx7AbMwkRxcyYA9zQ1RTIAsDyWR4svo";
 
 // env variables are interpolated

@@ -395,17 +395,48 @@ export class LinkedInAPI {
         }).then(_ => null);
     }
 
-    public repost(token: string, postId: string) {
+    public repost(token: string, shareUrn: string) {
         return fetch("https://www.linkedin.com/voyager/api/contentcreation/normShares", {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token,
             },
-            "body": `{\"visibleToConnectionsOnly\":false,\"externalAudienceProviders\":[],\"commentaryV2\":{\"text\":\"\",\"attributes\":[]},\"origin\":\"SHARE_AS_IS\",\"allowedCommentersScope\":\"NONE\",\"postState\":\"PUBLISHED\",\"parentUrn\":\"urn:li:share:${postId}\"}`,
+            "body": `{\"visibleToConnectionsOnly\":false,\"externalAudienceProviders\":[],\"commentaryV2\":{\"text\":\"\",\"attributes\":[]},\"origin\":\"SHARE_AS_IS\",\"allowedCommentersScope\":\"NONE\",\"postState\":\"PUBLISHED\",\"parentUrn\":\"${shareUrn}\"}`,
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
         }).then(_ => true);
+    }
+
+    public getUpdates(token: string, count: number): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `feed/updatesV2?commentsCount=0&count=${count}&likesCount=0&moduleKey=home-feed%3Adesktop&q=chronFeed`, this.getRequest(token))
+            .then(response => response.json());
+    }
+
+    public extractUpdates(response: any): any {
+        const paginationToken = response.metadata?.paginationToken;
+        const paginationTokenExpiryTime = response.metadata?.paginationTokenExpiryTime;
+        const queryAfterTime = response.metadata?.queryAfterTime;
+        const threads = response.elements?.map((e: any) => {
+            const author = JSONPath.query(e, "$.actor.urn")?.pop();
+            const urn = JSONPath.query(e, "$.socialDetail.urn")?.pop();
+            const shareUrn = JSONPath.query(e, "$.updateMetadata.shareUrn")?.pop();
+            return {author, urn, shareUrn};
+        })
+        return {paginationToken, paginationTokenExpiryTime, queryAfterTime, threads};
+    }
+
+    public like(token: string, urn: string) {
+        return fetch(LinkedInAPI.BASE + `voyagerSocialDashReactions?threadUrn=${this.encode(urn)}`, {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token,
+            },
+            "body": "{\"reactionType\":\"LIKE\"}",
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(_ => null);
     }
 
     private getRequest(token: string): any {

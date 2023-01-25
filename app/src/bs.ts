@@ -1,5 +1,5 @@
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID, POST_ID, VERBOSE} from "./global";
+import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID, SHARE_URN, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
@@ -16,10 +16,14 @@ chrome.action.onClicked.addListener(() => {
 
 // global parameters
 const CHECK_FREQUENCY = 0.5;
+const CHECK_BADGES = 'check-badges';
+const AUTO_FREQUENCY = 1;
+const AUTO_FEATURES = 'auto-features';
 
 const startMonitoring = () => {
     console.debug("Starting monitoring");
-    chrome.alarms.create('alarm', {periodInMinutes: CHECK_FREQUENCY, delayInMinutes: 0});
+    chrome.alarms.create(CHECK_BADGES, {periodInMinutes: CHECK_FREQUENCY, delayInMinutes: 0});
+    chrome.alarms.create(AUTO_FEATURES, {periodInMinutes: AUTO_FREQUENCY, delayInMinutes: 0.2});
 }
 
 /**
@@ -114,7 +118,7 @@ messages.listen<IAppRequest, any>({
     [AppMessageType.Unlock]: () =>
         getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.repost(token, POST_ID))
+            .then(token => api.repost(token, SHARE_URN))
             .then(r => new Promise((res) => chrome.storage.local.set({unlocked: true}, () => res(r)))),
     [AppMessageType.Completion]: (message) =>
         backEndAPI.getCompletion(message.payload),
@@ -174,14 +178,13 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
     }
 })
 
-chrome.alarms.onAlarm.addListener(a => {
-    // double check logging since logout can happen between moment alarm is cancelled and fired
-    console.debug('Firing:', a);
+function checkBadges() {
+    console.debug('Firing badges checks');
     return getCookies(LINKEDIN_DOMAIN)
         .then(async cookies => {
             const l = await api.isLogged(cookies);
             if (l) {
-                console.debug('Checking updates');
+                console.debug('Checking badges');
                 chrome.action.setIcon({path: "/content/icon-128.png"});
                 await chrome.action.setBadgeBackgroundColor({color: "#585858"});
                 await chrome.action.setBadgeText({text: "sync"});
@@ -195,5 +198,56 @@ chrome.alarms.onAlarm.addListener(a => {
                 return chrome.action.setBadgeText({text: total > 0 ? total.toString() : ""});
             }
         })
+}
+
+function autoFeatures() {
+    console.debug('Firing feed updates');
+
+    function getValue(n: string) {
+        return n.split(":").pop();
+    }
+
+    return getCookies(LINKEDIN_DOMAIN)
+        .then(async cookies => {
+            const l = await api.isLogged(cookies);
+            if (l) {
+                console.debug('Updating feeds');
+                const featuresResponse = await backEndAPI.getFeatures();
+                if (featuresResponse && featuresResponse?.response?.features?.length > 0) {
+                    const features = featuresResponse?.response?.features;
+                    const token = await api.getCsrfToken(cookies);
+                    const response = await api.getUpdates(token, 50);
+                    const updates = api.extractUpdates(response);
+                    if (updates?.threads?.length > 0) {
+                        updates?.threads?.forEach((t: any) => {
+                            const threadAuthor = getValue(t.author);
+                            const matches = features.filter((f: any) =>
+                                f.authors.findIndex((a: string) => a.indexOf(threadAuthor) >= 0) >= 0);
+                            matches.forEach(async m => {
+                                switch (m.type) {
+                                    case "like":
+                                        console.log('Liking', t.urn, 'created by', t.author);
+                                        await api.like(token, t.urn);
+                                        break;
+                                    case "repost":
+                                        console.log('Reposting', t.shareUrn, 'created by', t.author);
+                                        await api.repost(token, t.shareUrn);
+                                        break;
+                                }
+                            })
+                        })
+                    }
+                }
+            }
+        })
+}
+
+chrome.alarms.onAlarm.addListener(a => {
+    switch (a.name) {
+        case CHECK_BADGES:
+            return checkBadges();
+        case AUTO_FEATURES:
+            return autoFeatures();
+    }
 });
 
