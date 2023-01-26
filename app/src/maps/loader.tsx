@@ -4,8 +4,6 @@ import "./loader.scss";
 import {MapsLoader} from "./MapsLoader";
 
 ReactDOM.render(
-    <React.StrictMode>
-        <MapsLoader/>
-    </React.StrictMode>,
+    <MapsLoader/>,
     document.getElementById("root")
 );

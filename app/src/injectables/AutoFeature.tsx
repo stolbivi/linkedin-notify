@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import stylesheet from "./AutoFeature.scss";
 import {AppMessageType, BACKEND_SIGN_IN, Feature, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {Messages} from "@stolbivi/pirojok";
+import {Loader} from "../components/Loader";
 
 
 const LikeSVG = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false">
@@ -33,6 +34,7 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
 
     // @ts-ignore
     const [disabledInternal, setDisabledInternal] = useState(disabled);
+    const [completed, setCompleted] = useState(false);
     const [title, setTitle] = useState<string>();
     const [active, setActive] = useState<boolean>();
     const [author, setAuthor] = useState<string>();
@@ -59,6 +61,12 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
         setActive(index >= 0);
     }, [author]);
 
+    useEffect(() => {
+        if (active !== undefined) {
+            setCompleted(true);
+        }
+    }, [active]);
+
     const onClick = () => {
         if (disabledInternal) {
             return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
@@ -67,8 +75,10 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
             type: AppMessageType.SetFeatures,
             payload: {author, type: feature, action: active ? "unset" : "set"}
         }, (r) => {
+            setCompleted(true);
             if (r.error) {
                 console.error(r.error);
+                setActive(false);
                 setDisabledInternal(r.status == 403)
             } else {
                 setActive(!active);
@@ -84,7 +94,8 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className={`auto-pill-${active ? "on" : "off"}` + (disabledInternal ? " disabled" : "")}
                  onClick={onClick} title={title}>
-                {active ? "On" : "Off"} {getIcon(feature)}
+                <Loader show={!completed}/>
+                {completed && <React.Fragment>{active ? "On" : "Off"} {getIcon(feature)}</React.Fragment>}
             </div>
         </React.Fragment>
     );

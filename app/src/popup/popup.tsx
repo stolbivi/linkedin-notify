@@ -5,8 +5,6 @@ import "./popup.scss";
 import {Main} from "../components/Main";
 
 ReactDOM.render(
-    <React.StrictMode>
-        <Main/>
-    </React.StrictMode>,
+    <Main/>,
     document.getElementById("root")
 );

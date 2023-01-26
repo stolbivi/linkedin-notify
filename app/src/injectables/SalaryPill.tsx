@@ -30,13 +30,13 @@ export const SalaryPill: React.FC<Props> = ({url, disabled}) => {
             type: AppMessageType.SalaryPill,
             payload: id
         }, (r) => {
+            setCompleted(true);
             if (r.error) {
                 setSalary({result: {formattedPay: "N/A", note: r.error}});
                 setDisabledInternal(r.status == 403)
             } else {
                 setSalary(r);
             }
-            setCompleted(true);
         }).then(/* nada */);
     }, []);
 
