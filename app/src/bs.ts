@@ -203,8 +203,9 @@ function checkBadges() {
 function autoFeatures() {
     console.debug('Firing feed updates');
 
-    function getValue(n: string) {
-        return n.split(":").pop();
+    function getValue(n: any) {
+        const id = n.miniCompany ? n.miniCompany : n.miniProfile;
+        return id.split(":").pop();
     }
 
     return getCookies(LINKEDIN_DOMAIN)

@@ -71,6 +71,7 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
         if (disabledInternal) {
             return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
         }
+        setCompleted(false);
         messages.request<IAppRequest, any>({
             type: AppMessageType.SetFeatures,
             payload: {author, type: feature, action: active ? "unset" : "set"}
@@ -89,13 +90,20 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
     // @ts-ignore
     const getIcon = (feature: string): JSX.Element => Icons[feature];
 
+    const getText = () => {
+        if (disabledInternal) {
+            return "N/A"
+        }
+        return active ? "On" : "Off";
+    };
+
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className={`auto-pill-${active ? "on" : "off"}` + (disabledInternal ? " disabled" : "")}
                  onClick={onClick} title={title}>
                 <Loader show={!completed}/>
-                {completed && <React.Fragment>{active ? "On" : "Off"} {getIcon(feature)}</React.Fragment>}
+                {completed && <React.Fragment>{getText()} {getIcon(feature)}</React.Fragment>}
             </div>
         </React.Fragment>
     );

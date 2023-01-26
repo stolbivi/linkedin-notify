@@ -418,10 +418,11 @@ export class LinkedInAPI {
         const paginationTokenExpiryTime = response.metadata?.paginationTokenExpiryTime;
         const queryAfterTime = response.metadata?.queryAfterTime;
         const threads = response.elements?.map((e: any) => {
-            const author = JSONPath.query(e, "$.actor.urn")?.pop();
+            const [miniProfile] = JSONPath.query(e, "$.actor.name.attributes..miniProfile.entityUrn");
+            const [miniCompany] = JSONPath.query(e, "$.actor.name.attributes..miniCompany.entityUrn");
             const urn = JSONPath.query(e, "$.socialDetail.urn")?.pop();
             const shareUrn = JSONPath.query(e, "$.updateMetadata.shareUrn")?.pop();
-            return {author, urn, shareUrn};
+            return {author: {miniCompany, miniProfile}, urn, shareUrn};
         })
         return {paginationToken, paginationTokenExpiryTime, queryAfterTime, threads};
     }

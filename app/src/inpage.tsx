@@ -122,7 +122,7 @@ const injectUI = (response: any) => {
                                         const features = getFeatures(r);
                                         const disabled = isDisabled(r);
                                         res(
-                                            <div style={{paddingRight: "1em", display: "flex"}}>
+                                            <div style={{paddingLeft: "0.25em", display: "flex"}}>
                                                 <AutoFeature disabled={disabled}
                                                              activityId={activityId}
                                                              url={url}
@@ -139,8 +139,14 @@ const injectUI = (response: any) => {
                                 })
                             }
 
-                            inject(titles[0].lastChild, `lnmanager-auto-${activityId}`, "after",
-                                () => getAutoFeatures());
+                            const target = titles[0].querySelectorAll("a > div > span");
+                            if (target && target.length > 0) {
+                                const lastItem = target[target.length - 1];
+                                // @ts-ignore
+                                lastItem.style.display = "flex";
+                                inject(lastItem.lastChild, `lnmanager-auto-${activityId}`, "after",
+                                    () => getAutoFeatures());
+                            }
                         }
                     }
                 })
