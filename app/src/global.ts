@@ -11,6 +11,12 @@ export const BACKEND_SIGN_IN = `${process.env.BACKEND_BASE}/auth/linkedin`;
 export const BACKEND_API = `${process.env.BACKEND_BASE}/api/`;
 export const BACKEND_STATIC = `${process.env.BACKEND_BASE}/static/`;
 
+export interface InjectableContext {
+    context?: {
+        [key: string]: HTMLElement
+    }
+}
+
 export enum AppMessageType {
     OpenURL,
     IsLogged,

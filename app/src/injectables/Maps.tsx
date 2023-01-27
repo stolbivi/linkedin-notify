@@ -1,43 +1,73 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, BACKEND_SIGN_IN, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {Messages} from "@stolbivi/pirojok";
+import {inject} from "../utils/InjectHelper";
 
 // @ts-ignore
 import stylesheet from "./Maps.scss";
-import {Messages} from "@stolbivi/pirojok";
 
 type Props = {
-    url: string
-    disabled?: boolean
+    host: HTMLElement
 };
 
-export const Maps: React.FC<Props> = ({url, disabled}) => {
+const TAG = `lnm-maps`;
+
+export const MapsFactory = () => {
+    if (window.location.href.indexOf("/in/") > 0) {
+        const profileBackground = document.getElementsByClassName('live-video-hero-image');
+        if (profileBackground && profileBackground.length > 0) {
+            const receiver = profileBackground[0] as HTMLElement;
+            const lastChild = receiver.lastChild;
+            inject(lastChild, TAG, "after",
+                <Maps host={receiver}/>,
+            );
+        }
+    }
+}
+
+export const Maps: React.FC<Props> = ({host}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
+    const [disabled, setDisabled] = useState(true);
     const [src, setSrc] = useState<string>();
+    const [urlInternal, setUrlInternal] = useState(window.location.href);
 
     const iframeContainer = React.createRef<HTMLIFrameElement>();
 
     useEffect(() => {
-        const id = extractIdFromUrl(url);
+        for (let i = 0; i < host.children.length; i++) {
+            const child = host.children[i] as HTMLElement;
+            if (child.tagName !== TAG.toUpperCase()) {
+                child.style["display"] = disabled ? "block" : "none";
+            }
+        }
+    }, [disabled]);
+
+    useEffect(() => {
         let origin = 'chrome-extension://' + chrome.runtime.id;
         if (!location.ancestorOrigins.contains(origin)) {
-            setSrc(chrome.runtime.getURL(`maps/loader.html?id=${id}`));
+            setSrc(chrome.runtime.getURL(`maps/loader.html?id=${extractIdFromUrl(urlInternal)}`));
         }
-    }, []);
+    }, [urlInternal]);
 
-    const onClick = () => {
-        return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
-    }
+    useEffect(() => {
+        host.style.height = "200px";
+        window.addEventListener('hashchange', () => {
+            setUrlInternal(window.location.href);
+        });
+        messages.request<IAppRequest, any>({
+            type: AppMessageType.Features
+        }, (r) => {
+            setDisabled(!!r.error)
+        }).then(/* nada */);
+    }, []);
 
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="iframe-container">
-                {disabled
-                    ? <div className="sign-in" onClick={onClick}>Please, sign in to use premium features</div>
-                    : <iframe scrolling="no" height="200" ref={iframeContainer} src={src}></iframe>
-                }
+                <iframe scrolling="no" height="200" ref={iframeContainer} src={src}></iframe>
             </div>
         </React.Fragment>
     );

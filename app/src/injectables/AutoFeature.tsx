@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-// @ts-ignore
-import stylesheet from "./AutoFeature.scss";
 import {AppMessageType, BACKEND_SIGN_IN, Feature, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {Loader} from "../components/Loader";
 
+// @ts-ignore
+import stylesheet from "./AutoFeature.scss";
+import {inject} from "../utils/InjectHelper";
 
 const LikeSVG = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false">
     <path
@@ -20,24 +21,52 @@ const Icons = {
     repost: RepostSVG
 }
 
+export const AutoFeatureFactory = () => {
+    if (window.location.href.indexOf("/feed/") > 0) {
+        const updateDivs = document.querySelectorAll('div[data-id*="urn:li:activity:"]');
+        updateDivs.forEach(updateDiv => {
+            const titles = updateDiv.getElementsByClassName("update-components-actor");
+            if (titles && titles.length > 0) {
+                const aElements = titles[0].getElementsByTagName("a");
+                if (aElements && aElements.length > 0) {
+                    const dataId = updateDiv.getAttribute("data-id");
+                    const activityId = dataId.split(":").pop().trim();
+                    const url = aElements[0].getAttribute("href");
+                    const target = titles[0].querySelectorAll("a > div > span");
+                    if (target && target.length > 0) {
+                        const lastItem = target[target.length - 1];
+                        // @ts-ignore
+                        lastItem.style.display = "flex";
+                        inject(lastItem.lastChild, `lnm-auto-${activityId}`, "after",
+                            <div style={{paddingLeft: "0.25em", display: "flex"}}>
+                                <AutoFeature url={url} type={"like"}/>
+                                <AutoFeature url={url} type={"repost"}/>
+                            </div>
+                        );
+                    }
+                }
+            }
+        })
+    }
+}
+
 type Props = {
-    feature: string
-    activityId: string
+    type: string
     url: string
-    features: Feature[]
-    disabled?: boolean
 };
+
 // @ts-ignore
-export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features, disabled}) => {
+export const AutoFeature: React.FC<Props> = ({type, url}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     // @ts-ignore
-    const [disabledInternal, setDisabledInternal] = useState(disabled);
+    const [disabled, setDisabled] = useState(false);
     const [completed, setCompleted] = useState(false);
     const [title, setTitle] = useState<string>();
     const [active, setActive] = useState<boolean>();
     const [author, setAuthor] = useState<string>();
+    const [features, setFeatures] = useState<Feature[]>([]);
 
     const extractAuthor = (query: URLSearchParams, name: string) => {
         if (query.has(name)) {
@@ -45,8 +74,18 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
         }
     }
 
+    const getData = () => {
+        messages.request<IAppRequest, any>({
+            type: AppMessageType.Features
+        }, (r) => {
+            setFeatures(r.response?.features ?? []);
+            setDisabled(!!r.error)
+        }).then(/* nada */);
+    }
+
     useEffect(() => {
-        if (disabledInternal) {
+        getData();
+        if (disabled) {
             setTitle("Please, sign in to use premium features");
             return;
         }
@@ -56,7 +95,7 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
     }, []);
 
     useEffect(() => {
-        const typedFeature = features.find(f => f.type === feature);
+        const typedFeature = features.find(f => f.type === type);
         const index = typedFeature?.authors?.findIndex((f: string) => f === author);
         setActive(index >= 0);
     }, [author]);
@@ -68,19 +107,19 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
     }, [active]);
 
     const onClick = () => {
-        if (disabledInternal) {
+        if (disabled) {
             return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
         }
         setCompleted(false);
         messages.request<IAppRequest, any>({
             type: AppMessageType.SetFeatures,
-            payload: {author, type: feature, action: active ? "unset" : "set"}
+            payload: {author, type, action: active ? "unset" : "set"}
         }, (r) => {
             setCompleted(true);
             if (r.error) {
                 console.error(r.error);
                 setActive(false);
-                setDisabledInternal(r.status == 403)
+                setDisabled(r.status == 403)
             } else {
                 setActive(!active);
             }
@@ -91,7 +130,7 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
     const getIcon = (feature: string): JSX.Element => Icons[feature];
 
     const getText = () => {
-        if (disabledInternal) {
+        if (disabled) {
             return "N/A"
         }
         return active ? "On" : "Off";
@@ -100,10 +139,10 @@ export const AutoFeature: React.FC<Props> = ({feature, activityId, url, features
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className={`auto-pill-${active ? "on" : "off"}` + (disabledInternal ? " disabled" : "")}
+            <div className={`auto-pill-${active ? "on" : "off"}` + (disabled ? " disabled" : "")}
                  onClick={onClick} title={title}>
                 <Loader show={!completed}/>
-                {completed && <React.Fragment>{getText()} {getIcon(feature)}</React.Fragment>}
+                {completed && <React.Fragment>{getText()} {getIcon(type)}</React.Fragment>}
             </div>
         </React.Fragment>
     );

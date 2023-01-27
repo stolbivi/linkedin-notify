@@ -1,22 +1,32 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, BACKEND_SIGN_IN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
-
+import {inject} from "../utils/InjectHelper";
 // @ts-ignore
 import stylesheet from "./Completion.scss";
 
-type Props = {
-    disabled?: boolean
-};
+type Props = {};
 
 const SCROLL_END = 100000; // just very big number to cover
 
-export const Completion: React.FC<Props> = ({disabled}) => {
+export const CompletionFactory = () => {
+    const modalElement = document.getElementById('artdeco-modal-outlet');
+    if (modalElement) {
+        const actions = modalElement.getElementsByClassName("share-box_actions");
+        if (actions && actions.length > 0) {
+            inject(actions[0], "lnm-completion", "before",
+                <Completion/>
+            );
+        }
+    }
+}
+
+export const Completion: React.FC<Props> = ({}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     // @ts-ignore
-    const [disabledInternal, setDisabledInternal] = useState(disabled);
+    const [disabled, setDisabled] = useState(false);
     const [textEmpty, setTextEmpty] = useState(true);
     const [inProgress, setInProgress] = useState(false);
     const [editable, setEditable] = useState(null);
@@ -27,7 +37,7 @@ export const Completion: React.FC<Props> = ({disabled}) => {
 
     const updateWithText = (element: any) => {
         element = element.target ?? element;
-        if (disabledInternal) {
+        if (disabled) {
             setTextEmpty(true);
             setTitle("Please, sign in to use premium features");
         } else {
@@ -38,7 +48,7 @@ export const Completion: React.FC<Props> = ({disabled}) => {
     }
 
     useEffect(() => {
-        if (disabledInternal) {
+        if (disabled) {
             setTitle("Please, sign in to use premium features");
             return;
         }
@@ -74,7 +84,7 @@ export const Completion: React.FC<Props> = ({disabled}) => {
     }
 
     const onClick = () => {
-        if (disabledInternal) {
+        if (disabled) {
             return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
         }
         if (textEmpty || inProgress) {
@@ -89,7 +99,7 @@ export const Completion: React.FC<Props> = ({disabled}) => {
                 console.error(r.error);
                 setInProgress(false);
                 if (r.status === 403) {
-                    setDisabledInternal(true);
+                    setDisabled(true);
                     setTitle("Please, sign in to use premium features");
                 }
                 return;
@@ -107,7 +117,7 @@ export const Completion: React.FC<Props> = ({disabled}) => {
     // check is post is populated
 
     const getClass = () => {
-        if (disabledInternal) {
+        if (disabled) {
             return "action-base disabled";
         }
         if (inProgress) {
