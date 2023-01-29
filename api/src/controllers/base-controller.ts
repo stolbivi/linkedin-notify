@@ -29,4 +29,12 @@ export class BaseController extends Controller {
         return Promise.resolve(message);
     }
 
+    protected getFirst(result: any) {
+        if (result && result.length > 0) {
+            return result[0].toJSON();
+        } else {
+            return result.toJSON();
+        }
+    }
+
 }

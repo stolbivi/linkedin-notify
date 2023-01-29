@@ -24,7 +24,6 @@ export class LinkedInHelper {
                 .map(s => s.replace(/&quot;/g, "\""))
                 .map(s => s.replace(/&#92;/g, "\\"))
                 .map(s => {
-                    console.log(s);
                     return s
                 })
                 .map(decoded => JSON.parse(decoded))

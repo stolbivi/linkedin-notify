@@ -1,0 +1,58 @@
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  padding: 6px 11px;
+  border-radius: 37px;
+  color: white;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  height: 18px;
+
+  .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  label {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  & svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.interested {
+  background-color: rgba(21, 105, 191, 0.74);
+}
+
+.not-interested {
+  background-color: rgba(202, 26, 36, 0.74);
+}
+
+.interviewing {
+  background-color: rgba(240, 144, 0, 0.74);
+}
+
+.failed {
+  background-color: rgba(202, 26, 36, 0.74);
+}
+
+.hired {
+  background-color: rgba(17, 117, 68, 0.74);
+}
+
+.inactive {
+  background-color: #909090;
+}

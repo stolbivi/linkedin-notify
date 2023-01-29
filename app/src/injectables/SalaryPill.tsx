@@ -45,18 +45,40 @@ type Props = {
     url?: string
 };
 
+export interface Salary {
+    urn?: string
+    title?: string
+    symbol?: string
+    formattedPay?: string
+    formattedPayValue?: string
+    progressivePay?: string
+    progressivePayValue?: string
+    note?: string
+    payDistribution?: string[]
+    payDistributionValues?: number[]
+    payPeriodAnnual?: string[]
+}
+
+export const getSalaryValue = (salary: Salary) => {
+    if (salary.progressivePay) {
+        return salary.progressivePay;
+    } else {
+        return salary.formattedPay;
+    }
+}
+
 export const SalaryPill: React.FC<Props> = ({url}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
-    const [salary, setSalary] = useState({result: {formattedPay: "", note: ""}} as any);
-    const [completed, setCompleted] = useState(false);
-    const [disabled, setDisabled] = useState(false);
-    const [urlInternal, setUrlInternal] = useState(url);
+    const [salary, setSalary] = useState<Salary>({formattedPay: "", note: ""});
+    const [completed, setCompleted] = useState<boolean>(false);
+    const [disabled, setDisabled] = useState<boolean>(false);
+    const [urlInternal, setUrlInternal] = useState<string>(url);
 
     useEffect(() => {
         if (disabled) {
-            setSalary({result: {formattedPay: "Sign in", note: "Please, sign in to use premium features"}});
+            setSalary({formattedPay: "Sign in", note: "Please, sign in to use premium features"});
             return;
         }
     }, [disabled]);
@@ -70,13 +92,13 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
             type: AppMessageType.SalaryPill,
             payload: extractIdFromUrl(urlInternal)
         }, (r) => {
-            setCompleted(true);
             if (r.error) {
-                setSalary({result: {formattedPay: "N/A", note: r.error}});
+                setSalary({formattedPay: "N/A", note: r.error});
                 setDisabled(r.status == 403)
             } else {
-                setSalary(r);
+                setSalary({...r.result, title: r.title, urn: r.urn});
             }
+            setCompleted(true);
         }).then(/* nada */);
     }, [urlInternal]);
 
@@ -92,24 +114,24 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
     const onClick = () => {
         if (disabled) {
             return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
-        }
-    }
-
-    const getSalaryValue = () => {
-        if (salary.result.progressivePay) {
-            return salary.result.progressivePay;
         } else {
-            return salary.result.formattedPay;
+            if (salary) {
+                return messages.request({
+                    type: AppMessageType.NotesAndCharts,
+                    payload: {salary}
+                });
+            }
         }
     }
 
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className={"salary-pill" + (disabled ? " disabled" : "")} onClick={onClick}
-                 title={salary.result.note}>
+            <div className={"salary-pill" + (disabled ? " disabled" : "") + (completed ? " clickable" : "")}
+                 onClick={onClick}
+                 title={salary.note}>
                 <Loader show={!completed}/>
-                {completed && getSalaryValue()}
+                {completed && getSalaryValue(salary)}
             </div>
         </React.Fragment>
     );

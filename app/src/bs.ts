@@ -1,10 +1,11 @@
-import {Messages} from "@stolbivi/pirojok";
+import {Messages, Tabs} from "@stolbivi/pirojok";
 import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID, SHARE_URN, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
 
 const messages = new Messages(MESSAGE_ID, VERBOSE);
+const tabs = new Tabs();
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
 const mapsAPI = new MapsAPI();
@@ -138,7 +139,8 @@ messages.listen<IAppRequest, any>({
                     const organization = api.extractOrganization(organizationResponse);
                     request = {...request, organization}
                 }
-                return backEndAPI.getSalary(request);
+                const response = await backEndAPI.getSalary(request);
+                return {...response, ...request};
             }),
     [AppMessageType.Tz]: (message) =>
         getCookies(LINKEDIN_DOMAIN)
@@ -161,7 +163,25 @@ messages.listen<IAppRequest, any>({
     [AppMessageType.Features]: () =>
         backEndAPI.getFeatures(),
     [AppMessageType.SetFeatures]: (message) =>
-        backEndAPI.setFeatures(message.payload)
+        backEndAPI.setFeatures(message.payload),
+    [AppMessageType.Stage]: (message) => {
+        if (message.payload.id) {
+            return backEndAPI.getStage(message.payload.id)
+        } else {
+            return getCookies(LINKEDIN_DOMAIN)
+                .then(cookies => api.getCsrfToken(cookies))
+                .then(async token => {
+                    const experienceResponse = await api.getExperience(token, message.payload.url);
+                    const experience = api.extractExperience(experienceResponse);
+                    return backEndAPI.getStage(experience.urn)
+                })
+        }
+    },
+    [AppMessageType.SetStage]: (message) =>
+        backEndAPI.setStage(message.payload.id, message.payload.stage),
+    [AppMessageType.NotesAndCharts]: (message) =>
+        tabs.withCurrentTab()
+            .then(tabs => messages.requestTab(tabs[0].id, message))
 })
 
 // listening to cookies store events

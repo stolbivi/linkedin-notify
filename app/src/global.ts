@@ -35,7 +35,10 @@ export enum AppMessageType {
     SalaryPill,
     Tz,
     Features,
-    SetFeatures
+    SetFeatures,
+    Stage,
+    SetStage,
+    NotesAndCharts
 }
 
 export interface IAppRequest extends TMessage {

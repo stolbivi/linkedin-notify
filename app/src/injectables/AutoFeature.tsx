@@ -115,7 +115,6 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
             type: AppMessageType.SetFeatures,
             payload: {author, type, action: active ? "unset" : "set"}
         }, (r) => {
-            setCompleted(true);
             if (r.error) {
                 console.error(r.error);
                 setActive(false);
@@ -123,6 +122,7 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
             } else {
                 setActive(!active);
             }
+            setCompleted(true);
         }).then(/* nada */);
     }
 

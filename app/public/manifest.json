@@ -29,7 +29,8 @@
   "permissions": [
     "cookies",
     "alarms",
-    "storage"
+    "storage",
+    "tabs"
   ],
   "host_permissions": [
     "*://localhost/",

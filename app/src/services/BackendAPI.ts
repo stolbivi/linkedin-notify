@@ -1,5 +1,6 @@
 import {BaseAPI} from "./BaseAPI";
 import {BACKEND_API, Features} from "../global";
+import {StageEnum} from "../injectables/notes/Stage";
 
 export interface Response<T> {
     response: T
@@ -39,6 +40,20 @@ export class BackendAPI extends BaseAPI {
         return this.fetchRequest(
             `${BACKEND_API}features`,
             this.getRequest("POST", features)
+        );
+    }
+
+    public getStage(id: string): Promise<Response<Features>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/${id}`,
+            this.getRequest("GET")
+        );
+    }
+
+    public setStage(id: string, stage: StageEnum): Promise<Response<Features>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/${id}`,
+            this.getRequest("PUT", {stage})
         );
     }
 

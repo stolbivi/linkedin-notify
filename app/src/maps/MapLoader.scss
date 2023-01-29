@@ -37,7 +37,7 @@
   &:before, &:after, .map-sub-container:before, .map-sub-container:after {
     position: absolute;
     display: block;
-    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.35);
     content: '';
     z-index: 5;
   }
@@ -57,7 +57,7 @@
   }
 
   .map-sub-container:before {
-    bottom: 1px;
+    bottom: -2px;
     left: 0;
     right: 0;
     height: 5px;

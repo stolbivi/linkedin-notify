@@ -2,7 +2,6 @@ import {Body, Delete, Get, Post, Put, Query, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
 import {Feature, FeatureRequest, User, UserModel, UserWithId} from "../persistence/user-model";
-import {Item} from "dynamoose/dist/Item";
 
 
 @Route("/api")
@@ -23,7 +22,7 @@ export class UserController extends BaseController {
 
         try {
             const result = await UserModel.query("id").eq(id).exec();
-            let message: any = {response: result.map((r: Item) => r.toJSON())};
+            let message: any = {response: this.getFirst(result)};
             if (request?.user) {
                 message = {...message, user: request.user};
             }
@@ -44,7 +43,7 @@ export class UserController extends BaseController {
 
         try {
             const result = await UserModel.query("email").eq(q).exec();
-            let message: any = {response: result.map((r: Item) => r.toJSON())};
+            let message: any = {response: this.getFirst(result)};
             if (request?.user) {
                 message = {...message, user: request.user};
             }

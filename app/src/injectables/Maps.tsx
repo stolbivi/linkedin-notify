@@ -42,6 +42,10 @@ export const Maps: React.FC<Props> = ({host}) => {
                 child.style["display"] = disabled ? "block" : "none";
             }
         }
+        if (!disabled) {
+            host.style.height = "200px";
+            host.style.maxHeight = "200px";
+        }
     }, [disabled]);
 
     useEffect(() => {
@@ -52,7 +56,6 @@ export const Maps: React.FC<Props> = ({host}) => {
     }, [urlInternal]);
 
     useEffect(() => {
-        host.style.height = "200px";
         window.addEventListener('hashchange', () => {
             setUrlInternal(window.location.href);
         });

@@ -299,7 +299,10 @@ export class GlassDoorController extends BaseController {
             }
             if (!result.notFound) {
                 // adding projections based on experience
+                result.result.payDistributionValues = result.result?.payDistribution?.map((v: string) => extractValue(v).value);
                 const {value: original, symbol} = extractValue(result.result.formattedPay);
+                result.result.formattedPayValue = original;
+                result.result.symbol = symbol;
                 if (body.startYear) {
                     const startMonth = body.startMonth ? body.startMonth : 1;
                     let startingMoment = moment([body.startYear, startMonth - 1, 1]);
@@ -311,6 +314,7 @@ export class GlassDoorController extends BaseController {
                         result.result.progressivePay = symbol
                             ? `${symbol}${progressivePay.toLocaleString()}`
                             : progressivePay.toLocaleString();
+                        result.result.progressivePayValue = progressivePay;
                     }
                 }
             }

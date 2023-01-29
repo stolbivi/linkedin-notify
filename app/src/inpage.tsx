@@ -3,6 +3,8 @@ import {CompletionFactory} from "./injectables/Completion";
 import {SalaryPillFactory} from "./injectables/SalaryPill";
 import {AutoFeatureFactory} from "./injectables/AutoFeature";
 import {MapsFactory} from "./injectables/Maps";
+import {StagePillFactory} from "./injectables/notes/StagePill";
+import {NotesAndChartsFactory} from "./injectables/notes/NotesAndCharts";
 
 console.debug('LinkedIn Manager extension engaged');
 
@@ -17,6 +19,8 @@ const injectUI = () => {
             SalaryPillFactory();
             MapsFactory();
             AutoFeatureFactory();
+            StagePillFactory();
+            NotesAndChartsFactory();
         },
     });
 }

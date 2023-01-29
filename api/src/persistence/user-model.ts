@@ -16,16 +16,16 @@ export interface FeatureRequest {
 }
 
 export interface User {
-    firstName: String
-    lastName: String
-    email: String
+    firstName: string
+    lastName: string
+    email: string
     features?: Feature[]
     createdAt?: string
     updatedAt?: string
 }
 
 export interface UserWithId extends User {
-    id: String
+    id: string
 }
 
 const userSchema = new dynamoose.Schema({
@@ -37,10 +37,6 @@ const userSchema = new dynamoose.Schema({
     email: {
         type: String,
         required: true,
-        index: {
-            name: "email-index",
-            global: true
-        }
     },
     firstName: {
         type: String,
@@ -90,7 +86,6 @@ export class UserService {
             return result[0];
         } else {
             const user = this.toUserModel(profile);
-            // TODO init defaults for new users
             const result = await UserModel.create(user);
             return result.toJSON();
         }

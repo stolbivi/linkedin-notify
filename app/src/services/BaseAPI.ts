@@ -20,7 +20,7 @@ export class BaseAPI {
         }
     }
 
-    protected getRequest(method: "GET" | "POST", body?: any): any {
+    protected getRequest(method: "GET" | "POST" | "PUT", body?: any): any {
         return {
             "headers": {
                 "accept": "application/json",
