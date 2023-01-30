@@ -33,8 +33,6 @@ export const Maps: React.FC<Props> = ({host}) => {
     const [src, setSrc] = useState<string>();
     const [urlInternal, setUrlInternal] = useState(window.location.href);
 
-    const iframeContainer = React.createRef<HTMLIFrameElement>();
-
     useEffect(() => {
         for (let i = 0; i < host.children.length; i++) {
             const child = host.children[i] as HTMLElement;
@@ -56,7 +54,7 @@ export const Maps: React.FC<Props> = ({host}) => {
     }, [urlInternal]);
 
     useEffect(() => {
-        window.addEventListener('hashchange', () => {
+        window.addEventListener('popstate', () => {
             setUrlInternal(window.location.href);
         });
         messages.request<IAppRequest, any>({
@@ -70,7 +68,7 @@ export const Maps: React.FC<Props> = ({host}) => {
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="iframe-container">
-                <iframe scrolling="no" height="200" ref={iframeContainer} src={src}></iframe>
+                <iframe scrolling="no" height="200" src={src}></iframe>
             </div>
         </React.Fragment>
     );

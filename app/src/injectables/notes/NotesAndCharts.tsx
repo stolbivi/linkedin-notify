@@ -3,14 +3,15 @@ import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {getSalaryValue, Salary} from "../SalaryPill";
 import {PayDistribution} from "./PayDistribution";
-import {StageContainer} from "./StageSelector";
-import {StageEnum} from "./Stage";
+import {StageEnum, StageSwitch} from "./StageSwitch";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../../global";
+import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, NoteExtended, VERBOSE} from "../../global";
 import {inject} from "../../utils/InjectHelper";
+import {Loader} from "../../components/Loader";
 
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
+import {NoteCard} from "./NoteCard";
 
 export const NotesAndChartsFactory = () => {
     if (window.location.href.indexOf("/in/") > 0) {
@@ -30,25 +31,21 @@ type Props = {
 
 export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
 
+    const MAX_LENGTH = 200;
+
     const [show, setShow] = useState<boolean>(false);
     const [stageInternal, setStageInternal] = useState<StageEnum>(stage);
     const [salaryInternal, setSalaryInternal] = useState<Salary>(salary);
+    const [completed, setCompleted] = useState<boolean>(false);
+    const [editable, setEditable] = useState<boolean>(true);
+    const [notes, setNotes] = useState<NoteExtended[]>([]);
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     useEffect(() => {
-        if (!salaryInternal) {
-            messages.request<IAppRequest, any>({
-                type: AppMessageType.SalaryPill,
-                payload: extractIdFromUrl(window.location.href)
-            }, (r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    setSalaryInternal({...r.result, title: r.title, urn: r.urn});
-                }
-            }).then(/* nada */);
-        }
+        window.addEventListener('popstate', () => {
+            setShow(false);
+        });
         messages.listen<IAppRequest, any>({
             [AppMessageType.NotesAndCharts]: (message) => {
                 if (message.payload?.salary) {
@@ -64,19 +61,76 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
     }, []);
 
     useEffect(() => {
-        if (salaryInternal && !(stageInternal >= 0)) {
+        if (show) {
+            if (!salaryInternal) {
+                messages.request<IAppRequest, any>({
+                    type: AppMessageType.SalaryPill,
+                    payload: extractIdFromUrl(window.location.href)
+                }, (r) => {
+                    if (r.error) {
+                        console.error(r.error);
+                    } else {
+                        setSalaryInternal({...r.result, title: r.title, urn: r.urn});
+                    }
+                }).then(/* nada */);
+            }
+        }
+    }, [show]);
+
+    useEffect(() => {
+        if (salaryInternal) {
+            if (!(stageInternal >= 0)) {
+                messages.request<IAppRequest, any>({
+                    type: AppMessageType.Stage,
+                    payload: {id: salaryInternal.urn}
+                }, (r) => {
+                    if (r.error) {
+                        console.error(r.error);
+                    } else {
+                        setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1);
+                    }
+                }).then(/* nada */);
+            }
+            setCompleted(false);
             messages.request<IAppRequest, any>({
-                type: AppMessageType.Stage,
-                payload: {id: salaryInternal.urn}
+                type: AppMessageType.Notes,
+                payload: salaryInternal.urn
             }, (r) => {
                 if (r.error) {
                     console.error(r.error);
                 } else {
-                    setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1);
+                    setNotes(r.response);
+                    setCompleted(true);
                 }
             }).then(/* nada */);
         }
     }, [salaryInternal]);
+
+    const appendNote = (note: NoteExtended) => {
+        setNotes([...notes, note]);
+    }
+
+    const onKeyUp = (e: any) => {
+        if (e.code === 'Enter') {
+            let text = e.target.value?.trim();
+            if (text && text !== "") {
+                text = text.slice(0, MAX_LENGTH);
+                setEditable(false);
+                messages.request<IAppRequest, any>({
+                    type: AppMessageType.Note,
+                    payload: {id: salaryInternal.urn, stageTo: stageInternal, text}
+                }, (r) => {
+                    if (r.error) {
+                        console.error(r.error);
+                    } else {
+                        e.target.value = "";
+                        appendNote(r.note.response)
+                    }
+                    setEditable(true);
+                }).then(/* nada */);
+            }
+        }
+    }
 
     return (
         <React.Fragment>
@@ -110,17 +164,44 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
                                 </section>
                             </div>
                         </div>
-                        <div data-role={CollapsibleRole.Collapsible}>_BIG_CHART_</div>
+                        <div data-role={CollapsibleRole.Collapsible}>
+                            <div className="big-chart">_BIG_CHART_</div>
+                        </div>
                     </Collapsible>
                     {salaryInternal &&
-                    <StageContainer stage={stageInternal} setStage={setStageInternal} id={salaryInternal.urn}/>}
+                    <div className="stage-container">
+                        <span>Pick a stage</span>
+                        <div className="stages">
+                            <StageSwitch type={StageEnum.Interested} activeStage={stageInternal}
+                                         setStage={setStageInternal}
+                                         id={salaryInternal.urn} appendNote={appendNote}/>
+                            <StageSwitch type={StageEnum.NotInterested} activeStage={stageInternal}
+                                         setStage={setStageInternal}
+                                         id={salaryInternal.urn} appendNote={appendNote}/>
+                            <StageSwitch type={StageEnum.Interviewing} activeStage={stageInternal}
+                                         setStage={setStageInternal}
+                                         id={salaryInternal.urn} appendNote={appendNote}/>
+                            <StageSwitch type={StageEnum.FailedInterview} activeStage={stageInternal}
+                                         setStage={setStageInternal} id={salaryInternal.urn} appendNote={appendNote}/>
+                            <StageSwitch type={StageEnum.Hired} activeStage={stageInternal} setStage={setStageInternal}
+                                         id={salaryInternal.urn} appendNote={appendNote}/>
+                        </div>
+                    </div>}
                     <Collapsible>
                         <div data-role={CollapsibleRole.Title} className="title-child">
                             <label>Notes</label>
-                            <span><label className="notes-counter">15</label></span>
+                            <span><label className="notes-counter">{notes?.length}</label></span>
                         </div>
                         <div data-role={CollapsibleRole.Collapsible}>
-                            Notes here
+                            <div className="loader"><Loader show={!completed}/></div>
+                            <div className="notes-scroll">
+                                {completed && notes?.map((n, i) => (<NoteCard key={i} note={n}/>))}
+                                {notes.length == 0 && <div className="no-notes">No notes yet</div>}
+                            </div>
+                        </div>
+                        <div data-role={CollapsibleRole.Footer} className="footer-child">
+                            <input type="text" onKeyUp={onKeyUp} disabled={!editable} className="text-input"
+                                   placeholder="Leave a note"/>
                         </div>
                     </Collapsible>
                 </NotesContainer>

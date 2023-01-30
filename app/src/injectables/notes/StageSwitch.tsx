@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Loader} from "../../components/Loader";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, MESSAGE_ID, VERBOSE} from "../../global";
-import "./Stage.scss";
+import {AppMessageType, IAppRequest, MESSAGE_ID, Note, VERBOSE} from "../../global";
+import "./StageSwitch.scss";
 
 export enum StageEnum {
     Interested,
@@ -18,16 +18,17 @@ export const StageLabels = {
     2: {label: "Interviewing", class: "interviewing"},
     3: {label: "Failed interview", class: "failed"},
     4: {label: "Hired", class: "hired"}
-}
+} as { [key: number]: any }
 
 type Props = {
     type: StageEnum
     activeStage: StageEnum
     setStage: (s: StageEnum) => void
+    appendNote: (n: Note) => void
     id: string
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id}) => {
+export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, appendNote}) => {
 
     const [completed, setCompleted] = useState<boolean>(false);
 
@@ -40,15 +41,19 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id}) 
     }, [activeStage])
 
     const onClick = () => {
+        if (activeStage === type) {
+            return;
+        }
         setCompleted(false);
         messages.request<IAppRequest, any>({
             type: AppMessageType.SetStage,
-            payload: {id, stage: type}
+            payload: {id, stage: type, stageFrom: activeStage}
         }, (r) => {
             if (r.error) {
                 console.error(r.error);
             } else {
-                setStage(r.response.stage);
+                setStage(r.stage.response.stage);
+                appendNote(r.note.response)
             }
             setCompleted(true);
         }).then(/* nada */);

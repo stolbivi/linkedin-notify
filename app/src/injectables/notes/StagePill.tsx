@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../../global";
-import {StageEnum, StageLabels} from "./Stage";
+import {StageEnum, StageLabels} from "./StageSwitch";
 import {inject} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 
 // @ts-ignore
-import stylesheet from "./Stage.scss";
+import stylesheet from "./StageSwitch.scss";
 
 
 export const StagePillFactory = () => {
@@ -36,14 +36,18 @@ export const StagePill: React.FC<Props> = ({url}) => {
     const [show, setShow] = useState<boolean>(false);
     const [completed, setCompleted] = useState<boolean>(true);
     const [showNotes, setShowNotes] = useState<boolean>(false);
+    const [urlInternal, setUrlInternal] = useState<string>(url);
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     useEffect(() => {
+        if (!urlInternal) {
+            return;
+        }
         setShow(false);
         messages.request<IAppRequest, any>({
             type: AppMessageType.Stage,
-            payload: {url: extractIdFromUrl(url)}
+            payload: {url: extractIdFromUrl(urlInternal)}
         }, (r) => {
             if (r.error) {
                 console.error(r.error);
@@ -55,6 +59,13 @@ export const StagePill: React.FC<Props> = ({url}) => {
                 }
             }
         }).then(/* nada */);
+
+    }, [urlInternal]);
+
+    useEffect(() => {
+        window.addEventListener('popstate', () => {
+            setUrlInternal(window.location.href);
+        });
     }, [])
 
     const onClick = () => {

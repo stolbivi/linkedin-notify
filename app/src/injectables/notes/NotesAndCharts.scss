@@ -1,8 +1,8 @@
 @import "NotesContainer";
 @import "Collapsible";
 @import "PayDistribution";
-@import "StageContainer";
-@import "Stage";
+@import "StageSwitch";
+@import "NoteCard";
 
 .label-section {
   display: flex;
@@ -41,6 +41,29 @@
   align-items: center;
 }
 
+.footer-child {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FBFBFB;
+  padding: 2em;
+  border-bottom-left-radius: 9px;
+  border-bottom-right-radius: 9px;
+
+  .text-input {
+    width: 100%;
+    padding: 0.75em;
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 40px;
+
+    &:disabled {
+      opacity: 0.75;
+      cursor: wait;
+    }
+  }
+}
+
 .notes-counter {
   background: rgba(144, 144, 144, 0.1);
   height: 24px;
@@ -54,4 +77,45 @@
   justify-content: center;
   color: #585858;
   border-radius: 18px;
+}
+
+.big-chart {
+  padding: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.stage-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+
+  .stages {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 0.5em;
+  }
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.notes-scroll {
+  margin: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+
+  .no-notes {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+  }
 }

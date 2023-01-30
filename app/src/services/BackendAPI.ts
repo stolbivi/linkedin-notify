@@ -1,6 +1,6 @@
 import {BaseAPI} from "./BaseAPI";
-import {BACKEND_API, Features} from "../global";
-import {StageEnum} from "../injectables/notes/Stage";
+import {BACKEND_API, Features, Note} from "../global";
+import {StageEnum} from "../injectables/notes/StageSwitch";
 
 export interface Response<T> {
     response: T
@@ -43,17 +43,38 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public getStage(id: string): Promise<Response<Features>> {
+    public getStage(id: string): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}stage/${id}`,
             this.getRequest("GET")
         );
     }
 
-    public setStage(id: string, stage: StageEnum): Promise<Response<Features>> {
+    public setStage(id: string, stage: StageEnum): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}stage/${id}`,
             this.getRequest("PUT", {stage})
+        );
+    }
+
+    public getNotes(): Promise<Response<Note[]>> {
+        return this.fetchRequest(
+            `${BACKEND_API}notes`,
+            this.getRequest("GET")
+        );
+    }
+
+    public getNotesByProfile(profile: string): Promise<Response<Note[]>> {
+        return this.fetchRequest(
+            `${BACKEND_API}notes/profile/?q=${profile}`,
+            this.getRequest("GET")
+        );
+    }
+
+    public postNote(note: Note): Promise<Response<Note>> {
+        return this.fetchRequest(
+            `${BACKEND_API}note`,
+            this.getRequest("POST", note)
         );
     }
 

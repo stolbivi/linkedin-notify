@@ -441,13 +441,17 @@ export class LinkedInAPI {
     }
 
     public extractProfile(id: string, response: any): any {
-        const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
-        const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
-        const artifacts = extractArtifacts(vectorImage[0].artifacts);
-        const rootUrl = vectorImage[0].rootUrl;
         const actor = response.included.filter((i: any) => i.actor !== undefined);
         const name = JSONPath.query(actor[0], "$.actor.name.text");
-        return {profilePicture: {rootUrl, artifacts}, name};
+        let result: any = {name};
+        const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
+        const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
+        if (vectorImage && vectorImage.length > 0) {
+            const artifacts = extractArtifacts(vectorImage[0].artifacts);
+            const rootUrl = vectorImage[0].rootUrl;
+            result = {...result, profilePicture: {rootUrl, artifacts}}
+        }
+        return result;
     }
 
     public getProfile(token: string, id: string): Promise<any> {

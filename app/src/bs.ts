@@ -1,5 +1,14 @@
 import {Messages, Tabs} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID, SHARE_URN, VERBOSE} from "./global";
+import {
+    AppMessageType,
+    IAppRequest,
+    LINKEDIN_DOMAIN,
+    MESSAGE_ID,
+    Note,
+    NoteExtended,
+    SHARE_URN,
+    VERBOSE
+} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
@@ -42,6 +51,38 @@ getCookies(LINKEDIN_DOMAIN)
             startMonitoring();
         }
     });
+
+async function extendNote(token: string, ...notes: Note[]): Promise<NoteExtended[]> {
+    function getPicture(profilePicture: any) {
+        return profilePicture
+            ? profilePicture.rootUrl + profilePicture.artifacts[0].path
+            : "https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q"
+    }
+
+    const cache = {} as { [key: string]: any };
+    notes.forEach(n => {
+        cache[n.author] = {};
+        cache[n.profile] = {};
+    })
+    const promises = Object.keys(cache)
+        .map(k => api.getProfile(token, k)
+            .then(p => api.extractProfile(k, p))
+            .then(e => ({id: k, profile: e}))
+        );
+    const result = await Promise.all(promises);
+    result.forEach(r => cache[r.id] = r.profile);
+    const notesToSort = notes.map(n => ({
+        ...n,
+        authorName: cache[n.author].name[0],
+        authorPicture: getPicture(cache[n.author].profilePicture),
+        profileName: cache[n.profile].name[0],
+        profilePicture: getPicture(cache[n.profile].profilePicture),
+        timestamp: new Date(n.updatedAt)
+    }));
+    // @ts-ignore
+    notesToSort.sort((a, b) => a.timestamp - b.timestamp);
+    return notesToSort;
+}
 
 messages.listen<IAppRequest, any>({
     [AppMessageType.OpenURL]: (message) =>
@@ -181,16 +222,42 @@ messages.listen<IAppRequest, any>({
         getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {
-                // const profileResponse = await api.getProfile(token, message.payload.id);
-                // const profile = api.extractProfile(message.payload.id, profileResponse)
                 const me = await api.getMe(token);
-                const author = me.miniProfile.entityUrn;
-                console.log(author);
-                return backEndAPI.setStage(message.payload.id, message.payload.stage);
+                const note = await backEndAPI.postNote({
+                    profile: message.payload.id,
+                    author: me.miniProfile.entityUrn?.split(":").pop(),
+                    stageFrom: message.payload.stageFrom,
+                    stageTo: message.payload.stage,
+                });
+                const noteExtended = await extendNote(token, note.response);
+                const stage = await backEndAPI.setStage(message.payload.id, message.payload.stage);
+                return {note: {response: noteExtended[0]}, stage: stage};
             }),
     [AppMessageType.NotesAndCharts]: (message) =>
         tabs.withCurrentTab()
             .then(tabs => messages.requestTab(tabs[0].id, message)),
+    [AppMessageType.Notes]: (message) =>
+        getCookies(LINKEDIN_DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const notes = await backEndAPI.getNotesByProfile(message.payload);
+                return extendNote(token, ...notes.response)
+                    .then(response => ({response}))
+            }),
+    [AppMessageType.Note]: (message) =>
+        getCookies(LINKEDIN_DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const me = await api.getMe(token);
+                const note = await backEndAPI.postNote({
+                    profile: message.payload.id,
+                    author: me.miniProfile.entityUrn?.split(":").pop(),
+                    stageTo: message.payload.stageTo,
+                    text: message.payload.text,
+                });
+                const noteExtended = await extendNote(token, note.response);
+                return {note: {response: noteExtended[0]}};
+            }),
 })
 
 // listening to cookies store events

@@ -33,27 +33,6 @@ export class UserController extends BaseController {
     }
 
     @Tags("Persistence")
-    @Get("user/email")
-    public async findByEmail(@Query() q: string,
-                             @Request() request?: express.Request): Promise<any> {
-        if (this.abruptOnNoSession(request)) {
-            this.setStatus(403);
-            return Promise.resolve("Please, sign in to use premium features");
-        }
-
-        try {
-            const result = await UserModel.query("email").eq(q).exec();
-            let message: any = {response: this.getFirst(result)};
-            if (request?.user) {
-                message = {...message, user: request.user};
-            }
-            return Promise.resolve(message);
-        } catch (error) {
-            return this.handleError(error, request);
-        }
-    }
-
-    @Tags("Persistence")
     @Post("user")
     public async create(@Body() body: UserWithId,
                         @Request() request?: express.Request

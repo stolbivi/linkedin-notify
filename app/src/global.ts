@@ -38,7 +38,9 @@ export enum AppMessageType {
     SetFeatures,
     Stage,
     SetStage,
-    NotesAndCharts
+    NotesAndCharts,
+    Notes,
+    Note
 }
 
 export interface IAppRequest extends TMessage {
@@ -83,6 +85,25 @@ export interface Feature {
 
 export interface Features {
     features: Feature[]
+}
+
+export interface Note {
+    id?: string
+    profile: string
+    author: string
+    text?: string
+    stageFrom?: number
+    stageTo?: number
+    createdAt?: string
+    updatedAt?: string
+}
+
+export interface NoteExtended extends Note {
+    authorName: string
+    authorPicture: string
+    profileName: string
+    profilePicture: string
+    timestamp: Date
 }
 
 export const extractIdFromUrl = (url: string) => {

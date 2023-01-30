@@ -1,18 +1,19 @@
-import {Body, Delete, Get, Post, Put, Query, Request, Route, Tags} from "tsoa";
+import {Body, Delete, Get, Post, Query, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
-import {Stage, StageModel, StageWithId} from "../persistence/stage-model";
+import {Note, NoteModel} from "../persistence/note-model";
+import {v4 as uuid} from 'uuid';
 
 
 @Route("/api")
-export class StageController extends BaseController {
+export class NoteController extends BaseController {
 
     constructor() {
         super();
     }
 
     @Tags("Persistence")
-    @Get("stage/{id}")
+    @Get("note/{id}")
     public async findById(id: string,
                           @Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
@@ -21,7 +22,7 @@ export class StageController extends BaseController {
         }
 
         try {
-            const result = await StageModel.query("id").eq(id).exec();
+            const result = await NoteModel.query("id").eq(id).exec();
             let message: any = {response: this.getFirst(result)};
             if (request?.user) {
                 message = {...message, user: request.user};
@@ -33,17 +34,16 @@ export class StageController extends BaseController {
     }
 
     @Tags("Persistence")
-    @Get("stage/email")
-    public async findByEmail(@Query() q: string,
-                             @Request() request?: express.Request): Promise<any> {
+    @Get("notes")
+    public async findAll(@Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
             return Promise.resolve("Please, sign in to use premium features");
         }
 
         try {
-            const result = await StageModel.query("email").eq(q).exec();
-            let message: any = {response: this.getFirst(result)};
+            const result = await NoteModel.scan().exec();
+            let message: any = {response: result.map((i: any) => i.toJSON())};
             if (request?.user) {
                 message = {...message, user: request.user};
             }
@@ -54,8 +54,29 @@ export class StageController extends BaseController {
     }
 
     @Tags("Persistence")
-    @Post("stage")
-    public async create(@Body() body: StageWithId,
+    @Get("notes/profile")
+    public async findByProfile(@Query() q: string,
+                               @Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            const result = await NoteModel.query("profile").eq(q).exec();
+            let message: any = {response: result.map((i: any) => i.toJSON())};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
+    @Tags("Persistence")
+    @Post("note")
+    public async create(@Body() body: Note,
                         @Request() request?: express.Request
     ): Promise<any> {
         if (this.abruptOnNoSession(request)) {
@@ -64,7 +85,8 @@ export class StageController extends BaseController {
         }
 
         try {
-            const saved = await StageModel.create(body);
+            const toCreate = {...body, id: uuid()};
+            const saved = await NoteModel.create(toCreate);
             let message: any = {response: saved.toJSON()};
             if (request?.user) {
                 message = {...message, user: request.user};
@@ -76,33 +98,7 @@ export class StageController extends BaseController {
     }
 
     @Tags("Persistence")
-    @Put("stage/{id}")
-    public async update(id: string,
-                        @Body() body: Stage,
-                        @Request() request?: express.Request
-    ): Promise<any> {
-        if (this.abruptOnNoSession(request)) {
-            this.setStatus(403);
-            return Promise.resolve("Please, sign in to use premium features");
-        }
-
-        try {
-            const toSave = {...body};
-            delete toSave.createdAt;
-            delete toSave.updatedAt;
-            const saved = await StageModel.update(id, toSave);
-            let message: any = {response: saved.toJSON()};
-            if (request?.user) {
-                message = {...message, user: request.user};
-            }
-            return Promise.resolve(message);
-        } catch (error) {
-            return this.handleError(error, request);
-        }
-    }
-
-    @Tags("Persistence")
-    @Delete("stage/{id}")
+    @Delete("note/{id}")
     public async delete(id: string,
                         @Request() request?: express.Request
     ): Promise<any> {
@@ -112,7 +108,7 @@ export class StageController extends BaseController {
         }
 
         try {
-            await StageModel.delete(id);
+            await NoteModel.delete(id);
             let message: any = {response: id, status: "Deleted"};
             if (request?.user) {
                 message = {...message, user: request.user};

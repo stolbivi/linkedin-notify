@@ -1,0 +1,87 @@
+@import "StageSwitch";
+
+.note-card {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid rgb(0 0 0 / 10%);
+
+  .picture {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .dot {
+      margin-right: 0.5em;
+      width: 6px;
+      height: 6px;
+      border-radius: 20px;
+    }
+
+    .interested {
+      background-color: rgba(21, 105, 191, 0.74);
+    }
+
+    .not-interested {
+      background-color: rgba(202, 26, 36, 0.74);
+    }
+
+    .interviewing {
+      background-color: rgba(240, 144, 0, 0.74);
+    }
+
+    .failed {
+      background-color: rgba(202, 26, 36, 0.74);
+    }
+
+    .hired {
+      background-color: rgba(17, 117, 68, 0.74);
+    }
+
+    img {
+      width: 44px;
+      height: 44px;
+      border-radius: 200px;
+    }
+  }
+
+  .details {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 1em;
+    padding-right: 1em;
+
+    .header {
+      .author {
+        color: black;
+      }
+
+      .timestamp {
+        float: right;
+      }
+    }
+
+    .transition {
+      padding-top: 0.5em;
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: center;
+
+      svg {
+        padding: 0.5em;
+      }
+
+    }
+
+    .text {
+      margin-top: 1em;
+      padding: 1em;
+      background: rgba(244, 244, 244, 0.38);
+      border-radius: 0px 15px 15px 15px;
+    }
+  }
+}

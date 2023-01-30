@@ -8,7 +8,8 @@ type Props = {
 export enum CollapsibleRole {
     Title,
     Static,
-    Collapsible
+    Collapsible,
+    Footer
 }
 
 export const Collapsible: React.FC<Props> = ({children}) => {
@@ -26,9 +27,11 @@ export const Collapsible: React.FC<Props> = ({children}) => {
 
     const getCollapsible = () => [...children].filter(c => c.props["data-role"] === CollapsibleRole.Collapsible);
 
+    const getFooter = () => [...children].filter(c => c.props["data-role"] === CollapsibleRole.Footer);
+
     return (
         <React.Fragment>
-            <div>
+            <div className="collapsible-container">
                 <div className="collapsible-title" onClick={onClick}>
                     <svg className={getTransition()} width="8" height="10" viewBox="0 0 8 10" fill="none"
                          xmlns="http://www.w3.org/2000/svg">
@@ -40,6 +43,7 @@ export const Collapsible: React.FC<Props> = ({children}) => {
                 </div>
                 {getStatic()}
                 {opened && getCollapsible()}
+                {getFooter()}
             </div>
         </React.Fragment>
     );

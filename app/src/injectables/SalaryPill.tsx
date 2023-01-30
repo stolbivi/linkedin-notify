@@ -105,7 +105,7 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
     useEffect(() => {
         if (!url) {
             setUrlInternal(window.location.href);
-            window.addEventListener('hashchange', () => {
+            window.addEventListener('popstate', () => {
                 setUrlInternal(window.location.href);
             });
         }

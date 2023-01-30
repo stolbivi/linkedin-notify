@@ -1,18 +1,23 @@
-.collapsible-title {
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
+.collapsible-container {
 
-  span {
-    padding-left: 0.5em;
+  .collapsible-title {
+    padding: 1em;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+
+    span {
+      padding-left: 0.5em;
+    }
+
+    .opened {
+      transform: rotate(90deg);
+    }
+
+    .closed {
+      transform: rotate(0deg);
+    }
   }
 
-  .opened {
-    transform: rotate(90deg);
-  }
-
-  .closed {
-    transform: rotate(0deg);
-  }
 }
