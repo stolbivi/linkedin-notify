@@ -64,7 +64,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
     }, []);
 
     useEffect(() => {
-        if (salaryInternal && !stageInternal) {
+        if (salaryInternal && !(stageInternal >= 0)) {
             messages.request<IAppRequest, any>({
                 type: AppMessageType.Stage,
                 payload: {id: salaryInternal.urn}
@@ -72,7 +72,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
                 if (r.error) {
                     console.error(r.error);
                 } else {
-                    setStageInternal(r?.response?.stage ? r?.response?.stage : -1);
+                    setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1);
                 }
             }).then(/* nada */);
         }
@@ -112,7 +112,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
                         </div>
                         <div data-role={CollapsibleRole.Collapsible}>_BIG_CHART_</div>
                     </Collapsible>
-                    {salaryInternal && stageInternal &&
+                    {salaryInternal &&
                     <StageContainer stage={stageInternal} setStage={setStageInternal} id={salaryInternal.urn}/>}
                     <Collapsible>
                         <div data-role={CollapsibleRole.Title} className="title-child">

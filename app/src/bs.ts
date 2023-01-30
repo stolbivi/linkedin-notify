@@ -178,10 +178,19 @@ messages.listen<IAppRequest, any>({
         }
     },
     [AppMessageType.SetStage]: (message) =>
-        backEndAPI.setStage(message.payload.id, message.payload.stage),
+        getCookies(LINKEDIN_DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                // const profileResponse = await api.getProfile(token, message.payload.id);
+                // const profile = api.extractProfile(message.payload.id, profileResponse)
+                const me = await api.getMe(token);
+                const author = me.miniProfile.entityUrn;
+                console.log(author);
+                return backEndAPI.setStage(message.payload.id, message.payload.stage);
+            }),
     [AppMessageType.NotesAndCharts]: (message) =>
         tabs.withCurrentTab()
-            .then(tabs => messages.requestTab(tabs[0].id, message))
+            .then(tabs => messages.requestTab(tabs[0].id, message)),
 })
 
 // listening to cookies store events

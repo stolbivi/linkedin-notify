@@ -440,12 +440,32 @@ export class LinkedInAPI {
         }).then(_ => null);
     }
 
-    private getRequest(token: string): any {
+    public extractProfile(id: string, response: any): any {
+        const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
+        const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
+        const artifacts = extractArtifacts(vectorImage[0].artifacts);
+        const rootUrl = vectorImage[0].rootUrl;
+        const actor = response.included.filter((i: any) => i.actor !== undefined);
+        const name = JSONPath.query(actor[0], "$.actor.name.text");
+        return {profilePicture: {rootUrl, artifacts}, name};
+    }
+
+    public getProfile(token: string, id: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.22e7cccbd773ceef5ed7c2c9d195473a`,
+            this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
+            .then(response => response.json());
+    }
+
+    private getRequest(token: string, headers?: any): any {
+        let defaultHeaders = {
+            "accept": "application/graphql",
+            "csrf-token": token,
+        };
+        if (headers) {
+            defaultHeaders = {...defaultHeaders, ...headers};
+        }
         return {
-            "headers": {
-                "accept": "application/graphql",
-                "csrf-token": token,
-            },
+            "headers": defaultHeaders,
             "body": null,
             "method": "GET",
             "mode": "cors",

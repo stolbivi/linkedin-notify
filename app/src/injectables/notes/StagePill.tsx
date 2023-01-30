@@ -48,9 +48,12 @@ export const StagePill: React.FC<Props> = ({url}) => {
             if (r.error) {
                 console.error(r.error);
             } else {
-                setType(r?.response?.stage ? r?.response?.stage : -1);
+                const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
+                setType(s);
+                if (s >= 0) {
+                    setShow(true);
+                }
             }
-            setShow(true);
         }).then(/* nada */);
     }, [])
 
