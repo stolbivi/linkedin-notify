@@ -3,6 +3,16 @@
 @import "PayDistribution";
 @import "StageSwitch";
 @import "NoteCard";
+@import "NotesCommon";
+
+.notes-and-charts {
+  width: 500px;
+  position: absolute;
+  top: 25px;
+  left: 10vw;
+  z-index: 1000;
+  box-shadow: 0px 18px 101px rgba(150, 163, 176, 0.27);
+}
 
 .label-section {
   display: flex;
@@ -41,44 +51,6 @@
   align-items: center;
 }
 
-.footer-child {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #FBFBFB;
-  padding: 2em;
-  border-bottom-left-radius: 9px;
-  border-bottom-right-radius: 9px;
-
-  .text-input {
-    width: 100%;
-    padding: 0.75em;
-    background: #FFFFFF;
-    border: 1px solid #E5E5E5;
-    border-radius: 40px;
-
-    &:disabled {
-      opacity: 0.75;
-      cursor: wait;
-    }
-  }
-}
-
-.notes-counter {
-  background: rgba(144, 144, 144, 0.1);
-  height: 24px;
-  width: 24px;
-  font-family: 'Helvetica';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #585858;
-  border-radius: 18px;
-}
-
 .big-chart {
   padding: 1em;
   display: flex;
@@ -95,27 +67,5 @@
     display: flex;
     justify-content: space-around;
     padding-top: 0.5em;
-  }
-}
-
-.loader {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.notes-scroll {
-  margin: 1em;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: start;
-
-  .no-notes {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
   }
 }

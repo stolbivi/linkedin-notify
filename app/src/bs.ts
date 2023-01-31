@@ -236,7 +236,15 @@ messages.listen<IAppRequest, any>({
     [AppMessageType.NotesAndCharts]: (message) =>
         tabs.withCurrentTab()
             .then(tabs => messages.requestTab(tabs[0].id, message)),
-    [AppMessageType.Notes]: (message) =>
+    [AppMessageType.NotesAll]: () =>
+        getCookies(LINKEDIN_DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const notes = await backEndAPI.getNotes();
+                return extendNote(token, ...notes.response)
+                    .then(response => ({response}))
+            }),
+    [AppMessageType.NotesByProfile]: (message) =>
         getCookies(LINKEDIN_DOMAIN)
             .then(cookies => api.getCsrfToken(cookies))
             .then(async token => {

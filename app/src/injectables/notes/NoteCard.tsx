@@ -6,17 +6,19 @@ import {formatDate} from "../../services/UIHelpers";
 
 type Props = {
     note: NoteExtended
+    extended?: boolean
+    onProfileSelect?: (profile: any) => void
 };
 
-export const NoteCard: React.FC<Props> = ({note}) => {
+export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => {
 
     const getDotClass = () => StageLabels[note.stageTo].class;
 
     const getDescription = () => {
         if (note.stageFrom !== undefined && note.stageTo !== undefined) {
-            return " changed the status";
+            return " changed the status" + (extended ? " of" : "");
         } else {
-            return " left a note";
+            return " left a note" + (extended ? " about" : "");
         }
     }
 
@@ -29,15 +31,38 @@ export const NoteCard: React.FC<Props> = ({note}) => {
         </div>
     }
 
+    const setWithNote = () => onProfileSelect({
+        profile: note.profile,
+        profileName: note.profileName,
+        profilePicture: note.profilePicture
+    })
+
     return (
         <div className="note-card">
             <div className="picture">
-                <div className={"dot " + getDotClass()}/>
-                <img src={note.authorPicture}/>
+                {extended ?
+                    <div className="picture-extended pointer" onClick={() => setWithNote()}>
+                        <img src={note.profilePicture}/>
+                        <img className="img-over" src={note.authorPicture}/>
+                    </div>
+                    : <React.Fragment>
+                        <div className={"dot " + getDotClass()}/>
+                        <img src={note.authorPicture}/>
+                    </React.Fragment>}
             </div>
             <div className="details">
                 <div className="header">
-                    <span><span className="author">{note.authorName}</span>{getDescription()}</span>
+                    {extended ?
+                        <div>
+                            <div className="author">{note.authorName}</div>
+                            {getDescription()}
+                            <div className="author pointer" onClick={() => setWithNote()}>{note.profileName}</div>
+                        </div>
+                        : <div>
+                            <div className="author">{note.authorName}</div>
+                            {getDescription()}
+                        </div>
+                    }
                     <label className="timestamp">{formatDate(new Date(note.timestamp))}</label>
                 </div>
                 {note.stageFrom !== undefined && note.stageTo !== undefined &&

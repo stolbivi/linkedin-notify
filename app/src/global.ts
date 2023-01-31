@@ -39,7 +39,8 @@ export enum AppMessageType {
     Stage,
     SetStage,
     NotesAndCharts,
-    Notes,
+    NotesAll,
+    NotesByProfile,
     Note
 }
 

@@ -1,0 +1,73 @@
+@import "NotesContainer";
+@import "Collapsible";
+@import "PayDistribution";
+@import "StageSwitch";
+@import "NoteCard";
+@import "NotesCommon";
+
+.notes-manager {
+  width: 322px;
+  margin-bottom: 0.5em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+
+  .notes-container {
+    border: 1px solid #E0DFDC;
+  }
+
+  .notes-header {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 1em;
+    background: #FBFBFB;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+
+    .back-button {
+      cursor: pointer;
+      margin: 0.5em;
+    }
+
+    img {
+      width: 44px;
+      height: 44px;
+      border-radius: 200px;
+      border: 2px solid white;
+      margin: 0.5em;
+    }
+
+    .name {
+      font-family: 'Helvetica';
+      font-style: normal;
+      font-weight: 700;
+      font-size: 14px;
+      color: #000000;
+    }
+
+  }
+
+  .notes-title {
+    font-family: 'Helvetica';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    padding: 1em;
+  }
+
+  .notes-scroll {
+    overflow: auto;
+  }
+
+  .centered-loader {
+    padding: 2em 0em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+}
