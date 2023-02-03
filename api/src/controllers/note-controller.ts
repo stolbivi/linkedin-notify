@@ -35,14 +35,18 @@ export class NoteController extends BaseController {
 
     @Tags("Persistence")
     @Get("notes")
-    public async findAll(@Request() request?: express.Request): Promise<any> {
+    public async findAll(@Query() as?: string,
+                         @Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
             return Promise.resolve("Please, sign in to use premium features");
         }
 
         try {
-            const result = await NoteModel.scan().exec();
+            let query = as ?
+                NoteModel.query("author").eq(as)
+                : NoteModel.scan();
+            const result = await query.exec();
             let message: any = {response: result.map((i: any) => i.toJSON())};
             if (request?.user) {
                 message = {...message, user: request.user};
@@ -56,6 +60,7 @@ export class NoteController extends BaseController {
     @Tags("Persistence")
     @Get("notes/profile")
     public async findByProfile(@Query() q: string,
+                               @Query() as?: string,
                                @Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
@@ -63,7 +68,11 @@ export class NoteController extends BaseController {
         }
 
         try {
-            const result = await NoteModel.query("profile").eq(q).exec();
+            let query = NoteModel.query("profile").eq(q);
+            if (as) {
+                query = query.where("author", as);
+            }
+            const result = await query.exec();
             let message: any = {response: result.map((i: any) => i.toJSON())};
             if (request?.user) {
                 message = {...message, user: request.user};

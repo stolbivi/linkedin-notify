@@ -8,4 +8,7 @@ export const isToday = (someDate: Date) => {
 }
 
 export const formatDate = (timestamp: Date) =>
-    isToday(timestamp) ? timestamp.toLocaleTimeString() : `${MONTH_NAMES[timestamp.getMonth()]} ${timestamp.getDate()}`;
+    isToday(timestamp) ? timestamp.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+    }) : `${MONTH_NAMES[timestamp.getMonth()]} ${timestamp.getDate()}`;

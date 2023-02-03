@@ -57,16 +57,16 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public getNotes(): Promise<Response<Note[]>> {
+    public getNotes(as?: string): Promise<Response<Note[]>> {
         return this.fetchRequest(
-            `${BACKEND_API}notes`,
+            `${BACKEND_API}notes` + (as ? `?as=${as}` : ""),
             this.getRequest("GET")
         );
     }
 
-    public getNotesByProfile(profile: string): Promise<Response<Note[]>> {
+    public getNotesByProfile(profile: string, as?: string): Promise<Response<Note[]>> {
         return this.fetchRequest(
-            `${BACKEND_API}notes/profile/?q=${profile}`,
+            `${BACKEND_API}notes/profile/?q=${profile}` + (as ? `&as=${as}` : ""),
             this.getRequest("GET")
         );
     }

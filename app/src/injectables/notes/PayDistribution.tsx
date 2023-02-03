@@ -34,9 +34,11 @@ export const PayDistribution: React.FC<Props> = ({salary}) => {
         }
 
         const total = salary.payDistributionValues[3] - salary.payDistributionValues[0];
+        const leftPercent = getPercent(0, 1, total);
+        const rightPercent = getPercent(2, 3, total);
         setDistribution({
             left: {
-                percent: getPercent(0, 1, total),
+                percent: Number.isNaN(leftPercent) ? 10 : leftPercent,
                 value: salary.payDistribution[0]
             },
             middle: {
@@ -44,7 +46,7 @@ export const PayDistribution: React.FC<Props> = ({salary}) => {
                 value: formatValue(salary.payDistributionValues[1] + salary.payDistributionValues[2] / 2)
             },
             right: {
-                percent: getPercent(2, 3, total),
+                percent: Number.isNaN(rightPercent) ? 90 : rightPercent,
                 value: salary.payDistribution[3]
             }
         })

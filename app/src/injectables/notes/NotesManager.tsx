@@ -37,7 +37,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
         setShow(true);
         setCompleted(false);
         messages.request<IAppRequest, any>({
-            type: AppMessageType.NotesAll,
+            type: AppMessageType.NotesAll
         }, (r) => {
             if (r.error) {
                 console.error(r.error);
@@ -51,7 +51,6 @@ export const NotesManager: React.FC<Props> = ({}) => {
 
     useEffect(() => {
         if (selection) {
-            console.log(selection);
             setCompleted(false);
             messages.request<IAppRequest, any>({
                 type: AppMessageType.NotesByProfile,
@@ -75,10 +74,12 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 <label>Notes</label>
                 <label className="notes-counter">{notes ? notes.length : 0}</label>
             </div>
-            <div className="notes-scroll">
-                {notes?.map((n, i) =>
-                    (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}/>))}
-                {notes.length == 0 && <div className="no-notes">No notes yet</div>}
+            <div className="scroll-container">
+                <div className="scroll-content">
+                    {notes?.map((n, i) =>
+                        (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}/>))}
+                    {notes.length == 0 && <div className="no-notes">No notes yet</div>}
+                </div>
             </div>
         </React.Fragment>
     }
@@ -131,10 +132,12 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 <label>Notes</label>
                 <label className="notes-counter">{selectedNotes ? selectedNotes.length : 0}</label>
             </div>
-            <div className="notes-scroll">
-                {selectedNotes?.map((n, i) =>
-                    (<NoteCard key={i} note={n}/>))}
-                {selectedNotes.length == 0 && <div className="no-notes">No notes yet</div>}
+            <div className="scroll-container">
+                <div className="scroll-content">
+                    {selectedNotes?.map((n, i) =>
+                        (<NoteCard key={i} note={n}/>))}
+                    {selectedNotes.length == 0 && <div className="no-notes">No notes yet</div>}
+                </div>
             </div>
             <div className="footer-child">
                 <input type="text" onKeyUp={onKeyUp} disabled={!editable} className="text-input"

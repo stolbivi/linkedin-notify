@@ -132,12 +132,22 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
         }
     }
 
+    const close = () => {
+        setShow(false);
+    }
+
     return (
         <React.Fragment>
             {show &&
             <React.Fragment>
                 <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
                 <div className="notes-and-charts">
+                    <div className="close-button" onClick={() => close()}>
+                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 2L15 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                            <path d="M15 2L2 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                        </svg>
+                    </div>
                     <NotesContainer>
                         <Collapsible>
                             <div data-role={CollapsibleRole.Title}>Avg. Base Salary (GBR)</div>
@@ -197,9 +207,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
                             </div>
                             <div data-role={CollapsibleRole.Collapsible}>
                                 <div className="loader"><Loader show={!completed}/></div>
-                                <div className="notes-scroll">
-                                    {completed && notes?.map((n, i) => (<NoteCard key={i} note={n}/>))}
-                                    {completed && notes.length == 0 && <div className="no-notes">No notes yet</div>}
+                                <div className="scroll-container h-300">
+                                    <div className="scroll-content">
+                                        {completed && notes?.map((n, i) => (
+                                            <NoteCard key={i} note={n}/>))}
+                                        {completed && notes.length == 0 && <div className="no-notes">No notes yet</div>}
+                                    </div>
                                 </div>
                             </div>
                             <div data-role={CollapsibleRole.Footer} className="footer-child">

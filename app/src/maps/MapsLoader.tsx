@@ -28,7 +28,7 @@ export const MapsLoader: React.FC<Props> = ({}) => {
 
     const updateTime = (tz: any) => {
         const utc = moment.utc();
-        const timeZoned = utc.add(tz.utcOffset, "minutes");
+        const timeZoned = tz.utcOffset ? utc.add(tz.utcOffset, "minutes") : utc;
         const timeFull = timeZoned.format(FORMAT);
         const time = timeZoned.format(FORMAT_TIME);
         const dayOfWeek = timeZoned.format(FORMAT_DDDD);
@@ -46,7 +46,7 @@ export const MapsLoader: React.FC<Props> = ({}) => {
             type: AppMessageType.Tz,
             payload: searchParams.get("id")
         }, (r) => {
-            if (r.geo && r.tz?.utcOffset) {
+            if (r.geo && r.tz) {
                 // setting map
                 const {lat, lng, city} = r.geo;
                 setCity(city);

@@ -8,10 +8,11 @@
 .notes-manager {
   width: 322px;
   margin-bottom: 0.5em;
-  padding-top: 0.5em;
   padding-bottom: 0.5em;
 
   .notes-container {
+    height: calc(90vh - 20px);
+    overflow: hidden;
     border: 1px solid #E0DFDC;
   }
 
@@ -43,6 +44,9 @@
       font-weight: 700;
       font-size: 14px;
       color: #000000;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
   }
@@ -56,10 +60,6 @@
     display: flex;
     align-items: center;
     padding: 1em;
-  }
-
-  .notes-scroll {
-    overflow: auto;
   }
 
   .centered-loader {

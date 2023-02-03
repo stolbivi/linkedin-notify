@@ -32,7 +32,11 @@ const noteSchema = new dynamoose.Schema({
     },
     author: {
         type: String,
-        required: true
+        required: true,
+        index: {
+            name: "author-index",
+            global: true
+        }
     },
     text: {
         type: String,
