@@ -22,7 +22,7 @@ export const injectFirstChild = (target: any, tag: string, injectable: JSX.Eleme
 export const injectLastChild = (target: any, tag: string, injectable: JSX.Element | (() => Promise<JSX.Element>)) => {
     if (document.getElementsByTagName(tag).length === 0) {
         let container = document.createElement(tag);
-        target.insertAfter(container, target.lastChild);
+        target.appendChild(container);
         ReactDOM.render(<root.div mode={'open'}>{injectable}</root.div>, container)
     }
 };

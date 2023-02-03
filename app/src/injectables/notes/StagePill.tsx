@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../../global";
 import {StageEnum, StageLabels} from "./StageSwitch";
-import {inject} from "../../utils/InjectHelper";
+import {injectLastChild} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 
 // @ts-ignore
@@ -18,7 +18,7 @@ export const StagePillFactory = () => {
             if (header && header.length > 0) {
                 header[0].parentElement.style.display = "flex";
                 header[0].style.paddingRight = "0.5em";
-                inject(header[0], "lnm-stage", "after",
+                injectLastChild(header[0].parentElement, "lnm-stage",
                     <StagePill url={window.location.href}/>
                 );
             }
@@ -84,7 +84,7 @@ export const StagePill: React.FC<Props> = ({url}) => {
             {show &&
             <React.Fragment>
                 <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-                <div className={"stage " + StageLabels[type].class} onClick={onClick}>
+                <div className={"stage " + StageLabels[type].class} onClick={onClick} style={{marginLeft: "1em"}}>
                     <div className="loader"><Loader show={!completed}/></div>
                     <label style={{opacity: completed ? 1 : 0}}>{StageLabels[type].label}</label>
                 </div>

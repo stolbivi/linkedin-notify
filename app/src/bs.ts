@@ -52,7 +52,7 @@ getCookies(LINKEDIN_DOMAIN)
         }
     });
 
-async function extendNote(token: string, notes: Note[]): Promise<NoteExtended[]> {
+async function extendNote(token: string, notes: Note[], as: string): Promise<NoteExtended[]> {
     function getPicture(profilePicture: any) {
         return profilePicture
             ? profilePicture.rootUrl + profilePicture.artifacts[0].path
@@ -73,7 +73,7 @@ async function extendNote(token: string, notes: Note[]): Promise<NoteExtended[]>
     result.forEach(r => cache[r.id] = r.profile);
     return notes.map(n => ({
         ...n,
-        authorName: cache[n.author].name[0],
+        authorName: as === n.author ? "You" : cache[n.author].name[0],
         authorPicture: getPicture(cache[n.author].profilePicture),
         profileName: cache[n.profile].name[0],
         profilePicture: getPicture(cache[n.profile].profilePicture),
@@ -227,7 +227,7 @@ messages.listen<IAppRequest, any>({
                     stageFrom: message.payload.stageFrom,
                     stageTo: message.payload.stage,
                 });
-                const noteExtended = await extendNote(token, [note.response]);
+                const noteExtended = await extendNote(token, [note.response], author);
                 const stage = await backEndAPI.setStage(message.payload.id, message.payload.stage);
                 return {note: {response: noteExtended[0]}, stage: stage};
             }),
@@ -241,7 +241,7 @@ messages.listen<IAppRequest, any>({
                 const me = await api.getMe(token);
                 const as = api.extractProfileUrn(me);
                 const notes = await backEndAPI.getNotes(as);
-                return extendNote(token, notes.response)
+                return extendNote(token, notes.response, as)
                     .then(response => {
                         // @ts-ignore
                         response.sort((a, b) => b.timestamp - a.timestamp);
@@ -255,7 +255,7 @@ messages.listen<IAppRequest, any>({
                 const me = await api.getMe(token);
                 const as = api.extractProfileUrn(me);
                 const notes = await backEndAPI.getNotesByProfile(message.payload, as);
-                return extendNote(token, notes.response)
+                return extendNote(token, notes.response, as)
                     .then(response => {
                         // @ts-ignore
                         response.sort((a, b) => a.timestamp - b.timestamp);
@@ -274,7 +274,7 @@ messages.listen<IAppRequest, any>({
                     stageTo: message.payload.stageTo,
                     text: message.payload.text,
                 });
-                const noteExtended = await extendNote(token, [note.response]);
+                const noteExtended = await extendNote(token, [note.response], author);
                 return {note: {response: noteExtended[0]}};
             }),
 })

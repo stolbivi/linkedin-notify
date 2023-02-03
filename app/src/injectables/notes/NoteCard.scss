@@ -91,22 +91,22 @@
       align-items: start;
       hite-space: nowrap;
 
-      .header-extended {
-        display: flex;
-        flex-direction: column;
-        justify-content: start;
-        align-items: start;
-      }
-
       .header-regular {
         display: flex;
         justify-content: start;
         align-items: center;
         flex-wrap: wrap;
+
+        & div:first-child {
+          margin-right: 0.25em;
+        }
+
+        & div:last-child {
+          margin-left: 0.25em;
+        }
       }
 
       .author {
-        padding-right: 0.25em;
         color: black;
         max-width: 150px;
         text-overflow: ellipsis;
@@ -115,6 +115,7 @@
       }
 
       .timestamp {
+        white-space: nowrap;
         margin-left: auto;
       }
     }

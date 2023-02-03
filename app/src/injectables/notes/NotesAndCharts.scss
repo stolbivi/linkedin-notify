@@ -9,9 +9,8 @@
   color: #909090;
   background: #FFFFFF;
   border-radius: 9px;
-  max-height: 80vh;
   overflow: hidden;
-  padding: 1em;
+  padding: 1em 1em 0em;
   width: 500px;
   position: absolute;
   top: 25px;
@@ -33,6 +32,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .footer-child {
+    margin-top: 0.5em;
+    margin-left: -1.5em;
+    margin-right: -1.5em;
   }
 
 }

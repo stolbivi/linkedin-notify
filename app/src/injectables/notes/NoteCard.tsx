@@ -1,5 +1,5 @@
 import {NoteExtended} from "../../global";
-import React, {useEffect, useRef} from "react";
+import React from "react";
 import "./NoteCard.scss";
 import {StageLabels} from "./StageSwitch";
 import {formatDate} from "../../services/UIHelpers";
@@ -8,19 +8,11 @@ type Props = {
     note: NoteExtended
     extended?: boolean
     onProfileSelect?: (profile: any) => void
-    shouldScrollTo?: boolean
 };
 
-export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, shouldScrollTo}) => {
+export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => {
 
-    const getDotClass = () => StageLabels[note.stageTo].class;
-    const ref = useRef<HTMLDivElement>();
-
-    useEffect((() => {
-        if (shouldScrollTo && ref.current) {
-            ref.current.scrollIntoView({behavior: "smooth"});
-        }
-    }), []);
+    const getAuthor = () => note.authorName;
 
     const getDescription = () => {
         if (note.stageFrom !== undefined && note.stageTo !== undefined) {
@@ -46,8 +38,7 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, shou
     })
 
     return (
-        <div className="note-card" ref={ref}>
-            {!extended && note.stageTo >= 0 && <div className={"dot " + getDotClass()}/>}
+        <div className="note-card">
             <div className="bordered">
                 <div className="picture">
                     {extended ?
@@ -60,13 +51,13 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, shou
                 <div className="details">
                     <div className="header">
                         {extended ?
-                            <div className="header-extended">
-                                <div className="author">{note.authorName}</div>
+                            <div className="header-regular">
+                                <div className="author">{getAuthor()}</div>
                                 <div>{getDescription()}</div>
                                 <div className="author pointer" onClick={() => setWithNote()}>{note.profileName}</div>
                             </div>
                             : <div className="header-regular">
-                                <span className="author">{note.authorName}</span>
+                                <span className="author">{getAuthor()}</span>
                                 <span> {getDescription()}</span>
                             </div>
                         }
