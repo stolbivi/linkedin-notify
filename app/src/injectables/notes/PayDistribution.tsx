@@ -25,28 +25,21 @@ export const PayDistribution: React.FC<Props> = ({salary}) => {
     const formatPercent = (percent: number) => percent && (percent.toFixed(0) + "%");
 
     useEffect(() => {
-        function getPercent(i: number, j: number, total: number) {
-            return (salary.payDistributionValues[j] - salary.payDistributionValues[i]) / total * 100;
-        }
-
         function formatValue(value: number) {
             return `${salary.symbol}${Number(value / 1000).toFixed(0)}K`;
         }
 
-        const total = salary.payDistributionValues[3] - salary.payDistributionValues[0];
-        const leftPercent = getPercent(0, 1, total);
-        const rightPercent = getPercent(2, 3, total);
         setDistribution({
             left: {
-                percent: Number.isNaN(leftPercent) ? 10 : leftPercent,
+                percent: 10,
                 value: salary.payDistribution[0]
             },
             middle: {
-                percent: getPercent(1, 2, total),
+                percent: 80,
                 value: formatValue(salary.payDistributionValues[1] + salary.payDistributionValues[2] / 2)
             },
             right: {
-                percent: Number.isNaN(rightPercent) ? 90 : rightPercent,
+                percent: 10,
                 value: salary.payDistribution[3]
             }
         })
@@ -57,7 +50,7 @@ export const PayDistribution: React.FC<Props> = ({salary}) => {
             <div className="bar-container">
                 <div className="bar-left" style={{width: distribution?.left?.percent + "%"}}>
                     <span>{distribution?.left?.value}</span>
-                    <span>{formatPercent(distribution?.left?.percent)}</span>
+                    <span>{formatPercent(10)}</span>
                     <div className="bar-line"/>
                 </div>
                 <div className="bar-middle">
@@ -67,7 +60,7 @@ export const PayDistribution: React.FC<Props> = ({salary}) => {
                 </div>
                 <div className="bar-right" style={{width: distribution?.right?.percent + "%"}}>
                     <span>{distribution?.right?.value}</span>
-                    <span>{formatPercent(distribution?.right?.percent)}</span>
+                    <span>{formatPercent(90)}</span>
                     <div className="bar-line"/>
                 </div>
             </div>
