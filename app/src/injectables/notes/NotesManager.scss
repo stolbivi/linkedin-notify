@@ -70,4 +70,53 @@
     height: 100%;
     width: 100%;
   }
+
+  .search-bar {
+    background: rgba(217, 217, 217, 0.23);
+    border-radius: 7px;
+    padding: 0.5em 1em;
+    margin: 0em 1em;
+    display: flex;
+    align-items: center;
+
+    input {
+      background: none;
+      border: none;
+      outline: none;
+      margin-left: 0.25em;
+      width: 100%;
+    }
+
+    .search-dropdown {
+      cursor: pointer;
+      user-select: none;
+      background: #FFFFFF;
+      border: 1px solid rgba(88, 88, 88, 0.1);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      padding: 0em 0.5em;
+      position: relative;
+
+      div {
+        padding: 0.5em;
+      }
+
+      .dropdown-options {
+        position: absolute;
+        padding: 1em;
+        background-color: white;
+        z-index: 15;
+        border-radius: 9px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: start;
+        top: 100%;
+        right: 0;
+        border: 1px solid #E0DFDC;
+      }
+    }
+
+  }
 }

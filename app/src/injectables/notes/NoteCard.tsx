@@ -57,8 +57,8 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => 
                                 <div className="author pointer" onClick={() => setWithNote()}>{note.profileName}</div>
                             </div>
                             : <div className="header-regular">
-                                <span className="author">{getAuthor()}</span>
-                                <span> {getDescription()}</span>
+                                <div className="author">{getAuthor()}</div>
+                                <div> {getDescription()}</div>
                             </div>
                         }
                         <label className="timestamp">{formatDate(new Date(note.timestamp))}</label>
