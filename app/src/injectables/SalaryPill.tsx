@@ -50,13 +50,14 @@ export interface Salary {
     title?: string
     symbol?: string
     formattedPay?: string
-    formattedPayValue?: string
+    formattedPayValue?: number
     progressivePay?: string
-    progressivePayValue?: string
+    progressivePayValue?: number
     note?: string
     payDistribution?: string[]
     payDistributionValues?: number[]
     payPeriodAnnual?: string[]
+    experienceYears?: number
 }
 
 export const getSalaryValue = (salary: Salary) => {

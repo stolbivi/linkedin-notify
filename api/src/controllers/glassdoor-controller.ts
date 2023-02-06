@@ -307,6 +307,7 @@ export class GlassDoorController extends BaseController {
                     const startMonth = body.startMonth ? body.startMonth : 1;
                     let startingMoment = moment([body.startYear, startMonth - 1, 1]);
                     const experienceYears = moment().diff(startingMoment, 'years');
+                    result.result.experienceYears = experienceYears;
                     if (experienceYears > 0) {
                         const newPay = Number((original * Math.pow(GROWTH_FACTOR, experienceYears)).toFixed(0));
                         const {value: max} = extractValue([...result.result.payDistribution].pop());

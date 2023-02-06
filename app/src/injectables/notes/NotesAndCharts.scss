@@ -4,6 +4,7 @@
 @import "StageSwitch";
 @import "NoteCard";
 @import "NotesCommon";
+@import "PayExtrapolationChart";
 
 .notes-and-charts {
   color: #909090;
@@ -76,13 +77,6 @@
 
 .title-child {
   display: flex;
-  align-items: center;
-}
-
-.big-chart {
-  padding: 1em;
-  display: flex;
-  justify-content: center;
   align-items: center;
 }
 

@@ -12,6 +12,7 @@ import {NoteCard} from "./NoteCard";
 
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
+import {PayExtrapolationChart} from "./PayExtrapolationChart";
 
 export const NotesAndChartsFactory = () => {
     if (window.location.href.indexOf("/in/") > 0) {
@@ -176,7 +177,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
                                 </div>
                             </div>
                             <div data-role={CollapsibleRole.Collapsible}>
-                                <div className="big-chart">_BIG_CHART_</div>
+                                <PayExtrapolationChart salary={salaryInternal}/>
                             </div>
                         </Collapsible>
                         {salaryInternal &&
