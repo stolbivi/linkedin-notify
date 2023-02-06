@@ -22,17 +22,20 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
     const [data, setData] = useState<Sample[]>();
 
     const extractData = () => {
-        const first = salary.formattedPayValue;
-        const last = salary.payDistributionValues.slice().pop();
-        const step = (last - first) / EXTRA_LENGTH;
-        let data: Sample[] = [];
-        for (let i = 0; i <= EXTRA_LENGTH; i += STEP) {
-            data.push({x: i, y: first + i * step, radius: 0});
+        if (salary) {
+            const first = salary.formattedPayValue;
+            const last = salary.payDistributionValues.slice().pop();
+            const step = (last - first) / EXTRA_LENGTH;
+            let data: Sample[] = [];
+            for (let i = 0; i <= EXTRA_LENGTH; i += STEP) {
+                data.push({x: i, y: first + i * step, radius: 0});
+            }
+            const payValue = salary.progressivePayValue ?? salary.formattedPayValue;
+            const payX = (payValue - first) / step;
+            data.push({x: payX, y: payValue, radius: 5});
+            data.sort((a, b) => a.x - b.x);
+            setData(data);
         }
-        const payX = (salary.progressivePayValue - first) / step;
-        data.push({x: payX, y: salary.progressivePayValue, radius: 5});
-        data.sort((a, b) => a.x - b.x);
-        setData(data);
     }
 
     const canvasRef = useRef<HTMLCanvasElement>();
@@ -81,8 +84,10 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
                                     callback: ((value: number) => {
                                         if (value < STEP) {
                                             return "< 1 yr"
+                                        } else if (value === STEP) {
+                                            return "1-4 yr"
                                         } else {
-                                            return `${value - STEP + 1} - ${value} yrs`
+                                            return `${value - STEP}-${value - 1} yrs`
                                         }
                                     })
                                 }
@@ -101,7 +106,7 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
 
     useEffect(() => {
         extractData();
-    }, []);
+    }, [salary]);
 
     return (
         <React.Fragment>

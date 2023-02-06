@@ -19,6 +19,7 @@ export const StageLabels = {
     3: {label: "Failed interview", class: "failed"},
     4: {label: "Hired", class: "hired"}
 } as { [key: number]: any }
+StageLabels[-1] = {label: "Add Status", class: "inactive"};
 
 type Props = {
     type: StageEnum

@@ -442,7 +442,16 @@ export class LinkedInAPI {
 
     public extractProfile(id: string, response: any): any {
         const actor = response.included.filter((i: any) => i.actor !== undefined);
-        const name = actor?.length > 0 ? JSONPath.query(actor[0], "$.actor.name.text") : "Not found";
+        let name = ["N/A"];
+        if (actor?.length > 0) {
+            name = JSONPath.query(actor[0], "$.actor.name.text");
+        } else {
+            const firstName = JSONPath.query(response, "$..firstName");
+            const lastName = JSONPath.query(response, "$..lastName");
+            if (firstName && lastName) {
+                name = [`${firstName} ${lastName}`];
+            }
+        }
         let result: any = {name};
         const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
         const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
