@@ -85,7 +85,7 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
                                         if (value < STEP) {
                                             return "< 1 yr"
                                         } else if (value === STEP) {
-                                            return "1-4 yr"
+                                            return "1-4 yrs"
                                         } else {
                                             return `${value - STEP}-${value - 1} yrs`
                                         }

@@ -1,0 +1,17 @@
+FROM node:18-alpine3.17
+RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+ADD public /home/node/app/public
+ADD src /home/node/app/src
+ADD scripts /home/node/app/scripts
+COPY prod.env /home/node/app/.env
+COPY package*.json /home/node/app/
+COPY tsoa.json /home/node/app/
+COPY tsconfig.json /home/node/app/
+WORKDIR /home/node/app
+RUN npm install -g npm@latest
+RUN npm install -g typescript
+RUN npm install -g ts-node
+RUN npm install
+RUN npm run build
+EXPOSE 8080
+CMD [ "node", "." ]
