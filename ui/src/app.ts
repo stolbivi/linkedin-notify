@@ -1,6 +1,6 @@
 const express = require("express");
 
-require("dotenv").config();
+require("dotenv").config({path: "env/.env"});
 
 (async () => {
     try {

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Loader} from "./Loader";
 import "./AccountDetails.scss";
+import {BackendAPI} from "../services/BackendAPI";
 
 type Props = {};
 
@@ -11,8 +12,20 @@ export const AccountDetails: React.FC<Props> = ({}) => {
     const [expiration, setExpiration] = useState<string>();
     const [complete, setComplete] = useState<boolean>();
 
-    useEffect(() => {
+    const backEnd = new BackendAPI();
 
+    useEffect(() => {
+        backEnd.getBilling()
+            .then(billing => {
+                if (billing.error) {
+                    console.error(billing.error);
+                } else {
+                    setUser(`${billing.response?.user?.firstName} ${billing.response?.user?.lastName}`);
+                    setPlan(billing.response.plan);
+                    setExpiration(billing.response.expiration.toLocaleDateString());
+                    setComplete(true);
+                }
+            })
     }, []);
 
     return (

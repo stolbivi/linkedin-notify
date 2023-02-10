@@ -9,7 +9,7 @@ const BABEL_OPTIONS = {
     envName: "development",
 };
 
-const tsEntry = (dist, input, output) => {
+const tsEntry = (dist, input, output, definitions) => {
     return {
         entry: input,
         output: {
@@ -48,11 +48,31 @@ const tsEntry = (dist, input, output) => {
         },
         plugins: [
             new webpack.DefinePlugin({
+                ...definitions,
                 "process": {env: {DEBUG: undefined}}
             })
         ],
         devtool: "cheap-module-source-map"
     };
+};
+
+const withCSSInlined = (object) => {
+    object.module.rules.push({
+        test: /\.(s[ac]ss|css)$/i,
+        use: [
+            {
+                loader: 'to-string-loader',
+            },
+            {
+                loader: "css-loader",
+                options: {
+                    importLoaders: 1,
+                },
+            },
+            "sass-loader",
+        ],
+    });
+    return object;
 };
 
 const withCSS = (object, outputCss) => {
@@ -106,6 +126,7 @@ const withHTML = (object, template, outputHtml, outputCss) => {
 
 module.exports = {
     tsEntry,
+    withCSSInlined,
     withCSS,
-    withHTML,
+    withHTML
 };

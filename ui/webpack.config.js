@@ -3,9 +3,16 @@ const {tsEntry, withHTML} = require("./webpack.core");
 const DIST = "static";
 
 module.exports = function (env, argv) {
+    const pathToEnv = `env/${env.env}.env`;
+    console.log('Environment:', env, 'using env file', pathToEnv);
+    require("dotenv").config({path: pathToEnv});
+    const definitions = {
+        'process.env.API_BASE': process.env.API_BASE
+    }
+    console.log('Definitions:', definitions);
     return [
         withHTML(
-            tsEntry(DIST, "./src/components/dashboard.tsx", "js/dashboard.js"),
+            tsEntry(DIST, "./src/components/dashboard.tsx", "js/dashboard.js", definitions),
             "./src/components/dashboard.html", "dashboard.html", "css/dashboard.css"
         )
     ];

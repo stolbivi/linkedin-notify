@@ -6,8 +6,10 @@
   "scripts": {
     "init": "export SET NODE_OPTIONS=--openssl-legacy-provider",
     "cleanup": "node ./scripts/build.js --command init",
-    "build-ui": "webpack --mode development",
+    "build-ui": "webpack --mode development --env env=dev",
+    "release-ui": "webpack --mode development --env env=prod",
     "build": "npm run build-ui && tsc",
+    "release": "npm run release-ui && tsc",
     "start": "npm run init && node .",
     "serve": "npm run init && npm run tsoa && nodemon src/app.ts"
   },

@@ -7,6 +7,7 @@ import swaggerUi from "swagger-ui-express";
 import Swagger from "./autogen/swagger.json";
 import {RegisterRoutes} from "./autogen/routes";
 import {Dictionary} from "./data/dictionary";
+import cors from "cors";
 
 require("dotenv").config();
 
@@ -18,6 +19,13 @@ require("dotenv").config();
 
         const app = express();
 
+        app.use(cors({
+            credentials: true,
+            origin: process.env.ORIGIN,
+            methods: ["GET", "POST", "PUT", "HEAD", "OPTIONS"],
+            allowedHeaders: ["X-Requested-With", "Content-Type", "Authorization"]
+        }));
+
         app.use(bodyParser.urlencoded({extended: true}));
         app.use(bodyParser.json());
         app.use(cookieParser());
@@ -28,13 +36,13 @@ require("dotenv").config();
 
         RegisterRoutes(app);
 
-        app.use('/', express.static('public'));
-        app.use('/static', express.static('static'));
+        app.use("/", express.static("public"));
+        app.use("/static", express.static("static"));
 
-        app.get('/auth/linkedin', passport.authenticate('linkedin'));
-        app.get('/auth/linkedin/callback', passport.authenticate('linkedin', {
-            successRedirect: '/',
-            failureRedirect: '/login'
+        app.get("/auth/linkedin", passport.authenticate("linkedin"));
+        app.get("/auth/linkedin/callback", passport.authenticate("linkedin", {
+            successRedirect: process.env.SUCCESS_URL,
+            failureRedirect: process.env.FAILURE_URL
         }));
 
         // swagger
