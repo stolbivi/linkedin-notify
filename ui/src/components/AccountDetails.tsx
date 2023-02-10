@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Loader} from "./Loader";
+import "./AccountDetails.scss";
 
 type Props = {};
 
@@ -15,7 +16,7 @@ export const AccountDetails: React.FC<Props> = ({}) => {
     }, []);
 
     return (
-        <React.Fragment>
+        <div className="account-details">
             {!complete ? <Loader/>
                 : <React.Fragment>
                     <h1 className="margin-bottom margin-xsmall">Account Details</h1>
@@ -38,6 +39,6 @@ export const AccountDetails: React.FC<Props> = ({}) => {
                     </div>
                 </React.Fragment>
             }
-        </React.Fragment>
+        </div>
     );
 };
