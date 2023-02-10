@@ -1,6 +1,7 @@
 export interface Response<T> {
     response?: T
     error?: string
+    status?: number
 }
 
 export class BaseAPI {
@@ -13,9 +14,9 @@ export class BaseAPI {
                         const error = await response.text();
                         return {error, status: response.status}
                     }
-                    return response.json();
+                    const json = await response.json();
+                    return {response: json};
                 })
-                .then(response => ({response}))
                 .catch(error => {
                     console.error(error);
                     return {error: error.message};
