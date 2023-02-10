@@ -28,6 +28,7 @@ require("dotenv").config();
 
         RegisterRoutes(app);
 
+        app.use('/', express.static('public'));
         app.use('/static', express.static('static'));
 
         app.get('/auth/linkedin', passport.authenticate('linkedin'));
