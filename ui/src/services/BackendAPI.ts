@@ -10,4 +10,11 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
+    public checkout(): Promise<Response<any>> {
+        return this.fetchRequest<any>(
+            `${API_BASE}checkout`,
+            this.getRequest("GET")
+        );
+    }
+
 }

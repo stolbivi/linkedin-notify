@@ -1,4 +1,5 @@
 import {Profile} from "passport";
+import {createCustomer} from "../services/stripe-service";
 
 const dynamoose = require("dynamoose");
 
@@ -22,6 +23,9 @@ export interface User {
     features?: Feature[]
     createdAt?: string
     updatedAt?: string
+    billingId?: string
+    plan?: string
+    expiration?: Date
 }
 
 export interface UserWithId extends User {
@@ -70,7 +74,7 @@ export const UserModel = dynamoose.model(process.env.TABLE_USERS, userSchema);
 
 export class UserService {
 
-    public toUserModel(profile: Profile) {
+    public toUserModel(profile: Profile): UserWithId {
         const {value: email} = profile.emails?.slice(0, 1).shift();
         return {
             id: profile.id,
@@ -86,7 +90,8 @@ export class UserService {
             return result[0];
         } else {
             const user = this.toUserModel(profile);
-            const result = await UserModel.create(user);
+            const customer = await this.createCustomer(user);
+            const result = await UserModel.create(customer);
             return result.toJSON();
         }
     }
@@ -96,6 +101,12 @@ export class UserService {
         if (result && result.length > 0) {
             return result[0].toJSON();
         }
+    }
+
+    public async createCustomer(user: UserWithId): Promise<UserWithId> {
+        const customer = await createCustomer(user);
+        user.billingId = customer.id;
+        return user;
     }
 
 }

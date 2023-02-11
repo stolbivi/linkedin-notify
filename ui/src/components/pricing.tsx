@@ -9,6 +9,6 @@ ReactDOM.render(
 );
 
 ReactDOM.render(
-    <GetStarted/>,
+    <GetStarted checkout/>,
     document.getElementById("get-started-premium")
 );

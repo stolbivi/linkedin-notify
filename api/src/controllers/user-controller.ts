@@ -1,8 +1,9 @@
-import {Body, Delete, Get, Post, Put, Query, Request, Route, Tags} from "tsoa";
+import {Body, Delete, Get, Post, Put, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
-import {Feature, FeatureRequest, User, UserModel, UserWithId} from "../persistence/user-model";
+import {Feature, FeatureRequest, User, UserModel, UserService, UserWithId} from "../persistence/user-model";
 
+const userService = new UserService();
 
 @Route("/api")
 export class UserController extends BaseController {
@@ -43,7 +44,9 @@ export class UserController extends BaseController {
         }
 
         try {
-            const saved = await UserModel.create(body);
+            let saved = await UserModel.create(body);
+            const customer = await userService.createCustomer(saved);
+            saved = await UserModel.save(customer);
             let message: any = {response: saved.toJSON()};
             if (request?.user) {
                 message = {...message, user: request.user};

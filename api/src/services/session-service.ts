@@ -3,7 +3,7 @@ import session from "express-session";
 require("dotenv").config();
 
 const options = {
-    table: 'lnmanager-sessions'
+    table: process.env.TABLE_SESSIONS
 };
 
 const DynamoDBStore = require('connect-dynamodb')({session: session});

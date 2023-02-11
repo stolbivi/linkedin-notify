@@ -41,8 +41,8 @@ require("dotenv").config();
 
         app.get("/auth/linkedin", passport.authenticate("linkedin"));
         app.get("/auth/linkedin/callback", passport.authenticate("linkedin", {
-            successRedirect: process.env.SUCCESS_URL,
-            failureRedirect: process.env.FAILURE_URL
+            successRedirect: process.env.LOGIN_SUCCESS_URL,
+            failureRedirect: process.env.LOGIN_FAILURE_URL
         }));
 
         // swagger
