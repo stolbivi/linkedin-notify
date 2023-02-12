@@ -241,12 +241,16 @@ messages.listen<IAppRequest, any>({
                 const me = await api.getMe(token);
                 const as = api.extractProfileUrn(me);
                 const notes = await backEndAPI.getNotes(as);
-                return extendNote(token, notes.response, as)
-                    .then(response => {
-                        // @ts-ignore
-                        response.sort((a, b) => b.timestamp - a.timestamp);
-                        return {response};
-                    })
+                if (notes.response) {
+                    return extendNote(token, notes.response, as)
+                        .then(response => {
+                            // @ts-ignore
+                            response.sort((a, b) => b.timestamp - a.timestamp);
+                            return {response};
+                        })
+                } else {
+                    return notes;
+                }
             }),
     [AppMessageType.NotesByProfile]: (message) =>
         getCookies(LINKEDIN_DOMAIN)
@@ -255,12 +259,16 @@ messages.listen<IAppRequest, any>({
                 const me = await api.getMe(token);
                 const as = api.extractProfileUrn(me);
                 const notes = await backEndAPI.getNotesByProfile(message.payload, as);
-                return extendNote(token, notes.response, as)
-                    .then(response => {
-                        // @ts-ignore
-                        response.sort((a, b) => a.timestamp - b.timestamp);
-                        return {response};
-                    })
+                if (notes.response) {
+                    return extendNote(token, notes.response, as)
+                        .then(response => {
+                            // @ts-ignore
+                            response.sort((a, b) => a.timestamp - b.timestamp);
+                            return {response};
+                        })
+                } else {
+                    return notes;
+                }
             }),
     [AppMessageType.Note]: (message) =>
         getCookies(LINKEDIN_DOMAIN)
@@ -277,6 +285,8 @@ messages.listen<IAppRequest, any>({
                 const noteExtended = await extendNote(token, [note.response], author);
                 return {note: {response: noteExtended[0]}};
             }),
+    [AppMessageType.Subscription]: () =>
+        backEndAPI.getSubscription(),
 })
 
 // listening to cookies store events

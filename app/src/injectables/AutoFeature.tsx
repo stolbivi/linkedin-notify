@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, BACKEND_SIGN_IN, Feature, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, Feature, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {Loader} from "../components/Loader";
 
 // @ts-ignore
 import stylesheet from "./AutoFeature.scss";
 import {inject} from "../utils/InjectHelper";
+import {AccessGuard, AccessState} from "./AccessGuard";
 
 const LikeSVG = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false">
     <path
@@ -61,9 +62,8 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     // @ts-ignore
-    const [disabled, setDisabled] = useState(false);
+    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [completed, setCompleted] = useState(false);
-    const [title, setTitle] = useState<string>();
     const [active, setActive] = useState<boolean>();
     const [author, setAuthor] = useState<string>();
     const [features, setFeatures] = useState<Feature[]>([]);
@@ -79,20 +79,18 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
             type: AppMessageType.Features
         }, (r) => {
             setFeatures(r.response?.features ?? []);
-            setDisabled(!!r.error)
         }).then(/* nada */);
     }
 
     useEffect(() => {
-        getData();
-        if (disabled) {
-            setTitle("Please, sign in to use premium features");
+        if (accessState !== AccessState.Valid) {
             return;
         }
+        getData();
         const query = new URL(url);
         extractAuthor(query.searchParams, "miniProfileUrn");
         extractAuthor(query.searchParams, "miniCompanyUrn");
-    }, []);
+    }, [accessState]);
 
     useEffect(() => {
         const typedFeature = features.find(f => f.type === type);
@@ -107,9 +105,6 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
     }, [active]);
 
     const onClick = () => {
-        if (disabled) {
-            return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
-        }
         setCompleted(false);
         messages.request<IAppRequest, any>({
             type: AppMessageType.SetFeatures,
@@ -118,7 +113,6 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
             if (r.error) {
                 console.error(r.error);
                 setActive(false);
-                setDisabled(r.status == 403)
             } else {
                 setActive(!active);
             }
@@ -130,20 +124,19 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
     const getIcon = (feature: string): JSX.Element => Icons[feature];
 
     const getText = () => {
-        if (disabled) {
-            return "N/A"
-        }
         return active ? "On" : "Off";
     };
 
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className={`auto-pill-${active ? "on" : "off"}` + (disabled ? " disabled" : "")}
-                 onClick={onClick} title={title}>
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px10"}
+                         loaderClassName={"loader-base loader-px10"} hideTitle/>
+            {accessState === AccessState.Valid &&
+            <div className={`auto-pill-${active ? "on" : "off"}`} onClick={onClick}>
                 <Loader show={!completed}/>
                 {completed && <React.Fragment>{getText()} {getIcon(type)}</React.Fragment>}
-            </div>
+            </div>}
         </React.Fragment>
     );
 

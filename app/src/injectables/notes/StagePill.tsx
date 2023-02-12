@@ -4,10 +4,10 @@ import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from
 import {StageEnum, StageLabels} from "./StageSwitch";
 import {injectLastChild} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
+import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-
 
 export const StagePillFactory = () => {
     // individual profile
@@ -32,8 +32,8 @@ type Props = {
 
 export const StagePill: React.FC<Props> = ({url}) => {
 
+    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [type, setType] = useState<StageEnum>();
-    const [show, setShow] = useState<boolean>(false);
     const [completed, setCompleted] = useState<boolean>(true);
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const [urlInternal, setUrlInternal] = useState<string>(url);
@@ -41,10 +41,9 @@ export const StagePill: React.FC<Props> = ({url}) => {
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
     useEffect(() => {
-        if (!urlInternal) {
+        if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
-        setShow(false);
         messages.request<IAppRequest, any>({
             type: AppMessageType.Stage,
             payload: {url: extractIdFromUrl(urlInternal)}
@@ -54,11 +53,10 @@ export const StagePill: React.FC<Props> = ({url}) => {
             } else {
                 const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
                 setType(s);
-                setShow(true);
             }
         }).then(/* nada */);
 
-    }, [urlInternal]);
+    }, [accessState, urlInternal]);
 
     useEffect(() => {
         window.addEventListener('popstate', () => {
@@ -79,14 +77,14 @@ export const StagePill: React.FC<Props> = ({url}) => {
 
     return (
         <React.Fragment>
-            {show &&
-            <React.Fragment>
-                <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-                <div className={"stage " + StageLabels[type].class} onClick={onClick} style={{marginLeft: "1em"}}>
-                    <div className="loader"><Loader show={!completed}/></div>
-                    <label style={{opacity: completed ? 1 : 0}}>{StageLabels[type].label}</label>
-                </div>
-            </React.Fragment>}
+            <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
+                         loaderClassName="loader-base loader-px24"/>
+            {accessState === AccessState.Valid &&
+            <div className={"stage " + StageLabels[type].class} onClick={onClick} style={{marginLeft: "1em"}}>
+                <div className="loader"><Loader show={!completed}/></div>
+                <label style={{opacity: completed ? 1 : 0}}>{StageLabels[type].label}</label>
+            </div>}
         </React.Fragment>
     );
 }

@@ -1,10 +1,6 @@
-import {BaseAPI} from "./BaseAPI";
-import {BACKEND_API, Features, Note} from "../global";
+import {BaseAPI, Response} from "./BaseAPI";
+import {BACKEND_API, Features, Note, Subscriptions} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
-
-export interface Response<T> {
-    response: T
-}
 
 export class BackendAPI extends BaseAPI {
 
@@ -75,6 +71,14 @@ export class BackendAPI extends BaseAPI {
         return this.fetchRequest(
             `${BACKEND_API}note`,
             this.getRequest("POST", note)
+        );
+    }
+
+    // incomplete, incomplete_expired, trialing, active, past_due, canceled, unpaid
+    public getSubscription(): Promise<Response<Subscriptions>> {
+        return this.fetchRequest<Subscriptions>(
+            `${BACKEND_API}subscription`,
+            this.getRequest("GET")
         );
     }
 

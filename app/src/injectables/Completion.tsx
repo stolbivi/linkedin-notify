@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, BACKEND_SIGN_IN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {inject} from "../utils/InjectHelper";
+import {AccessGuard, AccessState} from "./AccessGuard";
+
 // @ts-ignore
 import stylesheet from "./Completion.scss";
 
@@ -25,8 +27,7 @@ export const Completion: React.FC<Props> = ({}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
-    // @ts-ignore
-    const [disabled, setDisabled] = useState(false);
+    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [textEmpty, setTextEmpty] = useState(true);
     const [inProgress, setInProgress] = useState(false);
     const [editable, setEditable] = useState(null);
@@ -37,22 +38,15 @@ export const Completion: React.FC<Props> = ({}) => {
 
     const updateWithText = (element: any) => {
         element = element.target ?? element;
-        if (disabled) {
-            setTextEmpty(true);
-            setTitle("Please, sign in to use premium features");
-        } else {
-            const text = element.innerText.trim();
-            setText(text);
-            setTextEmpty(text.length === 0);
-        }
+        const text = element.innerText.trim();
+        setText(text);
+        setTextEmpty(text.length === 0);
     }
 
     useEffect(() => {
-        if (disabled) {
-            setTitle("Please, sign in to use premium features");
+        if (accessState !== AccessState.Valid) {
             return;
         }
-
         setTitle("Use AI assist to complete the post");
         const textDiv = document.getElementsByClassName("ql-editor");
         const modalDiv = document.getElementsByClassName("artdeco-modal");
@@ -65,7 +59,7 @@ export const Completion: React.FC<Props> = ({}) => {
             textDiv[0].addEventListener("paste", updateWithText, false);
             updateWithText(textDiv[0]);
         }
-    }, []);
+    }, [accessState]);
 
     const simulateTyping = (text: string, position: number = 0) => {
         if (position < text.length) {
@@ -84,12 +78,6 @@ export const Completion: React.FC<Props> = ({}) => {
     }
 
     const onClick = () => {
-        if (disabled) {
-            return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
-        }
-        if (textEmpty || inProgress) {
-            return;
-        }
         setInProgress(true);
         return messages.request<IAppRequest, any>({
             type: AppMessageType.Completion,
@@ -98,10 +86,6 @@ export const Completion: React.FC<Props> = ({}) => {
             if (r.error) {
                 console.error(r.error);
                 setInProgress(false);
-                if (r.status === 403) {
-                    setDisabled(true);
-                    setTitle("Please, sign in to use premium features");
-                }
                 return;
             }
             if (r.response[0] || r.response[0].text) {
@@ -117,9 +101,6 @@ export const Completion: React.FC<Props> = ({}) => {
     // check is post is populated
 
     const getClass = () => {
-        if (disabled) {
-            return "action-base disabled";
-        }
         if (inProgress) {
             return "action-base complete-progress";
         }
@@ -129,9 +110,12 @@ export const Completion: React.FC<Props> = ({}) => {
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
+                         loaderClassName={"loader-base loader-px24"} hideTitle/>
+            {accessState === AccessState.Valid &&
             <div className={getClass()} onClick={onClick} title={title}>
                 <span>AI</span>
-            </div>
+            </div>}
         </React.Fragment>
     );
 };

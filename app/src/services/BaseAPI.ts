@@ -1,19 +1,27 @@
+export interface Response<T> {
+    response?: T
+    error?: string
+    status?: number
+}
+
 export class BaseAPI {
 
-    protected fetchRequest(input: string, request: any) {
+    protected fetchRequest<T>(input: string, request: any): Promise<Response<T>> {
         try {
-            return fetch(input, request)
-                .then(async response => {
-                    if (!response.ok) {
-                        const error = await response.text();
-                        return {error, status: response.status}
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    console.error(error);
-                    return {error: error.message};
-                })
+            return Promise.resolve(
+                fetch(input, request)
+                    .then(async response => {
+                        if (!response.ok) {
+                            const error = await response.text();
+                            return {error, status: response.status}
+                        }
+                        const json = await response.json();
+                        return {response: json};
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        return {error: error.message};
+                    }));
         } catch (error) {
             console.error(error);
             return Promise.resolve({error: error.message});

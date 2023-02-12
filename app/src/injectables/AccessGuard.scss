@@ -1,0 +1,51 @@
+.loader-base {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader-px24 {
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+}
+
+.loader-px10 {
+  width: 10px;
+  height: 10px;
+}
+
+.access-guard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgb(88, 88, 88);
+  user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgb(222, 222, 222) !important;
+  }
+}
+
+.access-guard-px16 {
+  font-size: 16px;
+  border: 1px solid rgb(88, 88, 88);
+  border-radius: 50px;
+  padding: 0.25em 0.75em;
+  margin: 0em 0.5em;
+
+  & svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.access-guard-px10 {
+  font-size: 16px;
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+}

@@ -7,7 +7,6 @@ export const SHARE_URN = "urn:li:share:7010927250069934081";
 export const MAPS_KEY = "AIzaSyDewx7AbMwkRxcyYA9zQ1RTIAsDyWR4svo";
 
 // env variables are interpolated
-export const BACKEND_SIGN_IN = `${process.env.BACKEND_BASE}/auth/linkedin`;
 export const BACKEND_API = `${process.env.BACKEND_BASE}/api/`;
 export const BACKEND_STATIC = `${process.env.BACKEND_BASE}/static/`;
 
@@ -41,7 +40,8 @@ export enum AppMessageType {
     NotesAndCharts,
     NotesAll,
     NotesByProfile,
-    Note
+    Note,
+    Subscription
 }
 
 export interface IAppRequest extends TMessage {
@@ -111,4 +111,22 @@ export const extractIdFromUrl = (url: string) => {
     const path = url.split("?")[0];
     const parts = path.split("/");
     return parts.filter(e => e !== "").pop();
+}
+
+export interface Subscriptions {
+    subscriptions: Subscription[],
+    user?: any
+}
+
+export interface Subscription {
+    id: string,
+    productId: string,
+    name: string
+    status: string,
+    currentPeriodStart: number,
+    currentPeriodEnd: number,
+    trialStart: number,
+    trialEnd: number,
+    daysUntilDue: number,
+    serverTimeZone: string
 }

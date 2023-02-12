@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, BACKEND_SIGN_IN, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
+import {AccessGuard, AccessState} from "./AccessGuard";
 
 export const SalaryPillFactory = () => {
     // individual profile
@@ -72,20 +73,13 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
+    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [salary, setSalary] = useState<Salary>({formattedPay: "", note: ""});
     const [completed, setCompleted] = useState<boolean>(false);
-    const [disabled, setDisabled] = useState<boolean>(false);
     const [urlInternal, setUrlInternal] = useState<string>(url);
 
     useEffect(() => {
-        if (disabled) {
-            setSalary({formattedPay: "Sign in", note: "Please, sign in to use premium features"});
-            return;
-        }
-    }, [disabled]);
-
-    useEffect(() => {
-        if (!urlInternal) {
+        if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
         setCompleted(false);
@@ -95,13 +89,12 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
         }, (r) => {
             if (r.error) {
                 setSalary({formattedPay: "N/A", note: r.error});
-                setDisabled(r.status == 403)
             } else {
                 setSalary({...r.result, title: r.title, urn: r.urn});
             }
             setCompleted(true);
         }).then(/* nada */);
-    }, [urlInternal]);
+    }, [accessState, urlInternal]);
 
     useEffect(() => {
         if (!url) {
@@ -113,27 +106,26 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
     }, []);
 
     const onClick = () => {
-        if (disabled) {
-            return messages.request<IAppRequest, any>({type: AppMessageType.OpenURL, payload: {url: BACKEND_SIGN_IN}});
-        } else {
-            if (salary) {
-                return messages.request({
-                    type: AppMessageType.NotesAndCharts,
-                    payload: {salary}
-                });
-            }
+        if (salary) {
+            return messages.request({
+                type: AppMessageType.NotesAndCharts,
+                payload: {salary}
+            });
         }
     }
 
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className={"salary-pill" + (disabled ? " disabled" : "") + (completed ? " clickable" : "")}
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
+                         loaderClassName={"loader-base loader-px24"}/>
+            {accessState === AccessState.Valid &&
+            <div className={"salary-pill" + (completed ? " clickable" : "")}
                  onClick={onClick}
                  title={salary.note}>
                 <Loader show={!completed}/>
                 {completed && getSalaryValue(salary)}
-            </div>
+            </div>}
         </React.Fragment>
     );
 };
