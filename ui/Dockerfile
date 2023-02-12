@@ -6,7 +6,6 @@ ADD scripts /home/node/app/scripts
 COPY env/.env /home/node/app/.env
 COPY babel.config.js /home/node/app/
 COPY package*.json /home/node/app/
-COPY tsoa.json /home/node/app/
 COPY tsconfig.json /home/node/app/
 COPY webpack.core.js /home/node/app/
 COPY webpack.config.js /home/node/app/
