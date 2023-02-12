@@ -28,12 +28,12 @@ export const GetStarted: React.FC<Props> = ({checkout}) => {
 
     useEffect(() => {
         setComplete(false);
-        backEnd.getBilling()
-            .then(billing => {
-                if (billing.error) {
+        backEnd.getSubscription()
+            .then(subscriptions => {
+                if (subscriptions.error) {
                     setState(State.Store);
                 } else {
-                    if (billing.response.plan) {
+                    if (subscriptions.response?.subscriptions?.length > 0) {
                         setState(State.Dashboard);
                     } else {
                         setState(State.Checkout);

@@ -1,12 +1,10 @@
 import {UserWithId} from "../persistence/user-model";
 
-const stripe = require('stripe');
+const stripe = require("stripe");
 
 require("dotenv").config();
 
-const Stripe = stripe(process.env.STRIPE_SECRET_KEY, {apiVersion: '2020-08-27'});
-
-const findCustomerById = (id: string) => Stripe.customers.retrieve(id);
+const Stripe = stripe(process.env.STRIPE_SECRET_KEY, {apiVersion: "2020-08-27"});
 
 export const createCustomer = (user: UserWithId) =>
     Stripe.customers.create({
@@ -17,8 +15,9 @@ export const createCustomer = (user: UserWithId) =>
 
 export const createCheckoutSession = (billingId: string, price: string) =>
     Stripe.checkout.sessions.create({
-        mode: 'subscription',
-        payment_method_types: ['card'],
+        mode: "subscription",
+        payment_method_types: ["card"],
+        payment_method_collection: "if_required",
         customer: billingId,
         line_items: [
             {
@@ -27,11 +26,18 @@ export const createCheckoutSession = (billingId: string, price: string) =>
             }
         ],
         subscription_data: {
-            trial_period_days: process.env.TRIAL_DAYS
+            trial_period_days: process.env.TRIAL_DAYS,
+            trial_settings: {end_behavior: {missing_payment_method: "pause"}}
         },
         success_url: `${process.env.CHECKOUT_SUCCESS_URL}`,
         cancel_url: `${process.env.CHECKOUT_CANCEL_URL}`
     });
+
+export const createBillingSession = async (billingId: string) =>
+    Stripe.billingPortal.sessions.create({
+        customer: billingId,
+        return_url: `${process.env.BILLING_RETURN_URL}`
+    })
 
 export const getSubscriptions = (billingId: string) =>
     Stripe.subscriptions.list({
@@ -40,3 +46,6 @@ export const getSubscriptions = (billingId: string) =>
 
 export const getProduct = (productId: string) =>
     Stripe.products.retrieve(productId);
+
+export const getAccount = (accountId: string) =>
+    Stripe.accounts.retrieve(accountId);

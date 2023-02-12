@@ -9,6 +9,13 @@
     text-decoration: none;
   }
 
+  .details-button {
+    display: flex;
+    white-space: nowrap;
+    justify-content: center;
+    align-items: center;
+  }
+
   .sign-in {
     display: flex;
     border-radius: 6px;
