@@ -150,7 +150,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
                         </svg>
                     </div>
                     <NotesContainer>
-                        <Collapsible>
+                        <Collapsible initialOpened={false}>
                             <div data-role={CollapsibleRole.Title}>Avg. Base Salary (GBR)</div>
                             <div data-role={CollapsibleRole.Static}>
                                 <div className="d-flex">

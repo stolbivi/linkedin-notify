@@ -123,10 +123,6 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
     // @ts-ignore
     const getIcon = (feature: string): JSX.Element => Icons[feature];
 
-    const getText = () => {
-        return active ? "On" : "Off";
-    };
-
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
@@ -135,7 +131,7 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
             {accessState === AccessState.Valid &&
             <div className={`auto-pill-${active ? "on" : "off"}`} onClick={onClick}>
                 <Loader show={!completed}/>
-                {completed && <React.Fragment>{getText()} {getIcon(type)}</React.Fragment>}
+                {completed && <React.Fragment>Auto {getIcon(type)}</React.Fragment>}
             </div>}
         </React.Fragment>
     );

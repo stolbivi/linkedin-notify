@@ -25,9 +25,14 @@ export const AccountDetails: React.FC<Props> = ({}) => {
 
         const subscription = subscriptions[0];
         const planDetails = `You are currently in ${subscription.name} plan.`;
-        const expirationDetails = subscription.status === "trialing"
-            ? `Trial active until ${formatDate(subscription.trialEnd)}`
-            : `Current billing period end on ${formatDate(subscription.trialEnd)}`;
+        let expirationDetails;
+        if (subscription.status === "trialing") {
+            expirationDetails = `Trial active until ${formatDate(subscription.trialEnd)}`;
+        } else if (subscription.status === "active") {
+            expirationDetails = `Current billing period will end on ${formatDate(subscription.currentPeriodEnd)}`;
+        } else {
+            expirationDetails = `Current billing period ended on ${formatDate(subscription.currentPeriodEnd)}`;
+        }
         return `${planDetails} ${expirationDetails}`;
     }
 

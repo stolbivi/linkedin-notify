@@ -15,8 +15,7 @@ export class BaseAPI {
                             const error = await response.text();
                             return {error, status: response.status}
                         }
-                        const json = await response.json();
-                        return {response: json};
+                        return response.json();
                     })
                     .catch(error => {
                         console.error(error);

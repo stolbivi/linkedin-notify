@@ -8,7 +8,7 @@ module.exports = function (env, argv) {
     require("dotenv").config({path: pathToEnv});
     const definitions = {
         'process.env.BACKEND_BASE': process.env.BACKEND_BASE,
-        'process.env.HOME_URL': process.env.HOME_URL
+        'process.env.SIGN_UP_URL': process.env.SIGN_UP_URL
     }
     console.log('Definitions:', definitions);
     return [

@@ -3,6 +3,7 @@ import "./Collapsible.scss";
 
 type Props = {
     children?: React.ReactNode
+    initialOpened?: boolean
 };
 
 export enum CollapsibleRole {
@@ -12,9 +13,9 @@ export enum CollapsibleRole {
     Footer
 }
 
-export const Collapsible: React.FC<Props> = ({children}) => {
+export const Collapsible: React.FC<Props> = ({children, initialOpened = true}) => {
 
-    const [opened, setOpened] = useState(true);
+    const [opened, setOpened] = useState(initialOpened);
 
     const getTransition = () => opened ? "opened" : "closed";
 

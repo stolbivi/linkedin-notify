@@ -7,7 +7,7 @@ import {Loader} from "../components/Loader";
 import "./AccessGuard.scss";
 
 export const SIGN_IN_URL = `${process.env.BACKEND_BASE}/auth/linkedin`;
-export const SING_UP_URL = `${process.env.SING_UP_URL}`;
+export const SIGN_UP_URL = `${process.env.SIGN_UP_URL}`;
 
 export enum AccessState {
     Unknown,
@@ -36,10 +36,16 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
             if (r.status === 403) {
                 setState(AccessState.SignInRequired);
                 setAccessState(AccessState.SignInRequired);
-            } else if (r.response) {
-                console.log(r);
-                // TODO check invalid
+            } else if (r.subscriptions?.length > 0) {
+                const subscription = r.subscriptions[0];
+                if (subscription.status === "trialing" || subscription.status === "active") {
+                    setState(AccessState.Valid);
+                    setAccessState(AccessState.Valid);
+                    return;
+                }
             }
+            setState(AccessState.Invalid);
+            setAccessState(AccessState.Invalid);
         }).finally(() => setCompleted(true));
     }, []);
 
@@ -63,7 +69,7 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
                 </div>
             case AccessState.Invalid:
                 return <div className={"access-guard " + (className ?? "")}
-                            onClick={(e) => openUrl(e, SING_UP_URL)}
+                            onClick={(e) => openUrl(e, SIGN_UP_URL)}
                             title="Sign up">
                     <Lock/>
                     {!hideTitle && <span>Upgrade to Pro</span>}

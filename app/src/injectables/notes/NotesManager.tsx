@@ -10,6 +10,7 @@ import {StageEnum} from "./StageSwitch";
 
 // @ts-ignore
 import stylesheet from "./NotesManager.scss";
+import {AccessGuard, AccessState} from "../AccessGuard";
 
 export const NotesManagerFactory = () => {
     const aside = document.getElementsByClassName("scaffold-layout__aside");
@@ -34,7 +35,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
-    const [show, setShow] = useState<boolean>(false);
+    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [completed, setCompleted] = useState<boolean>(false);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [notesFiltered, setNotesFiltered] = useState<NoteExtended[]>([]);
@@ -47,21 +48,21 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
 
     useEffect(() => {
-        setShow(true);
+        if (accessState !== AccessState.Valid) {
+            return;
+        }
         setCompleted(false);
         messages.request<IAppRequest, any>({
             type: AppMessageType.NotesAll
         }, (r) => {
             if (r.error) {
                 console.error(r.error);
-                setShow(false)
             } else {
                 setNotes(r.response);
                 setNotesFiltered(r.response);
-                setCompleted(true);
             }
-        }).then(/* nada */);
-    }, []);
+        }).finally(() => setCompleted(true));
+    }, [accessState]);
 
     const checkByText = (n: NoteExtended, text: string) => {
         if (text && text.length > 1) {
@@ -261,17 +262,17 @@ export const NotesManager: React.FC<Props> = ({}) => {
 
     return (
         <React.Fragment>
-            {show &&
-            <React.Fragment>
-                <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-                <div className="notes-manager">
-                    <NotesContainer>
-                        {completed ?
-                            (selection == undefined ? getAllNotes() : getSelectedNotes())
-                            : <div className="centered-loader"><Loader show={!completed}/></div>}
-                    </NotesContainer>
-                </div>
-            </React.Fragment>}
+            <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
+                         loaderClassName={"loader-base loader-px24 m-1"}/>
+            {accessState === AccessState.Valid &&
+            <div className="notes-manager">
+                <NotesContainer>
+                    {completed ?
+                        (selection == undefined ? getAllNotes() : getSelectedNotes())
+                        : <div className="centered-loader"><Loader show={!completed}/></div>}
+                </NotesContainer>
+            </div>}
         </React.Fragment>
     );
 

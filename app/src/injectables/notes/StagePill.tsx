@@ -33,8 +33,8 @@ type Props = {
 export const StagePill: React.FC<Props> = ({url}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
-    const [type, setType] = useState<StageEnum>();
-    const [completed, setCompleted] = useState<boolean>(true);
+    const [type, setType] = useState<StageEnum>(-1);
+    const [completed, setCompleted] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const [urlInternal, setUrlInternal] = useState<string>(url);
 
@@ -54,7 +54,7 @@ export const StagePill: React.FC<Props> = ({url}) => {
                 const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
                 setType(s);
             }
-        }).then(/* nada */);
+        }).finally(() => setCompleted(true));
 
     }, [accessState, urlInternal]);
 
@@ -75,6 +75,8 @@ export const StagePill: React.FC<Props> = ({url}) => {
         }
     }
 
+    const getText = () => completed ? StageLabels[type].label : "Loading"
+
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
@@ -83,7 +85,7 @@ export const StagePill: React.FC<Props> = ({url}) => {
             {accessState === AccessState.Valid &&
             <div className={"stage " + StageLabels[type].class} onClick={onClick} style={{marginLeft: "1em"}}>
                 <div className="loader"><Loader show={!completed}/></div>
-                <label style={{opacity: completed ? 1 : 0}}>{StageLabels[type].label}</label>
+                <label style={{opacity: completed ? 1 : 0}}>{getText()}</label>
             </div>}
         </React.Fragment>
     );
