@@ -58,9 +58,18 @@ export const Maps: React.FC<Props> = ({host}) => {
             setUrlInternal(window.location.href);
         });
         messages.request<IAppRequest, any>({
-            type: AppMessageType.Features
+            type: AppMessageType.Subscription,
         }, (r) => {
-            setDisabled(!!r.error)
+            if (r.status === 403) {
+                setDisabled(true);
+            } else if (r.subscriptions?.length > 0) {
+                const subscription = r.subscriptions[0];
+                if (subscription.status === "trialing" || subscription.status === "active") {
+                    setDisabled(false);
+                    return;
+                }
+            }
+            setDisabled(true);
         }).then(/* nada */);
     }, []);
 

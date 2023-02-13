@@ -263,8 +263,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
-                         loaderClassName={"loader-base loader-px24 m-1"}/>
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16 m-1"}
+                         loaderClassName={"loader-base loader-px24"}/>
             {accessState === AccessState.Valid &&
             <div className="notes-manager">
                 <NotesContainer>

@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {AccountDetails} from "./AccountDetails";
 import {GetStarted} from "./GetStarted";
 
 ReactDOM.render(

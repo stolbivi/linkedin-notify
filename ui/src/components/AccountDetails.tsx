@@ -23,24 +23,28 @@ export const AccountDetails: React.FC<Props> = ({}) => {
             return new Date(value * 1000).toLocaleString()
         }
 
-        const subscription = subscriptions[0];
-        const planDetails = `You are currently in ${subscription.name} plan.`;
-        let expirationDetails;
-        if (subscription.status === "trialing") {
-            expirationDetails = `Trial active until ${formatDate(subscription.trialEnd)}`;
-        } else if (subscription.status === "active") {
-            expirationDetails = `Current billing period will end on ${formatDate(subscription.currentPeriodEnd)}`;
+        if (subscriptions?.length > 0) {
+            const subscription = subscriptions[0];
+            const planDetails = `You are currently in ${subscription.name} plan.`;
+            let expirationDetails;
+            if (subscription.status === "trialing") {
+                expirationDetails = `Trial active until ${formatDate(subscription.trialEnd)}`;
+            } else if (subscription.status === "active") {
+                expirationDetails = `Current billing period will end on ${formatDate(subscription.currentPeriodEnd)}`;
+            } else {
+                expirationDetails = `Current billing period ended on ${formatDate(subscription.currentPeriodEnd)}`;
+            }
+            return `${planDetails} ${expirationDetails}`;
         } else {
-            expirationDetails = `Current billing period ended on ${formatDate(subscription.currentPeriodEnd)}`;
+            return "You currently don't have any active subscription or a trial"
         }
-        return `${planDetails} ${expirationDetails}`;
     }
 
     useEffect(() => {
         setComplete(false);
         backEnd.getSubscription()
             .then(subscription => {
-                if (subscription.status === 403 || !(subscription.response?.subscriptions?.length > 0)) {
+                if (subscription.status === 403) {
                     setLogin(true);
                     setComplete(true)
                     return;

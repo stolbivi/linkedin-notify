@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Loader} from "./Loader";
 import {BackendAPI} from "../services/BackendAPI";
+import {LOGIN_URL, STRIPE_PUBLIC_KEY} from "../global";
 
 import "./GetStarted.scss";
 
@@ -11,7 +12,8 @@ type Props = {
 enum State {
     Store,
     Checkout,
-    Dashboard
+    Dashboard,
+    SignIn
 }
 
 export const GetStarted: React.FC<Props> = ({checkout}) => {
@@ -24,14 +26,18 @@ export const GetStarted: React.FC<Props> = ({checkout}) => {
 
     const backEnd = new BackendAPI();
     //@ts-ignore
-    const stripe = Stripe(process.env.STRIPE_PUBLIC_KEY);
+    const stripe = Stripe(STRIPE_PUBLIC_KEY);
 
     useEffect(() => {
         setComplete(false);
         backEnd.getSubscription()
             .then(subscriptions => {
-                if (subscriptions.error) {
-                    setState(State.Store);
+                if (subscriptions.status === 403) {
+                    if (checkout) {
+                        setState(State.SignIn);
+                    } else {
+                        setState(State.Store);
+                    }
                 } else {
                     if (subscriptions.response?.subscriptions?.length > 0) {
                         setState(State.Dashboard);
@@ -61,6 +67,10 @@ export const GetStarted: React.FC<Props> = ({checkout}) => {
             return <Loader/>
         }
         switch (state) {
+            case State.SignIn:
+                return <div className="pricing-1-button-wrap">
+                    <a href={LOGIN_URL} className="button w-button">Get started</a>
+                </div>
             case State.Store:
                 return <div className="pricing-1-button-wrap">
                     <a href={STORE_LINK} className="button w-button">Get started</a>
