@@ -52,8 +52,6 @@ export const ProductPrice: React.FC<Props> = ({checkout}) => {
                     })
                     .finally(() => setComplete(true))
             }
-        } else {
-            setComplete(true);
         }
     }, []);
 
@@ -61,8 +59,11 @@ export const ProductPrice: React.FC<Props> = ({checkout}) => {
         if (price) {
             return `${price.symbol} ${price.amount} ${price.currency.toUpperCase()}`
         } else {
-            return "FREE";
+            if (checkout) {
+                return "";
+            }
         }
+        return "FREE";
     }
 
     const getButton = () => {
