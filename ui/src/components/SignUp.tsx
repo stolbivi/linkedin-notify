@@ -1,8 +1,6 @@
 import React from "react";
 import {LOGIN_URL} from "../global";
 
-import "./GetStarted.scss";
-
 type Props = {
     className?: string
 };

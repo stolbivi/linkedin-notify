@@ -28,3 +28,8 @@ export interface Price {
     amount: number
     symbol: string
 }
+
+export interface PriceResponse {
+    price: Price
+    hasSubscription: boolean
+}

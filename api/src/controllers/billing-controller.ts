@@ -1,4 +1,4 @@
-import {Get, Request, Route, Tags} from "tsoa";
+import {Get, Query, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
 import {
@@ -79,8 +79,8 @@ export class BillingController extends BaseController {
     }
 
     @Tags("Billing")
-    @Get("checkout/{price}")
-    public async checkout(price?: string,
+    @Get("checkout")
+    public async checkout(@Query() price?: string,
                           @Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
@@ -109,20 +109,23 @@ export class BillingController extends BaseController {
     @Tags("Billing")
     @Get("price")
     public async price(@Request() request?: express.Request): Promise<any> {
-        if (this.abruptOnNoSession(request)) {
-            this.setStatus(403);
-            return Promise.resolve("Please, sign in to use premium features");
-        }
-
         try {
+            // @ts-ignore
+            const billingId = request.user?.billingId;
+            let hasSubscription = false;
+            if (billingId) {
+                const response = await getSubscriptions(billingId);
+                hasSubscription = response?.data?.length > 0;
+            }
             let {priceId, symbol} = this.getGeoBasedPrice(request);
             const price = await getPrice(priceId);
             let message: any = {
                 price: {
                     ...price,
                     amount: (price.unit_amount / 100)?.toFixed(2),
-                    symbol
-                }
+                    symbol,
+                },
+                hasSubscription
             };
             if (request?.user) {
                 message = {...message, user: request.user};

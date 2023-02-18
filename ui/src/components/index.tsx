@@ -1,13 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {SignUp} from "./SignUp";
-
-//<a href="pricing.html" class="button w-button">Start Your 7 Days PRO Trial Now</a>
-//<a href="contact.html" class="button secondary w-button">Start Your 7 day Free Trial Now</a>
+import {ProductPrice} from "./ProductPrice";
 
 ReactDOM.render(
     <SignUp className="button w-button"/>,
     document.getElementById("start-trial-header")
+);
+
+ReactDOM.render(
+    <ProductPrice/>,
+    document.getElementById("product-price-free")
+);
+
+ReactDOM.render(
+    <ProductPrice checkout/>,
+    document.getElementById("product-price-premium")
 );
 
 ReactDOM.render(
