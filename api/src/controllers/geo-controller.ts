@@ -16,7 +16,7 @@ export class GeoController extends BaseController {
         setCache({store: this.store, preload: false});
     }
 
-    @Tags("Timezone")
+    @Tags("Geo")
     @Get("tz")
     public async tz(@Query() lat: number,
                     @Query() lng: number,
@@ -47,7 +47,7 @@ export class GeoController extends BaseController {
         }
     }
 
-    @Tags("Timezone")
+    @Tags("Geo")
     @Get("cacheSize")
     public async cacheSize(@Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
@@ -57,6 +57,28 @@ export class GeoController extends BaseController {
 
         try {
             let message: any = {response: this.store.size};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
+    @Tags("Geo")
+    @Get("lookup")
+    public async lookup(
+        @Request() request?: express.Request
+    ): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            const geo = getGeo(request);
+            let message: any = {geo};
             if (request?.user) {
                 message = {...message, user: request.user};
             }

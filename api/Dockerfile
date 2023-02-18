@@ -12,6 +12,7 @@ RUN npm install -g npm@latest
 RUN npm install -g typescript
 RUN npm install -g ts-node
 RUN npm install
+RUN npm run update-geo
 RUN npm run build
 EXPOSE 3000
 CMD [ "node", "." ]
