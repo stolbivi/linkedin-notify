@@ -8,6 +8,7 @@ import Swagger from "./autogen/swagger.json";
 import {RegisterRoutes} from "./autogen/routes";
 import {Dictionary} from "./data/dictionary";
 import cors from "cors";
+import {getSubscriptions} from "./services/stripe-service";
 
 require("dotenv").config();
 
@@ -40,10 +41,30 @@ require("dotenv").config();
         app.use("/static", express.static("static"));
 
         app.get("/auth/linkedin", passport.authenticate("linkedin"));
-        app.get("/auth/linkedin/callback", passport.authenticate("linkedin", {
-            successRedirect: process.env.LOGIN_SUCCESS_URL,
-            failureRedirect: process.env.LOGIN_FAILURE_URL
-        }));
+
+        const options = {session: true};
+        app.get('/auth/linkedin/callback', (req, res, next) => {
+            passport.authenticate("linkedin", options, (err, user, info) => {
+                req.logIn(user, options, (err) => {
+                    if (err || !user) {
+                        console.error(err);
+                        return res.redirect(process.env.LOGIN_FAILURE_URL);
+                    }
+                    // @ts-ignore
+                    const billingId = req.user.billingId;
+                    if (billingId) {
+                        getSubscriptions(billingId).then((response: any) => {
+                            if (response?.data?.length > 0) {
+                                return res.redirect(process.env.LOGIN_SUCCESS_URL);
+                            } else {
+                                return res.redirect(`${process.env.LOGIN_SUCCESS_URL}?checkout=1`);
+                            }
+                            next();
+                        });
+                    }
+                });
+            })(req, res, next);
+        });
 
         // swagger
         app.use(["/swagger"], swaggerUi.serve, swaggerUi.setup(Swagger));
