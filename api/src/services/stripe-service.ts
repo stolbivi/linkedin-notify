@@ -49,3 +49,6 @@ export const getProduct = (productId: string) =>
 
 export const getAccount = (accountId: string) =>
     Stripe.accounts.retrieve(accountId);
+
+export const getPrice = (priceId: string) =>
+    Stripe.prices.retrieve(priceId);

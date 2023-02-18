@@ -19,3 +19,12 @@ export interface Subscription {
     daysUntilDue: number,
     serverTimeZone: string
 }
+
+export interface Price {
+    id: string
+    currency: string
+    unit_amount: number
+    unit_amount_decimal: string
+    amount: number
+    symbol: string
+}

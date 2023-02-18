@@ -1,5 +1,5 @@
 import {BaseAPI, Response} from "./BaseAPI";
-import {API_BASE, Subscriptions} from "../global";
+import {API_BASE, Price, Subscriptions} from "../global";
 
 export class BackendAPI extends BaseAPI {
 
@@ -24,6 +24,13 @@ export class BackendAPI extends BaseAPI {
     public getBilling(): Promise<Response<any>> {
         return this.fetchRequest<any>(
             `${API_BASE}billing`,
+            this.getRequest("GET")
+        );
+    }
+
+    public getPrice(): Promise<Response<Price>> {
+        return this.fetchRequest<any>(
+            `${API_BASE}price`,
             this.getRequest("GET")
         );
     }

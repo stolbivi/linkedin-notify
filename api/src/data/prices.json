@@ -1,0 +1,14 @@
+{
+  "US": {
+    "priceId": "price_1MREeXCrt1xMyHmRqBN6i0tl",
+    "symbol": "$"
+  },
+  "UK": {
+    "priceId": "price_1MRJIQCrt1xMyHmR1HarjJap",
+    "symbol": "£"
+  },
+  "eu": {
+    "priceId": "price_1MRJJDCrt1xMyHmRUHLAB1vi",
+    "symbol": "€"
+  }
+}

@@ -19,6 +19,10 @@ module.exports = function (env, argv) {
         withHTML(
             tsEntry(DIST, "./src/components/pricing.tsx", "js/pricing.js", definitions),
             "./src/components/pricing.html", "pricing.html", "css/pricing.css"
+        ),
+        withHTML(
+            tsEntry(DIST, "./src/components/index.tsx", "js/index.js", definitions),
+            "./src/components/index.html", "index.html", "css/index.css"
         )
     ];
 };

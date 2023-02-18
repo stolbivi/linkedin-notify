@@ -5,9 +5,12 @@ import {
     createBillingSession,
     createCheckoutSession,
     getAccount,
+    getPrice,
     getProduct,
     getSubscriptions
 } from "../services/stripe-service";
+import {getGeo} from "../services/geo-service";
+import {Dictionary} from "../data/dictionary";
 
 require("dotenv").config();
 
@@ -59,19 +62,68 @@ export class BillingController extends BaseController {
         }
     }
 
+    private getGeoBasedPrice(request: express.Request) {
+        let result;
+        const geo = getGeo(request);
+        if (geo) {
+            if (geo.eu !== "0") {
+                result = Dictionary.prices["eu"];
+            } else {
+                result = Dictionary.prices[geo.country];
+            }
+        }
+        if (!result?.priceId) {
+            result = Dictionary.prices["US"];
+        }
+        return result;
+    }
+
     @Tags("Billing")
-    @Get("checkout")
-    public async checkout(@Request() request?: express.Request): Promise<any> {
+    @Get("checkout/{price}")
+    public async checkout(price?: string,
+                          @Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
             return Promise.resolve("Please, sign in to use premium features");
         }
 
         try {
+            let checkoutPrice = price;
+            if (!checkoutPrice) {
+                let result = this.getGeoBasedPrice(request);
+                checkoutPrice = result.priceId;
+            }
             // @ts-ignore
             const billingId = request.user.billingId;
-            const session = await createCheckoutSession(billingId, process.env.PRICE_PRO);
+            const session = await createCheckoutSession(billingId, checkoutPrice);
             let message: any = {session};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
+    @Tags("Billing")
+    @Get("price")
+    public async price(@Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            let {priceId, symbol} = this.getGeoBasedPrice(request);
+            const price = await getPrice(priceId);
+            let message: any = {
+                price: {
+                    ...price,
+                    amount: (price.unit_amount / 100)?.toFixed(2),
+                    symbol
+                }
+            };
             if (request?.user) {
                 message = {...message, user: request.user};
             }

@@ -3,6 +3,7 @@ import {find, setCache} from "geo-tz";
 import moment from "moment-timezone";
 import express from "express";
 import {BaseController} from "./base-controller";
+import {getGeo} from "../services/geo-service";
 
 @Route("/api")
 export class GeoController extends BaseController {
