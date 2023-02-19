@@ -14,7 +14,7 @@ export const ProductPrice: React.FC<Props> = ({checkout}) => {
     const STORE_LINK = "https://chrome.google.com/webstore/detail/linkedin-manager/bhkcnaoddagihkgnjfmpohdmffbieijb";
     const DASHBOARD_LINK = "/dashboard.html";
 
-    const [complete, setComplete] = useState<boolean>(false);
+    const [complete, setComplete] = useState<boolean>(!checkout);
     const [hasSubscription, setHasSubscription] = useState<boolean>();
     const [price, setPrice] = useState<Price>();
 

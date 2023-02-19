@@ -66,10 +66,11 @@ export class BillingController extends BaseController {
         let result;
         const geo = getGeo(request);
         if (geo) {
-            if (geo.eu !== "0") {
-                result = Dictionary.prices["eu"];
-            } else {
-                result = Dictionary.prices[geo.country];
+            result = Dictionary.prices[geo.country];
+            if (!result) {
+                if (geo.eu !== "0" || geo.timezone?.indexOf("Europe") >= 0) {
+                    result = Dictionary.prices["eu"];
+                }
             }
         }
         if (!result?.priceId) {
