@@ -34,7 +34,8 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => 
     const setWithNote = () => onProfileSelect({
         profile: note.profile,
         profileName: note.profileName,
-        profilePicture: note.profilePicture
+        profilePicture: note.profilePicture,
+        profileLink: note.profileLink
     })
 
     return (

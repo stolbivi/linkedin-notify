@@ -104,6 +104,7 @@ export interface NoteExtended extends Note {
     authorPicture: string
     profileName: string
     profilePicture: string
+    profileLink: string
     timestamp: Date
 }
 

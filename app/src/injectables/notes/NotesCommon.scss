@@ -20,16 +20,47 @@
   border-bottom-left-radius: 9px;
   border-bottom-right-radius: 9px;
 
-  .text-input {
+  .text-input-container {
+    position: relative;
+    display: flex;
     width: 100%;
-    padding: 0.75em;
-    background: #FFFFFF;
-    border: 1px solid #E5E5E5;
-    border-radius: 40px;
+    margin-bottom: 1em;
 
-    &:disabled {
-      opacity: 0.75;
-      cursor: wait;
+    .text-input {
+      width: 100%;
+      padding: 0.75em;
+      background: #FFFFFF;
+      border: 1px solid #E5E5E5;
+      border-radius: 40px;
+
+      &:disabled {
+        opacity: 0.75;
+        cursor: wait;
+      }
+
+      &:focus {
+        outline: 1px solid rgba(21, 105, 191, 1)
+      }
+    }
+
+    div > svg {
+      position: absolute;
+      height: 14px;
+      width: 14px;
+      right: 0.5em;
+      top: 0.45em;
+      padding: 0.5em;
+      border-radius: 2em;
+    }
+
+    .submit-allowed > svg {
+      background-color: rgba(21, 105, 191, 1);
+      cursor: pointer;
+    }
+
+    .submit-disabled > svg {
+      background-color: rgb(144, 144, 144);
+      cursor: not-allowed;
     }
   }
 }
@@ -60,9 +91,14 @@
   padding: 2em 0em;
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   user-select: none;
+
+  svg {
+
+  }
 }
 
 .scroll-container {
@@ -71,8 +107,13 @@
   flex-direction: column;
   justify-content: center;
   align-items: start;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
   scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .scroll-content {
     width: 100%;

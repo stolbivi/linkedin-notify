@@ -16,8 +16,13 @@
     height: calc(90vh - 20px);
     overflow: hidden;
     border: 1px solid #E0DFDC;
+  }
+
+  .clickable {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
   }
 
   .notes-header {

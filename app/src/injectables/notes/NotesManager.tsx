@@ -12,6 +12,8 @@ import {StageEnum} from "./StageSwitch";
 import stylesheet from "./NotesManager.scss";
 import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
+import {Submit} from "../../icons/Submit";
+import {NoNotes} from "../../icons/NoNotes";
 
 export const NotesManagerFactory = () => {
     const aside = document.getElementsByClassName("scaffold-layout__aside");
@@ -47,6 +49,12 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [searchValue, setSearchValue] = useState<SearchValue>(DEFAULT_SEARCH);
     const [searchText, setSearchText] = useState<string>("");
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
+    const [postAllowed, setPostAllowed] = useState<boolean>(false);
+    const [text, setText] = useState<{ value: string }>({value: ""});
+
+    useEffect(() => {
+        setPostAllowed(text && text.value.length > 0);
+    }, [text]);
 
     useEffect(() => {
         if (accessState !== AccessState.Valid) {
@@ -175,10 +183,14 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 <div className="scroll-content">
                     {notesFiltered?.map((n, i) =>
                         (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}/>))}
-                    {notesFiltered.length == 0 && <div className="no-notes">No notes yet</div>}
+                    {notesFiltered.length == 0 &&
+                    <div className="no-notes">
+                        <NoNotes/>
+                        <div>No notes yet</div>
+                    </div>}
                 </div>
             </div>
-            <Credits/>
+            <Credits short={true}/>
         </React.Fragment>
     }
 
@@ -192,26 +204,34 @@ export const NotesManager: React.FC<Props> = ({}) => {
         setSearchText("");
     }
 
-    const postNote = (e: any) => {
+    const onChange = (e: any) => {
+        let text = e.target.value?.trim();
+        setText({value: text});
+    }
+
+    const onKeyUp = (e: any) => {
         if (e.code === 'Enter') {
-            let text = e.target.value?.trim();
-            if (text && text !== "") {
-                text = text.slice(0, MAX_LENGTH);
-                setEditable(false);
-                const lastState = selectedNotes[selectedNotes.length - 1].stageTo;
-                messages.request<IAppRequest, any>({
-                    type: AppMessageType.Note,
-                    payload: {id: selection.profile, stageTo: lastState, text}
-                }, (r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    } else {
-                        e.target.value = "";
-                        appendNote(r.note.response)
-                    }
-                    setEditable(true);
-                }).then(/* nada */);
-            }
+            postNote(text?.value)
+        }
+    }
+
+    const postNote = (text: string) => {
+        if (text && text !== "") {
+            text = text.slice(0, MAX_LENGTH);
+            setEditable(false);
+            const lastState = selectedNotes[selectedNotes.length - 1].stageTo;
+            messages.request<IAppRequest, any>({
+                type: AppMessageType.Note,
+                payload: {id: selection.profile, stageTo: lastState, text}
+            }, (r) => {
+                if (r.error) {
+                    console.error(r.error);
+                } else {
+                    setText({value: ""});
+                    appendNote(r.note.response)
+                }
+                setEditable(true);
+            }).then(/* nada */);
         }
     }
 
@@ -222,6 +242,15 @@ export const NotesManager: React.FC<Props> = ({}) => {
 
     const updateSearchText = (e: any) => setSearchText(e.target.value?.trim());
 
+    const openProfile = (link: string) => {
+        if (link) {
+            return messages.request<IAppRequest, any>({
+                type: AppMessageType.OpenURL,
+                payload: {url: link}
+            });
+        }
+    }
+
     const getSelectedNotes = () => {
         return <React.Fragment>
             <div className="notes-header">
@@ -231,8 +260,10 @@ export const NotesManager: React.FC<Props> = ({}) => {
                               strokeLinejoin="round"/>
                     </svg>
                 </div>
-                <img src={selection.profilePicture}/>
-                <div className="name">{selection.profileName}</div>
+                <div className="clickable" onClick={() => openProfile(selection.profileLink)}>
+                    <img src={selection.profilePicture}/>
+                    <div className="name">{selection.profileName}</div>
+                </div>
             </div>
             <div className="notes-title">
                 <label>Notes</label>
@@ -253,12 +284,24 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 <div className="scroll-content">
                     {selectedNotesFiltered?.map((n, i) =>
                         (<NoteCard key={i} note={n}/>))}
-                    {selectedNotesFiltered.length == 0 && <div className="no-notes">No notes yet</div>}
+                    {selectedNotesFiltered.length == 0 &&
+                    <div className="no-notes">
+                        <NoNotes/>
+                        <div>No notes yet</div>
+                    </div>}
                 </div>
             </div>
             <div className="footer-child">
-                <input type="text" onKeyUp={postNote} disabled={!editable} className="text-input"
-                       placeholder="Leave a note"/>
+                <div className="text-input-container">
+                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
+                           disabled={!editable}
+                           className="text-input"
+                           placeholder="Leave a note" value={text?.value}/>
+                    <div onClick={() => postNote(text?.value)}
+                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
+                        <Submit/>
+                    </div>
+                </div>
                 <Credits/>
             </div>
         </React.Fragment>

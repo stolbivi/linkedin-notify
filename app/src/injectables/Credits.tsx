@@ -1,12 +1,18 @@
 import React from "react";
 import "./Credits.scss"
+import {Logo} from "../icons/Logo";
 
-type Props = {};
+type Props = {
+    short?: boolean
+};
 
-export const Credits: React.FC<Props> = ({}) => {
+export const Credits: React.FC<Props> = ({short}) => {
 
     return (
-        <div className="credits">Powered by LinkedIn Manager Chrome Extension</div>
+        <div className="credits">
+            <Logo/>
+            <span className={short ? "short" : ""}>Powered by LinkedIn Manager Chrome Extension</span>
+        </div>
     );
 
 };

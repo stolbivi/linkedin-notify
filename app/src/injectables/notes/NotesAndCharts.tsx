@@ -14,6 +14,8 @@ import {NoteCard} from "./NoteCard";
 import stylesheet from "./NotesAndCharts.scss";
 import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
+import {Submit} from "../../icons/Submit";
+import {NoNotes} from "../../icons/NoNotes";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -66,6 +68,8 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     const [completed, setCompleted] = useState<boolean>(false);
     const [editable, setEditable] = useState<boolean>(true);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
+    const [postAllowed, setPostAllowed] = useState<boolean>(false);
+    const [text, setText] = useState<{ value: string }>({value: ""});
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
@@ -92,6 +96,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
             },
         });
     }, []);
+
+    useEffect(() => {
+        setPostAllowed(text && text.value.length > 0);
+    }, [text]);
 
     useEffect(() => {
         if (show) {
@@ -143,25 +151,34 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
         setNotes([...notes, note]);
     }
 
+    const postNote = (text: string) => {
+        if (text && text !== "") {
+            text = text.slice(0, MAX_LENGTH);
+            setEditable(false);
+            setPostAllowed(false);
+            messages.request<IAppRequest, any>({
+                type: AppMessageType.Note,
+                payload: {id: salaryInternal.urn, stageTo: stageInternal, text}
+            }, (r) => {
+                if (r.error) {
+                    console.error(r.error);
+                } else {
+                    setText({value: ""});
+                    appendNote(r.note.response)
+                }
+                setEditable(true);
+            }).then(/* nada */);
+        }
+    }
+
+    const onChange = (e: any) => {
+        let text = e.target.value?.trim();
+        setText({value: text});
+    }
+
     const onKeyUp = (e: any) => {
         if (e.code === 'Enter') {
-            let text = e.target.value?.trim();
-            if (text && text !== "") {
-                text = text.slice(0, MAX_LENGTH);
-                setEditable(false);
-                messages.request<IAppRequest, any>({
-                    type: AppMessageType.Note,
-                    payload: {id: salaryInternal.urn, stageTo: stageInternal, text}
-                }, (r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    } else {
-                        e.target.value = "";
-                        appendNote(r.note.response)
-                    }
-                    setEditable(true);
-                }).then(/* nada */);
-            }
+            postNote(text?.value)
         }
     }
 
@@ -244,13 +261,25 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                                     <div className="scroll-content">
                                         {completed && notes?.map((n, i) => (
                                             <NoteCard key={i} note={n}/>))}
-                                        {completed && notes.length == 0 && <div className="no-notes">No notes yet</div>}
+                                        {completed && notes.length == 0 &&
+                                        <div className="no-notes">
+                                            <NoNotes/>
+                                            <div>No notes yet</div>
+                                        </div>}
                                     </div>
                                 </div>
                             </div>
                             <div data-role={CollapsibleRole.Footer} className="footer-child">
-                                <input type="text" onKeyUp={onKeyUp} disabled={!editable} className="text-input"
-                                       placeholder="Leave a note"/>
+                                <div className="text-input-container">
+                                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
+                                           disabled={!editable}
+                                           className="text-input"
+                                           placeholder="Leave a note" value={text?.value}/>
+                                    <div onClick={() => postNote(text?.value)}
+                                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
+                                        <Submit/>
+                                    </div>
+                                </div>
                                 <Credits/>
                             </div>
                         </Collapsible>
