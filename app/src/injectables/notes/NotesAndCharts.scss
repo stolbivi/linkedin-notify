@@ -5,6 +5,7 @@
 @import "NoteCard";
 @import "NotesCommon";
 @import "PayExtrapolationChart";
+@import "../Credits";
 
 .notes-and-charts {
   color: #909090;
@@ -16,11 +17,11 @@
   position: absolute;
   top: 25px;
   left: 10vw;
-  z-index: 1000;
+  z-index: 10;
   box-shadow: 0px 18px 101px rgba(150, 163, 176, 0.27);
 
   .h-300 {
-    height: 300px;
+    height: 215px;
   }
 
   .close-button {

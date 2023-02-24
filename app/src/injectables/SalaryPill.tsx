@@ -3,10 +3,10 @@ import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
+import {AccessGuard, AccessState} from "./AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
-import {AccessGuard, AccessState} from "./AccessGuard";
 
 export const SalaryPillFactory = () => {
     // individual profile
@@ -16,7 +16,7 @@ export const SalaryPillFactory = () => {
             const actions = profileActions[0].getElementsByClassName("pvs-profile-actions");
             if (actions && actions.length > 0) {
                 inject(actions[0], "lnm-salary", "after",
-                    <SalaryPill/>
+                    <SalaryPill showSalary={true}/>
                 );
             }
         }
@@ -34,7 +34,7 @@ export const SalaryPillFactory = () => {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
                         inject(lastChild, `lnm-salary-${id}`, "before",
-                            <SalaryPill url={link}/>);
+                            <SalaryPill url={link} id={id}/>);
                     }
                 }
             })
@@ -44,6 +44,9 @@ export const SalaryPillFactory = () => {
 
 type Props = {
     url?: string
+    showSalary?: boolean
+    showNotes?: boolean
+    id?: string
 };
 
 export interface Salary {
@@ -69,7 +72,7 @@ export const getSalaryValue = (salary: Salary) => {
     }
 }
 
-export const SalaryPill: React.FC<Props> = ({url}) => {
+export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNotes = false}) => {
 
     const messages = new Messages(MESSAGE_ID, VERBOSE);
 
@@ -109,7 +112,7 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
         if (salary) {
             return messages.request({
                 type: AppMessageType.NotesAndCharts,
-                payload: {salary}
+                payload: {id, salary, showSalary, showNotes}
             });
         }
     }
@@ -121,8 +124,7 @@ export const SalaryPill: React.FC<Props> = ({url}) => {
                          loaderClassName={"loader-base loader-px24"}/>
             {accessState === AccessState.Valid &&
             <div className={"salary-pill" + (completed ? " clickable" : "")}
-                 onClick={onClick}
-                 title={salary.note}>
+                 onClick={onClick}>
                 <Loader show={!completed}/>
                 {completed && getSalaryValue(salary)}
             </div>}

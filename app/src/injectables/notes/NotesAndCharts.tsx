@@ -13,8 +13,10 @@ import {NoteCard} from "./NoteCard";
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
 import {PayExtrapolationChart} from "./PayExtrapolationChart";
+import {Credits} from "../Credits";
 
 export const NotesAndChartsFactory = () => {
+    // individual profile
     if (window.location.href.indexOf("/in/") > 0) {
         const section = document.querySelectorAll('section[data-member-id]');
         if (section && section.length > 0) {
@@ -23,17 +25,41 @@ export const NotesAndChartsFactory = () => {
             );
         }
     }
+    // people's search
+    if (window.location.href.indexOf("search/results/people/") > 0) {
+        const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
+        if (profileCards.length > 0) {
+            profileCards.forEach((card: HTMLDivElement) => {
+                card.style.position = "relative";
+                const profileLink = card.querySelectorAll('a[href*="/in/"]');
+                if (profileLink.length > 0) {
+                    const link = profileLink[0].getAttribute("href");
+                    const profileActions = card.getElementsByClassName('entity-result__actions');
+                    if (profileActions.length > 0) {
+                        const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
+                        const id = extractIdFromUrl(link);
+                        inject(lastChild, `lnm-notes-and-charts-${id}`, "after",
+                            <NotesAndCharts id={id}/>
+                        );
+                    }
+                }
+            })
+        }
+    }
 }
 
 type Props = {
     stage?: StageEnum
     salary?: Salary
+    id?: string
 };
 
-export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
+export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
 
     const MAX_LENGTH = 200;
 
+    const [showSalary, setShowSalary] = useState<boolean>(false);
+    const [showNotes, setShowNotes] = useState<boolean>(false);
     const [show, setShow] = useState<boolean>(false);
     const [stageInternal, setStageInternal] = useState<StageEnum>(stage);
     const [salaryInternal, setSalaryInternal] = useState<Salary>(salary);
@@ -49,12 +75,18 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
         });
         messages.listen<IAppRequest, any>({
             [AppMessageType.NotesAndCharts]: (message) => {
+                console.log(id, message.payload);
+                if (id && message.payload?.id !== id) {
+                    return Promise.resolve();
+                }
                 if (message.payload?.salary) {
                     setSalaryInternal(message.payload.salary);
                 }
                 if (message.payload?.stage >= 0) {
                     setStageInternal(message.payload.stage);
                 }
+                setShowNotes(message.payload?.showNotes)
+                setShowSalary(message.payload?.showSalary)
                 setShow(true);
                 return Promise.resolve();
             },
@@ -150,7 +182,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
                         </svg>
                     </div>
                     <NotesContainer>
-                        <Collapsible initialOpened={false}>
+                        <Collapsible initialOpened={showSalary}>
                             <div data-role={CollapsibleRole.Title}>Avg. Base Salary (GBR)</div>
                             <div data-role={CollapsibleRole.Static}>
                                 <div className="d-flex">
@@ -201,7 +233,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
                                              id={salaryInternal.urn} appendNote={appendNote}/>
                             </div>
                         </div>}
-                        <Collapsible>
+                        <Collapsible initialOpened={showNotes}>
                             <div data-role={CollapsibleRole.Title} className="title-child">
                                 <label>Notes</label>
                                 <label className="notes-counter">{notes ? notes.length : 0}</label>
@@ -219,6 +251,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage}) => {
                             <div data-role={CollapsibleRole.Footer} className="footer-child">
                                 <input type="text" onKeyUp={onKeyUp} disabled={!editable} className="text-input"
                                        placeholder="Leave a note"/>
+                                <Credits/>
                             </div>
                         </Collapsible>
                     </NotesContainer>

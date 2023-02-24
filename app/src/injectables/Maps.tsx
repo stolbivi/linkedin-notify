@@ -60,16 +60,20 @@ export const Maps: React.FC<Props> = ({host}) => {
         messages.request<IAppRequest, any>({
             type: AppMessageType.Subscription,
         }, (r) => {
+            // TODO FIXME
+            // setDisabled(false);
+            // return Promise.resolve();
             if (r.status === 403) {
                 setDisabled(true);
             } else if (r.subscriptions?.length > 0) {
                 const subscription = r.subscriptions[0];
                 if (subscription.status === "trialing" || subscription.status === "active") {
                     setDisabled(false);
-                    return;
+                    return Promise.resolve();
                 }
             }
             setDisabled(true);
+            return Promise.resolve();
         }).then(/* nada */);
     }, []);
 

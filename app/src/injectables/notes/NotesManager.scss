@@ -5,6 +5,7 @@
 @import "NoteCard";
 @import "NotesCommon";
 @import "../AccessGuard";
+@import "../Credits";
 
 .notes-manager {
   width: 322px;
@@ -15,6 +16,8 @@
     height: calc(90vh - 20px);
     overflow: hidden;
     border: 1px solid #E0DFDC;
+    display: flex;
+    justify-content: center;
   }
 
   .notes-header {

@@ -71,6 +71,7 @@ export const StagePill: React.FC<Props> = ({url}) => {
             setCompleted(false);
             messages.request({
                 type: AppMessageType.NotesAndCharts,
+                payload: {showSalary: false, showNotes: true}
             }).finally(() => setCompleted(true));
         }
     }

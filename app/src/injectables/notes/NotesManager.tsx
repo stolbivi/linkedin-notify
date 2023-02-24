@@ -11,6 +11,7 @@ import {StageEnum} from "./StageSwitch";
 // @ts-ignore
 import stylesheet from "./NotesManager.scss";
 import {AccessGuard, AccessState} from "../AccessGuard";
+import {Credits} from "../Credits";
 
 export const NotesManagerFactory = () => {
     const aside = document.getElementsByClassName("scaffold-layout__aside");
@@ -86,6 +87,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     useEffect(() => {
         setSearchValue(DEFAULT_SEARCH);
         if (selection) {
+            // console.log(selection);
             setCompleted(false);
             messages.request<IAppRequest, any>({
                 type: AppMessageType.NotesByProfile,
@@ -176,6 +178,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
                     {notesFiltered.length == 0 && <div className="no-notes">No notes yet</div>}
                 </div>
             </div>
+            <Credits/>
         </React.Fragment>
     }
 
@@ -256,6 +259,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
             <div className="footer-child">
                 <input type="text" onKeyUp={postNote} disabled={!editable} className="text-input"
                        placeholder="Leave a note"/>
+                <Credits/>
             </div>
         </React.Fragment>
     }
@@ -263,16 +267,18 @@ export const NotesManager: React.FC<Props> = ({}) => {
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16 m-1"}
-                         loaderClassName={"loader-base loader-px24"}/>
-            {accessState === AccessState.Valid &&
             <div className="notes-manager">
                 <NotesContainer>
-                    {completed ?
-                        (selection == undefined ? getAllNotes() : getSelectedNotes())
-                        : <div className="centered-loader"><Loader show={!completed}/></div>}
+                    <AccessGuard setAccessState={setAccessState} className={"access-guard-px16 m-1"}
+                                 loaderClassName={"loader-base loader-px24"}/>
+                    {accessState === AccessState.Valid &&
+                    <React.Fragment>
+                        {completed ?
+                            (selection == undefined ? getAllNotes() : getSelectedNotes())
+                            : <div className="centered-loader"><Loader show={!completed}/></div>}
+                    </React.Fragment>}
                 </NotesContainer>
-            </div>}
+            </div>
         </React.Fragment>
     );
 

@@ -12,10 +12,11 @@
 .footer-child {
   margin-top: auto;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #FBFBFB;
-  padding: 2em;
+  padding: 2em 2em 0em;
   border-bottom-left-radius: 9px;
   border-bottom-right-radius: 9px;
 
