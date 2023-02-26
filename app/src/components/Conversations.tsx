@@ -42,7 +42,6 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
 
     useEffect(() => {
         messages.request<IAppRequest, UnlockedResponse>({type: AppMessageType.CheckUnlocked}, (r) => {
-            console.log("Unlocked", r);
             setUnlocked(r.unlocked);
             return messages.request<IAppRequest, ConversationsResponse>({type: AppMessageType.Conversations},
                 (r) => {

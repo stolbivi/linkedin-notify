@@ -36,7 +36,7 @@ export const PayDistribution: React.FC<Props> = ({salary}) => {
             },
             middle: {
                 percent: 80,
-                value: formatValue(salary.payDistributionValues[1] + salary.payDistributionValues[2] / 2)
+                value: formatValue((salary.payDistributionValues[0] + salary.payDistributionValues[3]) / 2)
             },
             right: {
                 percent: 10,

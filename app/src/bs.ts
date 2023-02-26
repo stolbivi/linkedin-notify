@@ -76,7 +76,7 @@ async function extendNote(token: string, notes: Note[], as: string): Promise<Not
         authorName: as === n.author ? "You" : cache[n.author].name[0],
         authorPicture: getPicture(cache[n.author].profilePicture),
         profileName: cache[n.profile].name[0],
-        profileLink: cache[n.profile].link[0],
+        profileLink: cache[n.profile].link?.length > 0 ? cache[n.profile].link[0] : undefined,
         profilePicture: getPicture(cache[n.profile].profilePicture),
         timestamp: new Date(n.updatedAt)
     }));

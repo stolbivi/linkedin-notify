@@ -11,7 +11,7 @@ import stylesheet from "./SalaryPill.scss";
 export const SalaryPillFactory = () => {
     // individual profile
     if (window.location.href.indexOf("/in/") > 0) {
-        const profileActions = document.getElementsByClassName('pv-top-card-v2-ctas');
+        const profileActions = document.getElementsByClassName("pv-top-card-v2-ctas");
         if (profileActions && profileActions.length > 0) {
             const actions = profileActions[0].getElementsByClassName("pvs-profile-actions");
             if (actions && actions.length > 0) {
@@ -22,18 +22,18 @@ export const SalaryPillFactory = () => {
         }
     }
     // people's search
-    if (window.location.href.indexOf("search/results/people/") > 0) {
+    if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
         const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
         if (profileCards.length > 0) {
-            profileCards.forEach(card => {
+            profileCards.forEach((card, index) => {
                 const profileLink = card.querySelectorAll('a[href*="/in/"]');
                 if (profileLink.length > 0) {
                     const link = profileLink[0].getAttribute("href");
-                    const profileActions = card.getElementsByClassName('entity-result__actions');
+                    const profileActions = card.getElementsByClassName("entity-result__actions");
                     if (profileActions.length > 0) {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
-                        inject(lastChild, `lnm-salary-${id}`, "before",
+                        inject(lastChild, `lnm-salary-${index}`, "before",
                             <SalaryPill url={link} id={id}/>);
                     }
                 }
@@ -102,7 +102,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
     useEffect(() => {
         if (!url) {
             setUrlInternal(window.location.href);
-            window.addEventListener('popstate', () => {
+            window.addEventListener("popstate", () => {
                 setUrlInternal(window.location.href);
             });
         }

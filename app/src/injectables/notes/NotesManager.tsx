@@ -75,9 +75,9 @@ export const NotesManager: React.FC<Props> = ({}) => {
 
     const checkByText = (n: NoteExtended, text: string) => {
         if (text && text.length > 1) {
-            return n.profileName.indexOf(text) >= 0
-                || n.authorName.indexOf(text) >= 0
-                || n.text?.indexOf(text) >= 0
+            return n.profileName.toLowerCase().indexOf(text) >= 0
+                || n.authorName.toLowerCase().indexOf(text) >= 0
+                || n.text?.toLowerCase().indexOf(text) >= 0
         } else {
             return true;
         }
@@ -86,7 +86,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     useEffect(() => {
         const stagesCount = Object.values(searchValue.stages).filter(v => v).length;
         let filteredNotes = notes.filter(
-            n => checkByText(n, searchValue.text) &&
+            n => checkByText(n, searchValue.text?.toLowerCase()) &&
                 (stagesCount > 0 ? (searchValue.stages[n.stageFrom] || searchValue.stages[n.stageTo]) : true)
         );
         setNotesFiltered(filteredNotes);
@@ -95,7 +95,6 @@ export const NotesManager: React.FC<Props> = ({}) => {
     useEffect(() => {
         setSearchValue(DEFAULT_SEARCH);
         if (selection) {
-            // console.log(selection);
             setCompleted(false);
             messages.request<IAppRequest, any>({
                 type: AppMessageType.NotesByProfile,
@@ -195,7 +194,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     }
 
     const appendNote = (note: NoteExtended) => {
-        setSelectedNotes([...notes, note]);
+        setSelectedNotes([...selectedNotes, note]);
     }
 
     const back = () => {
@@ -236,7 +235,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     }
 
     useEffect(() => {
-        let filteredNotes = selectedNotes.filter(n => checkByText(n, searchText));
+        let filteredNotes = selectedNotes.filter(n => checkByText(n, searchText?.toLowerCase()));
         setSelectedNotesFiltered(filteredNotes);
     }, [searchText, selectedNotes]);
 

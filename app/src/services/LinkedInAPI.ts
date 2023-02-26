@@ -448,10 +448,13 @@ export class LinkedInAPI {
             name = JSONPath.query(actor[0], "$.actor.name.text");
             link = JSONPath.query(actor[0], "$.actor.navigationContext.target");
         } else {
-            const firstName = JSONPath.query(response, "$..firstName");
-            const lastName = JSONPath.query(response, "$..lastName");
-            if (firstName && lastName) {
-                name = [`${firstName} ${lastName}`];
+            const entity = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
+            if (entity?.length > 0) {
+                const firstName = entity[0].firstName;
+                const lastName = entity[0].lastName;
+                if (firstName && lastName) {
+                    name = [`${firstName} ${lastName}`];
+                }
             }
         }
         let result: any = {name, link};

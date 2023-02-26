@@ -9,13 +9,13 @@ import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, NoteExtended,
 import {inject} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
-
-// @ts-ignore
-import stylesheet from "./NotesAndCharts.scss";
 import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
+
+// @ts-ignore
+import stylesheet from "./NotesAndCharts.scss";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -28,10 +28,10 @@ export const NotesAndChartsFactory = () => {
         }
     }
     // people's search
-    if (window.location.href.indexOf("search/results/people/") > 0) {
+    if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
         const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
         if (profileCards.length > 0) {
-            profileCards.forEach((card: HTMLDivElement) => {
+            profileCards.forEach((card: HTMLDivElement, index) => {
                 card.style.position = "relative";
                 const profileLink = card.querySelectorAll('a[href*="/in/"]');
                 if (profileLink.length > 0) {
@@ -40,7 +40,7 @@ export const NotesAndChartsFactory = () => {
                     if (profileActions.length > 0) {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
-                        inject(lastChild, `lnm-notes-and-charts-${id}`, "after",
+                        inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
                             <NotesAndCharts id={id}/>
                         );
                     }
@@ -79,7 +79,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
         });
         messages.listen<IAppRequest, any>({
             [AppMessageType.NotesAndCharts]: (message) => {
-                console.log(id, message.payload);
                 if (id && message.payload?.id !== id) {
                     return Promise.resolve();
                 }
