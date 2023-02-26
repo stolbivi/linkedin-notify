@@ -34,9 +34,9 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
             type: AppMessageType.Subscription,
         }, (r) => {
             // TODO FIXME
-            setState(AccessState.Valid);
-            setAccessState(AccessState.Valid);
-            return;
+            // setState(AccessState.Valid);
+            // setAccessState(AccessState.Valid);
+            // return;
             if (r.status === 403) {
                 setState(AccessState.SignInRequired);
                 setAccessState(AccessState.SignInRequired);
