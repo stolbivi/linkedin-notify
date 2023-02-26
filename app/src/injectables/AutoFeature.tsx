@@ -96,7 +96,7 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
         const typedFeature = features.find(f => f.type === type);
         const index = typedFeature?.authors?.findIndex((f: string) => f === author);
         setActive(index >= 0);
-    }, [author]);
+    }, [author, features]);
 
     useEffect(() => {
         if (active !== undefined) {
@@ -104,7 +104,9 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
         }
     }, [active]);
 
-    const onClick = () => {
+    const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.preventDefault();
+        e.stopPropagation();
         setCompleted(false);
         messages.request<IAppRequest, any>({
             type: AppMessageType.SetFeatures,
@@ -129,7 +131,8 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px10"}
                          loaderClassName={"loader-base loader-px10"} hideTitle/>
             {accessState === AccessState.Valid &&
-            <div className={`auto-pill-${active ? "on" : "off"}`} onClick={onClick}>
+            <div className={`auto-pill-${active ? "on" : "off"}`}
+                 onClick={(e) => onClick(e)}>
                 <Loader show={!completed}/>
                 {completed && <React.Fragment>Auto {getIcon(type)}</React.Fragment>}
             </div>}

@@ -1,14 +1,30 @@
 {
-  "US": {
-    "priceId": "price_1MREeXCrt1xMyHmRqBN6i0tl",
-    "symbol": "$"
+  "dev": {
+    "US": {
+      "priceId": "price_1MREeXCrt1xMyHmRqBN6i0tl",
+      "symbol": "$"
+    },
+    "GB": {
+      "priceId": "price_1MRJIQCrt1xMyHmR1HarjJap",
+      "symbol": "£"
+    },
+    "eu": {
+      "priceId": "price_1MRJJDCrt1xMyHmRUHLAB1vi",
+      "symbol": "€"
+    }
   },
-  "GB": {
-    "priceId": "price_1MRJIQCrt1xMyHmR1HarjJap",
-    "symbol": "£"
-  },
-  "eu": {
-    "priceId": "price_1MRJJDCrt1xMyHmRUHLAB1vi",
-    "symbol": "€"
+  "prod": {
+    "US": {
+      "priceId": "price_1Mfo1OCrt1xMyHmRFhPQMDB2",
+      "symbol": "$"
+    },
+    "GB": {
+      "priceId": "price_1Mfo1OCrt1xMyHmRxwEdwebH",
+      "symbol": "£"
+    },
+    "eu": {
+      "priceId": "price_1Mfo1OCrt1xMyHmRQz69uW5n",
+      "symbol": "€"
+    }
   }
 }

@@ -57,7 +57,7 @@ export const ProductPrice: React.FC<Props> = ({checkout}) => {
 
     const getPrice = () => {
         if (price) {
-            return `${price.symbol} ${price.amount} ${price.currency.toUpperCase()}`
+            return `${price.symbol}${price.amount} ${price.currency.toUpperCase()}`
         } else {
             if (checkout) {
                 return "";

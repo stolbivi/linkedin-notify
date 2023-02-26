@@ -12,3 +12,6 @@ export const formatDate = (timestamp: Date) =>
         hour: '2-digit',
         minute: '2-digit'
     }) : `${MONTH_NAMES[timestamp.getMonth()]} ${timestamp.getDate()}`;
+
+export const formatDateToday = (timestamp: Date) =>
+    isToday(timestamp) ? "Today" : `${MONTH_NAMES[timestamp.getMonth()]} ${timestamp.getDate()}`;

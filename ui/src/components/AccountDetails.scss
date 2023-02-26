@@ -5,6 +5,12 @@
   justify-content: center;
   align-items: center;
 
+  .details-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+  }
+
   a:link, a:visited, a:hover, a:visited {
     text-decoration: none;
   }

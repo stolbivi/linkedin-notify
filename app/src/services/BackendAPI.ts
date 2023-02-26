@@ -1,5 +1,5 @@
 import {BaseAPI, Response} from "./BaseAPI";
-import {BACKEND_API, Features, Note, Subscriptions} from "../global";
+import {BACKEND_API, Features, LastViewed, Note, Subscriptions} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
 
 export class BackendAPI extends BaseAPI {
@@ -79,6 +79,20 @@ export class BackendAPI extends BaseAPI {
         return this.fetchRequest<Subscriptions>(
             `${BACKEND_API}subscription`,
             this.getRequest("GET")
+        );
+    }
+
+    public getLastViewed(profile: string, as: string): Promise<Response<LastViewed>> {
+        return this.fetchRequest(
+            `${BACKEND_API}last-viewed-items/profile/?q=${profile}&as=${as}`,
+            this.getRequest("GET")
+        );
+    }
+
+    public postLastViewed(lastViewed: LastViewed): Promise<Response<LastViewed>> {
+        return this.fetchRequest(
+            `${BACKEND_API}last-viewed`,
+            this.getRequest("POST", lastViewed)
         );
     }
 

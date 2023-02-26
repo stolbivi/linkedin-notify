@@ -5,11 +5,13 @@ type Props = {};
 export const Clock: React.FC<Props> = ({}) => {
 
     return (
-        <svg width="700pt" height="700pt" version="1.1" viewBox="0 0 700 550" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <g>
-                <path d="m350 20.496c-143.3 0-259.5 116.2-259.5 259.5s116.2 259.5 259.5 259.5 259.5-116.2 259.5-259.5-116.2-259.5-259.5-259.5zm121.46 355.54c-3.6406 6.2734-10.246 9.7422-16.969 9.7422-3.3594 0-6.7188-0.83984-9.8008-2.6328l-88.648-51.297c-17.809-10.305-28.84-29.457-28.84-50.008v-150.24c0-10.809 8.793-19.602 19.602-19.602 10.863 0 19.602 8.793 19.602 19.602v150.25c0 6.6094 3.5859 12.77 9.2969 16.07l88.594 51.297c9.3477 5.4336 12.594 17.418 7.1641 26.824z"/>
-            </g>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 6C11 8.76 8.76 11 6 11C3.24 11 1 8.76 1 6C1 3.24 3.24 1 6 1C8.76 1 11 3.24 11 6Z"
+                  stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M7.855 7.59L6.305 6.665C6.035 6.505 5.815 6.12 5.815 5.805V3.755" stroke="currentColor"
+                  strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
+
     );
 
 };

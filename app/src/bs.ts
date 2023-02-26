@@ -288,6 +288,35 @@ messages.listen<IAppRequest, any>({
             }),
     [AppMessageType.Subscription]: () =>
         backEndAPI.getSubscription(),
+    [AppMessageType.LastViewedGet]: (message) =>
+        getCookies(LINKEDIN_DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const experienceResponse = await api.getExperience(token, message.payload);
+                const experience = api.extractExperience(experienceResponse);
+                const profile = experience.urn;
+                const me = await api.getMe(token);
+                const as = api.extractProfileUrn(me);
+                if (profile === as) {
+                    return {response: {profile: me, author: as, hide: true}}
+                } else {
+                    return backEndAPI.getLastViewed(profile, as);
+                }
+            }),
+    [AppMessageType.LastViewedSet]: (message) =>
+        getCookies(LINKEDIN_DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const experienceResponse = await api.getExperience(token, message.payload);
+                const experience = api.extractExperience(experienceResponse);
+                const profile = experience.urn;
+                const me = await api.getMe(token);
+                const author = api.extractProfileUrn(me);
+                return backEndAPI.postLastViewed({
+                    profile,
+                    author,
+                });
+            }),
 })
 
 // listening to cookies store events
@@ -342,6 +371,8 @@ function autoFeatures() {
                 const featuresResponse = await backEndAPI.getFeatures();
                 if (featuresResponse && featuresResponse?.response?.features?.length > 0) {
                     const features = featuresResponse?.response?.features;
+                    // const updatedAt = new Date(featuresResponse?.response?.updatedAt);
+                    // console.log(updatedAt.toLocaleDateString());
                     const token = await api.getCsrfToken(cookies);
                     const response = await api.getUpdates(token, 50);
                     const updates = api.extractUpdates(response);

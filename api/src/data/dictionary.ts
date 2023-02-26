@@ -3,11 +3,13 @@ import * as Cities from "./cities.json";
 import * as Synonyms from "./synonyms.json";
 import * as Prices from "../data/prices.json";
 
+require("dotenv").config();
+
 export class Dictionary {
 
     private static _countries = {} as { [index: string]: number };
     private static _cities = {} as { [index: string]: { [index: string]: number } };
-    private static _prices = {} as { [index: string]: {priceId: string, symbol: string} };
+    private static _prices = {} as { [index: string]: { priceId: string, symbol: string } };
 
     static get countries(): { [p: string]: number } {
         return this._countries;
@@ -17,17 +19,19 @@ export class Dictionary {
         return this._cities;
     }
 
-    static get prices(): { [p: string]: {priceId: string, symbol: string} } {
+    static get prices(): { [p: string]: { priceId: string, symbol: string } } {
         return this._prices;
     }
 
     public static loadDictionary() {
         console.log('Loading dictionaries started');
-        // countries
-        for (let i = 0; i < Object.keys(Prices).length; i++) {
-            const key = Object.keys(Prices)[i];
+        // prices
+        // @ts-ignore
+        const envPrices = Prices[process.env.ENV];
+        for (let i = 0; i < Object.keys(envPrices).length; i++) {
+            const key = Object.keys(envPrices)[i];
             // @ts-ignore
-            Dictionary._prices[key] = Prices[key];
+            Dictionary._prices[key] = envPrices[key];
         }
         console.log('Loaded prices:', Object.keys(Dictionary._prices).length);
         // countries

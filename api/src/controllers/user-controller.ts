@@ -120,7 +120,7 @@ export class UserController extends BaseController {
                 if (result && result.length) {
                     const user = result.shift() as User;
                     const features = user.features ?? [];
-                    const message = {response: {features}, user: request.user};
+                    const message = {response: {features, updatedAt: user.updatedAt}, user: request.user};
                     return Promise.resolve(message);
                 }
             }

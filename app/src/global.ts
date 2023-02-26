@@ -41,7 +41,9 @@ export enum AppMessageType {
     NotesAll,
     NotesByProfile,
     Note,
-    Subscription
+    Subscription,
+    LastViewedGet,
+    LastViewedSet
 }
 
 export interface IAppRequest extends TMessage {
@@ -86,6 +88,7 @@ export interface Feature {
 
 export interface Features {
     features: Feature[]
+    updatedAt: string
 }
 
 export interface Note {
@@ -130,4 +133,12 @@ export interface Subscription {
     trialEnd: number,
     daysUntilDue: number,
     serverTimeZone: string
+}
+
+export interface LastViewed {
+    profile: string
+    author: string
+    createdAt?: string
+    updatedAt?: string
+    hide?: boolean
 }

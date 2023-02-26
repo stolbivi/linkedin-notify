@@ -84,14 +84,17 @@ export const AccountDetails: React.FC<Props> = ({}) => {
             </React.Fragment>
         }
         return <React.Fragment>
-            <h1 className="margin-bottom margin-xsmall text-align-center">Account Details</h1>
-            <p className="margin-bottom margin-medium text-align-center">Hi {user}</p>
-            <p className="margin-bottom margin-medium text-align-center">{subscriptionDetails}</p>
-            <p className="margin-bottom margin-medium text-align-center">To access your subscription, click
-                on the &quot;Download&quot; button and add Linkedin Manager to your browser. Our assistant AI
-                comes alive as soon as you browse Linkedin!</p>
-            <p className="margin-bottom margin-medium text-align-center">Update your billing details or cancel anytime
-                by clicking on &quot;Manage Billing&quot;.</p>
+            <div className="details-block">
+                <h1 className="margin-bottom margin-xsmall">Account Details</h1>
+                <p className="margin-bottom margin-medium">Hi {user}</p>
+                <p className="margin-bottom margin-medium">{subscriptionDetails}</p>
+                <p className="margin-bottom margin-medium">To access your subscription, click
+                    on the &quot;Download&quot; button and add Linkedin Manager to your browser. Our assistant AI
+                    comes alive as soon as you browse Linkedin!</p>
+                <p className="margin-bottom margin-medium">Update your billing details or cancel
+                    anytime
+                    by clicking on &quot;Manage Billing&quot;.</p>
+            </div>
             <div className="w-row">
                 <div className="column w-col w-col-6">
                     <a href="https://chrome.google.com/webstore/detail/linkedin-manager/bhkcnaoddagihkgnjfmpohdmffbieijb"
