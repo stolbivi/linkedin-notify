@@ -204,7 +204,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     }
 
     const onChange = (e: any) => {
-        let text = e.target.value?.trim();
+        let text = e.target.value;
         setText({value: text});
     }
 

@@ -339,6 +339,26 @@ export class LinkedInAPI {
             }
         }
 
+        function getGenericInvitationView(genericInvitationView: any) {
+            if (genericInvitationView) {
+                const attributes = genericInvitationView?.primaryImage?.attributes;
+                const result: any = {
+                    sentTime: genericInvitationView.sentTime,
+                    text: genericInvitationView.title?.text
+                }
+                const element = attributes?.filter((a: any) => a?.miniCompany);
+                if (element?.length > 0) {
+                    result.name = element[0].miniCompany.name;
+                    const logo = element[0].miniCompany.logo;
+                    result.logo = logo && logo["com.linkedin.common.VectorImage"] ? {
+                        rootUrl: logo["com.linkedin.common.VectorImage"]?.rootUrl,
+                        artifacts: extractArtifacts(logo["com.linkedin.common.VectorImage"]?.artifacts)
+                    } : {}
+                }
+                return result;
+            }
+        }
+
         const elements = response.elements as Array<any>;
         const result = elements.map(i => {
             const invitation = i.invitation;
@@ -350,7 +370,8 @@ export class LinkedInAPI {
                 customMessage: invitation?.customMessage,
                 message: invitation?.message,
                 unseen: invitation?.unseen,
-                fromMember: getFromMember(invitation?.fromMember)
+                fromMember: getFromMember(invitation?.fromMember),
+                genericInvitationView: getGenericInvitationView(i.genericInvitationView)
             }
         });
         return result;

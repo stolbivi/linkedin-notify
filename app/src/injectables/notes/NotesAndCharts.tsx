@@ -171,7 +171,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     }
 
     const onChange = (e: any) => {
-        let text = e.target.value?.trim();
+        let text = e.target.value;
         setText({value: text});
     }
 
