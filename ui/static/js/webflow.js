@@ -28625,7 +28625,7 @@ var BatchHttpLink = /** @class */ (function (_super) {
     function BatchHttpLink(fetchParams) {
         if (fetchParams === void 0) { fetchParams = {}; }
         var _this = _super.call(this) || this;
-        var _a = fetchParams.uri, uri = _a === void 0 ? '/graphql' : _a, 
+        var _a = fetchParams.uri, uri = _a === void 0 ? '/graphql' : _a,
         // use default global fetch is nothing passed in
         fetcher = fetchParams.fetch, includeExtensions = fetchParams.includeExtensions, batchInterval = fetchParams.batchInterval, batchMax = fetchParams.batchMax, batchKey = fetchParams.batchKey, requestOptions = __rest(fetchParams, ["uri", "fetch", "includeExtensions", "batchInterval", "batchMax", "batchKey"]);
         // dev warnings to ensure fetch is present
@@ -48035,7 +48035,7 @@ var QueryManager = /** @class */ (function () {
             });
         });
     };
-    QueryManager.prototype.fetchQuery = function (queryId, options, fetchType, 
+    QueryManager.prototype.fetchQuery = function (queryId, options, fetchType,
     // This allows us to track if this is a query spawned by a `fetchMore`
     // call for another query. We need this data to compute the `fetchMore`
     // network status for the query this is fetching for.
@@ -48630,7 +48630,7 @@ var QueryManager = /** @class */ (function () {
         var _this = this;
         var requestId = _a.requestId, queryId = _a.queryId, document = _a.document, options = _a.options, fetchMoreForQueryId = _a.fetchMoreForQueryId;
         var variables = options.variables, context = options.context, _b = options.errorPolicy, errorPolicy = _b === void 0 ? 'none' : _b, fetchPolicy = options.fetchPolicy;
-        var operation = this.buildOperationForLink(document, variables, __assign({}, context, { 
+        var operation = this.buildOperationForLink(document, variables, __assign({}, context, {
             // TODO: Should this be included for all entry points via
             // buildOperationForLink?
             forceFetch: !this.queryDeduplication }));
@@ -48768,7 +48768,7 @@ var QueryManager = /** @class */ (function () {
                 : document,
             variables: variables,
             operationName: Object(apollo_utilities__WEBPACK_IMPORTED_MODULE_3__["getOperationName"])(document) || undefined,
-            context: __assign({}, extraContext, { cache: cache, 
+            context: __assign({}, extraContext, { cache: cache,
                 // getting an entry's cache key is useful for cacheResolvers & state-link
                 getCacheKey: function (obj) {
                     if (cache.config) {
@@ -64796,7 +64796,7 @@ module.exports = isInteger;
 	 * Alias: `accounting.parse(string)`
 	 *
 	 * Decimal must be included in the regular expression to match floats (defaults to
-	 * accounting.settings.number.decimal), so if the number uses a non-standard decimal 
+	 * accounting.settings.number.decimal), so if the number uses a non-standard decimal
 	 * separator, provide it as the second argument.
 	 *
 	 * Also matches bracketed negatives (eg. "$ (1.99)" => -1.99)
@@ -71803,6 +71803,7 @@ Webflow.define('forms', module.exports = function ($, _) {
   }
 
   function build(i, el) {
+      console.log('Build:');
     // Store form state using namespace
     var $el = $(el);
     var data = $.data(el, namespace);
@@ -71862,8 +71863,6 @@ Webflow.define('forms', module.exports = function ($, _) {
       data.handler = typeof hostedSubmitWebflow === 'function' ? hostedSubmitWebflow : exportedSubmitWebflow;
       return;
     } // Alert for disconnected Webflow forms
-
-
     disconnected();
   }
 
@@ -71871,8 +71870,8 @@ Webflow.define('forms', module.exports = function ($, _) {
     listening = true; // Handle form submission for Webflow forms
 
     $doc.on('submit', namespace + ' form', function (evt) {
+      console.log("Submitting");
       var data = $.data(this, namespace);
-
       if (data.handler) {
         data.evt = evt;
         data.handler(data);
@@ -72031,6 +72030,7 @@ Webflow.define('forms', module.exports = function ($, _) {
 
 
   function submitMailChimp(data) {
+    console.log("Submitting");
     reset(data);
     var form = data.form;
     var payload = {}; // Skip Ajax submission if http/s mismatch, fallback to POST instead

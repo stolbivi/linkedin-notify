@@ -13,16 +13,20 @@ module.exports = function (env, argv) {
     console.log('Definitions:', definitions);
     return [
         withHTML(
-            tsEntry(DIST, "./src/components/dashboard.tsx", "js/dashboard.js", definitions),
-            "./src/components/dashboard.html", "dashboard.html", "css/dashboard.css"
+            tsEntry(DIST, "./src/components/index.tsx", "js/index.js", definitions),
+            "./src/components/index.html", "index.html", "css/index.css"
         ),
         withHTML(
             tsEntry(DIST, "./src/components/pricing.tsx", "js/pricing.js", definitions),
             "./src/components/pricing.html", "pricing.html", "css/pricing.css"
         ),
         withHTML(
-            tsEntry(DIST, "./src/components/index.tsx", "js/index.js", definitions),
-            "./src/components/index.html", "index.html", "css/index.css"
+            tsEntry(DIST, "./src/components/contact.tsx", "js/contact.js", definitions),
+            "./src/components/contact.html", "contact.html", "css/contact.css"
+        ),
+        withHTML(
+            tsEntry(DIST, "./src/components/dashboard.tsx", "js/dashboard.js", definitions),
+            "./src/components/dashboard.html", "dashboard.html", "css/dashboard.css"
         )
     ];
 };
