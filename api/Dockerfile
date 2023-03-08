@@ -1,4 +1,4 @@
-FROM node:18-alpine3.17
+FROM --platform=linux/amd64 node:18-alpine3.17
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 ADD static /home/node/app/static
 ADD src /home/node/app/src
