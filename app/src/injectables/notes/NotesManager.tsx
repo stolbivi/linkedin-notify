@@ -183,10 +183,10 @@ export const NotesManager: React.FC<Props> = ({}) => {
                     {notesFiltered?.map((n, i) =>
                         (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}/>))}
                     {notesFiltered.length == 0 &&
-                    <div className="no-notes">
-                        <NoNotes/>
-                        <div>No notes yet</div>
-                    </div>}
+                        <div className="no-notes">
+                            <NoNotes/>
+                            <div>No notes yet</div>
+                        </div>}
                 </div>
             </div>
             <Credits short={true}/>
@@ -284,21 +284,22 @@ export const NotesManager: React.FC<Props> = ({}) => {
                     {selectedNotesFiltered?.map((n, i) =>
                         (<NoteCard key={i} note={n}/>))}
                     {selectedNotesFiltered.length == 0 &&
-                    <div className="no-notes">
-                        <NoNotes/>
-                        <div>No notes yet</div>
-                    </div>}
+                        <div className="no-notes">
+                            <NoNotes/>
+                            <div>No notes yet</div>
+                        </div>}
                 </div>
             </div>
             <div className="footer-child">
                 <div className="text-input-container">
-                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
-                           disabled={!editable}
-                           className="text-input"
-                           placeholder="Leave a note" value={text?.value}/>
-                    <div onClick={() => postNote(text?.value)}
-                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
-                        <Submit/>
+                    <div className="text-input">
+                        <input type="text" onKeyUp={onKeyUp} onChange={onChange}
+                               disabled={!editable}
+                               placeholder="Leave a note" value={text?.value}/>
+                        <div onClick={() => postNote(text?.value)}
+                             className={postAllowed ? "submit-allowed" : "submit-disabled"}>
+                            <Submit/>
+                        </div>
                     </div>
                 </div>
                 <Credits/>
@@ -314,11 +315,11 @@ export const NotesManager: React.FC<Props> = ({}) => {
                     <AccessGuard setAccessState={setAccessState} className={"access-guard-px16 m-1"}
                                  loaderClassName={"loader-base loader-px24"}/>
                     {accessState === AccessState.Valid &&
-                    <React.Fragment>
-                        {completed ?
-                            (selection == undefined ? getAllNotes() : getSelectedNotes())
-                            : <div className="centered-loader"><Loader show={!completed}/></div>}
-                    </React.Fragment>}
+                        <React.Fragment>
+                            {completed ?
+                                (selection == undefined ? getAllNotes() : getSelectedNotes())
+                                : <div className="centered-loader"><Loader show={!completed}/></div>}
+                        </React.Fragment>}
                 </NotesContainer>
             </div>
         </React.Fragment>
