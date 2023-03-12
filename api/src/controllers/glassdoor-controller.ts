@@ -265,7 +265,8 @@ export class GlassDoorController extends BaseController {
         }
 
         function extractValue(original: string) {
-            let value = original.replace("K", "000");
+            let value = original.replace("M", "000000")
+                .replace("K", "000");
             const match = value.match("([^0-9,])+");
             let symbol = "";
             if (match) {
