@@ -14,6 +14,7 @@ export class StageController extends BaseController {
     @Tags("Persistence")
     @Get("stage/{id}")
     public async findById(id: string,
+                          @Query() as?: string,
                           @Request() request?: express.Request): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
@@ -21,28 +22,10 @@ export class StageController extends BaseController {
         }
 
         try {
-            const result = await StageModel.query("id").eq(id).exec();
-            let message: any = {response: this.getFirst(result)};
-            if (request?.user) {
-                message = {...message, user: request.user};
-            }
-            return Promise.resolve(message);
-        } catch (error) {
-            return this.handleError(error, request);
-        }
-    }
-
-    @Tags("Persistence")
-    @Get("stage/email")
-    public async findByEmail(@Query() q: string,
-                             @Request() request?: express.Request): Promise<any> {
-        if (this.abruptOnNoSession(request)) {
-            this.setStatus(403);
-            return Promise.resolve("Please, sign in to use premium features");
-        }
-
-        try {
-            const result = await StageModel.query("email").eq(q).exec();
+            let query = as
+                ? StageModel.query("id").eq(id).where("author").eq(as)
+                : StageModel.query("id").eq(id);
+            const result = await query.exec();
             let message: any = {response: this.getFirst(result)};
             if (request?.user) {
                 message = {...message, user: request.user};

@@ -43,8 +43,8 @@ export class NoteController extends BaseController {
         }
 
         try {
-            let query = as ?
-                NoteModel.query("author").eq(as)
+            let query = as
+                ? NoteModel.query("author").eq(as)
                 : NoteModel.scan();
             const result = await query.exec();
             let message: any = {response: result.map((i: any) => i.toJSON())};
@@ -68,10 +68,9 @@ export class NoteController extends BaseController {
         }
 
         try {
-            let query = NoteModel.query("profile").eq(q);
-            if (as) {
-                query = query.where("author", as);
-            }
+            let query = as
+                ? NoteModel.query("profile").eq(q).where("author").eq(as)
+                : NoteModel.query("profile").eq(q);
             const result = await query.exec();
             let message: any = {response: result.map((i: any) => i.toJSON())};
             if (request?.user) {

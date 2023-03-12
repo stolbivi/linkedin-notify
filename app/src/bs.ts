@@ -204,17 +204,19 @@ messages.listen<IAppRequest, any>({
     [AppMessageType.SetFeatures]: (message) =>
         backEndAPI.setFeatures(message.payload),
     [AppMessageType.Stage]: (message) => {
-        if (message.payload.id) {
-            return backEndAPI.getStage(message.payload.id)
-        } else {
-            return getCookies(LINKEDIN_DOMAIN)
-                .then(cookies => api.getCsrfToken(cookies))
-                .then(async token => {
+        return getCookies(LINKEDIN_DOMAIN)
+            .then(cookies => api.getCsrfToken(cookies))
+            .then(async token => {
+                const me = await api.getMe(token);
+                const as = api.extractProfileUrn(me);
+                if (message.payload.id) {
+                    return backEndAPI.getStage(message.payload.id, as)
+                } else {
                     const experienceResponse = await api.getExperience(token, message.payload.url);
                     const experience = api.extractExperience(experienceResponse);
-                    return backEndAPI.getStage(experience.urn)
-                })
-        }
+                    return backEndAPI.getStage(experience.urn, as);
+                }
+            })
     },
     [AppMessageType.SetStage]: (message) =>
         getCookies(LINKEDIN_DOMAIN)
@@ -229,7 +231,7 @@ messages.listen<IAppRequest, any>({
                     stageTo: message.payload.stage,
                 });
                 const noteExtended = await extendNote(token, [note.response], author);
-                const stage = await backEndAPI.setStage(message.payload.id, message.payload.stage);
+                const stage = await backEndAPI.setStage(message.payload.id, message.payload.stage, author);
                 return {note: {response: noteExtended[0]}, stage: stage};
             }),
     [AppMessageType.NotesAndCharts]: (message) =>
