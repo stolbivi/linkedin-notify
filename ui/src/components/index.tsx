@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {SignUp} from "./SignUp";
 import {ProductPrice} from "./ProductPrice";
+import "./index.scss"
 
 ReactDOM.render(
     <SignUp className="button w-button"/>,
