@@ -2,17 +2,14 @@ const dynamoose = require("dynamoose");
 
 require("dotenv").config();
 
-export interface Note {
-    profile: string
-    author: string
-    text?: string
-    stageFrom?: number
-    stageTo?: number
+export interface Shared {
+    profile?: string
+    urn: string
     createdAt?: string
     updatedAt?: string
 }
 
-const noteSchema = new dynamoose.Schema({
+const sharedSchema = new dynamoose.Schema({
     id: {
         type: String,
         hashKey: true,
@@ -26,29 +23,17 @@ const noteSchema = new dynamoose.Schema({
             global: true
         }
     },
-    author: {
+    urn: {
         type: String,
         required: true,
         index: {
-            name: "author-index",
+            name: "urn-index",
             global: true
         }
-    },
-    text: {
-        type: String,
-        required: false
-    },
-    stageFrom: {
-        type: Number,
-        required: false
-    },
-    stageTo: {
-        type: Number,
-        required: false
     },
 }, {
     "saveUnknown": true,
     "timestamps": true
 });
 
-export const NoteModel = dynamoose.model(process.env.TABLE_NOTES, noteSchema);
+export const SharedModel = dynamoose.model(process.env.TABLE_SHARED, sharedSchema);

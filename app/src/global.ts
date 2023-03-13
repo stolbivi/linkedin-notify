@@ -142,3 +142,10 @@ export interface LastViewed {
     updatedAt?: string
     hide?: boolean
 }
+
+export interface Shared {
+    profile?: string
+    urn: string
+    createdAt?: string
+    updatedAt?: string
+}

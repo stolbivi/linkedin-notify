@@ -1,5 +1,5 @@
 import {BaseAPI, Response} from "./BaseAPI";
-import {BACKEND_API, Features, LastViewed, Note, Subscriptions} from "../global";
+import {BACKEND_API, Features, LastViewed, Note, Shared, Subscriptions} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
 
 export class BackendAPI extends BaseAPI {
@@ -93,6 +93,20 @@ export class BackendAPI extends BaseAPI {
         return this.fetchRequest(
             `${BACKEND_API}last-viewed`,
             this.getRequest("POST", lastViewed)
+        );
+    }
+
+    public getShared(urn: string): Promise<Response<Shared[]>> {
+        return this.fetchRequest(
+            `${BACKEND_API}shared/urn/${urn}`,
+            this.getRequest("GET")
+        );
+    }
+
+    public postShared(shared: Shared): Promise<Response<Shared>> {
+        return this.fetchRequest(
+            `${BACKEND_API}shared`,
+            this.getRequest("POST", shared)
         );
     }
 

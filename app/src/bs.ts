@@ -339,7 +339,7 @@ function checkBadges() {
     console.debug('Firing badges checks');
     return getCookies(LINKEDIN_DOMAIN)
         .then(async cookies => {
-            const l = await api.isLogged(cookies);
+            const l = api.isLogged(cookies);
             if (l) {
                 console.debug('Checking badges');
                 chrome.action.setIcon({path: "/content/icon-128.png"});
@@ -367,7 +367,7 @@ function autoFeatures() {
 
     return getCookies(LINKEDIN_DOMAIN)
         .then(async cookies => {
-            const l = await api.isLogged(cookies);
+            const l = api.isLogged(cookies);
             if (l) {
                 console.debug('Updating feeds');
                 const featuresResponse = await backEndAPI.getFeatures();
@@ -375,7 +375,7 @@ function autoFeatures() {
                     const features = featuresResponse?.response?.features;
                     // const updatedAt = new Date(featuresResponse?.response?.updatedAt);
                     // console.log(updatedAt.toLocaleDateString());
-                    const token = await api.getCsrfToken(cookies);
+                    const token = api.getCsrfToken(cookies);
                     const response = await api.getUpdates(token, 50);
                     const updates = api.extractUpdates(response);
                     if (updates?.threads?.length > 0) {
@@ -386,12 +386,26 @@ function autoFeatures() {
                             matches.forEach(async m => {
                                 switch (m.type) {
                                     case "like":
-                                        console.log('Liking', t.urn, 'created by', t.author);
-                                        await api.like(token, t.urn);
+                                        const likeUrn = t.urn;
+                                        const likedUrn = await backEndAPI.getShared(likeUrn);
+                                        if (likedUrn?.response?.length > 0) {
+                                            console.log('Skipping', likeUrn);
+                                        } else {
+                                            console.log('Liking', likeUrn, 'created by', t.author);
+                                            await api.like(token, likeUrn);
+                                            await backEndAPI.postShared({urn: likeUrn});
+                                        }
                                         break;
                                     case "repost":
-                                        console.log('Reposting', t.shareUrn, 'created by', t.author);
-                                        await api.repost(token, t.shareUrn);
+                                        const repostUrn = t.shareUrn;
+                                        const repostedUrn = await backEndAPI.getShared(repostUrn);
+                                        if (repostedUrn?.response?.length > 0) {
+                                            console.log('Skipping', repostUrn);
+                                        } else {
+                                            console.log('Reposting', repostUrn, 'created by', t.author);
+                                            await api.repost(token, repostUrn);
+                                            await backEndAPI.postShared({urn: repostUrn});
+                                        }
                                         break;
                                 }
                             })
