@@ -55,9 +55,9 @@ require("dotenv").config();
                     if (billingId) {
                         getSubscriptions(billingId).then((response: any) => {
                             if (response?.data?.length > 0) {
-                                return res.redirect(process.env.LOGIN_SUCCESS_URL);
+                                return res.redirect(process.env.LOGIN_DASHBOARD_URL);
                             } else {
-                                return res.redirect(`${process.env.LOGIN_SUCCESS_URL}?checkout=1`);
+                                return res.redirect(`${process.env.LOGIN_PRICING_URL}?checkout=1`);
                             }
                             next();
                         });
