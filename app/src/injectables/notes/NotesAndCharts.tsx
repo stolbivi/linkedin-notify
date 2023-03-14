@@ -65,6 +65,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     const [show, setShow] = useState<boolean>(false);
     const [showChart, setShowChart] = useState<boolean>(false);
     const [completed, setCompleted] = useState<boolean>(false);
+    const [minimized, setMinimized] = useState<boolean>(true);
     const [stageInternal, setStageInternal] = useState<StageEnum>(stage);
     const [salaryInternal, setSalaryInternal] = useState<Salary>(salary);
     const [editable, setEditable] = useState<boolean>(true);
@@ -83,70 +84,47 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                 if (id && message.payload?.id !== id) {
                     return Promise.resolve();
                 }
-                if (message.payload?.salary) {
-                    setSalaryInternal(message.payload.salary);
-                }
-                if (message.payload?.stage >= 0) {
-                    setStageInternal(message.payload.stage);
-                }
                 setShowNotes(message.payload?.showNotes)
                 setShowSalary(message.payload?.showSalary)
                 setShow(true);
                 return Promise.resolve();
             },
         });
+        // getting data
+        setCompleted(false);
+        messages.request<IAppRequest, any>({
+            type: AppMessageType.SalaryPill,
+            payload: extractIdFromUrl(window.location.href)
+        }).then((r) => {
+            const salary = {...r.result, title: r.title, urn: r.urn};
+            setSalaryInternal(salary);
+            return salary;
+        }).then(salary => {
+            const stagePromise = messages.request<IAppRequest, any>({
+                type: AppMessageType.Stage,
+                payload: {id: salary.urn}
+            }).then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
+                .catch(e => console.error(e.error));
+            const notesPromise = messages.request<IAppRequest, any>({
+                type: AppMessageType.NotesByProfile,
+                payload: salary.urn
+            }).then((r) => setNotes(r.response))
+                .catch(e => console.error(e.error));
+            Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
+        }).catch(e => console.error(e.error));
     }, []);
 
     useEffect(() => {
-        setPostAllowed(text && text.value.length > 0);
-    }, [text]);
-
-    useEffect(() => {
         if (show) {
-            if (!salaryInternal) {
-                setCompleted(false);
-                messages.request<IAppRequest, any>({
-                    type: AppMessageType.SalaryPill,
-                    payload: extractIdFromUrl(window.location.href)
-                }, (r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    } else {
-                        setSalaryInternal({...r.result, title: r.title, urn: r.urn});
-                    }
-                }).then(/* nada */);
-            }
+            setTimeout(() => setMinimized(false), 100);
+        } else {
+            setMinimized(true);
         }
     }, [show]);
 
     useEffect(() => {
-        if (salaryInternal) {
-            if (!(stageInternal >= 0)) {
-                messages.request<IAppRequest, any>({
-                    type: AppMessageType.Stage,
-                    payload: {id: salaryInternal.urn}
-                }, (r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    } else {
-                        setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1);
-                    }
-                }).then(/* nada */);
-            }
-            setCompleted(false);
-            messages.request<IAppRequest, any>({
-                type: AppMessageType.NotesByProfile,
-                payload: salaryInternal.urn
-            }, (r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    setNotes(r.response);
-                    setCompleted(true);
-                }
-            }).then(/* nada */);
-        }
-    }, [salaryInternal]);
+        setPostAllowed(text && text.value.length > 0);
+    }, [text]);
 
     const appendNote = (note: NoteExtended) => {
         setNotes([...notes, note]);
@@ -198,7 +176,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                 <React.Fragment>
                     <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
                     <div onTransitionEnd={() => onExpanded()}
-                         className={"notes-and-charts " + (completed ? "position-expanded" : "position-collapsed")}>
+                         className={"notes-and-charts " + ((completed && !minimized) ? "position-expanded" : "position-collapsed")}>
                         <div className="close-button" onClick={() => close()}>
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -208,7 +186,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                         </div>
                         <React.Fragment>
                             <div className="local-loader"><Loader show={!completed}/></div>
-                            {completed && <NotesContainer>
+                            {completed && !minimized && <NotesContainer>
                                 <Collapsible initialOpened={showSalary}>
                                     <div data-role={CollapsibleRole.Title}>Avg. Base Salary (GBR)</div>
                                     <div data-role={CollapsibleRole.Static}>

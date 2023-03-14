@@ -68,11 +68,10 @@ export const StagePill: React.FC<Props> = ({url}) => {
         if (showNotes) {
             setShowNotes(false);
         } else {
-            setCompleted(false);
             messages.request({
                 type: AppMessageType.NotesAndCharts,
                 payload: {showSalary: false, showNotes: true}
-            }).finally(() => setCompleted(true));
+            }).finally(/*nada*/);
         }
     }
 
@@ -84,10 +83,10 @@ export const StagePill: React.FC<Props> = ({url}) => {
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName="loader-base loader-px24"/>
             {accessState === AccessState.Valid &&
-            <div className={"stage " + StageLabels[type].class} onClick={onClick} style={{marginLeft: "1em"}}>
-                <div className="loader"><Loader show={!completed}/></div>
-                <label style={{opacity: completed ? 1 : 0}}>{getText()}</label>
-            </div>}
+                <div className={"stage " + StageLabels[type].class} onClick={onClick} style={{marginLeft: "1em"}}>
+                    <div className="loader"><Loader show={!completed}/></div>
+                    <label style={{opacity: completed ? 1 : 0}}>{getText()}</label>
+                </div>}
         </React.Fragment>
     );
 }

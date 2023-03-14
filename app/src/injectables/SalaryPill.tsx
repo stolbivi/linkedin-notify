@@ -112,7 +112,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
         if (salary) {
             return messages.request({
                 type: AppMessageType.NotesAndCharts,
-                payload: {id, salary, showSalary, showNotes}
+                payload: {id, showSalary, showNotes}
             });
         }
     }
@@ -123,11 +123,11 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName={"loader-base loader-px24"}/>
             {accessState === AccessState.Valid &&
-            <div className={"salary-pill" + (completed ? " clickable" : "")}
-                 onClick={onClick}>
-                <Loader show={!completed}/>
-                {completed && getSalaryValue(salary)}
-            </div>}
+                <div className={"salary-pill" + (completed ? " clickable" : "")}
+                     onClick={onClick}>
+                    <Loader show={!completed}/>
+                    {completed && getSalaryValue(salary)}
+                </div>}
         </React.Fragment>
     );
 };
