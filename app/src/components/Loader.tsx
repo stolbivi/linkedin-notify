@@ -1,4 +1,5 @@
 import React from "react";
+import "./Loader.scss";
 
 type Props = {
     show: boolean

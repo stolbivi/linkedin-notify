@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {Badges} from "../global";
+import "./Tabs.scss";
 
 type Props = {
     onTab: (tab: number) => void

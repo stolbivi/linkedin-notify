@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, LINKEDIN_DOMAIN, IAppRequest, MESSAGE_ID} from "../global";
+import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID} from "../global";
 import {Messages} from "@stolbivi/pirojok";
-import {ConversationMessage} from "./ConversationMessage";
+import {ConversationMessageCard} from "./ConversationMessageCard";
+import "./ConversationDetails.scss";
 
 type Props = {
     details: Array<any>
@@ -16,7 +17,7 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails}) 
 
     useEffect(() => {
         setConversationMessages(details.map((m: any, i: number) =>
-            (<ConversationMessage message={m} key={i} onReply={onReply}/>)
+            (<ConversationMessageCard message={m} key={i} onReply={onReply}/>)
         ));
     }, [details]);
 

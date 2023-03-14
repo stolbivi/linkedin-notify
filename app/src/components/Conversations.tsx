@@ -13,6 +13,8 @@ import {ConversationCard} from "./ConversationCard";
 import {Loader} from "./Loader";
 import {ConversationDetails} from "./ConversationDetails";
 import {Premium} from "./Premium";
+import "./Conversations.scss";
+import "./NoData.scss";
 
 type Props = {
     setBadges: (badges: Badges) => void

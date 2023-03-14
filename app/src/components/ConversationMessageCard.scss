@@ -1,0 +1,44 @@
+@import "BaseCard";
+
+.message-card {
+  @extend .base-card;
+  padding: 0.55em 3em;
+
+  .message-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 0.5em;
+
+    .image-space {
+      height: 45px;
+      width: 45px;
+    }
+
+    img {
+      cursor: pointer;
+      border-radius: 50%;
+      height: 45px;
+      width: 45px;
+    }
+  }
+
+  .message-timestamp {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.9);
+    margin-left: 0.25em;
+  }
+
+  .message-no-media {
+    cursor: pointer;
+    font-style: italic;
+  }
+
+  .message-detail {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+    overflow-y: hidden;
+  }
+}

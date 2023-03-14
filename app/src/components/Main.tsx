@@ -6,6 +6,7 @@ import {Tabs, TabTypes} from "./Tabs";
 import {Conversations} from "./Conversations";
 import {Invitations} from "./Invitations";
 import {SignIn} from "./SignIn";
+import "./Main.scss";
 
 type Props = {};
 

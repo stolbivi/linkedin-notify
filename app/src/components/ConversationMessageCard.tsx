@@ -2,13 +2,14 @@ import React, {useEffect, useState} from "react";
 import {AppMessageType, IAppRequest, MESSAGE_ID} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {formatDate} from "../services/UIHelpers";
+import "./ConversationMessageCard.scss";
 
 type Props = {
     message: any,
     onReply: () => void
 };
 
-export const ConversationMessage: React.FC<Props> = ({message, onReply}) => {
+export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => {
 
     const [picture, setPicture] = useState("");
     const [deliveredAt, setDeliveredAt] = useState("");

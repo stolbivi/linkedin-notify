@@ -11,6 +11,7 @@ import {
 import {Messages} from "@stolbivi/pirojok";
 import {NotificationCard} from "./NotificationCard";
 import {Loader} from "./Loader";
+import "./NoData.scss";
 
 type Props = {
     setBadges: (badges: Badges) => void

@@ -1,0 +1,62 @@
+.has-unread {
+  background-color: #e2f0fd !important;
+}
+
+.bordered-card {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.base-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: start;
+  width: 100%;
+  background-color: white;
+
+  &:hover {
+    background-color: #ebebeb !important;
+  }
+
+  .card-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 0.5em;
+
+    img {
+      cursor: pointer;
+      border-radius: 50%;
+      height: 75px;
+      width: 75px;
+    }
+  }
+
+  .card-timestamp {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.9);
+    margin-left: auto;
+  }
+
+  .card-title {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.9);
+
+    &:hover {
+      color: rgba(0, 0, 0, 1);
+      text-decoration: underline;
+    }
+  }
+
+  .card-message {
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+    max-height: 3em;
+    overflow-y: hidden;
+  }
+}

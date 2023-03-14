@@ -3,6 +3,7 @@ import {AppMessageType, IAppRequest, InvitationsResponse, MESSAGE_ID, VERBOSE} f
 import {Messages} from "@stolbivi/pirojok";
 import {InvitationCard} from "./InvitationCard";
 import {Loader} from "./Loader";
+import "./NoData.scss";
 
 type Props = {};
 

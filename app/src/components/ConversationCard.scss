@@ -1,0 +1,22 @@
+@import "BaseCard";
+
+.conversation-card {
+  @extend .base-card;
+  padding: 0.55em 0.75em;
+  cursor: pointer;
+
+  .card-badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 400;
+    color: white;
+    background-color: rgb(10, 102, 194);
+    border-radius: 50%;
+    min-width: 25px;
+    height: 25px;
+    margin-left: auto;
+  }
+
+}

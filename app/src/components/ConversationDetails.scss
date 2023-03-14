@@ -1,0 +1,46 @@
+.details {
+  position: relative;
+
+  .detail-header {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+
+    .details-back {
+      cursor: pointer;
+      color: rgba(0, 0, 0, 0.6);
+      margin-left: 0.5em;
+      margin-right: auto;
+
+      &:hover {
+        color: rgba(0, 0, 0, 0.9);
+      }
+
+      svg {
+        height: 32px;
+        width: 32px;
+      }
+    }
+
+    .details-reply {
+      margin-left: auto;
+      margin-right: 0.5em;
+      font-size: 16px;
+      background-color: white;
+      color: rgb(10, 102, 194);
+      border: 1px solid rgb(10, 102, 194);
+      border-radius: 50px;
+      padding: 0.25em 0.75em;
+      user-select: none;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #e2f0fd !important;
+      }
+    }
+  }
+}

@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, LINKEDIN_DOMAIN, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID, VERBOSE} from "../global";
 import {formatDate} from "../services/UIHelpers";
+import "./NotificationCard.scss";
 
 type Props = {
     notification: any

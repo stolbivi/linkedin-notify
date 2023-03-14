@@ -1,6 +1,7 @@
 import React from "react";
 import {Messages} from "@stolbivi/pirojok";
 import {AppMessageType, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import "./Premium.scss"
 
 type Props = {
     setUnlocked: (unlocked: boolean) => void

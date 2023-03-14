@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {AppMessageType, Badges, BadgesResponse, IAppRequest, MESSAGE_ID} from "../global";
 import {Messages} from "@stolbivi/pirojok";
 import {formatDate} from "../services/UIHelpers";
+import "./ConversationCard.scss";
 
 type Props = {
     conversation: any
@@ -71,7 +72,7 @@ export const ConversationCard: React.FC<Props> = ({conversation, getDetails, set
                 <div className="w-100 d-flex flex-row align-items-end">
                     <div className="card-message">{message?.body}</div>
                     {unreadCount > 0 &&
-                    <div className="card-badge">{unreadCount}</div>
+                        <div className="card-badge">{unreadCount}</div>
                     }
                 </div>
             </div>
