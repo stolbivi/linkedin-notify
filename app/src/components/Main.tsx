@@ -7,6 +7,7 @@ import {Conversations} from "./Conversations";
 import {Invitations} from "./Invitations";
 import {SignIn} from "./SignIn";
 import "./Main.scss";
+import {Logo} from "../icons/Logo";
 
 type Props = {};
 
@@ -32,7 +33,15 @@ export const Main: React.FC<Props> = ({}) => {
             {isLogged === false
                 ? <SignIn/>
                 : <div className="w-100 d-flex flex-column justify-content-center align-items-start">
-                    <Tabs onTab={setTab} badges={badges}/>
+                    <div className="header">
+                        <div className="title-row">
+                            <div className="title">
+                                <Logo/>
+                                <span>LinkedIn Manager</span>
+                            </div>
+                        </div>
+                        <Tabs onTab={setTab} badges={badges}/>
+                    </div>
                     <div className="scroll">
                         {
                             tab === TabTypes.MyNetwork && <Invitations/>

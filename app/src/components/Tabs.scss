@@ -5,16 +5,14 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  position: fixed;
-  top: 0px;
   background-color: $tab;
+  border-top: 1px solid $tab-border;
   border-bottom: 1px solid $tab-border;
-  z-index: 1000;
 
   .tab-item {
     position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     flex-grow: 1;
     align-items: center;
@@ -23,6 +21,10 @@
     font-weight: 400;
     padding: 1em;
     color: $tab-item;
+
+    span {
+      margin: 0em 0.5em;
+    }
 
     &:hover {
       color: $tab-item-hover;
@@ -47,6 +49,7 @@
   }
 
   .tab-selected {
+    color: $tab-item-selected !important;;
     background-color: $tab-selected !important;
   }
 }
