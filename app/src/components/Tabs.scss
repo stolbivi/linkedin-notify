@@ -1,3 +1,5 @@
+@import "../themes/light";
+
 .tabs {
   width: 100%;
   display: flex;
@@ -5,8 +7,8 @@
   align-items: center;
   position: fixed;
   top: 0px;
-  background-color: white;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: $tab;
+  border-bottom: 1px solid $tab-border;
   z-index: 1000;
 
   .tab-item {
@@ -20,10 +22,10 @@
     font-size: 14px;
     font-weight: 400;
     padding: 1em;
-    color: rgba(0, 0, 0, 0.6);
+    color: $tab-item;
 
     &:hover {
-      color: rgba(0, 0, 0, 0.9);
+      color: $tab-item-hover;
     }
 
     .tab-badge {
@@ -35,8 +37,8 @@
       align-items: center;
       font-size: 14px;
       font-weight: 400;
-      color: white;
-      background-color: #ce3b28;
+      color: $tab_badge;
+      background-color: $tab_badge-background;
       border-radius: 50%;
       min-width: 25px;
       height: 25px;
@@ -45,6 +47,6 @@
   }
 
   .tab-selected {
-    background-color: #f3f2ef !important;
+    background-color: $tab-selected !important;
   }
 }

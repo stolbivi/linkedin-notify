@@ -1,3 +1,4 @@
+@import "../themes/light";
 @import "BaseCard";
 
 .conversation-card {
@@ -11,8 +12,8 @@
     align-items: center;
     font-size: 14px;
     font-weight: 400;
-    color: white;
-    background-color: rgb(10, 102, 194);
+    color: $conversation-card-badge;
+    background-color: $conversation-card-background;
     border-radius: 50%;
     min-width: 25px;
     height: 25px;

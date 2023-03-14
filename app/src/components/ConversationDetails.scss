@@ -1,3 +1,5 @@
+@import "../themes/light";
+
 .details {
   position: relative;
 
@@ -12,12 +14,12 @@
 
     .details-back {
       cursor: pointer;
-      color: rgba(0, 0, 0, 0.6);
+      color: $details-back;
       margin-left: 0.5em;
       margin-right: auto;
 
       &:hover {
-        color: rgba(0, 0, 0, 0.9);
+        color: $details-back-hover;
       }
 
       svg {
@@ -30,16 +32,16 @@
       margin-left: auto;
       margin-right: 0.5em;
       font-size: 16px;
-      background-color: white;
-      color: rgb(10, 102, 194);
-      border: 1px solid rgb(10, 102, 194);
+      background-color: $details-reply-background;
+      color: $details-reply;
+      border: 1px solid $details-reply-border;
       border-radius: 50px;
       padding: 0.25em 0.75em;
       user-select: none;
       cursor: pointer;
 
       &:hover {
-        background-color: #e2f0fd !important;
+        background-color: $details-reply-background-hover !important;
       }
     }
   }

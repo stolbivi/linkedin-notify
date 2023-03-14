@@ -1,3 +1,5 @@
+@import "../themes/light";
+
 .scroll {
   width: 100%;
   margin-top: 75px;
@@ -10,5 +12,5 @@
   align-items: center;
   width: 550px;
   padding: 0px;
-  background-color: #f3f2ef;
+  background-color: $container;
 }

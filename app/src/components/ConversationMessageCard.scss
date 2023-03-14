@@ -1,3 +1,4 @@
+@import "../themes/light";
 @import "BaseCard";
 
 .message-card {
@@ -26,7 +27,7 @@
   .message-timestamp {
     font-size: 14px;
     font-weight: 400;
-    color: rgba(0, 0, 0, 0.9);
+    color: $message-card-timestamp;
     margin-left: 0.25em;
   }
 
@@ -38,7 +39,7 @@
   .message-detail {
     font-size: 14px;
     font-weight: 400;
-    color: rgba(0, 0, 0, 0.6);
+    color: $message-card-detail;
     overflow-y: hidden;
   }
 }

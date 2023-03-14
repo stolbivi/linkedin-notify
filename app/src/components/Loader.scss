@@ -1,6 +1,8 @@
+@import "../themes/light";
+
 .loader {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: rgb(10, 102, 194);
+  color: $loader;
 }
