@@ -61,7 +61,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
                 <Premium setUnlocked={setUnlocked}/>
             </div>
             <div className={"w-100" + (!unlocked ? " premium-blur" : "")} hidden={!completed}>
-                {conversations.length == 0 && <div className="no-data">No data</div>}
+                {conversations.length == 0 && <div className="no-data">No conversations</div>}
                 <div className="w-100" hidden={showDetails}>{conversations}</div>
                 <div className="w-100" hidden={!showDetails}>
                     <ConversationDetails details={details} setShowDetails={setShowDetails}/>

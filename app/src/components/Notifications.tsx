@@ -40,7 +40,7 @@ export const Notifications: React.FC<Props> = ({setBadges}) => {
     return (
         <div className="w-100">
             <Loader show={!completed} className="p-5"/>
-            {completed && notifications.length == 0 && <div className="no-data">No data</div>}
+            {completed && notifications.length == 0 && <div className="no-data">No notifications</div>}
             {notifications}
         </div>
     );
