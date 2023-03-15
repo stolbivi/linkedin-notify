@@ -2,10 +2,23 @@
 
 .has-unread {
   background-color: $base-card-unread !important;
+
+  .card-message {
+    background-color: $base-card;
+  }
 }
 
-.bordered-card {
-  border-bottom: 1px solid $base-card-border;
+.card-holder {
+  display: flex;
+  flex-direction: column;
+
+  &:after {
+    border-bottom: 1px solid $base-card-border;
+    content: '';
+    display: block;
+    margin-left: 5%;
+    width: 90%;
+  }
 }
 
 .base-card {
@@ -15,36 +28,48 @@
   align-items: start;
   width: 100%;
   background-color: $base-card;
+  padding: 1.5em 1em;
 
   &:hover {
     background-color: $base-card-hover !important;
+
+    .card-message {
+      background-color: $base-card;
+    }
+  }
+
+  .card-pre-section {
+    display: flex;
+    flex-direction: column;
+    width: 65px;
+    justify-content: start;
+    align-items: start;
   }
 
   .card-image {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-right: 0.5em;
+    margin-top: 0.25em;
 
     img {
       cursor: pointer;
       border-radius: 50%;
-      height: 75px;
-      width: 75px;
+      height: 44px;
+      width: 44px;
     }
   }
 
   .card-timestamp {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 400;
     color: $base-card-timestamp;
-    margin-left: auto;
   }
 
   .card-title {
     cursor: pointer;
-    font-size: 16px;
-    font-weight: 400;
+    font-size: 17px;
+    font-weight: 700;
     color: $base-card-title;
 
     &:hover {
@@ -58,7 +83,12 @@
     font-size: 14px;
     font-weight: 400;
     color: $base-card-message;
-    max-height: 3em;
+    max-height: 4.25em;
     overflow-y: hidden;
+    background: $base-card-message-background;
+    border-radius: 0px 10px 10px 10px;
+    padding: 1em;
+    margin: 1em;
   }
+
 }

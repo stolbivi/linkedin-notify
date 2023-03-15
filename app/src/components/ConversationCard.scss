@@ -3,21 +3,19 @@
 
 .conversation-card {
   @extend .base-card;
-  padding: 0.55em 0.75em;
   cursor: pointer;
 
   .card-badge {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 400;
     color: $conversation-card-badge;
     background-color: $conversation-card-background;
     border-radius: 50%;
-    min-width: 25px;
-    height: 25px;
-    margin-left: auto;
+    min-width: 17px;
+    height: 17px;
   }
 
 }

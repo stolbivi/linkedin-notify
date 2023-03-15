@@ -59,20 +59,22 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
     }
 
     return (
-        <div className={"notification-card bordered-card" + (notification.read === false ? " has-unread" : "")}
-             onClick={onCardAction}>
-            {picture.length > 0 && <div className="card-image">
-                <img src={picture}/>
-            </div>}
-            <div className="w-100 d-flex flex-column justify-content-center align-items-start">
-                <div className="w-100 d-flex flex-row">
+        <div className="card-holder">
+            <div className={"notification-card " + (notification.read === false ? " has-unread" : "")}
+                 onClick={onCardAction}>
+                <div className="card-pre-section">
                     <div className="card-timestamp">{publishedAt}</div>
+                    {picture.length > 0 && <div className="card-image">
+                        <img src={picture}/>
+                    </div>}
                 </div>
-                <div className="w-100 d-flex flex-row">
-                    <div className="card-message">{notification.headline}</div>
-                </div>
-                <div className="w-100 d-flex flex-row justify-content-between align-items-center pt-1">
-                    {actions}
+                <div className="w-100 d-flex flex-column justify-content-center align-items-start">
+                    <div className="w-100 d-flex flex-row">
+                        <div className="card-message">{notification.headline}</div>
+                    </div>
+                    <div className="w-100 d-flex flex-row justify-content-between align-items-center pt-1">
+                        {actions}
+                    </div>
                 </div>
             </div>
         </div>

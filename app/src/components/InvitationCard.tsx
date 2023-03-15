@@ -72,27 +72,31 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
     }
 
     return (
-        <div className={"invitation-card bordered-card" + (invitation.unseen === true ? " has-unread" : "")}>
-            <div className="card-image">
-                <img src={picture} onClick={onOpenProfile}/>
-            </div>
-            <div className="w-100 d-flex flex-column justify-content-center align-items-start">
-                <div className="w-100 d-flex flex-row">
-                    <div
-                        className="card-title"
-                        onClick={onOpenProfile}>{getTitle()}</div>
+        <div className="card-holder">
+            <div className={"invitation-card " + (invitation.unseen === true ? " has-unread" : "")}>
+                <div className="card-pre-section">
                     <div className="card-timestamp">{sentTime}</div>
+                    <div className="card-image">
+                        <img src={picture} onClick={onOpenProfile}/>
+                    </div>
                 </div>
-                <div className="w-100 d-flex flex-row align-items-center">
-                    <div className="card-subtitle" onClick={onOpenProfile}>{getText()}</div>
-                    <div className="action-ignore" onClick={onIgnore} hidden={hideActions}>Ignore</div>
-                    <div className="action-accept" onClick={onAccept} hidden={hideActions}>Accept</div>
+                <div className="w-100 d-flex flex-column justify-content-center align-items-start">
+                    <div className="w-100 d-flex flex-row">
+                        <div
+                            className="card-title"
+                            onClick={onOpenProfile}>{getTitle()}</div>
+                    </div>
+                    <div className="w-100 d-flex flex-row align-items-center">
+                        <div className="card-subtitle" onClick={onOpenProfile}>{getText()}</div>
+                        <div className="action-ignore" onClick={onIgnore} hidden={hideActions}>Ignore</div>
+                        <div className="action-accept" onClick={onAccept} hidden={hideActions}>Accept</div>
+                    </div>
+                    {invitation.customMessage &&
+                        <div className="custom-message">
+                            <div>{invitation.message}</div>
+                            {/*<div className="action-reply" onClick={onReply}>Reply to {invitation.fromMember?.firstName}</div>*/}
+                        </div>}
                 </div>
-                {invitation.customMessage &&
-                    <div className="custom-message">
-                        <div>{invitation.message}</div>
-                        {/*<div className="action-reply" onClick={onReply}>Reply to {invitation.fromMember?.firstName}</div>*/}
-                    </div>}
             </div>
         </div>
     );

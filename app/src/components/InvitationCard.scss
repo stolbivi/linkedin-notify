@@ -3,7 +3,6 @@
 
 .invitation-card {
   @extend .base-card;
-  padding: 0.55em 0.75em;
 
   .card-subtitle {
     margin-right: auto;
@@ -11,7 +10,7 @@
     font-size: 14px;
     font-weight: 400;
     color: $invitation-card-subtitle;
-    max-height: 3em;
+    max-height: 4.25em;
     overflow-y: hidden;
   }
 

@@ -1,24 +1,22 @@
 $base-card: white;
-$base-card-hover: #ebebeb;
-$base-card-timestamp: rgba(0, 0, 0, 0.9);
+$base-card-hover: #f3f3f3;
+$base-card-timestamp: #8D8D8D;
 $base-card-title: rgba(0, 0, 0, 0.9);
 $base-card-title-hover: rgba(0, 0, 0, 1);
-$base-card-message: rgba(0, 0, 0, 0.6);
+$base-card-message: #909090;
+$base-card-message-background: rgba(244, 244, 244, 0.38);
 $base-card-unread: #e2f0fd;
 $base-card-border: rgba(0, 0, 0, 0.1);
 
 $conversation-card-badge: white;
 $conversation-card-background: rgb(10, 102, 194);
 
-$details-back: rgba(0, 0, 0, 0.6);
-$details-back-hover: rgba(0, 0, 0, 0.9);
+$details-back: rgba(106, 106, 106, 0.6);
+$details-back-hover: rgba(106, 106, 106, 0.9);
 $details-reply-background: white;
 $details-reply-background-hover: #e2f0fd;
 $details-reply: rgb(10, 102, 194);
 $details-reply-border: rgb(10, 102, 194);
-
-$message-card-timestamp: rgba(0, 0, 0, 0.9);
-$message-card-detail: rgba(0, 0, 0, 0.6);
 
 $invitation-card-subtitle: rgba(0, 0, 0, 0.6);
 $invitation-card-action-1: #585858;
@@ -40,7 +38,6 @@ $sign-in-border: rgb(10, 102, 194);
 $sign-in-background: white;
 $sign-in-hover: #e2f0fd;
 
-
 $tab: white;
 $tab-selected: #1569BF;
 $tab-border: rgba(0, 0, 0, 0.1);
@@ -54,5 +51,3 @@ $header: #585858;
 $header-background: white;
 
 $loader: rgb(10, 102, 194);
-
-$container: #f3f2ef;

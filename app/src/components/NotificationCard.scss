@@ -3,7 +3,6 @@
 
 .notification-card {
   @extend .base-card;
-  padding: 0.55em 0.75em;
   cursor: pointer;
 
   .notification-action {
@@ -19,5 +18,9 @@
     &:hover {
       background-color: $notification-card-action-1-hover !important;
     }
+  }
+
+  .card-message {
+    margin: 1em;
   }
 }
