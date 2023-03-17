@@ -12,7 +12,7 @@ export enum StageEnum {
 
 export interface Stage {
     stage: StageEnum
-    author: string
+    author?: string
     email?: string
     createdAt?: string
     updatedAt?: string
@@ -30,7 +30,7 @@ const stageSchema = new dynamoose.Schema({
     },
     author: {
         type: String,
-        required: true,
+        required: false,
         index: {
             name: "author-index",
             global: true
@@ -38,7 +38,7 @@ const stageSchema = new dynamoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: false
     },
     stage: {
         type: Number,
