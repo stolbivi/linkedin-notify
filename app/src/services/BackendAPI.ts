@@ -1,6 +1,7 @@
 import {BaseAPI, Response} from "./BaseAPI";
 import {BACKEND_API, Features, LastViewed, Note, Shared, Subscriptions} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
+import {SetFeaturePayload} from "../actions";
 
 export class BackendAPI extends BaseAPI {
 
@@ -32,7 +33,7 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public setFeatures(features: any): Promise<Response<Features>> {
+    public setFeatures(features: SetFeaturePayload): Promise<Response<Features>> {
         return this.fetchRequest(
             `${BACKEND_API}features`,
             this.getRequest("POST", features)

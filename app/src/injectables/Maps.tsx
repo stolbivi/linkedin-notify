@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
-import {Messages} from "@stolbivi/pirojok";
+import {extractIdFromUrl, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
 import {inject} from "../utils/InjectHelper";
 
 // @ts-ignore
 import stylesheet from "./Maps.scss";
+import {getSubscription} from "../actions";
 
 type Props = {
     host: HTMLElement
@@ -27,7 +28,7 @@ export const MapsFactory = () => {
 
 export const Maps: React.FC<Props> = ({host}) => {
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     const [disabled, setDisabled] = useState(true);
     const [src, setSrc] = useState<string>();
@@ -57,24 +58,23 @@ export const Maps: React.FC<Props> = ({host}) => {
         window.addEventListener('popstate', () => {
             setUrlInternal(window.location.href);
         });
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.Subscription,
-        }, (r) => {
-            // TODO FIXME
-            // setDisabled(false);
-            // return Promise.resolve();
-            if (r.status === 403) {
-                setDisabled(true);
-            } else if (r.subscriptions?.length > 0) {
-                const subscription = r.subscriptions[0];
-                if (subscription.status === "trialing" || subscription.status === "active") {
-                    setDisabled(false);
-                    return Promise.resolve();
+        messages.request(getSubscription())
+            .then((r) => {
+                // TODO FIXME
+                // setDisabled(false);
+                // return Promise.resolve();
+                if (r.status === 403) {
+                    setDisabled(true);
+                } else if (r.subscriptions?.length > 0) {
+                    const subscription = r.subscriptions[0];
+                    if (subscription.status === "trialing" || subscription.status === "active") {
+                        setDisabled(false);
+                        return Promise.resolve();
+                    }
                 }
-            }
-            setDisabled(true);
-            return Promise.resolve();
-        }).then(/* nada */);
+                setDisabled(true);
+                return Promise.resolve();
+            }).then(/* nada */);
     }, []);
 
     return (

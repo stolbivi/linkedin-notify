@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {LINKEDIN_DOMAIN, VERBOSE} from "../global";
 import {formatDate} from "../services/UIHelpers";
 import "./NotificationCard.scss";
+import {markNotificationRead, openUrl} from "../actions";
 
 type Props = {
     notification: any
@@ -15,7 +16,7 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
     const [cardAction, setCardAction] = useState("");
     const [actions, setActions] = useState([]);
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
         if (notification.headerImage?.rootUrl) {
@@ -34,28 +35,19 @@ export const NotificationCard: React.FC<Props> = ({notification}) => {
         ));
     }, [notification]);
 
-    const markRead = () => messages.request<IAppRequest, any>({
-        type: AppMessageType.MarkNotificationRead,
-        payload: notification.entityUrn
-    });
+    const markRead = () => messages.request(markNotificationRead(notification.entityUrn));
 
     const onAction = (actionTarget: string, e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (actionTarget && actionTarget.length > 0) {
             e.stopPropagation();
             markRead().then(/* nada */);
-            return messages.request<IAppRequest, any>({
-                type: AppMessageType.OpenURL,
-                payload: {url: `https://${LINKEDIN_DOMAIN}/` + actionTarget}
-            });
+            return messages.request(openUrl(`https://${LINKEDIN_DOMAIN}/` + actionTarget));
         }
     }
 
     const onCardAction = () => {
         markRead().then(/* nada */);
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.OpenURL,
-            payload: {url: `https://${LINKEDIN_DOMAIN}/` + cardAction}
-        });
+        return messages.request(openUrl(`https://${LINKEDIN_DOMAIN}/` + cardAction));
     }
 
     return (

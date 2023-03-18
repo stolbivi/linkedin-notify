@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {extractIdFromUrl, VERBOSE} from "../../global";
 import {StageEnum, StageLabels} from "./StageSwitch";
 import {injectLastChild} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
@@ -8,6 +8,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
+import {getStages, showNotesAndChartsProxy} from "../../actions";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -38,23 +39,21 @@ export const StagePill: React.FC<Props> = ({url}) => {
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const [urlInternal, setUrlInternal] = useState<string>(url);
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.Stage,
-            payload: {url: extractIdFromUrl(urlInternal)}
-        }, (r) => {
-            if (r.error) {
-                console.error(r.error);
-            } else {
-                const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
-                setType(s);
-            }
-        }).finally(() => setCompleted(true));
+        messages.request(getStages({url: extractIdFromUrl(urlInternal)}))
+            .then((r) => {
+                if (r.error) {
+                    console.error(r.error);
+                } else {
+                    const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
+                    setType(s);
+                }
+            }).finally(() => setCompleted(true));
 
     }, [accessState, urlInternal]);
 
@@ -68,10 +67,7 @@ export const StagePill: React.FC<Props> = ({url}) => {
         if (showNotes) {
             setShowNotes(false);
         } else {
-            messages.request({
-                type: AppMessageType.NotesAndCharts,
-                payload: {showSalary: false, showNotes: true}
-            }).finally(/*nada*/);
+            return messages.request(showNotesAndChartsProxy({showSalary: false, showNotes: true}));
         }
     }
 

@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {VERBOSE} from "../global";
 import {Lock} from "../icons/Lock";
 import {Loader} from "../components/Loader";
 
 import "./AccessGuard.scss";
+import {getSubscription, openUrl as openUrlAction} from "../actions";
 
 export const SIGN_IN_URL = `${process.env.BACKEND_BASE}/auth/linkedin`;
 export const SIGN_UP_URL = `${process.env.SIGN_UP_URL}`;
@@ -25,41 +26,37 @@ type Props = {
 
 export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAccessState, hideTitle}) => {
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
     const [completed, setCompleted] = useState<boolean>(false);
     const [state, setState] = useState<AccessState>(AccessState.Unknown);
 
     useEffect(() => {
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.Subscription,
-        }, (r) => {
-            // TODO FIXME
-            // setState(AccessState.Valid);
-            // setAccessState(AccessState.Valid);
-            // return;
-            if (r.status === 403) {
-                setState(AccessState.SignInRequired);
-                setAccessState(AccessState.SignInRequired);
-            } else if (r.subscriptions?.length > 0) {
-                const subscription = r.subscriptions[0];
-                if (subscription.status === "trialing" || subscription.status === "active") {
-                    setState(AccessState.Valid);
-                    setAccessState(AccessState.Valid);
-                    return;
+        messages.request(getSubscription())
+            .then((r) => {
+                // TODO FIXME
+                // setState(AccessState.Valid);
+                // setAccessState(AccessState.Valid);
+                // return;
+                if (r.status === 403) {
+                    setState(AccessState.SignInRequired);
+                    setAccessState(AccessState.SignInRequired);
+                } else if (r.subscriptions?.length > 0) {
+                    const subscription = r.subscriptions[0];
+                    if (subscription.status === "trialing" || subscription.status === "active") {
+                        setState(AccessState.Valid);
+                        setAccessState(AccessState.Valid);
+                        return;
+                    }
                 }
-            }
-            setState(AccessState.Invalid);
-            setAccessState(AccessState.Invalid);
-        }).finally(() => setCompleted(true));
+                setState(AccessState.Invalid);
+                setAccessState(AccessState.Invalid);
+            }).finally(() => setCompleted(true));
     }, []);
 
     const openUrl = (e: any, url: string) => {
         e.preventDefault();
         e.stopPropagation();
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.OpenURL,
-            payload: {url}
-        });
+        return messages.request(openUrlAction({url}));
     }
 
     const getContents = () => {

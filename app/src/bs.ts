@@ -1,23 +1,42 @@
-import {Messages, Tabs} from "@stolbivi/pirojok";
-import {
-    AppMessageType,
-    IAppRequest,
-    LINKEDIN_DOMAIN,
-    MESSAGE_ID,
-    Note,
-    NoteExtended,
-    SHARE_URN,
-    VERBOSE
-} from "./global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {LINKEDIN_DOMAIN, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
-import {MapsAPI} from "./services/MapsAPI";
+import {
+    completion,
+    conversationAck,
+    getBadges,
+    getConversationDetails,
+    getConversations,
+    getCookies,
+    getFeatures,
+    getInvitations,
+    getIsLogged,
+    getIsUnlocked,
+    getLastViewed,
+    getNotesAll,
+    getNotesByProfile,
+    getNotifications,
+    getSalary,
+    getStages,
+    getSubscription,
+    getTz,
+    handleInvitation,
+    markNotificationRead,
+    markNotificationsSeen,
+    openUrl,
+    postNote,
+    setFeatures,
+    setLastViewed,
+    setStage,
+    showNotesAndChartsProxy,
+    unlock
+} from "./actions";
 
-const messages = new Messages(MESSAGE_ID, VERBOSE);
-const tabs = new Tabs();
+const messagesV2 = new MessagesV2(VERBOSE);
+
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
-const mapsAPI = new MapsAPI();
 
 // adding popup
 chrome.action.onClicked.addListener(() => {
@@ -36,12 +55,6 @@ const startMonitoring = () => {
     chrome.alarms.create(AUTO_FEATURES, {periodInMinutes: AUTO_FREQUENCY, delayInMinutes: 0.2});
 }
 
-/**
- * Returns all cookies of the store for particular domain, requires host permissions in manifest
- * @param domain
- */
-const getCookies = async (domain: string) => chrome.cookies.getAll({domain})
-
 // Main course below! //
 
 getCookies(LINKEDIN_DOMAIN)
@@ -52,274 +65,33 @@ getCookies(LINKEDIN_DOMAIN)
         }
     });
 
-async function extendNote(token: string, notes: Note[], as: string): Promise<NoteExtended[]> {
-    function getPicture(profilePicture: any) {
-        return profilePicture
-            ? profilePicture.rootUrl + profilePicture.artifacts[0].path
-            : "https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q"
-    }
-
-    const cache = {} as { [key: string]: any };
-    notes.forEach(n => {
-        cache[n.author] = {};
-        cache[n.profile] = {};
-    })
-    const promises = Object.keys(cache)
-        .map(k => api.getProfile(token, k)
-            .then(p => api.extractProfile(k, p))
-            .then(e => ({id: k, profile: e}))
-        );
-    const result = await Promise.all(promises);
-    result.forEach(r => cache[r.id] = r.profile);
-    return notes.map(n => ({
-        ...n,
-        authorName: as === n.author ? "You" : cache[n.author].name[0],
-        authorPicture: getPicture(cache[n.author].profilePicture),
-        profileName: cache[n.profile].name[0],
-        profileLink: cache[n.profile].link?.length > 0 ? cache[n.profile].link[0] : undefined,
-        profilePicture: getPicture(cache[n.profile].profilePicture),
-        timestamp: new Date(n.updatedAt)
-    }));
-}
-
-messages.listen<IAppRequest, any>({
-    [AppMessageType.OpenURL]: (message) =>
-        chrome.tabs.create({url: message.payload.url, selected: true}),
-    [AppMessageType.IsLogged]: () =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.isLogged(cookies))
-            .then(logged => ({isLogged: logged})),
-    [AppMessageType.Badges]: () =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const badgesResponse = await api.getTabBadges(token);
-                const badges = api.extractBadges(badgesResponse);
-                return {badges};
-            }),
-    [AppMessageType.Conversations]: () =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const meResponse = await api.getMe(token);
-                const profileUrn = api.extractProfileUrn(meResponse);
-                const conversationResponse = await api.getConversations(token, profileUrn);
-                const conversations = api.extractConversations(conversationResponse);
-                return {conversations};
-            }),
-    [AppMessageType.ConversationDetails]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const detailsResponse = await api.getConversationDetails(token, message.payload);
-                const details = await api.extractConversationDetails(detailsResponse);
-                return {details};
-            }),
-    [AppMessageType.ConversationAck]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                await api.markConversationRead(token, message.payload);
-                await api.markAllMessageAsSeen(token, message.payload)
-            }),
-    [AppMessageType.Notifications]: () =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const notificationsResponse = await api.getNotifications(token);
-                const notifications = api.extractNotifications(notificationsResponse);
-                return {notifications};
-            }),
-    [AppMessageType.MarkNotificationsSeen]: () =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.markAllNotificationsAsSeen(token)),
-    [AppMessageType.MarkNotificationRead]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.markNotificationRead(token, message.payload)),
-    [AppMessageType.Invitations]: () =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(async cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const invitationsResponse = await api.getInvitations(token);
-                const invitations = api.extractInvitations(invitationsResponse);
-                return {invitations};
-            }),
-    [AppMessageType.HandleInvitation]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.handleInvitation(token, message.payload)),
-    [AppMessageType.CheckUnlocked]: () => new Promise((res) => {
-        chrome.storage.local.get(["unlocked"], (result) => {
-            res({unlocked: result["unlocked"] === true})
-        });
-    }),
-    [AppMessageType.Unlock]: () =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(token => api.repost(token, SHARE_URN))
-            .then(r => new Promise((res) => chrome.storage.local.set({unlocked: true}, () => res(r)))),
-    [AppMessageType.Completion]: (message) =>
-        backEndAPI.getCompletion(message.payload),
-    [AppMessageType.SalaryPill]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const locationResponse = await api.getLocation(token, message.payload);
-                const location = api.extractLocation(locationResponse);
-                const experienceResponse = await api.getExperience(token, message.payload);
-                const experience = api.extractExperience(experienceResponse);
-                const titleResponse = await api.getTitle(token, experience.urn);
-                const title = api.extractTitle(titleResponse);
-                let request = {...title, ...experience, location};
-                if (experience.company?.universalName) {
-                    const organizationResponse = await api.getOrganization(token, experience.company?.universalName);
-                    const organization = api.extractOrganization(organizationResponse);
-                    request = {...request, organization}
-                }
-                const response = await backEndAPI.getSalary(request);
-                return {...response, ...request};
-            }),
-    [AppMessageType.Tz]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const locationResponse = await api.getLocation(token, message.payload);
-                return api.extractLocation(locationResponse);
-            })
-            .then(async location => {
-                const {city, state, country} = location;
-                const address = [city, state, country].filter(a => !!a && a !== "")
-                const geo = await mapsAPI.getGeocode(address.join(", "));
-                const {lat, lng} = geo.results[0].geometry.location;
-                return {lat, lng, city};
-            })
-            .then(async geo => {
-                const tz = await backEndAPI.getTz(geo.lat, geo.lng);
-                return {tz, geo};
-            }),
-    [AppMessageType.Features]: () =>
-        backEndAPI.getFeatures(),
-    [AppMessageType.SetFeatures]: (message) =>
-        backEndAPI.setFeatures(message.payload),
-    [AppMessageType.Stage]: (message) => {
-        return getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const me = await api.getMe(token);
-                const as = api.extractProfileUrn(me);
-                if (message.payload.id) {
-                    return backEndAPI.getStage(message.payload.id, as)
-                } else {
-                    const experienceResponse = await api.getExperience(token, message.payload.url);
-                    const experience = api.extractExperience(experienceResponse);
-                    return backEndAPI.getStage(experience.urn, as);
-                }
-            })
-    },
-    [AppMessageType.SetStage]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const me = await api.getMe(token);
-                const author = api.extractProfileUrn(me);
-                const note = await backEndAPI.postNote({
-                    profile: message.payload.id,
-                    author,
-                    stageFrom: message.payload.stageFrom,
-                    stageTo: message.payload.stage,
-                });
-                const noteExtended = await extendNote(token, [note.response], author);
-                const stage = await backEndAPI.setStage(message.payload.id, message.payload.stage, author);
-                return {note: {response: noteExtended[0]}, stage: stage};
-            }),
-    [AppMessageType.NotesAndCharts]: (message) =>
-        tabs.withCurrentTab()
-            .then(tabs => messages.requestTab(tabs[0].id, message)),
-    [AppMessageType.NotesAll]: () =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const me = await api.getMe(token);
-                const as = api.extractProfileUrn(me);
-                const notes = await backEndAPI.getNotes(as);
-                if (notes.response) {
-                    return extendNote(token, notes.response, as)
-                        .then(response => {
-                            // @ts-ignore
-                            response.sort((a, b) => b.timestamp - a.timestamp);
-                            return {response};
-                        })
-                } else {
-                    return notes;
-                }
-            }),
-    [AppMessageType.NotesByProfile]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const me = await api.getMe(token);
-                const as = api.extractProfileUrn(me);
-                const notes = await backEndAPI.getNotesByProfile(message.payload, as);
-                if (notes.response) {
-                    return extendNote(token, notes.response, as)
-                        .then(response => {
-                            // @ts-ignore
-                            response.sort((a, b) => a.timestamp - b.timestamp);
-                            return {response};
-                        })
-                } else {
-                    return notes;
-                }
-            }),
-    [AppMessageType.Note]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const me = await api.getMe(token);
-                const author = api.extractProfileUrn(me);
-                const note = await backEndAPI.postNote({
-                    profile: message.payload.id,
-                    author,
-                    stageTo: message.payload.stageTo,
-                    text: message.payload.text,
-                });
-                const noteExtended = await extendNote(token, [note.response], author);
-                return {note: {response: noteExtended[0]}};
-            }),
-    [AppMessageType.Subscription]: () =>
-        backEndAPI.getSubscription(),
-    [AppMessageType.LastViewedGet]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const experienceResponse = await api.getExperience(token, message.payload);
-                const experience = api.extractExperience(experienceResponse);
-                const profile = experience.urn;
-                const me = await api.getMe(token);
-                const as = api.extractProfileUrn(me);
-                if (profile === as) {
-                    return {response: {profile: me, author: as, hide: true}}
-                } else {
-                    return backEndAPI.getLastViewed(profile, as);
-                }
-            }),
-    [AppMessageType.LastViewedSet]: (message) =>
-        getCookies(LINKEDIN_DOMAIN)
-            .then(cookies => api.getCsrfToken(cookies))
-            .then(async token => {
-                const experienceResponse = await api.getExperience(token, message.payload);
-                const experience = api.extractExperience(experienceResponse);
-                const profile = experience.urn;
-                const me = await api.getMe(token);
-                const author = api.extractProfileUrn(me);
-                return backEndAPI.postLastViewed({
-                    profile,
-                    author,
-                });
-            }),
-})
+messagesV2.listen(openUrl);
+messagesV2.listen(getIsLogged);
+messagesV2.listen(getBadges);
+messagesV2.listen(getConversations);
+messagesV2.listen(getIsUnlocked);
+messagesV2.listen(unlock);
+messagesV2.listen(getConversationDetails);
+messagesV2.listen(conversationAck);
+messagesV2.listen(getNotifications);
+messagesV2.listen(markNotificationsSeen);
+messagesV2.listen(markNotificationRead);
+messagesV2.listen(getInvitations);
+messagesV2.listen(handleInvitation);
+messagesV2.listen(completion);
+messagesV2.listen(getSalary);
+messagesV2.listen(getTz);
+messagesV2.listen(getFeatures);
+messagesV2.listen(setFeatures);
+messagesV2.listen(getStages);
+messagesV2.listen(setStage);
+messagesV2.listen(showNotesAndChartsProxy);
+messagesV2.listen(getNotesAll);
+messagesV2.listen(getNotesByProfile);
+messagesV2.listen(postNote);
+messagesV2.listen(getSubscription);
+messagesV2.listen(getLastViewed);
+messagesV2.listen(setLastViewed);
 
 // listening to cookies store events
 chrome.cookies.onChanged.addListener(async (changeInfo) => {
@@ -346,7 +118,7 @@ function checkBadges() {
                 await chrome.action.setBadgeBackgroundColor({color: "#585858"});
                 await chrome.action.setBadgeText({text: "sync"});
 
-                const token = await api.getCsrfToken(cookies);
+                const token = api.getCsrfToken(cookies);
                 const response = await api.getTabBadges(token);
                 const badges = api.extractBadges(response);
 

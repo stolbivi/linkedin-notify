@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, Feature, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
-import {Messages} from "@stolbivi/pirojok";
+import {Feature, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./AutoFeature.scss";
+import {getFeatures, setFeatures as setFeaturesAction} from "../actions";
 
 const LikeSVG = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false">
     <path
@@ -59,7 +60,7 @@ type Props = {
 // @ts-ignore
 export const AutoFeature: React.FC<Props> = ({type, url}) => {
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     // @ts-ignore
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
@@ -75,11 +76,8 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
     }
 
     const getData = () => {
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.Features
-        }, (r) => {
-            setFeatures(r.response?.features ?? []);
-        }).then(/* nada */);
+        messages.request(getFeatures())
+            .then((r) => setFeatures(r.response?.features ?? []));
     }
 
     useEffect(() => {
@@ -108,18 +106,16 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
         e.preventDefault();
         e.stopPropagation();
         setCompleted(false);
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.SetFeatures,
-            payload: {author, type, action: active ? "unset" : "set"}
-        }, (r) => {
-            if (r.error) {
-                console.error(r.error);
-                setActive(false);
-            } else {
-                setActive(!active);
-            }
-            setCompleted(true);
-        }).then(/* nada */);
+        messages.request(setFeaturesAction({author, type, action: active ? "unset" : "set"}))
+            .then((r) => {
+                if (r.error) {
+                    console.error(r.error);
+                    setActive(false);
+                } else {
+                    setActive(!active);
+                }
+                setCompleted(true);
+            });
     }
 
     // @ts-ignore

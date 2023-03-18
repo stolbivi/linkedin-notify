@@ -1,17 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {
-    AppMessageType,
-    Badges,
-    BadgesResponse,
-    IAppRequest,
-    MESSAGE_ID,
-    NotificationsResponse,
-    VERBOSE
-} from "../global";
-import {Messages} from "@stolbivi/pirojok";
+import {Badges, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
 import {NotificationCard} from "./NotificationCard";
 import {Loader} from "./Loader";
 import "./NoData.scss";
+import {getBadges, getNotifications, markNotificationsSeen} from "../actions";
 
 type Props = {
     setBadges: (badges: Badges) => void
@@ -22,20 +15,19 @@ export const Notifications: React.FC<Props> = ({setBadges}) => {
     const [notifications, setNotifications] = useState([]);
     const [completed, setCompleted] = useState(false);
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
-        messages.request<IAppRequest, NotificationsResponse>({type: AppMessageType.Notifications},
-            (r) => {
-                setNotifications(r.notifications.map((n: any, i: number) =>
+        messages.request(getNotifications())
+            .then((notifications) => {
+                setNotifications(notifications.map((n: any, i: number) =>
                     (<NotificationCard notification={n} key={i}></NotificationCard>)
                 ));
                 setCompleted(true);
-            }).then(/* nada */);
-        messages.request<IAppRequest, any>({type: AppMessageType.MarkNotificationsSeen})
-            .then(_ => messages.request<IAppRequest, BadgesResponse>({type: AppMessageType.Badges},
-                (r) => setBadges(r.badges))
-                .then(/* nada */));
+            });
+        messages.request(markNotificationsSeen())
+            .then(_ => messages.request(getBadges())
+                .then((badges) => setBadges(badges)));
     }, []);
 
     return (

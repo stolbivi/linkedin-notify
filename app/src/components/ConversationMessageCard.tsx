@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, IAppRequest, MESSAGE_ID} from "../global";
-import {Messages} from "@stolbivi/pirojok";
+import {MessagesV2} from "@stolbivi/pirojok";
 import {formatDate} from "../services/UIHelpers";
 import "./ConversationMessageCard.scss";
+import {openUrl} from "../actions";
 
 type Props = {
     message: any,
@@ -14,7 +14,7 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => 
     const [picture, setPicture] = useState("");
     const [deliveredAt, setDeliveredAt] = useState("");
 
-    const messages = new Messages(MESSAGE_ID, true);
+    const messages = new MessagesV2(true);
 
     useEffect(() => {
         if (message.sender?.profilePicture?.rootUrl) {
@@ -26,10 +26,7 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => 
     }, [message]);
 
     const onOpenProfile = () => {
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.OpenURL,
-            payload: {url: message?.sender?.profileUrl}
-        });
+        return messages.request(openUrl(message?.sender?.profileUrl));
     }
 
     return (

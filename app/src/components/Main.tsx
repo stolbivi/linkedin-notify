@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, Badges, BadgesResponse, IAppRequest, IsLoggedResponse, MESSAGE_ID, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {Badges, VERBOSE} from "../global";
 import {Notifications} from "./Notifications";
 import {Tabs, TabTypes} from "./Tabs";
 import {Conversations} from "./Conversations";
@@ -8,6 +8,7 @@ import {Invitations} from "./Invitations";
 import {SignIn} from "./SignIn";
 import "./Main.scss";
 import {Logo} from "../icons/Logo";
+import {getBadges, getIsLogged} from "../actions";
 
 type Props = {};
 
@@ -17,15 +18,13 @@ export const Main: React.FC<Props> = ({}) => {
     const [isLogged, setIsLogged] = useState(false);
     const [tab, setTab] = useState(0);
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
-        messages.request<IAppRequest, IsLoggedResponse>({type: AppMessageType.IsLogged},
-            (r) => setIsLogged(r.isLogged))
-            .then(/* nada */);
-        messages.request<IAppRequest, BadgesResponse>({type: AppMessageType.Badges},
-            (r) => setBadges(r.badges))
-            .then(/* nada */)
+        messages.request(getIsLogged())
+            .then((logged) => setIsLogged(logged));
+        messages.request(getBadges())
+            .then((badges) => setBadges(badges));
     }, []);
 
     return (

@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Loader} from "../../components/Loader";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, MESSAGE_ID, Note, VERBOSE} from "../../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {Note, VERBOSE} from "../../global";
+import {setStage as setStageAction} from "../../actions";
 import "./StageSwitch.scss";
 
 export enum StageEnum {
@@ -33,7 +34,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
 
     const [completed, setCompleted] = useState<boolean>(false);
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
         if (activeStage !== undefined) {
@@ -46,18 +47,16 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
             return;
         }
         setCompleted(false);
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.SetStage,
-            payload: {id, stage: type, stageFrom: activeStage}
-        }, (r) => {
-            if (r.error) {
-                console.error(r.error);
-            } else {
-                setStage(r.stage.response.stage);
-                appendNote(r.note.response)
-            }
-            setCompleted(true);
-        }).then(/* nada */);
+        messages.request(setStageAction({id, stage: type, stageFrom: activeStage}))
+            .then((r) => {
+                if (r.error) {
+                    console.error(r.error);
+                } else {
+                    setStage(r.stage.response.stage);
+                    appendNote(r.note.response)
+                }
+                setCompleted(true);
+            });
     }
 
     return (

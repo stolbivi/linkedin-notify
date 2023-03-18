@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID} from "../global";
-import {Messages} from "@stolbivi/pirojok";
+import {LINKEDIN_DOMAIN} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
 import {ConversationMessageCard} from "./ConversationMessageCard";
 import "./ConversationDetails.scss";
+import {openUrl} from "../actions";
 
 type Props = {
     details: Array<any>
@@ -13,7 +14,7 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails}) 
 
     const [conversationMessages, setConversationMessages] = useState([]);
 
-    const messages = new Messages(MESSAGE_ID, true);
+    const messages = new MessagesV2(true);
 
     useEffect(() => {
         setConversationMessages(details.map((m: any, i: number) =>
@@ -27,10 +28,7 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails}) 
 
     const onReply = () => {
         const url = details.pop().backendConversationUrn.split(":").pop();
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.OpenURL,
-            payload: {url: `https://${LINKEDIN_DOMAIN}/messaging/thread/` + url}
-        });
+        return messages.request(openUrl(`https://${LINKEDIN_DOMAIN}/messaging/thread/` + url));
     }
 
     return (

@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {LINKEDIN_DOMAIN, VERBOSE} from "../global";
 import {formatDate} from "../services/UIHelpers";
 import "./InvitationCard.scss";
+import {handleInvitation, openUrl} from "../actions";
 
 type Props = {
     invitation: any
@@ -19,7 +20,7 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
     const [id, setId] = useState("");
     const [hideActions, setHideActions] = useState(false);
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
         if (invitation?.fromMember?.picture?.rootUrl) {
@@ -35,24 +36,17 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
     }, [invitation]);
 
     const onIgnore = () => {
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.HandleInvitation,
-            payload: {id: id, sharedSecret: invitation.sharedSecret, action: "ignore"}
-        }).then(_ => setHideActions(true));
+        return messages.request(handleInvitation({id: id, sharedSecret: invitation.sharedSecret, action: "ignore"}))
+            .then(_ => setHideActions(true));
     }
 
     const onAccept = () => {
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.HandleInvitation,
-            payload: {id: id, sharedSecret: invitation.sharedSecret, action: "accept"}
-        }).then(_ => setHideActions(true));
+        return messages.request(handleInvitation({id: id, sharedSecret: invitation.sharedSecret, action: "accept"}))
+            .then(_ => setHideActions(true));
     }
 
     const onOpenProfile = () => {
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.OpenURL,
-            payload: {url: `https://${LINKEDIN_DOMAIN}/in/` + invitation.fromMember.publicIdentifier}
-        });
+        return messages.request(openUrl(`https://${LINKEDIN_DOMAIN}/in/` + invitation.fromMember.publicIdentifier));
     }
 
     const getTitle = () => {

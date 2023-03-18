@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
-import {AppMessageType, IAppRequest, MESSAGE_ID, NoteExtended, VERBOSE} from "../../global";
-import {Messages} from "@stolbivi/pirojok";
+import {NoteExtended, VERBOSE} from "../../global";
+import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
 import {injectFirstChild} from "../../utils/InjectHelper";
@@ -14,6 +14,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
+import {getNotesAll, getNotesByProfile, openUrl, postNote as postNoteAction} from "../../actions";
 
 export const NotesManagerFactory = () => {
     const aside = document.getElementsByClassName("scaffold-layout__aside");
@@ -36,7 +37,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const MAX_LENGTH = 200;
     const DEFAULT_SEARCH = {text: "", stages: {}};
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [completed, setCompleted] = useState<boolean>(false);
@@ -61,16 +62,16 @@ export const NotesManager: React.FC<Props> = ({}) => {
             return;
         }
         setCompleted(false);
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.NotesAll
-        }, (r) => {
-            if (r.error) {
-                console.error(r.error);
-            } else {
-                setNotes(r.response);
-                setNotesFiltered(r.response);
-            }
-        }).finally(() => setCompleted(true));
+        messages.request(getNotesAll())
+            .then((r) => {
+                if (r.error) {
+                    console.error(r.error);
+                } else {
+                    setNotes(r.response);
+                    setNotesFiltered(r.response);
+                }
+            })
+            .finally(() => setCompleted(true));
     }, [accessState]);
 
     const checkByText = (n: NoteExtended, text: string) => {
@@ -96,18 +97,16 @@ export const NotesManager: React.FC<Props> = ({}) => {
         setSearchValue(DEFAULT_SEARCH);
         if (selection) {
             setCompleted(false);
-            messages.request<IAppRequest, any>({
-                type: AppMessageType.NotesByProfile,
-                payload: selection.profile
-            }, (r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    setSelectedNotes(r.response);
-                    setSelectedNotesFiltered(r.response);
-                    setCompleted(true);
-                }
-            }).then(/* nada */);
+            messages.request(getNotesByProfile(selection.profile))
+                .then((r) => {
+                    if (r.error) {
+                        console.error(r.error);
+                    } else {
+                        setSelectedNotes(r.response);
+                        setSelectedNotesFiltered(r.response);
+                        setCompleted(true);
+                    }
+                }).then(/* nada */);
         }
     }, [selection]);
 
@@ -219,18 +218,16 @@ export const NotesManager: React.FC<Props> = ({}) => {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
             const lastState = selectedNotes[selectedNotes.length - 1].stageTo;
-            messages.request<IAppRequest, any>({
-                type: AppMessageType.Note,
-                payload: {id: selection.profile, stageTo: lastState, text}
-            }, (r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    setText({value: ""});
-                    appendNote(r.note.response)
-                }
-                setEditable(true);
-            }).then(/* nada */);
+            messages.request(postNoteAction({id: selection.profile, stageTo: lastState, text}))
+                .then((r) => {
+                    if (r.error) {
+                        console.error(r.error);
+                    } else {
+                        setText({value: ""});
+                        appendNote(r.note.response)
+                    }
+                    setEditable(true);
+                }).then(/* nada */);
         }
     }
 
@@ -243,10 +240,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
 
     const openProfile = (link: string) => {
         if (link) {
-            return messages.request<IAppRequest, any>({
-                type: AppMessageType.OpenURL,
-                payload: {url: link}
-            });
+            return messages.request(openUrl(link));
         }
     }
 

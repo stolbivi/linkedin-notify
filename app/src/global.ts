@@ -10,39 +10,7 @@ export const MAPS_KEY = "AIzaSyDewx7AbMwkRxcyYA9zQ1RTIAsDyWR4svo";
 export const BACKEND_API = `${process.env.BACKEND_BASE}/api/`;
 export const BACKEND_STATIC = `${process.env.BACKEND_BASE}/static/`;
 
-export interface InjectableContext {
-    context?: {
-        [key: string]: HTMLElement
-    }
-}
-
 export enum AppMessageType {
-    OpenURL,
-    IsLogged,
-    Badges,
-    Conversations,
-    ConversationDetails,
-    ConversationAck,
-    Notifications,
-    MarkNotificationsSeen,
-    MarkNotificationRead,
-    Invitations,
-    HandleInvitation,
-    CheckUnlocked,
-    Unlock,
-    Completion,
-    SalaryPill,
-    Tz,
-    Features,
-    SetFeatures,
-    Stage,
-    SetStage,
-    NotesAndCharts,
-    NotesAll,
-    NotesByProfile,
-    Note,
-    Subscription,
-    LastViewedGet,
     LastViewedSet
 }
 
@@ -51,28 +19,14 @@ export interface IAppRequest extends TMessage {
     payload?: any
 }
 
-export interface IsLoggedResponse {
-    isLogged: boolean
+export interface Conversation {
+    entityUrn: string
 }
 
-export interface ConversationsResponse {
-    conversations: any
-}
-
-export interface NotificationsResponse {
-    notifications: any
-}
-
-export interface InvitationsResponse {
-    invitations: any
-}
-
-export interface BadgesResponse {
-    badges: Badges
-}
-
-export interface UnlockedResponse {
-    unlocked: boolean
+export interface Invitation {
+    id: string
+    action: string
+    sharedSecret: string
 }
 
 export interface Badges {

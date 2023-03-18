@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {VERBOSE} from "../global";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./Completion.scss";
+import {completion} from "../actions";
 
 type Props = {};
 
@@ -25,7 +26,7 @@ export const CompletionFactory = () => {
 
 export const Completion: React.FC<Props> = ({}) => {
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [textEmpty, setTextEmpty] = useState(true);
@@ -79,26 +80,22 @@ export const Completion: React.FC<Props> = ({}) => {
 
     const onClick = () => {
         setInProgress(true);
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.Completion,
-            payload: text
-        }, (r) => {
-            if (r.error) {
-                console.error(r.error);
-                setInProgress(false);
-                return;
-            }
-            if (r.response[0] || r.response[0].text) {
-                const result = r.response[0].text.replace(/^\s+|\s+$/g, '');
-                simulateTyping(result, 0);
-            } else {
-                console.error(JSON.stringify(r.rsponse));
-                setInProgress(false);
-            }
-        });
+        return messages.request(completion(text))
+            .then((r) => {
+                if (r.error) {
+                    console.error(r.error);
+                    setInProgress(false);
+                    return;
+                }
+                if (r.response[0] || r.response[0].text) {
+                    const result = r.response[0].text.replace(/^\s+|\s+$/g, '');
+                    simulateTyping(result, 0);
+                } else {
+                    console.error(JSON.stringify(r.rsponse));
+                    setInProgress(false);
+                }
+            })
     }
-
-    // check is post is populated
 
     const getClass = () => {
         if (inProgress) {
@@ -113,9 +110,9 @@ export const Completion: React.FC<Props> = ({}) => {
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName={"loader-base loader-px24"} hideTitle/>
             {accessState === AccessState.Valid &&
-            <div className={getClass()} onClick={onClick} title={title}>
-                <span>AI</span>
-            </div>}
+                <div className={getClass()} onClick={onClick} title={title}>
+                    <span>AI</span>
+                </div>}
         </React.Fragment>
     );
 };

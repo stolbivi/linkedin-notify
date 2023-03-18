@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {extractIdFromUrl, VERBOSE} from "../global";
 import {injectLastChild} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
 import {Clock} from "../icons/Clock";
@@ -9,6 +9,7 @@ import {formatDateToday} from "../services/UIHelpers";
 
 // @ts-ignore
 import stylesheet from "./LastViewed.scss";
+import {getLastViewed, setLastViewed as setLastViewedAction} from "../actions";
 
 export const LastViewedFactory = () => {
     // individual profile
@@ -33,37 +34,33 @@ export const LastViewed: React.FC<Props> = ({}) => {
     const [completed, setCompleted] = useState<boolean>(false);
     const [lastViewed, setLastViewed] = useState<Date>();
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.LastViewedGet,
-            payload: extractIdFromUrl(window.location.href)
-        }, (r) => {
-            if (r.error) {
-                console.error(r.error);
-            } else {
-                if (r?.response?.hide) {
-                    setShow(false);
-                } else if (r?.response?.length > 0) {
-                    setLastViewed(new Date(r?.response[0].updatedAt));
+        messages.request(getLastViewed(extractIdFromUrl(window.location.href)))
+            .then((r) => {
+                if (r.error) {
+                    console.error(r.error);
                 } else {
-                    setLastViewed(new Date());
+                    if (r?.response?.hide) {
+                        setShow(false);
+                    } else if (r?.response?.length > 0) {
+                        setLastViewed(new Date(r?.response[0].updatedAt));
+                    } else {
+                        setLastViewed(new Date());
+                    }
                 }
-            }
-        }).finally(() => setCompleted(true));
+            }).finally(() => setCompleted(true));
     }, []);
 
     useEffect(() => {
         if (lastViewed) {
-            messages.request<IAppRequest, any>({
-                type: AppMessageType.LastViewedSet,
-                payload: extractIdFromUrl(window.location.href)
-            }, (r) => {
-                if (r.error) {
-                    console.error(r.error);
-                }
-            }).finally(() => setCompleted(true));
+            messages.request(setLastViewedAction(extractIdFromUrl(window.location.href)))
+                .then((r) => {
+                    if (r.error) {
+                        console.error(r.error);
+                    }
+                }).finally(() => setCompleted(true));
         }
     }, [lastViewed]);
 
@@ -74,15 +71,15 @@ export const LastViewed: React.FC<Props> = ({}) => {
                          className={"access-guard-px16 top-right-corner"}
                          loaderClassName="loader-base top-right-corner loader-px24"/>
             {accessState === AccessState.Valid && show &&
-            <div className="last-viewed top-right-corner">
-                <Loader show={!completed}/>
-                {completed &&
-                <React.Fragment>
-                    <Clock/>
-                    <label>Last viewed on:</label>
-                    <span>{formatDateToday(lastViewed)}</span>
-                </React.Fragment>}
-            </div>}
+                <div className="last-viewed top-right-corner">
+                    <Loader show={!completed}/>
+                    {completed &&
+                        <React.Fragment>
+                            <Clock/>
+                            <label>Last viewed on:</label>
+                            <span>{formatDateToday(lastViewed)}</span>
+                        </React.Fragment>}
+                </div>}
         </React.Fragment>
     );
 }

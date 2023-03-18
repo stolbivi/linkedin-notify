@@ -1,5 +1,5 @@
 import Cookie = chrome.cookies.Cookie;
-import {Badges} from "../global";
+import {Badges, Invitation} from "../global";
 import * as JSONPath from "jsonpath";
 
 function extractArtifacts(artifacts: Array<any>) {
@@ -196,8 +196,8 @@ export class LinkedInAPI {
         return result;
     }
 
-    public getConversationDetails(token: string, conversation: any): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerMessages.08934c39ffb80ef0ba3206c05dd01362&variables=(conversationUrn:${this.encode(conversation.entityUrn)})`, this.getRequest(token))
+    public getConversationDetails(token: string, entityUrn: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerMessages.08934c39ffb80ef0ba3206c05dd01362&variables=(conversationUrn:${this.encode(entityUrn)})`, this.getRequest(token))
             .then(response => response.json());
     }
 
@@ -377,7 +377,7 @@ export class LinkedInAPI {
         return result;
     }
 
-    public handleInvitation(token: string, invitation: any) {
+    public handleInvitation(token: string, invitation: Invitation) {
         return fetch(LinkedInAPI.BASE + `relationships/invitations/${invitation.id}?action=${invitation.action}`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",

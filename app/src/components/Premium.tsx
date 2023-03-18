@@ -1,7 +1,8 @@
 import React from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {VERBOSE} from "../global";
 import "./Premium.scss"
+import {unlock} from "../actions";
 
 type Props = {
     setUnlocked: (unlocked: boolean) => void
@@ -9,11 +10,9 @@ type Props = {
 
 export const Premium: React.FC<Props> = ({setUnlocked}) => {
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
-    const unlock = () => messages.request<IAppRequest, boolean>({type: AppMessageType.Unlock}).then(_ => {
-        setUnlocked(true);
-    });
+    const onClick = () => messages.request(unlock()).then(_ => setUnlocked(true));
 
     return (
         <div className="premium">
@@ -22,7 +21,7 @@ export const Premium: React.FC<Props> = ({setUnlocked}) => {
                 <div className="text-center">Enable this premium feature for FREE by sharing our extension with your
                     network!
                 </div>
-                <div className="premium-share" onClick={unlock}>Share on LinkedIn</div>
+                <div className="premium-share" onClick={onClick}>Share on LinkedIn</div>
             </div>
         </div>
     );

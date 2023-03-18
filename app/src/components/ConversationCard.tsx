@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, Badges, BadgesResponse, IAppRequest, MESSAGE_ID} from "../global";
-import {Messages} from "@stolbivi/pirojok";
+import {Badges} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
 import {formatDate} from "../services/UIHelpers";
 import "./ConversationCard.scss";
+import {conversationAck, getBadges, openUrl} from "../actions";
 
 type Props = {
     conversation: any
@@ -18,27 +19,21 @@ export const ConversationCard: React.FC<Props> = ({conversation, getDetails, set
     const [deliveredAt, setDeliveredAt] = useState("");
     const [unreadCount, setUnreadCount] = useState(0);
 
-    const messages = new Messages(MESSAGE_ID, true);
+    const messages = new MessagesV2(true);
 
     const onOpenProfile = () => {
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.OpenURL,
-            payload: {url: participant.profileUrl}
-        });
+        return messages.request(openUrl(participant.profileUrl));
     }
 
     const onOpenMessage = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
         if (unreadCount > 0) {
-            messages.request<IAppRequest, any>({
-                type: AppMessageType.ConversationAck,
-                payload: conversation.entityUrn
-            }).then(_ => {
-                setUnreadCount(0);
-                messages.request<IAppRequest, BadgesResponse>({type: AppMessageType.Badges},
-                    (r) => setBadges(r.badges))
-                    .then(/* nada */)
-            });
+            messages.request(conversationAck(conversation.entityUrn))
+                .then(_ => {
+                    setUnreadCount(0);
+                    messages.request(getBadges())
+                        .then((badges) => setBadges(badges));
+                });
         }
         getDetails({entityUrn: conversation.entityUrn, syncToken: conversation.syncToken});
     }

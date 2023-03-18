@@ -1,19 +1,17 @@
 import React from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, IAppRequest, LINKEDIN_DOMAIN, MESSAGE_ID, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {LINKEDIN_DOMAIN, VERBOSE} from "../global";
 import "./SignIn.scss";
+import {openUrl} from "../actions";
 
 type Props = {};
 
 export const SignIn: React.FC<Props> = ({}) => {
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     const signIn = () => {
-        return messages.request<IAppRequest, any>({
-            type: AppMessageType.OpenURL,
-            payload: {url: "https://" + LINKEDIN_DOMAIN}
-        });
+        return messages.request(openUrl("https://" + LINKEDIN_DOMAIN));
     }
 
     return (

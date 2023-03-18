@@ -4,8 +4,8 @@ import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {getSalaryValue, Salary} from "../SalaryPill";
 import {PayDistribution} from "./PayDistribution";
 import {StageEnum, StageSwitch} from "./StageSwitch";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, NoteExtended, VERBOSE} from "../../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {extractIdFromUrl, NoteExtended, VERBOSE} from "../../global";
 import {inject} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
@@ -16,6 +16,14 @@ import {NoNotes} from "../../icons/NoNotes";
 
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
+import {
+    getNotesByProfile,
+    getSalary,
+    getStages,
+    postNote as postNoteAction,
+    ShowNotesAndChartsPayload
+} from "../../actions";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -73,42 +81,35 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
         window.addEventListener('popstate', () => {
             setShow(false);
         });
-        messages.listen<IAppRequest, any>({
-            [AppMessageType.NotesAndCharts]: (message) => {
-                if (id && message.payload?.id !== id) {
+        messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
+            (payload) => {
+                if (id && payload?.id !== id) {
                     return Promise.resolve();
                 }
-                setShowNotes(message.payload?.showNotes)
-                setShowSalary(message.payload?.showSalary)
+                setShowNotes(payload?.showNotes)
+                setShowSalary(payload?.showSalary)
                 setShow(true);
                 return Promise.resolve();
-            },
-        });
+            }));
         // getting data
         setCompleted(false);
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.SalaryPill,
-            payload: extractIdFromUrl(window.location.href)
-        }).then((r) => {
-            const salary = {...r.result, title: r.title, urn: r.urn};
-            setSalaryInternal(salary);
-            return salary;
-        }).then(salary => {
-            const stagePromise = messages.request<IAppRequest, any>({
-                type: AppMessageType.Stage,
-                payload: {id: salary.urn}
-            }).then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
+        messages.request(getSalary(extractIdFromUrl(window.location.href)))
+            .then((r) => {
+                const salary = {...r.result, title: r.title, urn: r.urn};
+                setSalaryInternal(salary);
+                return salary;
+            }).then(salary => {
+            const stagePromise = messages.request(getStages({id: salary.urn}))
+                .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
                 .catch(e => console.error(e.error));
-            const notesPromise = messages.request<IAppRequest, any>({
-                type: AppMessageType.NotesByProfile,
-                payload: salary.urn
-            }).then((r) => setNotes(r.response))
+            const notesPromise = messages.request(getNotesByProfile(salary.urn))
+                .then((r) => setNotes(r.response))
                 .catch(e => console.error(e.error));
             Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
         }).catch(e => console.error(e.error));
@@ -135,18 +136,16 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
             setPostAllowed(false);
-            messages.request<IAppRequest, any>({
-                type: AppMessageType.Note,
-                payload: {id: salaryInternal.urn, stageTo: stageInternal, text}
-            }, (r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    setText({value: ""});
-                    appendNote(r.note.response)
-                }
-                setEditable(true);
-            }).then(/* nada */);
+            messages.request(postNoteAction({id: salaryInternal.urn, stageTo: stageInternal, text}))
+                .then((r) => {
+                    if (r.error) {
+                        console.error(r.error);
+                    } else {
+                        setText({value: ""});
+                        appendNote(r.note.response)
+                    }
+                    setEditable(true);
+                }).then(/* nada */);
         }
     }
 

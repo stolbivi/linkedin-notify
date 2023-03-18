@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {Messages} from "@stolbivi/pirojok";
-import {AppMessageType, extractIdFromUrl, IAppRequest, MESSAGE_ID, VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {extractIdFromUrl, VERBOSE} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
+import {getSalary, showNotesAndChartsProxy} from "../actions";
 
 export const SalaryPillFactory = () => {
     // individual profile
@@ -74,7 +75,7 @@ export const getSalaryValue = (salary: Salary) => {
 
 export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNotes = false}) => {
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [salary, setSalary] = useState<Salary>({formattedPay: "", note: ""});
@@ -86,17 +87,15 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             return;
         }
         setCompleted(false);
-        messages.request<IAppRequest, any>({
-            type: AppMessageType.SalaryPill,
-            payload: extractIdFromUrl(urlInternal)
-        }, (r) => {
-            if (r.error) {
-                setSalary({formattedPay: "N/A", note: r.error});
-            } else {
-                setSalary({...r.result, title: r.title, urn: r.urn});
-            }
-            setCompleted(true);
-        }).then(/* nada */);
+        messages.request(getSalary(extractIdFromUrl(urlInternal)))
+            .then((r) => {
+                if (r.error) {
+                    setSalary({formattedPay: "N/A", note: r.error});
+                } else {
+                    setSalary({...r.result, title: r.title, urn: r.urn});
+                }
+                setCompleted(true);
+            });
     }, [accessState, urlInternal]);
 
     useEffect(() => {
@@ -110,10 +109,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
 
     const onClick = () => {
         if (salary) {
-            return messages.request({
-                type: AppMessageType.NotesAndCharts,
-                payload: {id, showSalary, showNotes}
-            });
+            return messages.request(showNotesAndChartsProxy({id, showSalary, showNotes}));
         }
     }
 

@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {AppMessageType, IAppRequest, InvitationsResponse, MESSAGE_ID, VERBOSE} from "../global";
-import {Messages} from "@stolbivi/pirojok";
+import {VERBOSE} from "../global";
+import {MessagesV2} from "@stolbivi/pirojok";
 import {InvitationCard} from "./InvitationCard";
 import {Loader} from "./Loader";
 import "./NoData.scss";
+import {getInvitations} from "../actions";
 
 type Props = {};
 
@@ -12,16 +13,16 @@ export const Invitations: React.FC<Props> = ({}) => {
     const [invitations, setInvitations] = useState([]);
     const [completed, setCompleted] = useState(false);
 
-    const messages = new Messages(MESSAGE_ID, VERBOSE);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
-        messages.request<IAppRequest, InvitationsResponse>({type: AppMessageType.Invitations},
-            (r) => {
-                setInvitations(r.invitations.map((v: any, i: number) =>
+        messages.request(getInvitations())
+            .then((invitations) => {
+                setInvitations(invitations.map((v: any, i: number) =>
                     (<InvitationCard invitation={v} key={i}></InvitationCard>)
                 ));
                 setCompleted(true);
-            }).then(/* nada */)
+            })
     }, []);
 
     return (
