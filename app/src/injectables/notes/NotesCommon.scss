@@ -1,3 +1,4 @@
+@import "../../themes/light";
 @import "NotesContainer";
 @import "Collapsible";
 @import "PayDistribution";
@@ -15,7 +16,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #FBFBFB;
+  background-color: $notes-background;
   padding: 2em 2em 0em;
   border-bottom-left-radius: 9px;
   border-bottom-right-radius: 9px;
@@ -28,8 +29,8 @@
 
     .text-input {
       width: 100%;
-      background: #FFFFFF;
-      border: 1px solid #E5E5E5;
+      background: $notes-input-background;
+      border: 1px solid $notes-input-border;
       border-radius: 40px;
       padding: 0.75em 40px 0.75em 0.75em;
 
@@ -45,7 +46,7 @@
       }
 
       &:focus {
-        outline: 1px solid rgba(21, 105, 191, 1)
+        outline: 1px solid $notes-input-outline;
       }
     }
 
@@ -60,12 +61,12 @@
     }
 
     .submit-allowed > svg {
-      background-color: rgba(21, 105, 191, 1);
+      background-color: $notes-input-submit;
       cursor: pointer;
     }
 
     .submit-disabled > svg {
-      background-color: rgb(144, 144, 144);
+      background-color: $notes-input-submit-disabled;
       cursor: not-allowed;
     }
   }
@@ -73,7 +74,7 @@
 
 .notes-counter {
   margin-left: 0.5em;
-  background: rgba(144, 144, 144, 0.1);
+  background: $notes-counter-background;
   height: 24px;
   width: 24px;
   font-family: 'Helvetica';
@@ -83,7 +84,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #585858;
+  color: $notes-counter;
   border-radius: 18px;
 }
 
@@ -102,10 +103,6 @@
   justify-content: center;
   align-items: center;
   user-select: none;
-
-  svg {
-
-  }
 }
 
 .scroll-container {

@@ -1,3 +1,4 @@
+@import "../themes/light";
 @import "AccessGuard";
 
 .action-base {
@@ -13,31 +14,23 @@
 }
 
 .complete {
-  background-color: rgb(10, 102, 194);
-  color: white;
+  background-color: $complete-background;
+  color: $complete;
   cursor: pointer;
 
   &:hover {
-    background-color: rgb(0, 65, 103);
+    background-color: $complete-background-hover;
   }
 }
 
 .complete-progress {
-  background-color: rgba(10, 102, 194, 0.32);
-  color: rgba(0, 0, 0, 0.3);
+  background-color: $complete-progress-background;
+  color: $complete-progress;
   cursor: wait;
 }
 
 .complete-disabled {
-  background-color: rgba(0, 0, 0, 0.08);
-  color: rgba(0, 0, 0, 0.3);
+  background-color: $complete-disabled-background;
+  color: $complete-disabled;
   cursor: not-allowed;
-}
-
-.disabled {
-  background-color: rgb(10, 102, 194);
-  color: white;
-  cursor: pointer;
-  opacity: 0.75;
-  filter: grayscale(1);
 }

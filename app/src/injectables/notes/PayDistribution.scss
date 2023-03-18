@@ -1,3 +1,5 @@
+@import "../../themes/light";
+
 .bar-container {
   display: flex;
   width: 250px;
@@ -24,7 +26,7 @@
     .bar-line {
       border-top-left-radius: 6px;
       border-bottom-left-radius: 6px;
-      background-color: #F4EACF;
+      background-color: $pay-distribution-left;
     }
   }
 
@@ -38,7 +40,7 @@
     }
 
     .bar-line {
-      background-color: #EAD5A5;
+      background-color: $pay-distribution-middle;
     }
   }
 
@@ -54,7 +56,7 @@
     .bar-line {
       border-top-right-radius: 6px;
       border-bottom-right-radius: 6px;
-      background-color: #BCA878;
+      background-color: $pay-distribution-right;
     }
   }
 }

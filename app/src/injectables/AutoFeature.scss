@@ -1,3 +1,4 @@
+@import "../themes/light";
 @import "AccessGuard";
 
 .auto-pill-base {
@@ -21,22 +22,22 @@
 
 .auto-pill-on {
   @extend .auto-pill-base;
-  background-color: rgb(10, 102, 194);
-  color: white;
+  background-color: $auto-pill-on-background;
+  color: $auto-pill-on;
 
   &:hover {
-    background-color: rgb(6, 68, 129);
+    background-color: $auto-pill-on-background-hover;
   }
 
 }
 
 .auto-pill-off {
   @extend .auto-pill-base;
-  background-color: rgb(88, 88, 88);
-  color: white;
+  background-color: $auto-pill-off-background;
+  color: $auto-pill-off;
 
   &:hover {
-    background-color: rgb(58, 58, 58);
+    background-color: $auto-pill-off-background-hover;
   }
 
 }

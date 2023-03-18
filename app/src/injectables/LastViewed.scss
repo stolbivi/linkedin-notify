@@ -1,3 +1,4 @@
+@import "../themes/light";
 @import "AccessGuard";
 
 .top-right-corner {
@@ -13,8 +14,8 @@
   justify-items: center;
   padding: 6px 11px;
   border-radius: 37px;
-  background: rgba(88, 88, 88, 0.08);
-  color: rgba(88, 88, 88, 1);
+  background: $last-viewed-background;
+  color: $last-viewed;
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 400;

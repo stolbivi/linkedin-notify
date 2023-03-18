@@ -1,9 +1,11 @@
+@import "../../themes/light";
+
 .notes-container {
   font-family: 'Arial';
   font-weight: 700;
   font-size: 12px;
-  color: #909090;
-  background: #FFFFFF;
+  color: $notes-container;
+  background: $notes-container-background;
   border-radius: 9px;
   display: flex;
   flex-direction: column;

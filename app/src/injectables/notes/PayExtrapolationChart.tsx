@@ -1,8 +1,7 @@
 import Chart from 'chart.js/auto';
 import React, {useEffect, useRef, useState} from "react";
-
-import "./PayExtrapolationChart.scss";
 import {Salary} from "../SalaryPill";
+import "./PayExtrapolationChart.scss";
 
 type Props = {
     salary: Salary
@@ -12,6 +11,14 @@ interface Sample {
     x: number
     y: number
     radius: number
+}
+
+const colors = {
+    light: {
+        color1: "#F3F2EF",
+        color2: "#F4EDD8",
+        border: "#A8A8A8"
+    }
 }
 
 export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
@@ -44,8 +51,9 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
         if (canvasRef.current && data) {
             const ctx = canvasRef.current.getContext("2d");
             const gradient = ctx.createLinearGradient(0, 0, 400, 0);
-            gradient.addColorStop(0, '#F3F2EF');
-            gradient.addColorStop(1, '#F4EDD8');
+            gradient.addColorStop(0, colors.light.color1);
+            gradient.addColorStop(1, colors.light.color2);
+
 
             new Chart(
                 canvasRef.current,
@@ -57,7 +65,7 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
                                 data: data,
                                 showLine: true,
                                 fill: true,
-                                borderColor: '#A8A8A8',
+                                borderColor: colors.light.border,
                                 backgroundColor: gradient,
                                 pointRadius: data.map(row => row.radius)
                             }
