@@ -167,12 +167,22 @@ export class UserController extends BaseController {
                         user.features = [];
                     }
                     const typedFeatures = user.features.filter(f => f.type === body.type);
-                    if (typedFeatures?.length > 0) {
-                        updateAuthor(typedFeatures[0]);
-                    } else {
-                        const newFeature = {type: body.type} as Feature;
-                        updateAuthor(newFeature);
-                        user.features.push(newFeature);
+                    if (body.author) {
+                        if (typedFeatures?.length > 0) {
+                            updateAuthor(typedFeatures[0]);
+                        } else {
+                            const newFeature = {type: body.type} as Feature;
+                            updateAuthor(newFeature);
+                            user.features.push(newFeature);
+                        }
+                    }
+                    if (body.theme) {
+                        if (typedFeatures?.length > 0) {
+                            typedFeatures[0].theme = body.theme;
+                        } else {
+                            const newFeature = {type: body.type, theme: body.theme} as Feature;
+                            user.features.push(newFeature);
+                        }
                     }
                     const toSave = {...user};
                     delete toSave.id;

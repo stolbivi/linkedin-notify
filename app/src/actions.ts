@@ -147,7 +147,8 @@ export const getTz = createAction<string, any>("getTz",
         }));
 
 export interface SetFeaturePayload {
-    author: string
+    author?: string
+    theme?: string
     action: string
     type: string
 }

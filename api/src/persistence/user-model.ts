@@ -8,10 +8,12 @@ require("dotenv").config();
 export interface Feature {
     type: string
     authors?: string[]
+    theme?: string
 }
 
 export interface FeatureRequest {
-    author: string
+    author?: string
+    theme?: string
     type: string
     action: string
 }

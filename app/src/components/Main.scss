@@ -27,11 +27,18 @@
       margin-right: auto;
       display: flex;
       align-items: center;
+      width: 100%;
 
-      svg {
-        margin-right: 0.5em;
-        width: 16px;
-        height: 16px;
+      .logo {
+        svg {
+          margin-right: 0.5em;
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      .switch {
+        margin-left: auto;
       }
 
     }

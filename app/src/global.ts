@@ -38,6 +38,7 @@ export interface Badges {
 export interface Feature {
     type: string
     authors?: string[]
+    theme?: string
 }
 
 export interface Features {
