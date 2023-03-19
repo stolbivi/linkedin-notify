@@ -1,7 +1,7 @@
 import {Theme} from "../global"
 
 export const theme: Theme = {
-    "--root": "#1D2226",
+    "--root": "white",
     "--base-card": "white",
     "--base-card-hover": "#f3f3f3",
     "--base-card-timestamp": "#8D8D8D",
