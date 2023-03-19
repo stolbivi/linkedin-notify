@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 
 .header {
   color: $header;
@@ -57,4 +57,5 @@
   align-items: center;
   width: 550px;
   padding: 0px;
+  background-color: $root;
 }

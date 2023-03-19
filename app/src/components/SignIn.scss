@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 
 .sign-in {
   font-size: 16px;
@@ -9,8 +9,4 @@
   padding: 0.5em 2em;
   user-select: none;
   cursor: pointer;
-
-  &:hover {
-    background-color: $sign-in-hover !important;
-  }
 }

@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 @import "AccessGuard";
 
 .action-base {
@@ -17,10 +17,6 @@
   background-color: $complete-background;
   color: $complete;
   cursor: pointer;
-
-  &:hover {
-    background-color: $complete-background-hover;
-  }
 }
 
 .complete-progress {

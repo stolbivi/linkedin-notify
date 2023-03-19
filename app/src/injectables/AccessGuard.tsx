@@ -56,7 +56,7 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
     const openUrl = (e: any, url: string) => {
         e.preventDefault();
         e.stopPropagation();
-        return messages.request(openUrlAction({url}));
+        return messages.request(openUrlAction(url));
     }
 
     const getContents = () => {

@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 @import "BaseCard";
 
 .invitation-card {
@@ -23,10 +23,6 @@
     margin: 0em 0.5em;
     user-select: none;
     cursor: pointer;
-
-    &:hover {
-      background-color: $invitation-card-action-2-hover !important;
-    }
   }
 
   .action-ignore {
@@ -36,25 +32,6 @@
     margin: 0em 0.15em;
     user-select: none;
     cursor: pointer;
-  }
-
-  .custom-message {
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: start;
-    padding: 0.5em;
-    margin: 0.5em;
-    border: 2px solid $invitation-card-custom-message-border;
-    border-radius: 8px;
-
-    .action-reply {
-      font-size: 14px;
-      color: $invitation-card-action-1;
-      padding: 0.25em 0.75em;
-      user-select: none;
-      cursor: pointer;
-    }
   }
 
 }

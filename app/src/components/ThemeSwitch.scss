@@ -1,6 +1,7 @@
-@import "../themes/light";
+@import "../themes/primary";
 
 .switch {
+  background-color: $theme-switch;
   border: 1px solid $theme-switch-border;
   width: 66px;
   height: 31px;

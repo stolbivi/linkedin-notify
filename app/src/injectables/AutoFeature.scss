@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 @import "AccessGuard";
 
 .auto-pill-base {
@@ -24,22 +24,12 @@
   @extend .auto-pill-base;
   background-color: $auto-pill-on-background;
   color: $auto-pill-on;
-
-  &:hover {
-    background-color: $auto-pill-on-background-hover;
-  }
-
 }
 
 .auto-pill-off {
   @extend .auto-pill-base;
   background-color: $auto-pill-off-background;
   color: $auto-pill-off;
-
-  &:hover {
-    background-color: $auto-pill-off-background-hover;
-  }
-
 }
 
 .disabled {

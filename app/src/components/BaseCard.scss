@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 
 .has-unread {
   background-color: $base-card-unread !important;
@@ -13,6 +13,7 @@
   flex-direction: column;
 
   &:after {
+    position: absolute;
     border-bottom: 1px solid $base-card-border;
     content: '';
     display: block;
@@ -73,7 +74,6 @@
     color: $base-card-title;
 
     &:hover {
-      color: $base-card-title-hover;
       text-decoration: underline;
     }
   }

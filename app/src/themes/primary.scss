@@ -1,0 +1,120 @@
+@import "variables";
+
+$root: var(--root);
+
+$base-card: var(--base-card);
+$base-card-hover: var(--base-card-hover);
+$base-card-timestamp: var(--base-card-timestamp);
+$base-card-title: var(--base-card-title);
+$base-card-message: var(--base-card-message);
+$base-card-message-background: var(--base-card-message-background);
+$base-card-unread: var(--base-card-unread);
+$base-card-border: var(--base-card-border);
+
+$conversation-card-badge: var(--conversation-card-badge);
+$conversation-card-background: var(--conversation-card-background);
+
+$details-back: var(--details-back);
+$details-back-hover: var(--details-back-hover);
+$details-reply-background: var(--details-reply-background);
+$details-reply-background-hover: var(--details-reply-background-hover);
+$details-reply: var(--details-reply);
+$details-reply-border: var(--details-reply-border);
+
+$invitation-card-subtitle: var(--invitation-card-subtitle);
+$invitation-card-action-1: var(--invitation-card-action-1);
+$invitation-card-action-2: var(--invitation-card-action-2);
+$invitation-card-custom-message-border: var(--invitation-card-custom-message-border);
+
+$notification-card-action-1: var(--notification-card-action-1);
+$notification-card-action-1-border: var(--notification-card-action-1-border);
+
+$premium-message-background: var(--premium-message-background);
+$premium-message: var(--premium-message);
+$premium-share: var(--premium-share);
+$premium-share-background: var(--premium-share-background);
+
+$sign-in: var(--sign-in);
+$sign-in-border: var(--sign-in-border);
+$sign-in-background: var(--sign-in-background);
+
+$tab: var(--tab);
+$tab-selected: var(--tab-selected);
+$tab-border: var(--tab-border);
+$tab-item: var(--tab-item);
+$tab-item-selected: var(--tab-item-selected);
+$tab-badge: var(--tab-badge);
+$tab-badge-background: var(--tab-badge-background);
+
+$header: var(--header);
+$header-background: var(--header-background);
+
+$loader: var(--loader);
+
+$access-guard: var(--access-guard);
+
+$auto-pill-on: var(--auto-pill-on);
+$auto-pill-on-background: var(--auto-pill-on-background);
+$auto-pill-off: var(--auto-pill-off);
+$auto-pill-off-background: var(--auto-pill-off-background);
+
+$complete-background: var(--complete-background);
+$complete: var(--complete);
+$complete-progress-background: var(--complete-progress-background);
+$complete-progress: var(--complete-progress);
+$complete-disabled-background: var(--complete-disabled-background);
+$complete-disabled: var(--complete-disabled);
+
+$last-viewed-background: var(--last-viewed-background);
+$last-viewed: var(--last-viewed);
+
+$salary-pill: var(--salary-pill);
+
+$note-card-border: var(--note-card-border);
+$note-card-picture: var(--note-card-picture);
+$note-card-author: var(--note-card-author);
+$note-card-text: var(--note-card-text);
+
+$notes-and-charts: var(--notes-and-charts);
+$notes-and-charts-background: var(--notes-and-charts-background);
+$notes-and-charts-shadow: var(--notes-and-charts-shadow);
+$notes-and-charts-salary: var(--notes-and-charts-salary);
+$notes-background: var(--notes-background);
+$notes-input-background: var(--notes-input-background);
+$notes-input-border: var(--notes-input-border);
+$notes-input-outline: var(--notes-input-outline);
+$notes-input-submit: var(--notes-input-submit);
+$notes-input-submit-disabled: var(--notes-input-submit-disabled);
+$notes-counter-background: var(--notes-counter-background);
+$notes-counter: var(--notes-counter);
+
+$notes-container: var(--notes-container);
+$notes-container-background: var(--notes-container-background);
+
+$notes-manager-border: var(--notes-manager-border);
+$notes-manager-header: var(--notes-manager-header);
+$notes-manager-image: var(--notes-manager-image);
+$notes-manager-name: var(--notes-manager-name);
+$notes-manager-search: var(--notes-manager-search);
+$notes-manager-search-dropdown: var(--notes-manager-search-dropdown);
+$notes-manager-search-dropdown-border: var(--notes-manager-search-dropdown-border);
+$notes-manager-search-dropdown-option: var(--notes-manager-search-dropdown-option);
+$notes-manager-search-dropdown-option-border: var(--notes-manager-search-dropdown-option-border);
+
+$pay-distribution-left: var(--pay-distribution-left);
+$pay-distribution-middle: var(--pay-distribution-middle);
+$pay-distribution-right: var(--pay-distribution-right);
+
+$stage: var(--stage);
+$stage-interested: var(--stage-interested);
+$stage-not-interested: var(--stage-not-interested);
+$stage-interviewing: var(--stage-interviewing);
+$stage-failed: var(--stage-failed);
+$stage-hired: var(--stage-hired);
+$stage-inactive: var(--stage-inactive);
+
+$theme-switch: var(--theme-switch);
+$theme-switch-border: var(--theme-switch-border);
+$theme-switch-icon: var(--theme-switch-icon);
+$theme-switch-circle: var(--theme-switch-circle);
+$theme-switch-circle-border: var(--theme-switch-circle-border);

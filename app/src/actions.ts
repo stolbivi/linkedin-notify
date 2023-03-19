@@ -234,7 +234,7 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
 
 
 export interface ShowNotesAndChartsPayload {
-    id: string
+    id?: string
     showSalary: boolean
     showNotes: boolean
 }

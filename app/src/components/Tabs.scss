@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 
 .tabs {
   width: 100%;
@@ -24,10 +24,6 @@
 
     span {
       margin: 0em 0.5em;
-    }
-
-    &:hover {
-      color: $tab-item-hover;
     }
 
     .tab-badge {

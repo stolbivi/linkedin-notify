@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {Badges, Feature, VERBOSE} from "../global";
+import {Badges, Feature, Theme, VERBOSE} from "../global";
 import {Notifications} from "./Notifications";
 import {Tabs, TabTypes} from "./Tabs";
 import {Conversations} from "./Conversations";
@@ -10,6 +10,8 @@ import "./Main.scss";
 import {Logo} from "../icons/Logo";
 import {getBadges, getFeatures, getIsLogged} from "../actions";
 import {ThemeSwitch} from "./ThemeSwitch";
+import {theme as LightTheme} from "../themes/light";
+import {theme as DarkTheme} from "../themes/dark";
 
 type Props = {};
 
@@ -23,6 +25,8 @@ export const Main: React.FC<Props> = ({}) => {
     const [badges, setBadges] = useState({} as Badges);
     const [isLogged, setIsLogged] = useState(false);
     const [tab, setTab] = useState(0);
+
+    const rootElement = useRef<HTMLDivElement>();
 
     useEffect(() => {
         messages.request(getFeatures())
@@ -45,10 +49,25 @@ export const Main: React.FC<Props> = ({}) => {
         }
     }, [features]);
 
+    useEffect(() => {
+        function setTheme(theme: Theme) {
+            for (let name in theme) {
+                if (Object.prototype.hasOwnProperty.call(theme, name)) {
+                    rootElement.current.style.setProperty(name, theme[name])
+                }
+            }
+        }
+
+        if (rootElement.current) {
+            const theme = light ? LightTheme : DarkTheme;
+            setTheme(theme);
+        }
+    }, [light]);
+
     return (
         <React.Fragment>
             {completed &&
-                <div className="container">
+                <div className="container" ref={rootElement}>
                     {isLogged === false
                         ? <SignIn/>
                         : <div className="w-100 d-flex flex-column justify-content-center align-items-start">

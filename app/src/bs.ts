@@ -154,7 +154,7 @@ function autoFeatures() {
                         updates?.threads?.forEach((t: any) => {
                             const threadAuthor = getValue(t.author);
                             const matches = features.filter((f: any) =>
-                                f.authors.findIndex((a: string) => a.indexOf(threadAuthor) >= 0) >= 0);
+                                f.authors?.findIndex((a: string) => a.indexOf(threadAuthor) >= 0) >= 0);
                             matches.forEach(async m => {
                                 switch (m.type) {
                                     case "like":

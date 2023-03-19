@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 @import "BaseCard";
 
 .notification-card {
@@ -14,10 +14,6 @@
     margin: 0em 0.5em;
     user-select: none;
     cursor: pointer;
-
-    &:hover {
-      background-color: $notification-card-action-1-hover !important;
-    }
   }
 
   .card-message {

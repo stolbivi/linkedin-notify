@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 
 .m-1 {
   margin-bottom: 0.5em;
@@ -28,10 +28,6 @@
   color: $access-guard;
   user-select: none;
   cursor: pointer;
-
-  &:hover {
-    background-color: $access-guard-hover !important;
-  }
 }
 
 .access-guard-px16 {

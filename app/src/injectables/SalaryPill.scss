@@ -1,4 +1,4 @@
-@import "../themes/light";
+@import "../themes/primary";
 @import "AccessGuard";
 
 .salary-pill {
@@ -9,12 +9,11 @@
   padding: 0.25em 0.75em;
   margin: 0em 0.5em;
   user-select: none;
-
-  &:hover {
-    background-color: $salary-pill-background-hover !important;
-  }
+  align-items: center;
+  display: flex;
 
   & svg {
+    margin-left: 0.5em;
     height: 24px;
     color: $salary-pill;
   }

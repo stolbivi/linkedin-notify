@@ -4,10 +4,11 @@ import {extractIdFromUrl, VERBOSE} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
+import {getSalary, showNotesAndChartsProxy} from "../actions";
+import {DollarCircle} from "../icons/DollarCircle";
 
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
-import {getSalary, showNotesAndChartsProxy} from "../actions";
 
 export const SalaryPillFactory = () => {
     // individual profile
@@ -123,6 +124,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
                      onClick={onClick}>
                     <Loader show={!completed}/>
                     {completed && getSalaryValue(salary)}
+                    {completed && <DollarCircle/>}
                 </div>}
         </React.Fragment>
     );

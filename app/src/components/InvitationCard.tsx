@@ -86,9 +86,8 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
                         <div className="action-accept" onClick={onAccept} hidden={hideActions}>Accept</div>
                     </div>
                     {invitation.customMessage &&
-                        <div className="custom-message">
+                        <div className="card-message">
                             <div>{invitation.message}</div>
-                            {/*<div className="action-reply" onClick={onReply}>Reply to {invitation.fromMember?.firstName}</div>*/}
                         </div>}
                 </div>
             </div>

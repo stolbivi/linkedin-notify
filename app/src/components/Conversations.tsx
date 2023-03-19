@@ -34,11 +34,14 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
     }
 
     useEffect(() => {
+        console.log('Checking');
         messages.request(getIsUnlocked())
             .then((unlocked) => {
+                console.log('Unlocked', unlocked);
                 setUnlocked(unlocked);
                 return messages.request(getConversations())
                     .then((conversations) => {
+                        console.log('Conversations', conversations);
                         setConversations(conversations.map((c: any, i: number) =>
                             (<ConversationCard conversation={c} key={i}
                                                getDetails={getDetails}
