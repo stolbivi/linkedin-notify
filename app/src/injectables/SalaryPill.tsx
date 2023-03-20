@@ -123,7 +123,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
                 <div className={"salary-pill" + (completed ? " clickable" : "")}
                      onClick={onClick}>
                     <Loader show={!completed}/>
-                    {completed && getSalaryValue(salary)}
+                    {completed && <span>{getSalaryValue(salary)}</span>}
                     {completed && <DollarCircle/>}
                 </div>}
         </React.Fragment>

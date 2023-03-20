@@ -12,8 +12,12 @@
   align-items: center;
   display: flex;
 
-  & svg {
+  span {
     margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+
+  & svg {
     height: 24px;
     color: $salary-pill;
   }
