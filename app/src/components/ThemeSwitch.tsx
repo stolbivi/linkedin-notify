@@ -26,14 +26,15 @@ export const ThemeSwitch: React.FC<Props> = ({light, setLight}) => {
                     console.error(r.error);
                 }
             });
-        // TODO send to all tabs
-        tabs.withCurrentTab().then(tabs => {
-            messages.requestTab(tabs[0].id,
-                switchTheme({theme})).then((r) => {
-                if (r.error) {
-                    console.error(r.error);
-                }
-            });
+        tabs.withAllTabs().then(tabs => {
+            for (let i = 0; i < tabs.length; ++i) {
+                messages.requestTab(tabs[i].id,
+                    switchTheme({theme})).then((r) => {
+                    if (r.error) {
+                        console.error(r.error);
+                    }
+                });
+            }
         });
     }
 

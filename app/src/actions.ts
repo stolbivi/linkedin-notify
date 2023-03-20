@@ -244,7 +244,7 @@ const _internalShowNotesAndCharts = createAction<ShowNotesAndChartsPayload, void
 
 export const showNotesAndChartsProxy = createAction<ShowNotesAndChartsPayload, any>("showNotesAndChartsProxy",
     (payload) => tabs.withCurrentTab()
-        .then(tabs => messagesV2.requestTab(tabs[0].id, _internalShowNotesAndCharts(payload))));
+        .then(tab => messagesV2.requestTab(tab?.id, _internalShowNotesAndCharts(payload))));
 
 export const getNotesAll = createAction<{}, any>("getNotesAll",
     () => getCookies(LINKEDIN_DOMAIN)
