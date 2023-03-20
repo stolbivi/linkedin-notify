@@ -5,7 +5,7 @@ import {getSalaryValue, Salary} from "../SalaryPill";
 import {PayDistribution} from "./PayDistribution";
 import {StageEnum, StageSwitch} from "./StageSwitch";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {extractIdFromUrl, Feature, NoteExtended, Theme, VERBOSE} from "../../global";
+import {extractIdFromUrl, NoteExtended, Theme, VERBOSE} from "../../global";
 import {inject} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
@@ -14,10 +14,10 @@ import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
-    getFeatures,
     getNotesByProfile,
     getSalary,
     getStages,
+    getTheme,
     postNote as postNoteAction,
     ShowNotesAndChartsPayload,
     SwitchThemePayload
@@ -85,17 +85,28 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
-    const [features, setFeatures] = useState<Feature[]>([]);
     const [theme, setTheme] = useState<Theme>(LightTheme);
 
     const messages = new MessagesV2(VERBOSE);
 
     const rootElement = useRef<HTMLDivElement>();
 
+    const updateTheme = (value: string) => {
+        let theme = value === "light" ? LightTheme : DarkTheme;
+        setThemeUtil(theme, rootElement);
+        setTheme(theme);
+    }
+
     useEffect(() => {
         window.addEventListener('popstate', () => {
             setShow(false);
         });
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            }));
         messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
             (payload) => {
                 if (id && payload?.id !== id) {
@@ -106,48 +117,23 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                 setShow(true);
                 return Promise.resolve();
             }));
-        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
-            (payload) => {
-                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
-                setThemeUtil(theme, rootElement);
-                setTheme(theme);
-                return Promise.resolve();
-            }));
         // getting data
         setCompleted(false);
-        messages.request(getFeatures())
+        messages.request(getSalary(extractIdFromUrl(window.location.href)))
             .then((r) => {
-                setFeatures(r.response?.features ?? []);
-                messages.request(getSalary(extractIdFromUrl(window.location.href)))
-                    .then((r) => {
-                        const salary = {...r.result, title: r.title, urn: r.urn};
-                        setSalaryInternal(salary);
-                        return salary;
-                    }).then(salary => {
-                    const stagePromise = messages.request(getStages({id: salary.urn}))
-                        .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                        .catch(e => console.error(e.error));
-                    const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                        .then((r) => setNotes(r.response))
-                        .catch(e => console.error(e.error));
-                    Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
-                }).catch(e => console.error(e.error));
-            });
+                const salary = {...r.result, title: r.title, urn: r.urn};
+                setSalaryInternal(salary);
+                return salary;
+            }).then(salary => {
+            const stagePromise = messages.request(getStages({id: salary.urn}))
+                .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
+                .catch(e => console.error(e.error));
+            const notesPromise = messages.request(getNotesByProfile(salary.urn))
+                .then((r) => setNotes(r.response))
+                .catch(e => console.error(e.error));
+            Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
+        }).catch(e => console.error(e.error));
     }, []);
-
-    useEffect(() => {
-        if (features?.length > 0) {
-            const themeFeature = features.find(f => f.type === 'theme');
-            if (themeFeature) {
-                let theme = themeFeature.theme === 'light' ? LightTheme : DarkTheme;
-                setThemeUtil(theme, rootElement);
-                setTheme(theme);
-            } else {
-                setThemeUtil(LightTheme, rootElement);
-                setTheme(LightTheme);
-            }
-        }
-    }, [features, rootElement.current]);
 
     useEffect(() => {
         if (show) {

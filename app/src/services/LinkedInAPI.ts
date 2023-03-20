@@ -28,12 +28,12 @@ export interface Experience {
 
 export class LinkedInAPI {
 
-    public static readonly THE_COOKIE = 'li_at';
+    public static readonly COOKIE_AT = 'li_at';
     private static readonly BASE = 'https://www.linkedin.com/voyager/api/';
     private static readonly CSRF = 'JSESSIONID';
 
     public isLogged(cookies: Cookie[]): boolean {
-        const theCookie = cookies.find(c => c.name === LinkedInAPI.THE_COOKIE);
+        const theCookie = cookies.find(c => c.name === LinkedInAPI.COOKIE_AT);
         return Number(theCookie?.expirationDate) * 1000 > new Date().getTime();
     }
 

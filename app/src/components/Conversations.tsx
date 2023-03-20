@@ -36,9 +36,9 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
     useEffect(() => {
         console.log('Checking');
         messages.request(getIsUnlocked())
-            .then((unlocked) => {
-                console.log('Unlocked', unlocked);
-                setUnlocked(unlocked);
+            .then((payload) => {
+                console.log('Unlocked', payload);
+                setUnlocked(payload.isUnlocked);
                 return messages.request(getConversations())
                     .then((conversations) => {
                         console.log('Conversations', conversations);

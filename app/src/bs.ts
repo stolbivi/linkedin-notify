@@ -1,4 +1,4 @@
-import {MessagesV2} from "@stolbivi/pirojok";
+import {MessagesV2, Tabs} from "@stolbivi/pirojok";
 import {LINKEDIN_DOMAIN, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
@@ -20,6 +20,7 @@ import {
     getSalary,
     getStages,
     getSubscription,
+    getTheme,
     getTz,
     handleInvitation,
     markNotificationRead,
@@ -29,19 +30,22 @@ import {
     setFeatures,
     setLastViewed,
     setStage,
+    setTheme,
     showNotesAndChartsProxy,
+    switchTheme,
     unlock
 } from "./actions";
+import {listenToThemeCookie} from "./themes/ThemeUtils";
 
 const messagesV2 = new MessagesV2(VERBOSE);
+const tabs = new Tabs();
 
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
 
 // adding popup
-chrome.action.onClicked.addListener(() => {
-    chrome.tabs.create({url: chrome.runtime.getURL('popup.html')});
-});
+chrome.action.onClicked.addListener(() =>
+    chrome.tabs.create({url: chrome.runtime.getURL('popup.html')}));
 
 // global parameters
 const CHECK_FREQUENCY = 0.5;
@@ -92,10 +96,28 @@ messagesV2.listen(postNote);
 messagesV2.listen(getSubscription);
 messagesV2.listen(getLastViewed);
 messagesV2.listen(setLastViewed);
+messagesV2.listen(getTheme);
+messagesV2.listen(setTheme);
 
 // listening to cookies store events
+listenToThemeCookie((cookie) => {
+    console.log("Cookie", cookie);
+    tabs.withAllTabs().then(tabs => {
+        for (let i = 0; i < tabs.length; ++i) {
+            try {
+                messagesV2.requestTab(tabs[i].id, switchTheme({theme: cookie.value}))
+                    .then((r) => {
+                        if (r.error) {
+                            console.error(r.error);
+                        }
+                    }).catch();
+            } catch {
+            }
+        }
+    });
+});
 chrome.cookies.onChanged.addListener(async (changeInfo) => {
-    if (changeInfo.cookie.name === LinkedInAPI.THE_COOKIE) {
+    if (changeInfo.cookie.name === LinkedInAPI.COOKIE_AT) {
         if (changeInfo.removed) {
             console.log("Stop monitoring");
             await chrome.alarms.clearAll();
@@ -105,7 +127,7 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
             startMonitoring();
         }
     }
-})
+});
 
 function checkBadges() {
     console.debug('Firing badges checks');

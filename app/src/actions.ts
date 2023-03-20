@@ -6,6 +6,8 @@ import {MapsAPI} from "./services/MapsAPI";
 import {Response} from "./services/BaseAPI";
 import {StageEnum} from "./injectables/notes/StageSwitch";
 import {MessagesV2, Tabs} from "@stolbivi/pirojok";
+import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
+import Cookie = chrome.cookies.Cookie;
 
 const messagesV2 = new MessagesV2(VERBOSE);
 const api = new LinkedInAPI();
@@ -17,14 +19,19 @@ const tabs = new Tabs();
  * Returns all cookies of the store for particular domain, requires host permissions in manifest
  * @param domain
  */
-export const getCookies = async (domain: string) => chrome.cookies.getAll({domain})
+export const getCookies = async (domain: string) => chrome.cookies.getAll({domain});
 
 export const openUrl = createAction<string, chrome.tabs.Tab>("openUrlAction",
     (url) => chrome.tabs.create({url}));
 
-export const getIsLogged = createAction<{}, boolean>("getIsLogged",
+export interface LoggedPayload {
+    isLogged: boolean
+}
+
+export const getIsLogged = createAction<{}, LoggedPayload>("getIsLogged",
     () => getCookies(LINKEDIN_DOMAIN)
-        .then(cookies => api.isLogged(cookies)));
+        .then(cookies => api.isLogged(cookies))
+        .then(isLogged => ({isLogged})));
 
 export const getBadges = createAction<{}, Badges>("getBadges",
     () => getCookies(LINKEDIN_DOMAIN)
@@ -44,18 +51,22 @@ export const getConversations = createAction<{}, any>("getConversations",
             return api.extractConversations(conversationResponse);
         }));
 
-export const getIsUnlocked = createAction<{}, boolean>("getIsUnlocked",
-    () => new Promise<boolean>((res) => {
+export interface UnlockedPayload {
+    isUnlocked: boolean
+}
+
+export const getIsUnlocked = createAction<{}, UnlockedPayload>("getIsUnlocked",
+    () => new Promise<UnlockedPayload>((res) => {
         chrome.storage.local.get(["unlocked"], (result) => {
-            res(result["unlocked"] === true)
+            res({isUnlocked: result["unlocked"] === true})
         });
     }));
 
-export const unlock = createAction<{}, boolean>("unlock",
+export const unlock = createAction<{}, UnlockedPayload>("unlock",
     () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(token => api.repost(token, SHARE_URN))
-        .then(r => new Promise((res) => chrome.storage.local.set({unlocked: true}, () => res(r)))));
+        .then(r => new Promise((res) => chrome.storage.local.set({unlocked: true}, () => res({isUnlocked: r})))));
 
 export const getConversationDetails = createAction<string, Array<any>>("getConversationDetails",
     (entityUrn) => getCookies(LINKEDIN_DOMAIN)
@@ -346,3 +357,9 @@ export interface SwitchThemePayload {
 
 export const switchTheme = createAction<SwitchThemePayload, void>("switchTheme",
     (_) => Promise.resolve());
+
+export const getTheme = createAction<{}, string>("getTheme",
+    (_) => getThemeCookie().then(cookie => cookie?.value));
+
+export const setTheme = createAction<string, Cookie>("setTheme",
+    (theme) => setThemeCookie(theme));

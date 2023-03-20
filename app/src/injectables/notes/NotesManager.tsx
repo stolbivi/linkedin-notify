@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
-import {Feature, NoteExtended, VERBOSE} from "../../global";
+import {NoteExtended, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
@@ -12,9 +12,9 @@ import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
-    getFeatures,
     getNotesAll,
     getNotesByProfile,
+    getTheme,
     openUrl,
     postNote as postNoteAction,
     SwitchThemePayload
@@ -62,34 +62,28 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
-    const [features, setFeatures] = useState<Feature[]>([]);
 
     const rootElement = useRef<HTMLDivElement>();
 
+    const updateTheme = (value: string) => {
+        let theme = value === "light" ? LightTheme : DarkTheme;
+        setThemeUtil(theme, rootElement);
+    }
+
     useEffect(() => {
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            }));
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {
                 let theme = payload.theme === "light" ? LightTheme : DarkTheme;
                 setThemeUtil(theme, rootElement);
                 return Promise.resolve();
             }));
-        messages.request(getFeatures())
-            .then((r) => {
-                setFeatures(r.response?.features ?? []);
-            });
     }, []);
-
-    useEffect(() => {
-        if (features?.length > 0) {
-            const themeFeature = features.find(f => f.type === 'theme');
-            if (themeFeature) {
-                let theme = themeFeature.theme === 'light' ? LightTheme : DarkTheme;
-                setThemeUtil(theme, rootElement);
-            } else {
-                setThemeUtil(LightTheme, rootElement);
-            }
-        }
-    }, [features, rootElement.current]);
 
     useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
