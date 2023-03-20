@@ -1,20 +1,30 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
-import {NoteExtended, VERBOSE} from "../../global";
+import {Feature, NoteExtended, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
 import {injectFirstChild} from "../../utils/InjectHelper";
 import {StageButton} from "./StageButton";
 import {StageEnum} from "./StageSwitch";
-
-// @ts-ignore
-import stylesheet from "./NotesManager.scss";
 import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getNotesAll, getNotesByProfile, openUrl, postNote as postNoteAction} from "../../actions";
+import {
+    getFeatures,
+    getNotesAll,
+    getNotesByProfile,
+    openUrl,
+    postNote as postNoteAction,
+    SwitchThemePayload
+} from "../../actions";
+import {setTheme as setThemeUtil} from "../../themes/ThemeUtils";
+// @ts-ignore
+import stylesheet from "./NotesManager.scss";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as LightTheme} from "../../themes/light";
+import {theme as DarkTheme} from "../../themes/dark";
 
 export const NotesManagerFactory = () => {
     const aside = document.getElementsByClassName("scaffold-layout__aside");
@@ -52,6 +62,34 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
+    const [features, setFeatures] = useState<Feature[]>([]);
+
+    const rootElement = useRef<HTMLDivElement>();
+
+    useEffect(() => {
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                return Promise.resolve();
+            }));
+        messages.request(getFeatures())
+            .then((r) => {
+                setFeatures(r.response?.features ?? []);
+            });
+    }, []);
+
+    useEffect(() => {
+        if (features?.length > 0) {
+            const themeFeature = features.find(f => f.type === 'theme');
+            if (themeFeature) {
+                let theme = themeFeature.theme === 'light' ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+            } else {
+                setThemeUtil(LightTheme, rootElement);
+            }
+        }
+    }, [features, rootElement.current]);
 
     useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
@@ -249,7 +287,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
             <div className="notes-header">
                 <div className="back-button" onClick={() => back()}>
                     <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path opacity="0.2" d="M7 1L1 7L7 13" stroke="#666666" strokeWidth="2" strokeLinecap="round"
+                        <path opacity="0.2" d="M7 1L1 7L7 13" stroke="currentColor" strokeWidth="2"
+                              strokeLinecap="round"
                               strokeLinejoin="round"/>
                     </svg>
                 </div>
@@ -304,7 +343,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className="notes-manager">
+            <div className="notes-manager" ref={rootElement}>
                 <NotesContainer>
                     <AccessGuard setAccessState={setAccessState} className={"access-guard-px16 m-1"}
                                  loaderClassName={"loader-base loader-px24"}/>

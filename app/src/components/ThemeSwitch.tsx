@@ -28,7 +28,6 @@ export const ThemeSwitch: React.FC<Props> = ({light, setLight}) => {
             });
         // TODO send to all tabs
         tabs.withCurrentTab().then(tabs => {
-            console.log("Switch theme to:", theme);
             messages.requestTab(tabs[0].id,
                 switchTheme({theme})).then((r) => {
                 if (r.error) {

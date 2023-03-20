@@ -108,7 +108,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
             }));
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {
-                console.log("Received switch theme to:", payload);
                 let theme = payload.theme === "light" ? LightTheme : DarkTheme;
                 setThemeUtil(theme, rootElement);
                 setTheme(theme);
@@ -147,7 +146,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                 setThemeUtil(LightTheme, rootElement);
                 setTheme(LightTheme);
             }
-            setCompleted(true);
         }
     }, [features, rootElement.current]);
 

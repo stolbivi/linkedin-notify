@@ -15,7 +15,6 @@ export const theme: Theme = {
     "--conversation-card-background": "rgb(10, 102, 194)",
 
     "--details-back": "rgba(106, 106, 106, 0.6)",
-    "--details-back-hover": "rgba(106, 106, 106, 0.9)",
     "--details-reply-background": "white",
     "--details-reply-background-hover": "#e2f0fd",
     "--details-reply": "rgb(10, 102, 194)",
@@ -39,7 +38,7 @@ export const theme: Theme = {
     "--sign-in-background": "white",
 
     "--tab": "white",
-    "--tab-selected": "#1569BF",
+    "--tab-selected": "rgb(10, 102, 194)",
     "--tab-border": "rgba(0, 0, 0, 0.1)",
     "--tab-item": "rgba(0, 0, 0)",
     "--tab-item-selected": "white",
@@ -51,12 +50,12 @@ export const theme: Theme = {
 
     "--loader": "rgb(10, 102, 194)",
 
-    "--access-guard": "rgb(88, 88, 88)",
+    "--access-guard": "rgb(144, 144, 144)",
 
     "--auto-pill-on": "white",
     "--auto-pill-on-background": "rgb(10, 102, 194)",
     "--auto-pill-off": "white",
-    "--auto-pill-off-background": "rgb(88, 88, 88)",
+    "--auto-pill-off-background": "rgb(144, 144, 144)",
 
     "--complete-background": "rgb(10, 102, 194)",
     "--complete": "white",
@@ -84,8 +83,8 @@ export const theme: Theme = {
     "--notes-input": "black",
     "--notes-input-background": "#FFFFFF",
     "--notes-input-border": "#E5E5E5",
-    "--notes-input-outline": "rgba(21, 105, 191, 1)",
-    "--notes-input-submit": "rgba(21, 105, 191, 1)",
+    "--notes-input-outline": "rgb(10, 102, 194)",
+    "--notes-input-submit": "rgb(10, 102, 194)",
     "--notes-input-submit-disabled": "rgb(144, 144, 144)",
     "--notes-counter-background": "rgba(144, 144, 144, 0.1)",
     "--notes-counter": "#585858",
@@ -96,7 +95,7 @@ export const theme: Theme = {
     "--notes-manager-border": "#E0DFDC",
     "--notes-manager-header": "#FBFBFB",
     "--notes-manager-image": "white",
-    "--notes-manager-name": "#000000",
+    "--notes-manager-name": "black",
     "--notes-manager-search": "rgba(217, 217, 217, 0.23)",
     "--notes-manager-search-dropdown": "#FFFFFF",
     "--notes-manager-search-dropdown-border": "rgba(88, 88, 88, 0.1)",
