@@ -105,6 +105,14 @@
   justify-content: center;
   align-items: center;
   user-select: none;
+
+  .color-1 {
+    fill: $notes-color-1;
+  }
+
+  .color-2 {
+    fill: $notes-color-2;
+  }
 }
 
 .scroll-container {

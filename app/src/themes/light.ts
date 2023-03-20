@@ -88,6 +88,8 @@ export const theme: Theme = {
     "--notes-input-submit-disabled": "rgb(144, 144, 144)",
     "--notes-counter-background": "rgba(144, 144, 144, 0.1)",
     "--notes-counter": "#585858",
+    "--notes-color-1": "white",
+    "--notes-color-2": "#D9D9D9",
 
     "--notes-container": "#909090",
     "--notes-container-background": "#FFFFFF",
