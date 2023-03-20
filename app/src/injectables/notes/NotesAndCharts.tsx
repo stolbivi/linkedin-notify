@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {getSalaryValue, Salary} from "../SalaryPill";
 import {PayDistribution} from "./PayDistribution";
 import {StageEnum, StageSwitch} from "./StageSwitch";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {extractIdFromUrl, NoteExtended, VERBOSE} from "../../global";
+import {extractIdFromUrl, Feature, NoteExtended, Theme, VERBOSE} from "../../global";
 import {inject} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
@@ -13,17 +13,21 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-
-// @ts-ignore
-import stylesheet from "./NotesAndCharts.scss";
 import {
+    getFeatures,
     getNotesByProfile,
     getSalary,
     getStages,
     postNote as postNoteAction,
-    ShowNotesAndChartsPayload
+    ShowNotesAndChartsPayload,
+    SwitchThemePayload
 } from "../../actions";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+// @ts-ignore
+import stylesheet from "./NotesAndCharts.scss";
+import {setTheme as setThemeUtil} from "../../themes/ThemeUtils";
+import {theme as LightTheme} from "../../themes/light";
+import {theme as DarkTheme} from "../../themes/dark";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -64,6 +68,7 @@ type Props = {
     id?: string
 };
 
+
 export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
 
     const MAX_LENGTH = 200;
@@ -80,8 +85,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
+    const [features, setFeatures] = useState<Feature[]>([]);
+    const [theme, setTheme] = useState<Theme>(LightTheme);
 
     const messages = new MessagesV2(VERBOSE);
+
+    const rootElement = useRef<HTMLDivElement>();
 
     useEffect(() => {
         window.addEventListener('popstate', () => {
@@ -97,23 +106,50 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                 setShow(true);
                 return Promise.resolve();
             }));
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                console.log("Received switch theme to:", payload);
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                setTheme(theme);
+                return Promise.resolve();
+            }));
         // getting data
         setCompleted(false);
-        messages.request(getSalary(extractIdFromUrl(window.location.href)))
+        messages.request(getFeatures())
             .then((r) => {
-                const salary = {...r.result, title: r.title, urn: r.urn};
-                setSalaryInternal(salary);
-                return salary;
-            }).then(salary => {
-            const stagePromise = messages.request(getStages({id: salary.urn}))
-                .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                .catch(e => console.error(e.error));
-            const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                .then((r) => setNotes(r.response))
-                .catch(e => console.error(e.error));
-            Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
-        }).catch(e => console.error(e.error));
+                setFeatures(r.response?.features ?? []);
+                messages.request(getSalary(extractIdFromUrl(window.location.href)))
+                    .then((r) => {
+                        const salary = {...r.result, title: r.title, urn: r.urn};
+                        setSalaryInternal(salary);
+                        return salary;
+                    }).then(salary => {
+                    const stagePromise = messages.request(getStages({id: salary.urn}))
+                        .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
+                        .catch(e => console.error(e.error));
+                    const notesPromise = messages.request(getNotesByProfile(salary.urn))
+                        .then((r) => setNotes(r.response))
+                        .catch(e => console.error(e.error));
+                    Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
+                }).catch(e => console.error(e.error));
+            });
     }, []);
+
+    useEffect(() => {
+        if (features?.length > 0) {
+            const themeFeature = features.find(f => f.type === 'theme');
+            if (themeFeature) {
+                let theme = themeFeature.theme === 'light' ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                setTheme(theme);
+            } else {
+                setThemeUtil(LightTheme, rootElement);
+                setTheme(LightTheme);
+            }
+            setCompleted(true);
+        }
+    }, [features, rootElement.current]);
 
     useEffect(() => {
         if (show) {
@@ -175,7 +211,8 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                 <React.Fragment>
                     <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
                     <div onTransitionEnd={() => onExpanded()}
-                         className={"notes-and-charts " + ((completed && !minimized) ? "position-expanded" : "position-collapsed")}>
+                         className={"notes-and-charts " + ((completed && !minimized) ? "position-expanded" : "position-collapsed")}
+                         ref={rootElement}>
                         <div className="close-button" onClick={() => close()}>
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -213,7 +250,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                                         </div>
                                     </div>
                                     <div data-role={CollapsibleRole.Collapsible}>
-                                        {showChart && <PayExtrapolationChart salary={salaryInternal}/>}
+                                        {showChart && <PayExtrapolationChart salary={salaryInternal} theme={theme}/>}
                                     </div>
                                 </Collapsible>
                                 {salaryInternal &&

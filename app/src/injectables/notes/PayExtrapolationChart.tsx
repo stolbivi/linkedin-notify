@@ -2,9 +2,11 @@ import Chart from 'chart.js/auto';
 import React, {useEffect, useRef, useState} from "react";
 import {Salary} from "../SalaryPill";
 import "./PayExtrapolationChart.scss";
+import {Theme} from "../../global";
 
 type Props = {
     salary: Salary
+    theme: Theme
 };
 
 interface Sample {
@@ -13,15 +15,7 @@ interface Sample {
     radius: number
 }
 
-const colors = {
-    light: {
-        color1: "#F3F2EF",
-        color2: "#F4EDD8",
-        border: "#A8A8A8"
-    }
-}
-
-export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
+export const PayExtrapolationChart: React.FC<Props> = ({salary, theme}) => {
 
     const EXTRA_LENGTH = 20;
     const STEP = 5;
@@ -51,9 +45,8 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
         if (canvasRef.current && data) {
             const ctx = canvasRef.current.getContext("2d");
             const gradient = ctx.createLinearGradient(0, 0, 400, 0);
-            gradient.addColorStop(0, colors.light.color1);
-            gradient.addColorStop(1, colors.light.color2);
-
+            gradient.addColorStop(0, theme["--pay-chart-color1"]);
+            gradient.addColorStop(1, theme["--pay-chart-color2"]);
 
             new Chart(
                 canvasRef.current,
@@ -65,7 +58,7 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
                                 data: data,
                                 showLine: true,
                                 fill: true,
-                                borderColor: colors.light.border,
+                                borderColor: theme["--pay-chart-border"],
                                 backgroundColor: gradient,
                                 pointRadius: data.map(row => row.radius)
                             }
@@ -87,6 +80,9 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
                             x: {
                                 type: 'linear',
                                 position: 'bottom',
+                                grid: {
+                                    color: theme["--pay-chart-grid"]
+                                },
                                 ticks: {
                                     count: STEP,
                                     callback: ((value: number) => {
@@ -101,6 +97,9 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary}) => {
                                 }
                             },
                             y: {
+                                grid: {
+                                    display: false
+                                },
                                 ticks: {
                                     callback: (value: number) => `${(value / 1000).toFixed(0)}K`
                                 }

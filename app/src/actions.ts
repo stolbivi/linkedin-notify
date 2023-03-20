@@ -339,3 +339,10 @@ export const setLastViewed = createAction<string, any>("setLastViewed",
                 author,
             });
         }));
+
+export interface SwitchThemePayload {
+    theme: string
+}
+
+export const switchTheme = createAction<SwitchThemePayload, void>("switchTheme",
+    (_) => Promise.resolve());

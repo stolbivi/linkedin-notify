@@ -72,7 +72,8 @@
   --note-card-border: rgb(0 0 0 / 10%);
   --note-card-picture: white;
   --note-card-author: black;
-  --note-card-text: rgba(244, 244, 244, 0.38);
+  --note-card-text: black;
+  --note-card-text-background: rgba(244, 244, 244, 0.38);
 
   --notes-and-charts: #909090;
   --notes-and-charts-background: #FFFFFF;
@@ -80,6 +81,7 @@
   --notes-and-charts-salary: #585858;
   --notes-background: #FBFBFB;
   --notes-input-background: #FFFFFF;
+  --notes-input: black;
   --notes-input-border: #E5E5E5;
   --notes-input-outline: rgba(21, 105, 191, 1);
   --notes-input-submit: rgba(21, 105, 191, 1);
@@ -110,7 +112,7 @@
   --stage-interviewing: rgba(240, 144, 0, 0.74);
   --stage-failed: rgba(202, 26, 36, 0.74);
   --stage-hired: rgba(17, 117, 68, 0.74);
-  --stage-inactive: #909090;
+  --stage-inactive: rgb(144, 144, 144);
 
   --theme-switch: white;
   --theme-switch-border: #E4E7EC;

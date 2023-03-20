@@ -2,9 +2,9 @@ import React from "react";
 import "./ThemeSwitch.scss";
 import {Sun} from "../icons/Sun";
 import {Moon} from "../icons/Moon";
-import {MessagesV2} from "@stolbivi/pirojok";
+import {MessagesV2, Tabs} from "@stolbivi/pirojok";
 import {VERBOSE} from "../global";
-import {setFeatures as setFeaturesAction} from "../actions";
+import {setFeatures as setFeaturesAction, switchTheme} from "../actions";
 
 type Props = {
     light: boolean
@@ -14,16 +14,28 @@ type Props = {
 export const ThemeSwitch: React.FC<Props> = ({light, setLight}) => {
 
     const messages = new MessagesV2(VERBOSE);
+    const tabs = new Tabs();
 
     const onClick = () => {
         const newValue = !light;
         setLight(newValue);
-        messages.request(setFeaturesAction({theme: newValue ? "light" : "dark", type: "theme", action: "set"}))
+        const theme = newValue ? "light" : "dark";
+        messages.request(setFeaturesAction({theme, type: "theme", action: "set"}))
             .then((r) => {
                 if (r.error) {
                     console.error(r.error);
                 }
             });
+        // TODO send to all tabs
+        tabs.withCurrentTab().then(tabs => {
+            console.log("Switch theme to:", theme);
+            messages.requestTab(tabs[0].id,
+                switchTheme({theme})).then((r) => {
+                if (r.error) {
+                    console.error(r.error);
+                }
+            });
+        });
     }
 
     return (

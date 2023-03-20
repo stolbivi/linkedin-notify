@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {Badges, Feature, Theme, VERBOSE} from "../global";
+import {Badges, Feature, VERBOSE} from "../global";
 import {Notifications} from "./Notifications";
 import {Tabs, TabTypes} from "./Tabs";
 import {Conversations} from "./Conversations";
@@ -12,6 +12,7 @@ import {getBadges, getFeatures, getIsLogged} from "../actions";
 import {ThemeSwitch} from "./ThemeSwitch";
 import {theme as LightTheme} from "../themes/light";
 import {theme as DarkTheme} from "../themes/dark";
+import {setTheme} from "../themes/ThemeUtils";
 
 type Props = {};
 
@@ -50,18 +51,7 @@ export const Main: React.FC<Props> = ({}) => {
     }, [features]);
 
     useEffect(() => {
-        function setTheme(theme: Theme) {
-            for (let name in theme) {
-                if (Object.prototype.hasOwnProperty.call(theme, name)) {
-                    rootElement.current.style.setProperty(name, theme[name])
-                }
-            }
-        }
-
-        if (rootElement.current) {
-            const theme = light ? LightTheme : DarkTheme;
-            setTheme(theme);
-        }
+        setTheme(light ? LightTheme : DarkTheme, rootElement);
     }, [light]);
 
     return (
