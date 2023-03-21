@@ -101,17 +101,13 @@ messagesV2.listen(setTheme);
 
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
-    console.log("Cookie", cookie);
     tabs.withAllTabs().then(tabs => {
         for (let i = 0; i < tabs.length; ++i) {
             try {
                 messagesV2.requestTab(tabs[i].id, switchTheme({theme: cookie.value}))
-                    .then((r) => {
-                        if (r.error) {
-                            console.error(r.error);
-                        }
-                    }).catch();
-            } catch {
+                    .catch(e => console.log(e));
+            } catch (e) {
+                console.log(e)
             }
         }
     });

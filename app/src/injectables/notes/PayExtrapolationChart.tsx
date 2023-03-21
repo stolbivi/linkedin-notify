@@ -21,6 +21,7 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary, theme}) => {
     const STEP = 5;
 
     const [data, setData] = useState<Sample[]>();
+    const [chart, setChart] = useState<Chart>();
 
     const extractData = () => {
         if (salary) {
@@ -47,8 +48,10 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary, theme}) => {
             const gradient = ctx.createLinearGradient(0, 0, 400, 0);
             gradient.addColorStop(0, theme["--pay-chart-color1"]);
             gradient.addColorStop(1, theme["--pay-chart-color2"]);
-
-            new Chart(
+            if (chart) {
+                chart.destroy();
+            }
+            let newChart = new Chart(
                 canvasRef.current,
                 {
                     data: {
@@ -108,8 +111,9 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary, theme}) => {
                     }
                 },
             );
+            setChart(newChart);
         }
-    }, [data]);
+    }, [data, theme]);
 
     useEffect(() => {
         extractData();

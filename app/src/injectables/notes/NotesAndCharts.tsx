@@ -92,6 +92,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     const rootElement = useRef<HTMLDivElement>();
 
     const updateTheme = (value: string) => {
+        console.log("Updating theme to:", value);
         let theme = value === "light" ? LightTheme : DarkTheme;
         setThemeUtil(theme, rootElement);
         setTheme(theme);
@@ -137,6 +138,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
 
     useEffect(() => {
         if (show) {
+            messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
             setTimeout(() => setMinimized(false), 100);
         } else {
             setMinimized(true);
