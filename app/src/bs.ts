@@ -31,11 +31,12 @@ import {
     setLastViewed,
     setStage,
     setTheme,
-    showNotesAndChartsProxy,
-    switchTheme,
+    showNotesAndCharts,
+    switchThemeRequest,
     unlock
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
+import {store} from "./store/Store";
 
 const messagesV2 = new MessagesV2(VERBOSE);
 const tabs = new Tabs();
@@ -89,7 +90,7 @@ messagesV2.listen(getFeatures);
 messagesV2.listen(setFeatures);
 messagesV2.listen(getStages);
 messagesV2.listen(setStage);
-messagesV2.listen(showNotesAndChartsProxy);
+messagesV2.listen(showNotesAndCharts);
 messagesV2.listen(getNotesAll);
 messagesV2.listen(getNotesByProfile);
 messagesV2.listen(postNote);
@@ -104,7 +105,7 @@ listenToThemeCookie((cookie) => {
     tabs.withAllTabs().then(tabs => {
         for (let i = 0; i < tabs.length; ++i) {
             try {
-                messagesV2.requestTab(tabs[i].id, switchTheme({theme: cookie.value}))
+                messagesV2.requestTab(tabs[i].id, switchThemeRequest({theme: cookie.value}).toAction())
                     .catch(e => console.log(e));
             } catch (e) {
                 console.log(e)
@@ -215,3 +216,7 @@ chrome.alarms.onAlarm.addListener(a => {
     }
 });
 
+store.subscribe(() => {
+    // TODO debug only
+    console.log("Store:", store.getState());
+})

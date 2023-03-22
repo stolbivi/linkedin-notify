@@ -4,8 +4,7 @@ import {extractIdFromUrl, VERBOSE} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
-import {getSalary, showNotesAndChartsProxy} from "../actions";
-import {DollarCircle} from "../icons/DollarCircle";
+import {getSalary, showNotesAndCharts} from "../actions";
 
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
@@ -110,7 +109,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
 
     const onClick = () => {
         if (salary) {
-            return messages.request(showNotesAndChartsProxy({id, showSalary, showNotes}));
+            return messages.request(showNotesAndCharts({id, showSalary, showNotes}));
         }
     }
 
@@ -124,7 +123,6 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
                      onClick={onClick}>
                     <Loader show={!completed}/>
                     {completed && <span>{getSalaryValue(salary)}</span>}
-                    {completed && <DollarCircle/>}
                 </div>}
         </React.Fragment>
     );

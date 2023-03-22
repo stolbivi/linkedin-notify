@@ -1,11 +1,16 @@
 import {Theme} from "../global";
-import {MutableRefObject} from "react";
+import {MutableRefObject, useRef, useState} from "react";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {getTheme, SwitchThemePayload, switchThemeRequest} from "../actions";
+import {createFromRequest} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as LightTheme} from "./light";
+import {theme as DarkTheme} from "./dark";
 import Cookie = chrome.cookies.Cookie;
 
 export const COOKIE_THEME = "li_theme";
 const DOMAIN = ".www.linkedin.com";
 
-export function setTheme(theme: Theme, rootElement: MutableRefObject<HTMLElement>) {
+export function applyThemeProperties(theme: Theme, rootElement: MutableRefObject<HTMLElement>) {
     if (rootElement.current) {
         for (let name in theme) {
             if (Object.prototype.hasOwnProperty.call(theme, name)) {
@@ -44,4 +49,25 @@ export function listenToThemeCookie(handler: (cookie: Cookie) => void) {
             handler(cookie);
         }
     });
+}
+
+export function useThemeSupport<T extends HTMLElement>(messages: MessagesV2, defaultTheme: Theme): [Theme, MutableRefObject<T>, (_: string) => void] {
+
+    const [theme, setTheme] = useState<Theme>(defaultTheme);
+    const rootElement = useRef<T>();
+
+    const updateTheme = (value: string) => {
+        let theme = value === "light" ? LightTheme : DarkTheme;
+        applyThemeProperties(theme, rootElement);
+        setTheme(theme);
+    }
+
+    messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+    messages.listen(createFromRequest<SwitchThemePayload, any>(switchThemeRequest,
+        (payload) => {
+            updateTheme(payload.theme);
+            return Promise.resolve();
+        }));
+
+    return [theme, rootElement, updateTheme];
 }

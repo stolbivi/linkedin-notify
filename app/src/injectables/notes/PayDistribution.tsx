@@ -20,7 +20,11 @@ interface Distribution {
 
 export const PayDistribution: React.FC<Props> = ({salary}) => {
 
-    const [distribution, setDistribution] = useState<Distribution>();
+    const [distribution, setDistribution] = useState<Distribution>({
+        left: {percent: 10, value: ""},
+        middle: {percent: 80, value: ""},
+        right: {percent: 10, value: ""}
+    });
 
     const formatPercent = (percent: number) => percent && (percent.toFixed(0) + "%");
 
@@ -29,20 +33,22 @@ export const PayDistribution: React.FC<Props> = ({salary}) => {
             return `${salary.symbol}${Number(value / 1000).toFixed(0)}K`;
         }
 
-        setDistribution({
-            left: {
-                percent: 10,
-                value: salary.payDistribution[0]
-            },
-            middle: {
-                percent: 80,
-                value: formatValue((salary.payDistributionValues[0] + salary.payDistributionValues[3]) / 2)
-            },
-            right: {
-                percent: 10,
-                value: salary.payDistribution[3]
-            }
-        })
+        if (salary.payDistribution && salary.payDistributionValues) {
+            setDistribution({
+                left: {
+                    percent: 10,
+                    value: salary.payDistribution[0]
+                },
+                middle: {
+                    percent: 80,
+                    value: formatValue((salary.payDistributionValues[0] + salary.payDistributionValues[3]) / 2)
+                },
+                right: {
+                    percent: 10,
+                    value: salary.payDistribution[3]
+                }
+            })
+        }
     }, []);
 
     return (

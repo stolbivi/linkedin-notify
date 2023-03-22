@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {NoteExtended, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
@@ -19,7 +19,7 @@ import {
     postNote as postNoteAction,
     SwitchThemePayload
 } from "../../actions";
-import {setTheme as setThemeUtil} from "../../themes/ThemeUtils";
+import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
 // @ts-ignore
 import stylesheet from "./NotesManager.scss";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
@@ -48,6 +48,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const DEFAULT_SEARCH = {text: "", stages: {}};
 
     const messages = new MessagesV2(VERBOSE);
+    const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [completed, setCompleted] = useState<boolean>(false);
@@ -62,13 +63,6 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
-
-    const rootElement = useRef<HTMLDivElement>();
-
-    const updateTheme = (value: string) => {
-        let theme = value === "light" ? LightTheme : DarkTheme;
-        setThemeUtil(theme, rootElement);
-    }
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();

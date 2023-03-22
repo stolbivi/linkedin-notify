@@ -8,7 +8,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import {getStages, showNotesAndChartsProxy} from "../../actions";
+import {getStages, showNotesAndCharts} from "../../actions";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -67,7 +67,7 @@ export const StagePill: React.FC<Props> = ({url}) => {
         if (showNotes) {
             setShowNotes(false);
         } else {
-            return messages.request(showNotesAndChartsProxy({showSalary: false, showNotes: true}));
+            return messages.request(showNotesAndCharts({showSalary: false, showNotes: true}));
         }
     }
 

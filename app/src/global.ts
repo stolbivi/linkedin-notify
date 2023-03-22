@@ -89,14 +89,6 @@ export interface Subscription {
     serverTimeZone: string
 }
 
-export interface LastViewed {
-    profile: string
-    author: string
-    createdAt?: string
-    updatedAt?: string
-    hide?: boolean
-}
-
 export interface Shared {
     profile?: string
     urn: string

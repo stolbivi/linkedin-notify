@@ -24,7 +24,7 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary, theme}) => {
     const [chart, setChart] = useState<Chart>();
 
     const extractData = () => {
-        if (salary) {
+        if (salary && salary.formattedPayValue && salary.payDistributionValues) {
             const first = salary.formattedPayValue;
             const last = salary.payDistributionValues.slice().pop();
             const step = (last - first) / EXTRA_LENGTH;

@@ -12,7 +12,7 @@ import {getBadges, getIsLogged} from "../actions";
 import {ThemeSwitch} from "./ThemeSwitch";
 import {theme as LightTheme} from "../themes/light";
 import {theme as DarkTheme} from "../themes/dark";
-import {getThemeCookie, listenToThemeCookie, setTheme} from "../themes/ThemeUtils";
+import {applyThemeProperties, getThemeCookie, listenToThemeCookie} from "../themes/ThemeUtils";
 
 type Props = {};
 
@@ -43,7 +43,7 @@ export const Main: React.FC<Props> = ({}) => {
     }, []);
 
     useEffect(() => {
-        setTheme(light ? LightTheme : DarkTheme, rootElement);
+        applyThemeProperties(light ? LightTheme : DarkTheme, rootElement);
     }, [light]);
 
     return (

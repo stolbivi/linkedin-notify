@@ -1,7 +1,8 @@
 import {BaseAPI, Response} from "./BaseAPI";
-import {BACKEND_API, Features, LastViewed, Note, Shared, Subscriptions} from "../global";
+import {BACKEND_API, Features, Note, Shared, Subscriptions} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
 import {SetFeaturePayload} from "../actions";
+import {LastViewed} from "../store/LastViewedReducers";
 
 export class BackendAPI extends BaseAPI {
 

@@ -1,11 +1,11 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {getSalaryValue, Salary} from "../SalaryPill";
 import {PayDistribution} from "./PayDistribution";
 import {StageEnum, StageSwitch} from "./StageSwitch";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {extractIdFromUrl, NoteExtended, Theme, VERBOSE} from "../../global";
+import {extractIdFromUrl, NoteExtended, VERBOSE} from "../../global";
 import {inject} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
@@ -19,15 +19,13 @@ import {
     getStages,
     getTheme,
     postNote as postNoteAction,
-    ShowNotesAndChartsPayload,
-    SwitchThemePayload
+    ShowNotesAndChartsPayload
 } from "../../actions";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
-import {setTheme as setThemeUtil} from "../../themes/ThemeUtils";
+import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
-import {theme as DarkTheme} from "../../themes/dark";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -85,29 +83,15 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
-    const [theme, setTheme] = useState<Theme>(LightTheme);
 
     const messages = new MessagesV2(VERBOSE);
 
-    const rootElement = useRef<HTMLDivElement>();
-
-    const updateTheme = (value: string) => {
-        console.log("Updating theme to:", value);
-        let theme = value === "light" ? LightTheme : DarkTheme;
-        setThemeUtil(theme, rootElement);
-        setTheme(theme);
-    }
+    const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
     useEffect(() => {
         window.addEventListener('popstate', () => {
             setShow(false);
         });
-        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
-        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
-            (payload) => {
-                updateTheme(payload.theme);
-                return Promise.resolve();
-            }));
         messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
             (payload) => {
                 if (id && payload?.id !== id) {
