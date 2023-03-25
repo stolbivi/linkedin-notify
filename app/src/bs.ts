@@ -222,3 +222,35 @@ store.subscribe(() => {
     // TODO debug only
     console.log("Store:", store.getState());
 })
+
+let contentScriptReady = false;
+//@ts-ignore
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.contentScriptReady) {
+        contentScriptReady = true;
+        sendResponse({ success: true });
+    }
+    return true; // Keep the message channel open for the response
+});
+
+chrome.cookies.onChanged.addListener((changeInfo) => {
+    if (
+        contentScriptReady &&
+        changeInfo.cookie &&
+        changeInfo.cookie.name === "li_theme" &&
+        changeInfo.cookie.domain.includes(".linkedin.com")
+    ) {
+        const theme = changeInfo.cookie.value === "dark" ? "dark" : "light";
+        chrome.tabs.query({ active: true }, (tabs) => {
+            chrome.scripting.executeScript({
+                target: { tabId: tabs[0].id },
+                func: function (theme) {
+                    window.postMessage({ theme: theme }, "*");
+                },
+                args: [theme],
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    }
+});

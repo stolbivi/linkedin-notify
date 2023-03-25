@@ -1,24 +1,24 @@
 import React, {useEffect, useState} from "react";
 import {Badges} from "../global";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {formatDate} from "../services/UIHelpers";
 import "./ConversationCard.scss";
 import {conversationAck, getBadges, openUrl} from "../actions";
+import {formatDate} from "../services/UIHelpers";
 
 type Props = {
     conversation: any
     getDetails: (conversation: any) => void
     setBadges: (badges: Badges) => void
+    convMsgs: any
 };
 
-export const ConversationCard: React.FC<Props> = ({conversation, getDetails, setBadges}) => {
+export const ConversationCard: React.FC<Props> = ({conversation, getDetails, setBadges, convMsgs}) => {
 
     const [participant, setParticipant] = useState({} as any);
-    const [message, setMessage] = useState({} as any);
+    const [message,setMessage] = useState({} as any);
     const [picture, setPicture] = useState("");
-    const [deliveredAt, setDeliveredAt] = useState("");
+    const [deliveredAt,setDeliveredAt] = useState("");
     const [unreadCount, setUnreadCount] = useState(0);
-
     const messages = new MessagesV2(true);
 
     const onOpenProfile = () => {
@@ -35,7 +35,7 @@ export const ConversationCard: React.FC<Props> = ({conversation, getDetails, set
                         .then((badges) => setBadges(badges));
                 });
         }
-        getDetails({entityUrn: conversation.entityUrn, syncToken: conversation.syncToken});
+        getDetails({entityUrn: conversation.entityUrn, syncToken: conversation.syncToken, participants: conversation.conversationParticipants});
     }
 
     useEffect(() => {
@@ -51,6 +51,12 @@ export const ConversationCard: React.FC<Props> = ({conversation, getDetails, set
         setDeliveredAt(formatDate(new Date(m?.deliveredAt)));
         setUnreadCount(conversation.unreadCount);
     }, [conversation]);
+
+    useEffect(() => {
+        if(message && Object.keys(message).length > 0) {
+            convMsgs?.current?.push(message);
+        }
+    },[message]);
 
     return (
         <div className="card-holder">

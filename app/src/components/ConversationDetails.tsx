@@ -14,7 +14,6 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
     const replyText = useRef();
 
     useEffect(() => {
-        //console.log(details)
         setConversationMessages(details.map((m: any, i: number) =>
             (<ConversationMessageCard message={m} key={i} onReply={onReply}/>)
         ));

@@ -105,3 +105,9 @@ export interface Message {
     conversationId?: string,
     recipientId?: string
 }
+
+export interface Message {
+    messageBody?: string,
+    conversationId?: string,
+    recipientId?: string
+}
