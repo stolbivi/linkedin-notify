@@ -33,7 +33,8 @@ import {
     setTheme,
     showNotesAndCharts,
     switchThemeRequest,
-    unlock
+    unlock,
+    postReply
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -99,6 +100,7 @@ messagesV2.listen(getLastViewed);
 messagesV2.listen(setLastViewed);
 messagesV2.listen(getTheme);
 messagesV2.listen(setTheme);
+messagesV2.listen(postReply);
 
 // listening to cookies store events
 listenToThemeCookie((cookie) => {

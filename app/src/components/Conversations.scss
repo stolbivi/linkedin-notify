@@ -1,3 +1,40 @@
 .premium-blur {
   filter: blur(5px);
 }
+
+.search-input {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 5px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  font-size: 16px;
+  margin-top: 13px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #ccc;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.search-icon {
+  margin-right: 8px;
+}

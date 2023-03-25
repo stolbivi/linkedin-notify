@@ -1,6 +1,6 @@
 import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {LinkedInAPI} from "./services/LinkedInAPI";
-import {Badges, Features, Invitation, LINKEDIN_DOMAIN, Note, NoteExtended, SHARE_URN, VERBOSE} from "./global";
+import {Badges, Features, Invitation, LINKEDIN_DOMAIN, Message, Note, NoteExtended, SHARE_URN, VERBOSE} from "./global";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
 import {Response} from "./services/BaseAPI";
@@ -376,3 +376,10 @@ export const getTheme = createAction<{}, string>("getTheme",
 
 export const setTheme = createAction<string, Cookie>("setTheme",
     (theme) => setThemeCookie(theme));
+
+export const postReply = createAction<Message, void>("postReply",
+    (message) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            await api.postReply(token, message.conversationId,message.messageBody,message.recipientId);
+        }));

@@ -1,34 +1,36 @@
-import React, {useEffect, useState} from "react";
-import {LINKEDIN_DOMAIN} from "../global";
-import {MessagesV2} from "@stolbivi/pirojok";
+import React, {useEffect, useRef, useState} from "react";
 import {ConversationMessageCard} from "./ConversationMessageCard";
 import "./ConversationDetails.scss";
-import {openUrl} from "../actions";
 
 type Props = {
     details: Array<any>
     setShowDetails: (show: boolean) => void
+    onReply: any
 };
 
-export const ConversationDetails: React.FC<Props> = ({details, setShowDetails}) => {
+export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, onReply}) => {
 
     const [conversationMessages, setConversationMessages] = useState([]);
-
-    const messages = new MessagesV2(true);
+    const replyText = useRef();
 
     useEffect(() => {
+        //console.log(details)
         setConversationMessages(details.map((m: any, i: number) =>
             (<ConversationMessageCard message={m} key={i} onReply={onReply}/>)
         ));
     }, [details]);
 
+    useEffect(() => {
+        setTimeout(() => {
+            // @ts-ignore
+            replyText?.current?.scrollIntoView({ behavior: 'smooth' });
+            // @ts-ignore
+            replyText?.current?.focus();
+        }, 100);
+    },[conversationMessages]);
+
     const onBack = () => {
         setShowDetails(false);
-    }
-
-    const onReply = () => {
-        const url = details.pop().backendConversationUrn.split(":").pop();
-        return messages.request(openUrl(`https://${LINKEDIN_DOMAIN}/messaging/thread/` + url));
     }
 
     return (
@@ -42,9 +44,12 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails}) 
                         </g>
                     </svg>
                 </div>
-                <div className="details-reply" onClick={onReply}>Reply</div>
             </div>
             {conversationMessages}
+            <div>
+                <input type="text" className="w-75 m-4" ref={replyText}/>
+                <button className="btn btn-primary" onClick={()=>onReply(details[0], replyText)}>Reply</button>
+            </div>
         </div>
     );
 };

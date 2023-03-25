@@ -57,21 +57,20 @@ export const ConversationCard: React.FC<Props> = ({conversation, getDetails, set
             <div className={"conversation-card " + (unreadCount > 0 ? " has-unread" : "")}
                  onClick={(e) => onOpenMessage(e)}>
                 <div className="card-pre-section">
-                    <div className="card-timestamp">{deliveredAt}</div>
                     <div className="card-image" onClick={onOpenProfile}>
+                        {unreadCount > 0 &&
+                            <div className="card-badge"></div>
+                        }
                         <img src={picture}/>
                     </div>
                 </div>
                 <div className="w-100 d-flex flex-column justify-content-center align-items-start">
                     <div className="w-100 d-flex flex-row">
-                        <div className="card-title"
-                             onClick={onOpenProfile}>{participant?.firstName} {participant.lastName}</div>
+                        <div className="card-title" onClick={onOpenProfile}>{participant?.firstName} {participant.lastName}</div>
+                        <div className="card-timestamp message-time-stamp">{deliveredAt}</div>
                     </div>
                     <div className="w-100 d-flex flex-row align-items-end">
                         <div className="card-message">{message?.body}</div>
-                        {unreadCount > 0 &&
-                            <div className="card-badge">{unreadCount}</div>
-                        }
                     </div>
                 </div>
             </div>

@@ -12,10 +12,18 @@
     font-size: 12px;
     font-weight: 400;
     color: $conversation-card-badge;
-    background-color: $conversation-card-background;
+    background-color: $tab-badge-background;
     border-radius: 50%;
-    min-width: 17px;
-    height: 17px;
+    min-width: 11px;
+    height: 11px;
+    position: absolute;
+    top: 3px;
+    left: -2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  }
+
+  .message-time-stamp {
+    margin-left: auto;
   }
 
 }
