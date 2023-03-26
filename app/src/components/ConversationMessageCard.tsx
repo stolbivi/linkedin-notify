@@ -33,7 +33,6 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => 
         <div className="card-holder">
             <div className="message-card">
                 <div className="card-pre-section">
-                    <div className="card-timestamp">{deliveredAt}</div>
                     <div className="card-image" onClick={onOpenProfile}>
                         {message.showPicture && <img src={picture}/>}
                         {!message.showPicture && <div className="image-space"></div>}
@@ -43,6 +42,7 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => 
                     <div className="w-100 d-flex flex-row align-items-center">
                         <div className="card-title"
                              onClick={onOpenProfile}>{message.sender?.firstName} {message.sender?.lastName}</div>
+                        <div className="card-timestamp message-time-stamp">{deliveredAt}</div>
                     </div>
                     <div className={"card-message" + (message.openOriginal ? " message-no-media" : "")}
                          onClick={message.openOriginal ? onReply : () => {
