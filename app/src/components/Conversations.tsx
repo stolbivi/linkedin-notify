@@ -68,7 +68,9 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
         }
     },[searchText]);
 
-    const onReply = (conversation: any, replyText: any) => {
+    const onReply = (conversation: any, replyText: any, selfMsg: any) => {
+        selfMsg.text = replyText?.current?.value;
+        selfMsg.deliveredAt = new Date().getTime();
         const regex = /urn:li:msg_message:\(urn:li:fsd_profile:([^,]+)/;
         const matches = conversation.entityUrn.match(regex);
         if (matches && matches[1]) {
@@ -77,7 +79,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
             messages.request(postReply({recipientId: recipientObj.urn, messageBody: replyText?.current?.value}))
                 .then((_) => {
                     replyText.current.value = '';
-                    getDetails({entityUrn: conversation.convEntityUrn, syncToken: conversation.syncToken})
+                    setDetails([...details,selfMsg]);
                 });
         }
     }
@@ -107,7 +109,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
             <div className={"w-100" + (!unlocked ? " premium-blur" : "")} hidden={!completed}>
                 {conversations.length == 0 && <div className="no-data">No conversations</div>}
                 <div className="w-100" hidden={showDetails}>
-                    <div className="card-holder">
+                    <div className="card-holder" style={{marginBottom: "3.0rem"}}>
                         <input type="text" className="search-input" placeholder="Search messages or dialogs"
                                onChange={(event) => setSearchText(event.target.value)} />
                     </div>

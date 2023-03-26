@@ -12,8 +12,10 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
 
     const [conversationMessages, setConversationMessages] = useState([]);
     const replyText = useRef();
+    const [selfMsg, setSelfMsg] = useState({});
 
     useEffect(() => {
+        setSelfMsg(details.filter(conversation => conversation?.sender?.distance === "SELF")[0]);
         setConversationMessages(details.map((m: any, i: number) =>
             (<ConversationMessageCard message={m} key={i} onReply={onReply}/>)
         ));
@@ -45,9 +47,9 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
                 </div>
             </div>
             {conversationMessages}
-            <div>
-                <input type="text" className="w-75 m-4" ref={replyText}/>
-                <button className="btn btn-primary" onClick={()=>onReply(details[0], replyText)}>Reply</button>
+            <div style={{display:"flex", margin: "1rem"}}>
+                <input type="text" className="form-control bg-light" ref={replyText}/>
+                <button className="btn btn-sm btn-primary" onClick={()=>onReply(details[0], replyText, selfMsg)}>Reply</button>
             </div>
         </div>
     );

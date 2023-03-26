@@ -8,14 +8,16 @@
     width: 100%;
     display: flex;
     align-items: center;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    margin-bottom: 22px;
+    margin-top: 26px;
 
     .details-back {
       cursor: pointer;
       color: $details-back;
       margin-left: 0.5em;
       margin-right: auto;
+      z-index: 1;
+      position: fixed;
 
       svg {
         height: 32px;

@@ -7,7 +7,7 @@ export const theme: Theme = {
     "--base-card-timestamp": "#8D8D8D",
     "--base-card-title": "rgba(0, 0, 0, 0.9)",
     "--base-card-message": "#909090",
-    "--base-card-message-background": "rgba(244, 244, 244, 0.38)",
+    "--base-card-message-background": "#f6f6f6",
     "--base-card-unread": "#e2f0fd",
     "--base-card-border": "rgba(0, 0, 0, 0.1)",
 
