@@ -126,4 +126,6 @@ export const theme: Theme = {
     "--pay-chart-color2": "rgba(243, 242, 239, 0.04)",
     "--pay-chart-border": "rgba(168, 168, 168, 1)",
     "--pay-chart-grid": "rgba(144, 144, 144, 0.2)",
+
+    "--search-input": "black",
 }

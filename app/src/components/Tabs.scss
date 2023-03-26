@@ -31,11 +31,13 @@
       justify-content: center;
       align-items: center;
       font-weight: 400;
-      color: $tab_badge;
-      background-color: $tab_badge-background;
+      color: var(--tab-badge);
+      background-color: var(--tab-badge-background);
       border-radius: 50%;
-      min-width: 17px;
-      height: 17px;
+      min-width: 16px;
+      height: 16px;
+      padding: 3px;
+      font-size: 12px;
     }
   }
 

@@ -76,7 +76,7 @@ export const ConversationCard: React.FC<Props> = ({conversation, getDetails, set
                         <div className="card-timestamp message-time-stamp">{deliveredAt}</div>
                     </div>
                     <div className="w-100 d-flex flex-row align-items-end">
-                        <div className="card-message">{message?.body}</div>
+                        <div className="card-message card-message-overview">{message?.body}</div>
                     </div>
                 </div>
             </div>
