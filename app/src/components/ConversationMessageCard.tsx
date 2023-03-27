@@ -31,7 +31,7 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => 
 
     return (
         <div className="card-holder">
-            <div className="message-card">
+            <div className="message-card" style={{overflowWrap:"anywhere"}}>
                 <div className="card-pre-section">
                     <div className="card-image" onClick={onOpenProfile}>
                         <img src={picture}/>

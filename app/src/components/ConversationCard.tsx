@@ -61,11 +61,11 @@ export const ConversationCard: React.FC<Props> = ({conversation, getDetails, set
     return (
         <div className="card-holder">
             <div className={"conversation-card " + (unreadCount > 0 ? " has-unread" : "")}
-                 onClick={(e) => onOpenMessage(e)}>
+                 onClick={(e) => onOpenMessage(e)} style={{overflowWrap:"anywhere"}}>
                 <div className="card-pre-section">
                     <div className="card-image" onClick={onOpenProfile}>
                         {unreadCount > 0 &&
-                            <div className="card-badge"></div>
+                            <div className="card-badge"/>
                         }
                         <img src={picture}/>
                     </div>
