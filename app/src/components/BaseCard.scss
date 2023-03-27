@@ -33,6 +33,7 @@
   width: 100%;
   background-color: $base-card;
   padding: 1.5em 1em;
+  overflow-wrap: anywhere;
 
   &:hover {
     background-color: $base-card-hover !important;
