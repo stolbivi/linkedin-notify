@@ -30,9 +30,9 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
         } else {
             setPicture("https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q");
         }
-        const sentTimeValue = invitation.sentTime ? invitation.sentTime : invitation.genericInvitationView.sentTime;
+        const sentTimeValue = invitation?.sentTime ? invitation?.sentTime : invitation?.genericInvitationView?.sentTime;
         setSentTime(isNumeric(sentTimeValue) ? formatDate(new Date(sentTimeValue)) : sentTimeValue);
-        setId(invitation.urn.split(":").pop());
+        setId(invitation?.urn?.split?.(":")?.pop?.());
     }, [invitation]);
 
     const onIgnore = () => {
