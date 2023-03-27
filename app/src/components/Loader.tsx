@@ -3,15 +3,16 @@ import "./Loader.scss";
 
 type Props = {
     show: boolean
-    className?: string
+    className?: string,
+    heightValue?:string
 };
 
-export const Loader: React.FC<Props> = ({show,className}) => {
+export const Loader: React.FC<Props> = ({show,className, heightValue}) => {
 
     return (
         <React.Fragment>
             {show &&
-            <div className={"loader" + (className ? " " + className : "")} style={{display: "flex", height: "30rem"}}>
+            <div className={"loader" + (className ? " " + className : "")} style={{display: "flex", ...(heightValue && { height: heightValue }) }}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60" focusable="false" fill="currentColor">
                 <g>
                     <path opacity="1" d="M30.1,16.1L30.1,16.1c-0.6,0-1-0.5-1-1V1c0-0.6,0.5-1,1-1l0,0c0.6,0,1,0.5,1,1v14.1C31.1,15.7,30.6,16.1,30.1,16.1z"></path>

@@ -34,8 +34,7 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => 
             <div className="message-card">
                 <div className="card-pre-section">
                     <div className="card-image" onClick={onOpenProfile}>
-                        {message.showPicture && <img src={picture}/>}
-                        {!message.showPicture && <div className="image-space"></div>}
+                        <img src={picture}/>
                     </div>
                 </div>
                 <div className="w-100 d-flex flex-column align-items-start">

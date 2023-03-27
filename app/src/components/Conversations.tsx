@@ -24,47 +24,75 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
     const [searchText, setSearchText] = useState("");
     const messages = new MessagesV2(VERBOSE);
     const convMsgs = useRef([]);
+    const searchInput = useRef();
 
     const getDetails = (conversation: any) => {
         setCompleted(false);
         return messages.request(getConversationDetails(conversation.entityUrn))
             .then((r) => {
-                const resp = r.map((res) => {
+                const resp = r.map(res => {
+                    const resCopy = JSON.parse(JSON.stringify(res));
+                    const conversationCopy = JSON.parse(JSON.stringify(conversation));
                     return {
-                        ...res,
-                        syncToken: conversation.syncToken,
-                        convEntityUrn: conversation.entityUrn,
-                        participants: conversation.participants
+                        ...resCopy,
+                        syncToken: conversationCopy.syncToken,
+                        convEntityUrn: conversationCopy.entityUrn,
+                        participants: conversationCopy.participants
                     };
                 });
-                setDetails(resp);
+                setDetails(JSON.parse(JSON.stringify(resp)));
                 setShowDetails(true);
                 setCompleted(true);
             })
     }
 
     useEffect(() => {
-        setTimeout(() => {
-            const convRegex = /(?<=,2-)[^)]+/;
-            conversations.map(conv => {
-                const msgs = convMsgs.current.filter(msgObj => msgObj.urn.split(':').pop().replace(/^2-/, '') === conv.entityUrn.match(convRegex)[0]);
-                conv.messages = msgs;
+        messages.request(getIsUnlocked())
+            .then((payload) => {
+                console.log('Unlocked', payload);
+                setUnlocked(payload.isUnlocked);
+                // @ts-ignore
+                searchInput?.current?.scrollIntoView({ behavior: 'smooth' });
+                // @ts-ignore
+                searchInput?.current?.focus();
+                return messages.request(getConversations())
+                    .then((conversations) => {
+                        setConversations(JSON.parse(JSON.stringify(conversations)));
+                        setCompleted(true);
+                    });
             })
-        },1000);
-    },[conversations])
+    }, [showDetails]);
 
     useEffect(() => {
-        let filteredData = [];
-        if(searchText && searchText !== '') {
-         filteredData = conversations.filter(conversation => {
-             return conversation.conversationParticipants.some((participant: { distance: string; firstName: string; }) => participant?.distance !== "SELF"
-                 && participant?.firstName?.toLowerCase()?.includes(searchText?.toLowerCase()));
-         });
+        if(originalConversations.length === 0) {
+            setTimeout(() => {
+                const convRegex = /(?<=,2-)[^)]+/;
+                conversations.map(conv => {
+                    const msgs = convMsgs.current.filter(msgObj => msgObj.urn.split(':').pop().replace(/^2-/, '') === conv.entityUrn.match(convRegex)[0]);
+                    conv.messages = JSON.parse(JSON.stringify(msgs));
+                });
+                setOriginalConversations(JSON.parse(JSON.stringify(conversations)));
+            },1000);
         }
-        if(filteredData && filteredData.length > 0) {
-            setConversations(filteredData);
+    },[conversations]);
+
+    useEffect(() => {
+        if(searchText && searchText !== '') {
+            const filteredData = originalConversations?.filter(conversation => {
+                const participants = conversation.conversationParticipants || [];
+                return participants.some((participant: { firstName: string; lastName: string; distance: string; }) => {
+                    const firstName = participant.firstName || '';
+                    const lastName = participant.lastName || '';
+                    const fullName = `${firstName} ${lastName}`.toLowerCase();
+                    const search = searchText?.toLowerCase();
+                    const isMatch = fullName.includes(search);
+                    const isSelf = participant.distance === 'SELF';
+                    return !isSelf && isMatch;
+                });
+            });
+            setConversations(JSON.parse(JSON.stringify(filteredData)));
         } else {
-            setConversations(originalConversations);
+            setConversations(JSON.parse(JSON.stringify(originalConversations)));
         }
     },[searchText]);
 
@@ -79,30 +107,14 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
             messages.request(postReply({recipientId: recipientObj.urn, messageBody: replyText?.current?.value}))
                 .then((_) => {
                     replyText.current.value = '';
-                    setDetails([...details,selfMsg]);
+                    setDetails([...details,JSON.parse(JSON.stringify(selfMsg))]);
                 });
         }
     }
 
-    useEffect(() => {
-        messages.request(getIsUnlocked())
-            .then((payload) => {
-                console.log('Unlocked', payload);
-                setUnlocked(payload.isUnlocked);
-                return messages.request(getConversations())
-                    .then((conversations) => {
-                        console.log(conversations)
-                        setConversations(conversations);
-                        setOriginalConversations(conversations);
-                        setCompleted(true);
-                    });
-            })
-    }, []);
-
-
     return (
         <div className="w-100 position-relative">
-            <Loader show={!completed} className="p-5"/>
+            <Loader show={!completed} className="p-5" heightValue="30rem"/>
             <div hidden={!completed || unlocked}>
                 <Premium setUnlocked={setUnlocked}/>
             </div>
@@ -110,7 +122,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
                 {conversations.length == 0 && <div className="no-data">No conversations</div>}
                 <div className="w-100" hidden={showDetails}>
                     <div className="card-holder" style={{marginBottom: "3.0rem"}}>
-                        <input type="text" className="search-input" placeholder="Search messages or dialogs"
+                        <input type="text" className="search-input" placeholder="Search messages or dialogs" ref={searchInput}
                                onChange={(event) => setSearchText(event.target.value)} />
                     </div>
                     {
