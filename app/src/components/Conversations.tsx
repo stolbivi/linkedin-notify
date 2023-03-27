@@ -24,9 +24,11 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
     const [searchText, setSearchText] = useState("");
     const messages = new MessagesV2(VERBOSE);
     const convMsgs = useRef([]);
+    const [selectedRcpnt, setSelectedRcpnt] = useState({});
     const searchInput = useRef();
 
     const getDetails = (conversation: any) => {
+        setSelectedRcpnt(conversation.participants.find((p: any) => p.distance !== "SELF"));
         setCompleted(false);
         return messages.request(getConversationDetails(conversation.entityUrn))
             .then((r) => {
@@ -119,12 +121,12 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
                 <Premium setUnlocked={setUnlocked}/>
             </div>
             <div className={"w-100" + (!unlocked ? " premium-blur" : "")} hidden={!completed}>
-                {conversations.length == 0 && <div className="no-data">No conversations</div>}
                 <div className="w-100" hidden={showDetails}>
                     <div className="card-holder" style={{marginBottom: "3.0rem"}}>
-                        <input type="text" className="search-input" placeholder="Search messages or dialogs" ref={searchInput}
+                        <input type="text" className="search-input" placeholder="Search messages" ref={searchInput}
                                onChange={(event) => setSearchText(event.target.value)} />
                     </div>
+                    {conversations.length == 0 && <div className="no-data">No conversations</div>}
                     {
                         conversations.map((c: any, i: number) =>
                             (<ConversationCard conversation={c} key={i}
@@ -135,7 +137,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
                     }
                 </div>
                 <div className="w-100" hidden={!showDetails}>
-                    <ConversationDetails details={details} setShowDetails={setShowDetails} onReply={onReply}/>
+                    <ConversationDetails details={details} setShowDetails={setShowDetails} onReply={onReply} selectedRcpnt={selectedRcpnt}/>
                 </div>
             </div>
         </div>

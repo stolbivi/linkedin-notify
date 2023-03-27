@@ -5,16 +5,18 @@ import "./ConversationDetails.scss";
 type Props = {
     details: Array<any>
     setShowDetails: (show: boolean) => void
-    onReply: any
+    onReply: any,
+    selectedRcpnt: any
 };
 
-export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, onReply}) => {
+export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, onReply, selectedRcpnt}) => {
 
     const [conversationMessages, setConversationMessages] = useState([]);
     const replyText = useRef();
     const [selfMsg, setSelfMsg] = useState({});
 
     useEffect(() => {
+        console.log(selectedRcpnt)
         setSelfMsg(details.filter(conversation => conversation?.sender?.distance === "SELF")[0]);
         setConversationMessages(details.map((m: any, i: number) =>
             (<ConversationMessageCard message={m} key={i} onReply={onReply}/>)
@@ -38,19 +40,32 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
         <div className="details">
             <div className="detail-header">
                 <div className="details-back" onClick={onBack}>
-                    <svg width="700pt" height="700pt" version="1.1" viewBox="200 125 300 300" fill="currentColor">
-                        <g>
-                            <path
-                                d="m419.44 358.4c1.6797 8.9609-3.3594 12.879-11.199 7.8398l-128.24-77.277c-7.8398-5.0391-7.8398-12.879 0-17.359l128.24-77.84c7.8398-5.0391 12.879-1.1211 11.199 7.8398v1.6797c-7.2812 42.559-7.2812 112 0 154.56z"/>
-                        </g>
+                    <svg width="700pt" height="700pt" viewBox="0 0 17 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.5" d="M16 6H1M1 6L6 1M1 6L6 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
+                    {selectedRcpnt.firstName}  {selectedRcpnt.lastName}
                 </div>
             </div>
             {conversationMessages}
-            <div style={{display:"flex", margin: "1rem"}}>
-                <input type="text" className="form-control bg-light" ref={replyText}/>
-                <button className="btn btn-sm btn-primary" onClick={()=>onReply(details[0], replyText, selfMsg)}>Reply</button>
+            <div>
+                <div className="reply-container">
+                  <textarea
+                      ref={replyText}
+                      className="reply-textarea"
+                      placeholder="Write a message..."
+                      onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.shiftKey) {
+                              e.preventDefault();
+                              const target = e.target as HTMLTextAreaElement;
+                              target.value += "\n";
+                          }
+                      }}
+                  />
+                    <button className="btn btn-sm btn-primary reply-button" onClick={() => onReply(details[0], replyText, selfMsg)}>Reply</button>
+                </div>
             </div>
         </div>
     );
 };
+
+
