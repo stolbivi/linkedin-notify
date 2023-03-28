@@ -34,7 +34,7 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply, curr
 
     return (
         <div className="card-holder">
-            <div className="message-card" style={{overflowWrap:"anywhere", ...(currentCount === totalCount-1 && { marginBottom: "110px" })}} >
+            <div className="message-card" style={{overflowWrap:"anywhere", ...(currentCount === totalCount-1 && { paddingBottom: "90px" })}} >
                 <div className="card-pre-section">
                     <div className="card-image" onClick={onOpenProfile} ref={currentCount === totalCount - 1 ? lastElemRef : null}>
                         <img src={picture}/>

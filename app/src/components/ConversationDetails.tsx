@@ -24,17 +24,6 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
         ));
     }, [details]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            // @ts-ignore
-            lastElemRef?.current?.scrollIntoView({ behavior: 'smooth' });
-            // @ts-ignore
-            lastElemRef?.current?.focus();
-
-        }, 100);
-
-    },[conversationMessages]);
-
     const onBack = () => {
         setShowDetails(false);
     }
@@ -44,7 +33,7 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
             <div className="detail-header">
                 <div className="details-back" onClick={onBack}>
                     <svg width="700pt" height="700pt" viewBox="0 0 17 12" fill="none" xmlns="http://www.w3.org/2000/svg"  style={{padding: "7px"}}>
-                        <path opacity="0.5" d="M16 6H1M1 6L6 1M1 6L6 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path opacity="1" d="M16 6H1M1 6L6 1M1 6L6 11" stroke="grey" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     <div className="reply-text-name">
                         {selectedRcpnt.firstName}  {selectedRcpnt.lastName}

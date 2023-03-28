@@ -53,7 +53,7 @@
 .details .reply-container {
   position: fixed;
   width: 550px;
-  height: 103px;
+  height: 85px;
   right: 0px;
   bottom: 0px;
   background: $reply-text-container-color;
@@ -70,7 +70,7 @@
   gap: 10px;
   position: absolute;
   width: 489px;
-  height: 74px;
+  height: 53px;
   left: 30px;
   right: 30px;
   bottom: 16px;
@@ -80,6 +80,7 @@
   resize: none;
   caret-color: $reply-text-area-caret-color;
   outline: none;
+  color: $reply-text-area-caret-color
 }
 
 .reply-textarea::placeholder {
@@ -95,6 +96,7 @@
   cursor: pointer;
   width: 27px;
   height: 27px;
+  margin-bottom: 8px;
 }
 
 .reply-text-name {
