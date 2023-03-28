@@ -65,7 +65,7 @@ export const theme: Theme = {
     "--complete-disabled": "rgba(0, 0, 0, 0.3)",
 
     "--last-viewed-background": "rgba(88, 88, 88, 0.08)",
-    "--last-viewed": "rgba(88, 88, 88, 1)",
+    "--last-viewed": "rgb(38,38,38)",
 
     "--salary-pill": "#117544",
 
