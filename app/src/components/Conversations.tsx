@@ -26,6 +26,8 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
     const convMsgs = useRef([]);
     const [selectedRcpnt, setSelectedRcpnt] = useState({});
     const searchInput = useRef();
+    const firstElemRef = useRef();
+    const lastElemRef = useRef();
 
     const getDetails = (conversation: any) => {
         setSelectedRcpnt(conversation.participants.find((p: any) => p.distance !== "SELF"));
@@ -52,7 +54,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
         messages.request(getIsUnlocked())
             .then((payload) => {
                 console.log('Unlocked', payload);
-                setUnlocked(payload.isUnlocked);
+                setUnlocked(true);
                 // @ts-ignore
                 searchInput?.current?.scrollIntoView({ behavior: 'smooth' });
                 // @ts-ignore
@@ -63,6 +65,15 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
                         setCompleted(true);
                     });
             })
+            if(showDetails) {
+                setTimeout(() => {
+                    // @ts-ignore
+                    firstElemRef?.current?.scrollIntoView({ behavior: 'smooth' });
+                    // @ts-ignore
+                    firstElemRef?.current?.focus();
+                }, 300);
+            }
+
     }, [showDetails]);
 
     useEffect(() => {
@@ -110,6 +121,13 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
                 .then((_) => {
                     replyText.current.value = '';
                     setDetails([...details,JSON.parse(JSON.stringify(selfMsg))]);
+                    setTimeout(() => {
+                        // @ts-ignore
+                        lastElemRef?.current?.scrollIntoView({ behavior: 'smooth' });
+                        // @ts-ignore
+                        lastElemRef?.current?.focus();
+
+                    }, 200);
                 });
         }
     }
@@ -137,7 +155,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
                     }
                 </div>
                 <div className="w-100" hidden={!showDetails}>
-                    <ConversationDetails details={details} setShowDetails={setShowDetails} onReply={onReply} selectedRcpnt={selectedRcpnt}/>
+                    <ConversationDetails details={details} setShowDetails={setShowDetails} onReply={onReply} selectedRcpnt={selectedRcpnt} firstElemRef={firstElemRef} lastElemRef={lastElemRef}/>
                 </div>
             </div>
         </div>

@@ -9,10 +9,11 @@ type Props = {
     onReply: () => void,
     currentCount: number,
     totalCount: number,
+    firstElemRef:any,
     lastElemRef: any
 };
 
-export const ConversationMessageCard: React.FC<Props> = ({message, onReply, currentCount ,totalCount,lastElemRef}) => {
+export const ConversationMessageCard: React.FC<Props> = ({message, onReply, currentCount ,totalCount,firstElemRef, lastElemRef}) => {
 
     const [picture, setPicture] = useState("");
     const [deliveredAt, setDeliveredAt] = useState("");
@@ -33,10 +34,10 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply, curr
     }
 
     return (
-        <div className="card-holder">
+        <div className="card-holder"  ref={currentCount === 0 ? firstElemRef : (currentCount === totalCount - 1 ? lastElemRef : null)}>
             <div className="message-card" style={{overflowWrap:"anywhere", ...(currentCount === totalCount-1 && { paddingBottom: "90px" })}} >
                 <div className="card-pre-section">
-                    <div className="card-image" onClick={onOpenProfile} ref={currentCount === totalCount - 1 ? lastElemRef : null}>
+                    <div className="card-image" onClick={onOpenProfile}>
                         <img src={picture}/>
                     </div>
                 </div>

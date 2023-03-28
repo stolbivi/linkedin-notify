@@ -6,21 +6,22 @@ type Props = {
     details: Array<any>
     setShowDetails: (show: boolean) => void
     onReply: any,
-    selectedRcpnt: any
+    selectedRcpnt: any,
+    firstElemRef:any,
+    lastElemRef: any
 };
 
-export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, onReply, selectedRcpnt}) => {
+export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, onReply, selectedRcpnt, firstElemRef, lastElemRef}) => {
 
     const [conversationMessages, setConversationMessages] = useState([]);
     const replyText = useRef();
     const cardHolderRef = useRef();
-    const lastElemRef = useRef();
     const [selfMsg, setSelfMsg] = useState({});
 
     useEffect(() => {
         setSelfMsg(details.filter(conversation => conversation?.sender?.distance === "SELF")[0]);
         setConversationMessages(details.map((m: any, i: number) =>
-            (<ConversationMessageCard message={m} key={i} onReply={onReply} currentCount={i} totalCount={details.length} lastElemRef={lastElemRef}/>)
+            (<ConversationMessageCard message={m} key={i} onReply={onReply} currentCount={i} totalCount={details.length} firstElemRef={firstElemRef} lastElemRef={lastElemRef}/>)
         ));
     }, [details]);
 
