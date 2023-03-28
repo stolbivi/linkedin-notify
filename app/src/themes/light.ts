@@ -129,6 +129,6 @@ export const theme: Theme = {
 
     "--search-input": "white",
     "--reply-text-area-color": "white",
-    "--reply-text-container-color": "#D9D9D9",
+    "--reply-text-container-color": "#f9f9f9",
     "--reply-text-area-caret-color": "#000000"
 }
