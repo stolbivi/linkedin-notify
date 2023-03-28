@@ -31,8 +31,7 @@
     "tabs",
     "alarms",
     "storage",
-    "scripting",
-    "<all_urls>"
+    "scripting"
   ],
   "host_permissions": [
     "*://localhost/",
