@@ -43,7 +43,9 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
                     <svg width="700pt" height="700pt" viewBox="0 0 17 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path opacity="0.5" d="M16 6H1M1 6L6 1M1 6L6 11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    {selectedRcpnt.firstName}  {selectedRcpnt.lastName}
+                    <div className="reply-text-name">
+                        {selectedRcpnt.firstName}  {selectedRcpnt.lastName}
+                    </div>
                 </div>
             </div>
             {conversationMessages}
@@ -54,14 +56,18 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
                       className="reply-textarea"
                       placeholder="Write a message..."
                       onKeyDown={(e) => {
-                          if (e.key === 'Enter' && e.shiftKey) {
+                          if (e.key === 'Enter' && !e.shiftKey) {
                               e.preventDefault();
+                              onReply(details[0], replyText, selfMsg);
+                          } else if (e.key === 'Enter' && e.shiftKey) {
                               const target = e.target as HTMLTextAreaElement;
                               target.value += "\n";
                           }
                       }}
                   />
-                    <button className="btn btn-sm btn-primary reply-button" onClick={() => onReply(details[0], replyText, selfMsg)}>Reply</button>
+                  <button className="btn btn-sm btn-primary reply-button" onClick={() => onReply(details[0], replyText, selfMsg)}>
+                     <i className="fas fa-arrow-up"></i>
+                  </button>
                 </div>
             </div>
         </div>
