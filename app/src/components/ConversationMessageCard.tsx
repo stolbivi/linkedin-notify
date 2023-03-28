@@ -6,10 +6,13 @@ import {openUrl} from "../actions";
 
 type Props = {
     message: any,
-    onReply: () => void
+    onReply: () => void,
+    currentCount: number,
+    totalCount: number,
+    lastElemRef: any
 };
 
-export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => {
+export const ConversationMessageCard: React.FC<Props> = ({message, onReply, currentCount ,totalCount,lastElemRef}) => {
 
     const [picture, setPicture] = useState("");
     const [deliveredAt, setDeliveredAt] = useState("");
@@ -31,9 +34,9 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => 
 
     return (
         <div className="card-holder">
-            <div className="message-card" style={{overflowWrap:"anywhere"}}>
+            <div className="message-card" style={{overflowWrap:"anywhere", ...(currentCount === totalCount-1 && { marginBottom: "110px" })}} >
                 <div className="card-pre-section">
-                    <div className="card-image" onClick={onOpenProfile}>
+                    <div className="card-image" onClick={onOpenProfile} ref={currentCount === totalCount - 1 ? lastElemRef : null}>
                         <img src={picture}/>
                     </div>
                 </div>

@@ -13,23 +13,26 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
 
     const [conversationMessages, setConversationMessages] = useState([]);
     const replyText = useRef();
+    const cardHolderRef = useRef();
+    const lastElemRef = useRef();
     const [selfMsg, setSelfMsg] = useState({});
 
     useEffect(() => {
-        console.log(selectedRcpnt)
         setSelfMsg(details.filter(conversation => conversation?.sender?.distance === "SELF")[0]);
         setConversationMessages(details.map((m: any, i: number) =>
-            (<ConversationMessageCard message={m} key={i} onReply={onReply}/>)
+            (<ConversationMessageCard message={m} key={i} onReply={onReply} currentCount={i} totalCount={details.length} lastElemRef={lastElemRef}/>)
         ));
     }, [details]);
 
     useEffect(() => {
         setTimeout(() => {
             // @ts-ignore
-            replyText?.current?.scrollIntoView({ behavior: 'smooth' });
+            lastElemRef?.current?.scrollIntoView({ behavior: 'smooth' });
             // @ts-ignore
-            replyText?.current?.focus();
+            lastElemRef?.current?.focus();
+
         }, 100);
+
     },[conversationMessages]);
 
     const onBack = () => {
@@ -37,7 +40,7 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, o
     }
 
     return (
-        <div className="details">
+        <div className="details" ref={cardHolderRef}>
             <div className="detail-header">
                 <div className="details-back" onClick={onBack}>
                     <svg width="700pt" height="700pt" viewBox="0 0 17 12" fill="none" xmlns="http://www.w3.org/2000/svg"  style={{padding: "7px"}}>
