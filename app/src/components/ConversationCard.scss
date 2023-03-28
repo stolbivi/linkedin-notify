@@ -4,6 +4,8 @@
 .conversation-card {
   @extend .base-card;
   cursor: pointer;
+  padding: 0.8em 1em;
+  padding-bottom: 0.1em;
 
   .card-badge {
     display: flex;
