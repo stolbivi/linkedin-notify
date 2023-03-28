@@ -3,6 +3,7 @@
 
 .message-card {
   @extend .base-card;
+  padding: 0.5em 1em;
 
   .message-no-media {
     cursor: pointer;
