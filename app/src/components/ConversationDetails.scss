@@ -59,6 +59,7 @@
   background: $reply-text-container-color;
   display: flex;
   align-items: center;
+  border-top: 1px solid rgba(245,245,245,0.2);
 }
 
 .reply-textarea {

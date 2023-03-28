@@ -65,14 +65,6 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
                         setCompleted(true);
                     });
             })
-            if(showDetails) {
-                setTimeout(() => {
-                    // @ts-ignore
-                    firstElemRef?.current?.scrollIntoView({ behavior: 'smooth' });
-                    // @ts-ignore
-                    firstElemRef?.current?.focus();
-                }, 300);
-            }
 
     }, [showDetails]);
 
