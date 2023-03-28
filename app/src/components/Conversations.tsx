@@ -133,7 +133,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
             <div className={"w-100" + (!unlocked ? " premium-blur" : "")} hidden={!completed}>
                 <div className="w-100" hidden={showDetails}>
                     <div className="card-holder" style={{marginBottom: "3.0rem"}}>
-                        <input type="text" className="search-input" placeholder="Search messages" ref={searchInput}
+                        <input type="text" className="search-input" placeholder="Search Contacts" ref={searchInput}
                                onChange={(event) => setSearchText(event.target.value)} />
                     </div>
                     {conversations.length == 0 && <div className="no-data">No conversations</div>}
