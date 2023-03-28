@@ -127,5 +127,8 @@ export const theme: Theme = {
     "--pay-chart-border": "#A8A8A8",
     "--pay-chart-grid": "rgba(144, 144, 144, 0.2)",
 
-    "--search-input": "white"
+    "--search-input": "white",
+    "--reply-text-area-color": "white",
+    "--reply-text-container-color": "#D9D9D9",
+    "--reply-text-area-caret-color": "#000000"
 }

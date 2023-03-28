@@ -116,7 +116,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
 
     return (
         <div className="w-100 position-relative">
-            <Loader show={!completed} className="p-5" heightValue="30rem"/>
+            <Loader show={!completed} className="p-5" heightValue="600px"/>
             <div hidden={!completed || unlocked}>
                 <Premium setUnlocked={setUnlocked}/>
             </div>

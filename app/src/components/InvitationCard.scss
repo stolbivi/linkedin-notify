@@ -3,6 +3,7 @@
 
 .invitation-card {
   @extend .base-card;
+  padding: 1em 1em;
 
   .card-subtitle {
     margin-right: auto;
@@ -38,6 +39,13 @@
     user-select: none;
     cursor: pointer;
     font-weight: 700;
+  }
+  .card-message-overview {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    margin-bottom: 0em
   }
 
 }
