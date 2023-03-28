@@ -54,7 +54,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
         messages.request(getIsUnlocked())
             .then((payload) => {
                 console.log('Unlocked', payload);
-                setUnlocked(true);
+                setUnlocked(payload.isUnlocked);
                 // @ts-ignore
                 searchInput?.current?.scrollIntoView({ behavior: 'smooth' });
                 // @ts-ignore
