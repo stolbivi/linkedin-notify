@@ -99,3 +99,15 @@ export interface Shared {
 export interface Theme {
     [key: string]: string
 }
+
+export interface Message {
+    messageBody?: string,
+    conversationId?: string,
+    recipientId?: string
+}
+
+export interface Message {
+    messageBody?: string,
+    conversationId?: string,
+    recipientId?: string
+}

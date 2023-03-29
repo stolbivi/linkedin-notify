@@ -21,7 +21,7 @@ export const Premium: React.FC<Props> = ({setUnlocked}) => {
                 <div className="text-center">Enable this premium feature for FREE by sharing our extension with your
                     network!
                 </div>
-                <div className="premium-share" onClick={onClick}>Share on LinkedIn</div>
+                <div className="premium-share" onClick={onClick}>Click Here</div>
             </div>
         </div>
     );

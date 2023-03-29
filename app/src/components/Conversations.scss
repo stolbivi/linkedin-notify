@@ -1,3 +1,45 @@
+@import "../themes/primary";
+
 .premium-blur {
   filter: blur(5px);
+}
+
+.search-input {
+  background-color: $base-card-message-background;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 19px;
+  box-sizing: border-box;
+  margin-bottom: -38px;
+  font-size: 16px;
+  margin-right: 23px;
+  margin-left: 28px;
+  margin-top: 18px;
+  z-index: 1;
+  color: $reply-text-area-caret-color;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: $base-card-message;
+  opacity: 0.5;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.search-icon {
+  margin-right: 8px;
 }

@@ -4,13 +4,14 @@
 .salary-pill {
   font-size: 16px;
   color: $salary-pill;
-  border: 1px solid $salary-pill;
+  border: 1.5px solid $salary-pill;
   border-radius: 50px;
   padding: 0.25em 0.75em;
   margin: 0em 0.5em;
   user-select: none;
   align-items: center;
   display: flex;
+  font-weight: 500;
 
   span {
     margin-left: 0.5em;

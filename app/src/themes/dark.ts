@@ -64,8 +64,8 @@ export const theme: Theme = {
     "--complete-disabled-background": "rgba(0, 0, 0, 0.08)",
     "--complete-disabled": "rgba(0, 0, 0, 0.3)",
 
-    "--last-viewed-background": "rgba(88, 88, 88, 0.08)",
-    "--last-viewed": "rgba(88, 88, 88, 1)",
+    "--last-viewed-background": "rgba(255, 255, 255, 0.06)",
+    "--last-viewed": "rgb(255,255,255)",
 
     "--salary-pill": "#117544",
 
@@ -126,4 +126,9 @@ export const theme: Theme = {
     "--pay-chart-color2": "rgba(243, 242, 239, 0.04)",
     "--pay-chart-border": "rgba(168, 168, 168, 1)",
     "--pay-chart-grid": "rgba(144, 144, 144, 0.2)",
+
+    "--search-input": "black",
+    "--reply-text-area-color": "black",
+    "--reply-text-container-color": "#2D3338",
+    "--reply-text-area-caret-color": "#a9b1b8"
 }

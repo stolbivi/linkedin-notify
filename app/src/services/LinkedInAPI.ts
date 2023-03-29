@@ -461,6 +461,35 @@ export class LinkedInAPI {
         }).then(_ => null);
     }
 
+    // @ts-ignore
+    public postReply(token: string, conversationId: string, messageBody: string, recipientId: string) {
+        const messageData = {
+            "conversationCreate": {
+                "recipients": [
+                    recipientId
+                ],
+                "eventCreate": {
+                    "value": {
+                        "com.linkedin.voyager.messaging.create.MessageCreate": {
+                            "body": messageBody
+                        }
+                    }
+                },
+                "subtype": "MEMBER_TO_MEMBER"
+            }
+        };
+        return fetch(LinkedInAPI.BASE + `messaging/conversations?action=create`, {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token
+            },
+            "body": JSON.stringify(messageData),
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(_ => null);
+    }
+
     public extractProfile(id: string, response: any): any {
         const actor = response.included.filter((i: any) => i.actor !== undefined);
         let name = ["N/A"];

@@ -1,7 +1,10 @@
+@import "../themes/primary";
+
 .no-data {
   width: 100%;
   padding: 4em;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: $reply-text-area-caret-color;
 }

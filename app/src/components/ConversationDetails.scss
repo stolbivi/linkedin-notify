@@ -2,20 +2,28 @@
 
 .details {
   position: relative;
+  height: 600px;
 
   .detail-header {
     top: 0px;
     width: 100%;
     display: flex;
     align-items: center;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    margin-bottom: 22px;
+    margin-top: 26px;
 
     .details-back {
       cursor: pointer;
-      color: $details-back;
-      margin-left: 0.5em;
       margin-right: auto;
+      z-index: 1;
+      position: fixed;
+      width: 100%;
+      font-weight: 700;
+      background-color: $reply-text-container-color;
+      padding-top: 8px;
+      padding-bottom: 9px;
+      display: flex;
+      align-items: center;
 
       svg {
         height: 32px;
@@ -40,4 +48,73 @@
       }
     }
   }
+}
+
+.details .reply-container {
+  position: fixed;
+  width: 550px;
+  height: 85px;
+  right: 0px;
+  bottom: 0px;
+  background: $reply-text-container-color;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid rgba(245,245,245,0.2);
+}
+
+.reply-textarea {
+  box-sizing: border-box;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding-right: 40px;
+  padding-left: 10px;
+  padding-top: 10px;
+  gap: 10px;
+  position: absolute;
+  width: 489px;
+  height: 53px;
+  left: 30px;
+  right: 30px;
+  bottom: 16px;
+  z-index: 1;
+  background-color: $tab;
+  border-radius: 10px;
+  resize: none;
+  caret-color: $reply-text-area-caret-color;
+  outline: none;
+  color: $reply-text-area-caret-color
+}
+
+.reply-textarea::placeholder {
+  color: #606874;
+}
+
+.reply-button {
+  position: absolute;
+  bottom: 19px;
+  right: 42px;
+  border-radius: 100px;
+  z-index: 3;
+  cursor: pointer;
+  width: 27px;
+  height: 27px;
+  margin-bottom: 8px;
+}
+
+.reply-text-name {
+  color: $base-card-title;
+}
+
+.reply-button path {
+  stroke: white;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.svg-style{
+  fill: white;
+  padding-bottom: 7px;
 }

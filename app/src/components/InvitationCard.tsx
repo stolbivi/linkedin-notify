@@ -86,7 +86,7 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
                         <div className="action-accept" onClick={onAccept} hidden={hideActions}>Accept</div>
                     </div>
                     {invitation.customMessage &&
-                        <div className="card-message">
+                        <div className="card-message card-message-overview">
                             <div>{invitation.message}</div>
                         </div>}
                 </div>

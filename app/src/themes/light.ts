@@ -7,7 +7,7 @@ export const theme: Theme = {
     "--base-card-timestamp": "#8D8D8D",
     "--base-card-title": "rgba(0, 0, 0, 0.9)",
     "--base-card-message": "#909090",
-    "--base-card-message-background": "rgba(244, 244, 244, 0.38)",
+    "--base-card-message-background": "#f6f6f6",
     "--base-card-unread": "#e2f0fd",
     "--base-card-border": "rgba(0, 0, 0, 0.1)",
 
@@ -65,7 +65,7 @@ export const theme: Theme = {
     "--complete-disabled": "rgba(0, 0, 0, 0.3)",
 
     "--last-viewed-background": "rgba(88, 88, 88, 0.08)",
-    "--last-viewed": "rgba(88, 88, 88, 1)",
+    "--last-viewed": "rgb(38,38,38)",
 
     "--salary-pill": "#117544",
 
@@ -126,4 +126,9 @@ export const theme: Theme = {
     "--pay-chart-color2": "#F4EDD8",
     "--pay-chart-border": "#A8A8A8",
     "--pay-chart-grid": "rgba(144, 144, 144, 0.2)",
+
+    "--search-input": "white",
+    "--reply-text-area-color": "white",
+    "--reply-text-container-color": "#f9f9f9",
+    "--reply-text-area-caret-color": "#000000"
 }

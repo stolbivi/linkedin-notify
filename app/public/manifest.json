@@ -28,8 +28,10 @@
   },
   "permissions": [
     "cookies",
+    "tabs",
     "alarms",
-    "storage"
+    "storage",
+    "scripting"
   ],
   "host_permissions": [
     "*://localhost/",
