@@ -25,6 +25,18 @@ export const StagePillFactory = () => {
             }
         }
     }
+    if (window.location.href.indexOf("/messaging/") > 0){
+        const nameContainer = document.getElementsByClassName("artdeco-entity-lockup__badge ember-view");
+        if (nameContainer && nameContainer.length > 0) {
+            const nameHeader = nameContainer[0].getElementsByClassName("artdeco-entity-lockup__degree");
+            if (nameHeader && nameHeader.length > 0) {
+                (nameHeader[0].parentElement as HTMLElement).style.paddingRight = "0.5em";
+                injectLastChild(nameHeader[0].parentElement, "lnm-stage",
+                    <StagePill url={window.location.href}/>
+                );
+            }
+        }
+    }
 }
 
 type Props = {
