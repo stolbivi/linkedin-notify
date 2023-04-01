@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {VERBOSE} from "../global";
+import {VERBOSE,LOGIN_URL} from "../global";
 import {Lock} from "../icons/Lock";
 import {Loader} from "../components/Loader";
-
 import "./AccessGuard.scss";
 import {getSubscription, openUrl as openUrlAction} from "../actions";
 
@@ -67,11 +66,11 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
                 </div>
             case AccessState.Invalid:
                 return <div className={"access-guard " + (className ?? "")}
-                            onClick={(e) => openUrl(e, SIGN_UP_URL)}
+                            onClick={(e) => openUrl(e, status === "Active Free Trial" ? LOGIN_URL : SIGN_UP_URL)}
                             title="Sign up">
-                    <Lock/>
-                    {!hideTitle && <span>{status}</span>}
-                </div>
+                            <Lock/>
+                            {!hideTitle && <span>{status}</span>}
+                      </div>
         }
     }
 

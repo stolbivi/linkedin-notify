@@ -28,45 +28,47 @@ import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 
 export const NotesAndChartsFactory = () => {
-    // individual profile
-    if (window.location.href.indexOf("/in/") > 0) {
-        const section = document.querySelectorAll('section[data-member-id]');
-        if (section && section.length > 0) {
-            inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                <NotesAndCharts/>
-            );
+    setTimeout(() => {
+        // individual profile
+        if (window.location.href.indexOf("/in/") > 0) {
+            const section = document.querySelectorAll('section[data-member-id]');
+            if (section && section.length > 0) {
+                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                    <NotesAndCharts/>
+                );
+            }
         }
-    }
-    if (window.location.href.indexOf("/messaging/") > 0) {
-        const section = document.querySelectorAll('#global-nav');
-        if (section && section.length > 0) {
-            inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                <NotesAndCharts convId={sessionStorage.getItem("prf")}/>
-            );
+        if (window.location.href.indexOf("/messaging/") > 0) {
+            const section = document.querySelectorAll('#global-nav');
+            if (section && section.length > 0) {
+                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                    <NotesAndCharts convId={sessionStorage.getItem("prf")}/>
+                );
+            }
         }
-    }
 
-    // people's search
-    if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
-        const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
-        if (profileCards.length > 0) {
-            profileCards.forEach((card: HTMLDivElement, index) => {
-                card.style.position = "relative";
-                const profileLink = card.querySelectorAll('a[href*="/in/"]');
-                if (profileLink.length > 0) {
-                    const link = profileLink[0].getAttribute("href");
-                    const profileActions = card.getElementsByClassName('entity-result__actions');
-                    if (profileActions.length > 0) {
-                        const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
-                        const id = extractIdFromUrl(link);
-                        inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
-                            <NotesAndCharts id={id}/>
-                        );
+        // people's search
+        if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
+            const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
+            if (profileCards.length > 0) {
+                profileCards.forEach((card: HTMLDivElement, index) => {
+                    card.style.position = "relative";
+                    const profileLink = card.querySelectorAll('a[href*="/in/"]');
+                    if (profileLink.length > 0) {
+                        const link = profileLink[0].getAttribute("href");
+                        const profileActions = card.getElementsByClassName('entity-result__actions');
+                        if (profileActions.length > 0) {
+                            const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
+                            const id = extractIdFromUrl(link);
+                            inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
+                                <NotesAndCharts id={id}/>
+                            );
+                        }
                     }
-                }
-            })
+                })
+            }
         }
-    }
+    },500);
 }
 
 type Props = {

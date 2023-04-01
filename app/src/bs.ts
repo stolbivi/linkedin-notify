@@ -135,6 +135,7 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
             await chrome.action.setIcon({path: "/content/icon-128-logout.png"});
             await chrome.action.setBadgeText({text: ""});
         } else {
+            chrome.action.setIcon({path: "/content/icon-128.png"});
             fetch(LOGIN_URL).then(_resp => {
                 startMonitoring();
             });
