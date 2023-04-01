@@ -11,12 +11,11 @@ import {Clock} from "../icons/Clock";
 
 export const TimeZoneFactory = () => {
     if (window.location.href.indexOf("/messaging/") > 0) {
-        const timeWrap = document.getElementsByClassName("break-words artdeco-entity-lockup artdeco-entity-lockup--stacked-left artdeco-entity-lockup--size-5 ember-view");
+        const timeWrap = document.getElementsByClassName("artdeco-entity-lockup__image artdeco-entity-lockup__image--type-circle ember-view");
         if (timeWrap && timeWrap.length > 0) {
-            let child = timeWrap[0].getElementsByTagName("a");
-            if (child && child.length > 0) {
-                injectLastChild(child[0], "lnm-time-zone", <TimeZone/>);
-            }
+
+                injectLastChild(timeWrap[0], "lnm-time-zone", <TimeZone/>);
+
         }
     }
 }

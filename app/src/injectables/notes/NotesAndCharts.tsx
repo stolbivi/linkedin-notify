@@ -29,7 +29,7 @@ import {theme as LightTheme} from "../../themes/light";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
-    if (window.location.href.indexOf("/in/") > 0) {
+    if (window.location.href.indexOf("/in/") > 0 || window.location.href.indexOf("/messaging/") > 0) {
         const section = document.querySelectorAll('#global-nav');
         if (section && section.length > 0) {
             inject(section[0].lastChild, "lnm-notes-and-charts", "after",
@@ -37,6 +37,12 @@ export const NotesAndChartsFactory = () => {
             );
         }
     }
+    /*const aside = document.getElementsByClassName("scaffold-layout__aside");
+    if (aside && aside.length > 0) {
+        injectFirstChild(aside[0], "lnm-notes-and-charts",
+            <NotesAndCharts/>
+        );
+    }*/
     // people's search
     if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
         const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
