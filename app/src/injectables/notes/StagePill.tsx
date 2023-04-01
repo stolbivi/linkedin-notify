@@ -8,7 +8,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import { getConversationProfile, getStages, showNotesAndCharts} from "../../actions";
+import { getStages, showNotesAndCharts} from "../../actions";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -25,18 +25,20 @@ export const StagePillFactory = () => {
             }
         }
     }
-    if (window.location.href.indexOf("/messaging/") > 0){
-        const nameContainer = document.getElementsByClassName("artdeco-entity-lockup__badge ember-view");
-        if (nameContainer && nameContainer.length > 0) {
-            const nameHeader = nameContainer[0].getElementsByClassName("artdeco-entity-lockup__degree");
-            if (nameHeader && nameHeader.length > 0) {
-                (nameHeader[0].parentElement as HTMLElement).style.paddingRight = "0.5em";
-                injectLastChild(nameHeader[0].parentElement, "lnm-stage",
-                    <StagePill convUrl={window.location.href}/>
-                );
+    setTimeout(() => {
+        if (window.location.href.indexOf("/messaging/") > 0){
+            const nameContainer = document.getElementsByClassName("artdeco-entity-lockup__badge ember-view");
+            if (nameContainer && nameContainer.length > 0) {
+                const nameHeader = nameContainer[0].getElementsByClassName("artdeco-entity-lockup__degree");
+                if (nameHeader && nameHeader.length > 0) {
+                    (nameHeader[0].parentElement as HTMLElement).style.paddingRight = "0.5em";
+                    injectLastChild(nameHeader[0].parentElement, "lnm-stage",
+                        <StagePill convUrl={window.location.href}/>
+                    );
+                }
             }
         }
-    }
+    }, 500);
 }
 
 type Props = {
@@ -58,33 +60,19 @@ export const StagePill: React.FC<Props> = ({url, convUrl}) => {
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
+        let url = extractIdFromUrl(urlInternal);
         if(convUrl) {
-            messages.request(getConversationProfile(extractIdFromUrl(convUrl)))
-                .then((r:any) => {
-                    const entityUrns = r.participants.map((participant:any) => {
-                        return participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3];
-                    });
-                    messages.request(getStages({url: entityUrns[0]}))
-                        .then((r) => {
-                            if (r.error) {
-                                console.error(r.error);
-                            } else {
-                                const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
-                                setType(s);
-                            }
-                        }).finally(() => setCompleted(true));
-                });
-        } else {
-            messages.request(getStages({url: extractIdFromUrl(urlInternal)}))
-                .then((r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    } else {
-                        const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
-                        setType(s);
-                    }
-                }).finally(() => setCompleted(true));
+            url = sessionStorage.getItem("prf");
         }
+        messages.request(getStages({url: url}))
+            .then((r) => {
+                if (r.error) {
+                    console.error(r.error);
+                } else {
+                    const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
+                    setType(s);
+                }
+            }).finally(() => setCompleted(true));
     }, [accessState, urlInternal]);
 
     useEffect(() => {

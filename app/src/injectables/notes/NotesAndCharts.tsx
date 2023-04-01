@@ -29,20 +29,23 @@ import {theme as LightTheme} from "../../themes/light";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
-    if (window.location.href.indexOf("/in/") > 0 || window.location.href.indexOf("/messaging/") > 0) {
-        const section = document.querySelectorAll('#global-nav');
+    if (window.location.href.indexOf("/in/") > 0) {
+        const section = document.querySelectorAll('section[data-member-id]');
         if (section && section.length > 0) {
             inject(section[0].lastChild, "lnm-notes-and-charts", "after",
                 <NotesAndCharts/>
             );
         }
     }
-    /*const aside = document.getElementsByClassName("scaffold-layout__aside");
-    if (aside && aside.length > 0) {
-        injectFirstChild(aside[0], "lnm-notes-and-charts",
-            <NotesAndCharts/>
-        );
-    }*/
+    if (window.location.href.indexOf("/messaging/") > 0) {
+        const section = document.querySelectorAll('#global-nav');
+        if (section && section.length > 0) {
+            inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                <NotesAndCharts convId={sessionStorage.getItem("prf")}/>
+            );
+        }
+    }
+
     // people's search
     if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
         const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
@@ -70,10 +73,11 @@ type Props = {
     stage?: StageEnum
     salary?: Salary
     id?: string
+    convId?:string
 };
 
 
-export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
+export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
 
     const MAX_LENGTH = 200;
 
@@ -110,7 +114,11 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
             }));
         // getting data
         setCompleted(false);
-        messages.request(getSalary(extractIdFromUrl(window.location.href)))
+        let prfId = extractIdFromUrl(window.location.href);
+        if(convId) {
+            prfId = convId;
+        }
+        messages.request(getSalary(prfId))
             .then((r) => {
                 const salary = {...r.result, title: r.title, urn: r.urn};
                 setSalaryInternal(salary);
