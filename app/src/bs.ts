@@ -7,6 +7,7 @@ import {
     conversationAck,
     getBadges,
     getConversationDetails,
+    getConversationProfile,
     getConversations,
     getCookies,
     getFeatures,
@@ -78,6 +79,7 @@ messagesV2.listen(getConversations);
 messagesV2.listen(getIsUnlocked);
 messagesV2.listen(unlock);
 messagesV2.listen(getConversationDetails);
+messagesV2.listen(getConversationProfile);
 messagesV2.listen(conversationAck);
 messagesV2.listen(getNotifications);
 messagesV2.listen(markNotificationsSeen);

@@ -78,6 +78,14 @@ export const getConversationDetails = createAction<string, Array<any>>("getConve
             return api.extractConversationDetails(detailsResponse);
         }));
 
+export const getConversationProfile = createAction<string, Array<any>>("getConversationProfile",
+    (convId) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const detailsResponse = await api.getConversationProfile(token, convId);
+            return detailsResponse;
+        }));
+
 export const conversationAck = createAction<string, void>("conversationAck",
     (entityUrn) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))

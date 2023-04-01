@@ -201,6 +201,12 @@ export class LinkedInAPI {
             .then(response => response.json());
     }
 
+    public getConversationProfile(token: string, convId: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `messaging/conversations/${convId}`, this.getRequest(token))
+            .then(response => response.json());
+    }
+
+
     public extractConversationDetails(response: any): Array<any> {
         function getSender(s: any) {
             const m = s?.participantType?.member;

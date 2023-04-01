@@ -30,7 +30,7 @@ import {theme as LightTheme} from "../../themes/light";
 export const NotesAndChartsFactory = () => {
     // individual profile
     if (window.location.href.indexOf("/in/") > 0) {
-        const section = document.querySelectorAll('section[data-member-id]');
+        const section = document.querySelectorAll('#global-nav');
         if (section && section.length > 0) {
             inject(section[0].lastChild, "lnm-notes-and-charts", "after",
                 <NotesAndCharts/>

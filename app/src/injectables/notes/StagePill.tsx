@@ -8,7 +8,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import {getStages, showNotesAndCharts} from "../../actions";
+import { getConversationProfile, getStages, showNotesAndCharts} from "../../actions";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -32,7 +32,7 @@ export const StagePillFactory = () => {
             if (nameHeader && nameHeader.length > 0) {
                 (nameHeader[0].parentElement as HTMLElement).style.paddingRight = "0.5em";
                 injectLastChild(nameHeader[0].parentElement, "lnm-stage",
-                    <StagePill url={window.location.href}/>
+                    <StagePill convUrl={window.location.href}/>
                 );
             }
         }
@@ -40,16 +40,17 @@ export const StagePillFactory = () => {
 }
 
 type Props = {
-    url: string
+    url?: string,
+    convUrl?: string
 };
 
-export const StagePill: React.FC<Props> = ({url}) => {
+export const StagePill: React.FC<Props> = ({url, convUrl}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [type, setType] = useState<StageEnum>(-1);
     const [completed, setCompleted] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
-    const [urlInternal, setUrlInternal] = useState<string>(url);
+    const [urlInternal, setUrlInternal] = useState<string>(url || convUrl);
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -57,16 +58,33 @@ export const StagePill: React.FC<Props> = ({url}) => {
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
-        messages.request(getStages({url: extractIdFromUrl(urlInternal)}))
-            .then((r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
-                    setType(s);
-                }
-            }).finally(() => setCompleted(true));
-
+        if(convUrl) {
+            messages.request(getConversationProfile(extractIdFromUrl(convUrl)))
+                .then((r:any) => {
+                    const entityUrns = r.participants.map((participant:any) => {
+                        return participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3];
+                    });
+                    messages.request(getStages({url: entityUrns[0]}))
+                        .then((r) => {
+                            if (r.error) {
+                                console.error(r.error);
+                            } else {
+                                const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
+                                setType(s);
+                            }
+                        }).finally(() => setCompleted(true));
+                });
+        } else {
+            messages.request(getStages({url: extractIdFromUrl(urlInternal)}))
+                .then((r) => {
+                    if (r.error) {
+                        console.error(r.error);
+                    } else {
+                        const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
+                        setType(s);
+                    }
+                }).finally(() => setCompleted(true));
+        }
     }, [accessState, urlInternal]);
 
     useEffect(() => {

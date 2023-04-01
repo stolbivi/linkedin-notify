@@ -33,10 +33,6 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
     useEffect(() => {
         messages.request(getSubscription())
             .then((r) => {
-                // TODO FIXME
-                setState(AccessState.Valid);
-                setAccessState(AccessState.Valid);
-                return;
                 if (r.status === 403) {
                     setState(AccessState.SignInRequired);
                     setAccessState(AccessState.SignInRequired);
