@@ -1,5 +1,5 @@
 import {MessagesV2, Tabs} from "@stolbivi/pirojok";
-import {LINKEDIN_DOMAIN, VERBOSE} from "./global";
+import {LINKEDIN_DOMAIN, VERBOSE, LOGIN_URL} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
 import {
@@ -122,10 +122,22 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
         if (changeInfo.removed) {
             console.log("Stop monitoring");
             await chrome.alarms.clearAll();
-            chrome.action.setIcon({path: "/content/icon-128-logout.png"});
+            chrome.cookies.getAll({}, function(cookies) {
+                for (let i = 0; i < cookies.length; i++) {
+                    if (cookies[i].domain == "www.linkedin.com" || cookies[i].domain == "api.lnmanager.com" || cookies[i].domain == "www.lnmanager.com") {
+                        chrome.cookies.remove({
+                            url: "https://" + cookies[i].domain + cookies[i].path,
+                            name: cookies[i].name
+                        });
+                    }
+                }
+            });
+            await chrome.action.setIcon({path: "/content/icon-128-logout.png"});
             await chrome.action.setBadgeText({text: ""});
         } else {
-            startMonitoring();
+            fetch(LOGIN_URL).then(_resp => {
+                startMonitoring();
+            });
         }
     }
 });

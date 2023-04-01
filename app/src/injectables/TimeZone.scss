@@ -1,34 +1,28 @@
 @import "../themes/primary";
 @import "AccessGuard";
 
-.salary-pill {
-  font-size: 16px;
-  color: $salary-pill;
-  border: 1.5px solid $salary-pill;
-  border-radius: 50px;
-  padding: 0.25em 0.75em;
-  margin: 0em 0.5em;
-  user-select: none;
-  align-items: center;
+.timezone {
+  top: 10px;
+  z-index: 10;
+  position: absolute;
   display: flex;
-  font-weight: 500;
-
-  span {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-  }
-
-  & svg {
-    height: 24px;
-    color: $salary-pill;
-  }
-}
-
-.clickable {
+  align-items: center;
+  color: rgb(86, 86, 86);
+  user-select: none;
   cursor: pointer;
-}
+  background: none padding-box padding-box rgb(169, 164, 164);
+  border: 0px;
+  padding: 0px 17px;
+  height: 40px;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 18px;
+  border-radius: 2px;
+  box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
+  margin-left: 0.5em;
 
-.disabled {
-  opacity: 0.75;
-  filter: grayscale(1);
+  svg {
+    width: 16px;
+    height: 16px;
+    padding-right: 0.25em;
+  }
 }

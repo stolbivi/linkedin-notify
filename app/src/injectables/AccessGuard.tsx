@@ -29,11 +29,12 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
     const messages = new MessagesV2(VERBOSE);
     const [completed, setCompleted] = useState<boolean>(false);
     const [state, setState] = useState<AccessState>(AccessState.Unknown);
-
+    const [status, setStatus] = useState("Upgrade To Pro");
     useEffect(() => {
         messages.request(getSubscription())
             .then((r) => {
                 if (r.status === 403) {
+                    setStatus("Active Free Trial");
                     setState(AccessState.SignInRequired);
                     setAccessState(AccessState.SignInRequired);
                 } else if (r.subscriptions?.length > 0) {
@@ -69,7 +70,7 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
                             onClick={(e) => openUrl(e, SIGN_UP_URL)}
                             title="Sign up">
                     <Lock/>
-                    {!hideTitle && <span>Upgrade to Pro</span>}
+                    {!hideTitle && <span>{status}</span>}
                 </div>
         }
     }

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {injectLastChild} from "../utils/InjectHelper";
 // @ts-ignore
-import stylesheet from "./TimeZone.scss";
+import "./TimeZone.scss";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
 import moment from "moment";
@@ -13,9 +13,7 @@ export const TimeZoneFactory = () => {
     if (window.location.href.indexOf("/messaging/") > 0) {
         const timeWrap = document.getElementsByClassName("artdeco-entity-lockup__image artdeco-entity-lockup__image--type-circle ember-view");
         if (timeWrap && timeWrap.length > 0) {
-
                 injectLastChild(timeWrap[0], "lnm-time-zone", <TimeZone/>);
-
         }
     }
 }
@@ -37,7 +35,6 @@ export const TimeZone: React.FC<Props> = ({}) => {
     const [tz, setTz] = useState<Tz>();
     const [city, setCity] = useState<string>();
     const [disabled, setDisabled] = useState<boolean>(false);
-
 
     const updateTime = (tz: any) => {
         const utc = moment.utc();
@@ -76,7 +73,8 @@ export const TimeZone: React.FC<Props> = ({}) => {
             {!disabled &&
                 <React.Fragment>
                     {tz?.timeFormatted && city &&
-                        <div className="time-zone top-right-corner" title={`${city} - ${tz.timeFull}`}>
+                        <div className="time-zone top-right-corner" title={`${city} - ${tz.timeFull}`}
+                        style={{display:"inline-block", position:"absolute", top: "0", right:"0", background: "#e3e3e3", padding:"4px", borderRadius: "5px"}}>
                             <Clock/><span>{tz.timeFormatted}</span>
                         </div>
                     }
