@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {getSalaryValue, Salary} from "../SalaryPill";
@@ -96,6 +96,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
+    const lastNoteRef = useRef();
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -191,6 +192,13 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
                 }).then(/* nada */);
         }
     }
+
+    useEffect(() => {
+        setTimeout(() => {
+            // @ts-ignore
+            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
+        }, 200);
+    },[notes]);
 
     const onChange = (e: any) => {
         let text = e.target.value;
@@ -290,7 +298,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
                                         <div className="scroll-container h-300">
                                             <div className="scroll-content">
                                                 {completed && notes?.map((n, i) => (
-                                                    <NoteCard key={i} note={n}/>))}
+                                                    <NoteCard key={i} note={n}
+                                                              currentCount={i} totalCount={notes.length} lastNoteRef={lastNoteRef}/>)
+                                                )
+                                                }
                                                 {completed && notes.length == 0 &&
                                                     <div className="no-notes">
                                                         <NoNotes/>
