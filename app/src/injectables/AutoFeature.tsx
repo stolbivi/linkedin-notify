@@ -24,32 +24,34 @@ const Icons = {
 }
 
 export const AutoFeatureFactory = () => {
-    if (window.location.href.indexOf("/feed/") > 0) {
-        const updateDivs = document.querySelectorAll('div[data-id*="urn:li:activity:"]');
-        updateDivs.forEach(updateDiv => {
-            const titles = updateDiv.getElementsByClassName("update-components-actor");
-            if (titles && titles.length > 0) {
-                const aElements = titles[0].getElementsByTagName("a");
-                if (aElements && aElements.length > 0) {
-                    const dataId = updateDiv.getAttribute("data-id");
-                    const activityId = dataId.split(":").pop().trim();
-                    const url = aElements[0].getAttribute("href");
-                    const target = titles[0].querySelectorAll("a > div > span");
-                    if (target && target.length > 0) {
-                        const lastItem = target[target.length - 1];
-                        // @ts-ignore
-                        lastItem.style.display = "flex";
-                        inject(lastItem.lastChild, `lnm-auto-${activityId}`, "after",
-                            <div style={{paddingLeft: "0.25em", display: "flex"}}>
-                                <AutoFeature url={url} type={"like"}/>
-                                <AutoFeature url={url} type={"repost"}/>
-                            </div>
-                        );
+    setTimeout(() => {
+        if (window.location.href.indexOf("/feed/") > 0) {
+            const updateDivs = document.querySelectorAll('div[data-id*="urn:li:activity:"]');
+            updateDivs.forEach(updateDiv => {
+                const titles = updateDiv.getElementsByClassName("update-components-actor");
+                if (titles && titles.length > 0) {
+                    const aElements = titles[0].getElementsByTagName("a");
+                    if (aElements && aElements.length > 0) {
+                        const dataId = updateDiv.getAttribute("data-id");
+                        const activityId = dataId.split(":").pop().trim();
+                        const url = aElements[0].getAttribute("href");
+                        const target = titles[0].querySelectorAll("a > div > span");
+                        if (target && target.length > 0) {
+                            const lastItem = target[target.length - 1];
+// @ts-ignore
+                            lastItem.style.display = "flex";
+                            inject(lastItem.lastChild, `lnm-auto-${activityId}`, "after",
+                                <div style={{paddingLeft: "0.25em", display: "flex"}}>
+                                    <AutoFeature url={url} type={"like"}/>
+                                    <AutoFeature url={url} type={"repost"}/>
+                                </div>
+                            );
+                        }
                     }
                 }
-            }
-        })
-    }
+            })
+        }
+    },1200);
 }
 
 type Props = {
@@ -62,7 +64,7 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
 
     const messages = new MessagesV2(VERBOSE);
 
-    // @ts-ignore
+// @ts-ignore
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [completed, setCompleted] = useState(false);
     const [active, setActive] = useState<boolean>();
@@ -118,7 +120,7 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
             });
     }
 
-    // @ts-ignore
+// @ts-ignore
     const getIcon = (feature: string): JSX.Element => Icons[feature];
 
     return (

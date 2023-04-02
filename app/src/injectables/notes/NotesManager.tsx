@@ -27,12 +27,14 @@ import {theme as LightTheme} from "../../themes/light";
 import {theme as DarkTheme} from "../../themes/dark";
 
 export const NotesManagerFactory = () => {
-    const aside = document.getElementsByClassName("scaffold-layout__aside");
-    if (aside && aside.length > 0) {
-        injectFirstChild(aside[0], "lnm-notes-manager",
-            <NotesManager/>
-        );
-    }
+    setTimeout(() => {
+        const aside = document.getElementsByClassName("scaffold-layout__aside");
+        if (aside && aside.length > 0) {
+            injectFirstChild(aside[0], "lnm-notes-manager",
+                <NotesManager/>
+            );
+        }
+    },1000);
 }
 
 type Props = {};

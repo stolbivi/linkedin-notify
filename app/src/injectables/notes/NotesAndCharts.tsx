@@ -14,6 +14,7 @@ import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
+    getConversationProfile,
     getNotesByProfile,
     getSalary,
     getStages,
@@ -28,46 +29,58 @@ import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 
 export const NotesAndChartsFactory = () => {
-    // individual profile
-    if (window.location.href.indexOf("/in/") > 0) {
-        const section = document.querySelectorAll('section[data-member-id]');
-        if (section && section.length > 0) {
-            inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                <NotesAndCharts/>
-            );
+    setTimeout(() => {
+        // individual profile
+        if (window.location.href.indexOf("/in/") > 0) {
+            const section = document.querySelectorAll('section[data-member-id]');
+            if (section && section.length > 0) {
+                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                    <NotesAndCharts/>
+                );
+            }
         }
-    }
-    // people's search
-    if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
-        const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
-        if (profileCards.length > 0) {
-            profileCards.forEach((card: HTMLDivElement, index) => {
-                card.style.position = "relative";
-                const profileLink = card.querySelectorAll('a[href*="/in/"]');
-                if (profileLink.length > 0) {
-                    const link = profileLink[0].getAttribute("href");
-                    const profileActions = card.getElementsByClassName('entity-result__actions');
-                    if (profileActions.length > 0) {
-                        const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
-                        const id = extractIdFromUrl(link);
-                        inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
-                            <NotesAndCharts id={id}/>
-                        );
+        if (window.location.href.indexOf("/messaging/") > 0) {
+            const section = document.getElementsByClassName("scaffold-layout__list-detail msg__list-detail");
+            if (section && section.length > 0) {
+                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                    <NotesAndCharts convId={"yes"}/>
+                );
+            }
+        }
+
+        // people's search
+        if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
+            const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
+            if (profileCards.length > 0) {
+                profileCards.forEach((card: HTMLDivElement, index) => {
+                    card.style.position = "relative";
+                    const profileLink = card.querySelectorAll('a[href*="/in/"]');
+                    if (profileLink.length > 0) {
+                        const link = profileLink[0].getAttribute("href");
+                        const profileActions = card.getElementsByClassName('entity-result__actions');
+                        if (profileActions.length > 0) {
+                            const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
+                            const id = extractIdFromUrl(link);
+                            inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
+                                <NotesAndCharts id={id}/>
+                            );
+                        }
                     }
-                }
-            })
+                })
+            }
         }
-    }
+    }, 100);
 }
 
 type Props = {
     stage?: StageEnum
     salary?: Salary
     id?: string
+    convId?:string
 };
 
 
-export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
+export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
 
     const MAX_LENGTH = 200;
 
@@ -104,20 +117,44 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
             }));
         // getting data
         setCompleted(false);
-        messages.request(getSalary(extractIdFromUrl(window.location.href)))
-            .then((r) => {
-                const salary = {...r.result, title: r.title, urn: r.urn};
-                setSalaryInternal(salary);
-                return salary;
-            }).then(salary => {
-            const stagePromise = messages.request(getStages({id: salary.urn}))
-                .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                .catch(e => console.error(e.error));
-            const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                .then((r) => setNotes(r.response))
-                .catch(e => console.error(e.error));
-            Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
-        }).catch(e => console.error(e.error));
+        if(convId) {
+            messages.request(getConversationProfile(extractIdFromUrl(window.location.href)))
+                .then((r:any) => {
+                    const entityUrns = r.participants.map((participant:any) => {
+                        return participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3];
+                    });
+                    messages.request(getSalary(entityUrns[0]))
+                        .then((r) => {
+                            const salary = {...r.result, title: r.title, urn: r.urn};
+                            setSalaryInternal(salary);
+                            return salary;
+                        }).then(salary => {
+                        const stagePromise = messages.request(getStages({id: salary.urn}))
+                            .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
+                            .catch(e => console.error(e.error));
+                        const notesPromise = messages.request(getNotesByProfile(salary.urn))
+                            .then((r) => setNotes(r.response))
+                            .catch(e => console.error(e.error));
+                        Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
+                    }).catch(e => console.error(e.error));
+                });
+        } else {
+            messages.request(getSalary(extractIdFromUrl(window.location.href)))
+                .then((r) => {
+                    const salary = {...r.result, title: r.title, urn: r.urn};
+                    setSalaryInternal(salary);
+                    return salary;
+                }).then(salary => {
+                const stagePromise = messages.request(getStages({id: salary.urn}))
+                    .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
+                    .catch(e => console.error(e.error));
+                const notesPromise = messages.request(getNotesByProfile(salary.urn))
+                    .then((r) => setNotes(r.response))
+                    .catch(e => console.error(e.error));
+                Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
+            }).catch(e => console.error(e.error));
+        }
+
     }, []);
 
     useEffect(() => {

@@ -4,6 +4,7 @@ export const LINKEDIN_DOMAIN = 'linkedin.com';
 export const VERBOSE = false;
 export const SHARE_URN = "urn:li:share:7010927250069934081";
 export const MAPS_KEY = "AIzaSyDewx7AbMwkRxcyYA9zQ1RTIAsDyWR4svo";
+export const LOGIN_URL = `${process.env.BACKEND_BASE}/auth/linkedin`;
 
 // env variables are interpolated
 export const BACKEND_API = `${process.env.BACKEND_BASE}/api/`;

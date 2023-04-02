@@ -1,0 +1,36 @@
+@import "../themes/primary";
+@import "AccessGuard";
+
+.lock-time {
+  top: 0;
+  right: 0;
+  display: flex;
+  position: absolute;
+}
+
+.time-zone {
+  top: 0;
+  right: 0;
+  display: flex;
+  z-index: 10;
+  position: absolute;
+  align-items: center;
+  color: $base-card-message;
+  user-select: none;
+  cursor: pointer;
+  background:  none padding-box padding-box $base-card-message-background;
+  border: 0px;
+  padding: 0px 17px;
+  height: 40px;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 18px;
+  border-radius: 2px;
+  box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
+  margin-left: 0.5em;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    padding-right: 0.25em !important;
+  }
+}

@@ -125,18 +125,20 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
     }
 
     return (
-        <div className="w-100 position-relative">
+        <div className="w-100 position-relative" style={{ height: "600px" }}>
             <Loader show={!completed} className="p-5" heightValue="600px"/>
             <div hidden={!completed || unlocked}>
                 <Premium setUnlocked={setUnlocked}/>
             </div>
             <div className={"w-100" + (!unlocked ? " premium-blur" : "")} hidden={!completed}>
                 <div className="w-100" hidden={showDetails}>
-                    <div className="card-holder" style={{marginBottom: "3.0rem"}}>
+                    {conversations.length == 0 && <div className="no-data">No conversations</div>}
+                    {conversations.length > 0 &&
+                        (<div className="card-holder" style={{marginBottom: "3.0rem"}}>
                         <input type="text" className="search-input" placeholder="Search Contacts" ref={searchInput}
                                onChange={(event) => setSearchText(event.target.value)} />
-                    </div>
-                    {conversations.length == 0 && <div className="no-data">No conversations</div>}
+                        </div>)
+                    }
                     {
                         conversations.map((c: any, i: number) =>
                             (<ConversationCard conversation={c} key={i}

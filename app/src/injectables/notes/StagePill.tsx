@@ -8,7 +8,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import {getStages, showNotesAndCharts} from "../../actions";
+import { getStages, showNotesAndCharts} from "../../actions";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -25,19 +25,34 @@ export const StagePillFactory = () => {
             }
         }
     }
+    setTimeout(() => {
+        if (window.location.href.indexOf("/messaging/") > 0){
+            const nameContainer = document.getElementsByClassName("artdeco-entity-lockup__badge ember-view");
+            if (nameContainer && nameContainer.length > 0) {
+                const nameHeader = nameContainer[0].getElementsByClassName("artdeco-entity-lockup__degree");
+                if (nameHeader && nameHeader.length > 0) {
+                    (nameHeader[0].parentElement as HTMLElement).style.paddingRight = "0.5em";
+                    injectLastChild(nameHeader[0].parentElement, "lnm-stage",
+                        <StagePill convUrl={window.location.href}/>
+                    );
+                }
+            }
+        }
+    }, 700);
 }
 
 type Props = {
-    url: string
+    url?: string,
+    convUrl?: string
 };
 
-export const StagePill: React.FC<Props> = ({url}) => {
+export const StagePill: React.FC<Props> = ({url, convUrl}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [type, setType] = useState<StageEnum>(-1);
     const [completed, setCompleted] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
-    const [urlInternal, setUrlInternal] = useState<string>(url);
+    const [urlInternal, setUrlInternal] = useState<string>(url || convUrl);
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -45,7 +60,11 @@ export const StagePill: React.FC<Props> = ({url}) => {
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
-        messages.request(getStages({url: extractIdFromUrl(urlInternal)}))
+        let url = extractIdFromUrl(urlInternal);
+        if(convUrl) {
+            url = sessionStorage.getItem("prf");
+        }
+        messages.request(getStages({url: url}))
             .then((r) => {
                 if (r.error) {
                     console.error(r.error);
@@ -54,7 +73,6 @@ export const StagePill: React.FC<Props> = ({url}) => {
                     setType(s);
                 }
             }).finally(() => setCompleted(true));
-
     }, [accessState, urlInternal]);
 
     useEffect(() => {
