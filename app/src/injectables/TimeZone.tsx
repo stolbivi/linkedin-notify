@@ -11,7 +11,7 @@ import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../themes/T
 import {theme as LightTheme} from "../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../themes/dark";
-
+import {AccessGuard, AccessState} from "./AccessGuard";
 
 export const TimeZoneFactory = () => {
     if (window.location.href.indexOf("/messaging/") > 0) {
@@ -36,7 +36,7 @@ export const TimeZone: React.FC<Props> = ({}) => {
     const FORMAT = "DD.MM.YYYY HH:mm:ss";
     const FORMAT_TIME = "HH:mm";
     const FORMAT_DDDD = "dddd";
-
+    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [tz, setTz] = useState<Tz>();
     const [city, setCity] = useState<string>();
     const [disabled, setDisabled] = useState<boolean>(false);
@@ -92,7 +92,10 @@ export const TimeZone: React.FC<Props> = ({}) => {
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            {!disabled &&
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16 lock-time"}
+                         loaderClassName="loader-base loader-px24"/>
+            {accessState === AccessState.Valid &&
+                !disabled &&
                 <React.Fragment>
                     {tz?.timeFormatted && city &&
                         <div className="time-zone" title={`${city} - ${tz.timeFull}`} ref={rootElement}>

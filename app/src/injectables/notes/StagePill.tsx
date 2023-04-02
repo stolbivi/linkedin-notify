@@ -38,7 +38,7 @@ export const StagePillFactory = () => {
                 }
             }
         }
-    }, 500);
+    }, 700);
 }
 
 type Props = {

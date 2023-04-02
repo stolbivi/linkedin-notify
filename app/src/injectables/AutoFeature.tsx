@@ -51,7 +51,7 @@ export const AutoFeatureFactory = () => {
                 }
             })
         }
-    },1000);
+    },1200);
 }
 
 type Props = {

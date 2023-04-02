@@ -1,4 +1,12 @@
 @import "../themes/primary";
+@import "AccessGuard";
+
+.lock-time {
+  top: 0;
+  right: 0;
+  display: flex;
+  position: absolute;
+}
 
 .time-zone {
   top: 0;
