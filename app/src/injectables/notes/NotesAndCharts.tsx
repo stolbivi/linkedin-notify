@@ -186,19 +186,16 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
                         console.error(r.error);
                     } else {
                         setText({value: ""});
-                        appendNote(r.note.response)
+                        appendNote(r.note.response);
+                        setTimeout(() => {
+                            // @ts-ignore
+                            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
+                        }, 200);
                     }
                     setEditable(true);
                 }).then(/* nada */);
         }
     }
-
-    useEffect(() => {
-        setTimeout(() => {
-            // @ts-ignore
-            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
-        }, 200);
-    },[notes]);
 
     const onChange = (e: any) => {
         let text = e.target.value;

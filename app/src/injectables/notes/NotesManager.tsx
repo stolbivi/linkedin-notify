@@ -83,13 +83,6 @@ export const NotesManager: React.FC<Props> = ({}) => {
     }, []);
 
     useEffect(() => {
-        setTimeout(() => {
-            // @ts-ignore
-            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
-        }, 200);
-    },[selectedNotes]);
-
-    useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
     }, [text]);
 
@@ -261,7 +254,11 @@ export const NotesManager: React.FC<Props> = ({}) => {
                         console.error(r.error);
                     } else {
                         setText({value: ""});
-                        appendNote(r.note.response)
+                        appendNote(r.note.response);
+                        setTimeout(() => {
+                            // @ts-ignore
+                            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
+                        }, 200);
                     }
                     setEditable(true);
                 }).then(/* nada */);
