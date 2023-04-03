@@ -151,7 +151,7 @@ function checkBadges() {
             if (l) {
                 console.debug('Checking badges');
                 chrome.action.setIcon({path: "/content/icon-128.png"});
-                await chrome.action.setBadgeBackgroundColor({color: "#585858"});
+                //await chrome.action.setBadgeBackgroundColor({color: "#585858"});
                 //await chrome.action.setBadgeText({text: "sync"});
 
                 const token = api.getCsrfToken(cookies);
