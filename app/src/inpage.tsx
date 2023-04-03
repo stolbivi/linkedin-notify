@@ -8,6 +8,7 @@ import {NotesAndChartsFactory} from "./injectables/notes/NotesAndCharts";
 import {NotesManagerFactory} from "./injectables/notes/NotesManager";
 import {LastViewedFactory} from "./injectables/LastViewed";
 import {TimeZoneFactory} from "./injectables/TimeZone";
+import {LnDashboardFactory} from "./injectables/LnDashboard";
 
 console.debug('LinkedIn Manager extension engaged');
 
@@ -27,6 +28,7 @@ const injectUI = () => {
             NotesManagerFactory();
             LastViewedFactory();
             TimeZoneFactory();
+            LnDashboardFactory();
         },
     });
 }
