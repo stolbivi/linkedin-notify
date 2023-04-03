@@ -43,6 +43,10 @@ export const Main: React.FC<Props> = ({}) => {
     }, []);
 
     useEffect(() => {
+        chrome.alarms.create("check-badges", {periodInMinutes: 0, delayInMinutes: 0});
+    },[badges]);
+
+    useEffect(() => {
         applyThemeProperties(light ? LightTheme : DarkTheme, rootElement);
     }, [light]);
 

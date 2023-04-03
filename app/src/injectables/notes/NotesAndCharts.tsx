@@ -173,6 +173,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
 
     const appendNote = (note: NoteExtended) => {
         setNotes([...notes, note]);
+        setTimeout(() => {
+            // @ts-ignore
+            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
+        }, 200);
     }
 
     const postNote = (text: string) => {
