@@ -1,0 +1,19 @@
+@import "../themes/primary";
+
+.ln-dashboard-title {
+  font-size: 11px;
+  color: $ln-dashboard-menu-icon-color;
+  margin-top: -6px;
+}
+.ln-dashboard-svg{
+  margin-top: 14%;
+  margin-left: 25%
+}
+.ln-dashboard-svg-color{
+  fill:$ln-dashboard-menu-icon-color;
+}
+.global-nav__primary-item:hover .ln-dashboard-svg-color,
+.global-nav__primary-item:hover .ln-dashboard-title {
+  color: $ln-dashboard-menu-icon-color-hover;
+  fill: $ln-dashboard-menu-icon-color-hover;
+}

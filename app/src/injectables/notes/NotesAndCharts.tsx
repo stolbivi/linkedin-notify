@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {getSalaryValue, Salary} from "../SalaryPill";
@@ -96,6 +96,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
+    const lastNoteRef = useRef();
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -172,6 +173,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
 
     const appendNote = (note: NoteExtended) => {
         setNotes([...notes, note]);
+        setTimeout(() => {
+            // @ts-ignore
+            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
+        }, 200);
     }
 
     const postNote = (text: string) => {
@@ -185,7 +190,11 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
                         console.error(r.error);
                     } else {
                         setText({value: ""});
-                        appendNote(r.note.response)
+                        appendNote(r.note.response);
+                        setTimeout(() => {
+                            // @ts-ignore
+                            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
+                        }, 200);
                     }
                     setEditable(true);
                 }).then(/* nada */);
@@ -290,7 +299,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
                                         <div className="scroll-container h-300">
                                             <div className="scroll-content">
                                                 {completed && notes?.map((n, i) => (
-                                                    <NoteCard key={i} note={n}/>))}
+                                                    <NoteCard key={i} note={n}
+                                                              currentCount={i} totalCount={notes.length} lastNoteRef={lastNoteRef}/>)
+                                                )
+                                                }
                                                 {completed && notes.length == 0 &&
                                                     <div className="no-notes">
                                                         <NoNotes/>

@@ -130,5 +130,7 @@ export const theme: Theme = {
     "--search-input": "white",
     "--reply-text-area-color": "white",
     "--reply-text-container-color": "#f9f9f9",
-    "--reply-text-area-caret-color": "#000000"
+    "--reply-text-area-caret-color": "#000000",
+    "--ln-dashboard-menu-icon-color": "rgb(102, 102, 102)",
+    "--ln-dashboard-menu-icon-color-hover": "#000000"
 }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {NoteExtended, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
@@ -65,6 +65,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
+    const lastNoteRef = useRef();
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
@@ -208,7 +209,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
             <div className="scroll-container">
                 <div className="scroll-content">
                     {notesFiltered?.map((n, i) =>
-                        (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}/>))}
+                        (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}
+                                   currentCount={i} totalCount={notesFiltered.length} lastNoteRef={lastNoteRef}/>))}
                     {notesFiltered.length == 0 &&
                         <div className="no-notes">
                             <NoNotes/>
@@ -252,7 +254,11 @@ export const NotesManager: React.FC<Props> = ({}) => {
                         console.error(r.error);
                     } else {
                         setText({value: ""});
-                        appendNote(r.note.response)
+                        appendNote(r.note.response);
+                        setTimeout(() => {
+                            // @ts-ignore
+                            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
+                        }, 200);
                     }
                     setEditable(true);
                 }).then(/* nada */);
@@ -305,7 +311,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
             <div className="scroll-container">
                 <div className="scroll-content">
                     {selectedNotesFiltered?.map((n, i) =>
-                        (<NoteCard key={i} note={n}/>))}
+                        (<NoteCard key={i} note={n}
+                                   currentCount={i} totalCount={selectedNotesFiltered.length} lastNoteRef={lastNoteRef}/>))}
                     {selectedNotesFiltered.length == 0 &&
                         <div className="no-notes">
                             <NoNotes/>

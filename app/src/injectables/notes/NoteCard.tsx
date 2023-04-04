@@ -8,9 +8,12 @@ type Props = {
     note: NoteExtended
     extended?: boolean
     onProfileSelect?: (profile: any) => void
+    lastNoteRef?: any
+    currentCount?:number
+    totalCount?:number
 };
 
-export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => {
+export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, currentCount, totalCount, lastNoteRef}) => {
 
     const getAuthor = () => note.authorName;
 
@@ -39,7 +42,7 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => 
     })
 
     return (
-        <div className="note-card">
+        <div className="note-card" ref={currentCount === totalCount - 1 ? lastNoteRef : null}>
             <div className="bordered">
                 <div className="picture">
                     {extended ?
