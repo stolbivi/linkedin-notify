@@ -395,7 +395,18 @@ export class LinkedInAPI {
             "credentials": "include"
         }).then(_ => null);
     }
-
+    public handleNewsLetterInvitation(token: string, invitation: Invitation) {
+        return fetch(LinkedInAPI.BASE + `voyagerRelationshipsDashInvitations/urn%3Ali%3Afsd_invitation%3A${invitation.id}?action=${invitation.action}`, {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token,
+            },
+            "body": `{\"invitationType\":\"ORGANIZATION\",\"sharedSecret\":\"${invitation.sharedSecret}\"}`,
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(_ => null);
+    }
     public markAllNotificationsAsSeen(token: string) {
         return fetch(LinkedInAPI.BASE + `voyagerNotificationsDashBadge?action=markAllItemsAsSeen`, {
             "headers": {

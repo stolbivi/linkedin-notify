@@ -125,6 +125,11 @@ export const handleInvitation = createAction<Invitation, any>("handleInvitation"
         .then(cookies => api.getCsrfToken(cookies))
         .then(token => api.handleInvitation(token, invitation)));
 
+export const handleNewsLetterInvitation = createAction<Invitation, any>("handleNewsLetterInvitation",
+    (invitation) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(token => api.handleNewsLetterInvitation(token, invitation)));
+
 export const completion = createAction<string, any>("completion",
     (text) => backEndAPI.getCompletion(text));
 

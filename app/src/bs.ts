@@ -24,6 +24,7 @@ import {
     getTheme,
     getTz,
     handleInvitation,
+    handleNewsLetterInvitation,
     markNotificationRead,
     markNotificationsSeen,
     openUrl,
@@ -86,6 +87,7 @@ messagesV2.listen(markNotificationsSeen);
 messagesV2.listen(markNotificationRead);
 messagesV2.listen(getInvitations);
 messagesV2.listen(handleInvitation);
+messagesV2.listen(handleNewsLetterInvitation);
 messagesV2.listen(completion);
 messagesV2.listen(getSalary);
 messagesV2.listen(getTz);

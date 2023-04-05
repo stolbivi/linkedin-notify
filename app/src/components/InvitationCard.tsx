@@ -3,7 +3,7 @@ import {MessagesV2} from "@stolbivi/pirojok";
 import {LINKEDIN_DOMAIN, VERBOSE} from "../global";
 import {formatDate} from "../services/UIHelpers";
 import "./InvitationCard.scss";
-import {handleInvitation, openUrl} from "../actions";
+import {handleInvitation, handleNewsLetterInvitation, openUrl} from "../actions";
 
 type Props = {
     invitation: any
@@ -36,11 +36,21 @@ export const InvitationCard: React.FC<Props> = ({invitation}) => {
     }, [invitation]);
 
     const onIgnore = () => {
+        if(id.indexOf('_') !== -1) {
+            const filteredInvitationId = id.slice(0, id.indexOf('_') );
+            return messages.request(handleNewsLetterInvitation({id: filteredInvitationId, sharedSecret: invitation.sharedSecret, action: "ignore"}))
+                .then(_ => setHideActions(true));
+        }
         return messages.request(handleInvitation({id: id, sharedSecret: invitation.sharedSecret, action: "ignore"}))
             .then(_ => setHideActions(true));
     }
 
     const onAccept = () => {
+        if(id.indexOf('_') !== -1) {
+            const filteredInvitationId = id.slice(0, id.indexOf('_') );
+            return messages.request(handleNewsLetterInvitation({id: filteredInvitationId, sharedSecret: invitation.sharedSecret, action: "accept"}))
+                .then(_ => setHideActions(true));
+        }
         return messages.request(handleInvitation({id: id, sharedSecret: invitation.sharedSecret, action: "accept"}))
             .then(_ => setHideActions(true));
     }
