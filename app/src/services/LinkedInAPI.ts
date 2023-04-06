@@ -38,7 +38,7 @@ export class LinkedInAPI {
     }
 
     public getCsrfToken(cookies: Cookie[]): string {
-        const token = cookies.find(c => c.name === LinkedInAPI.CSRF);
+        const token = cookies?.reverse?.().find(c => c.name === LinkedInAPI.CSRF);
         return token?.value.replace(/['"]+/g, '');
     }
 
