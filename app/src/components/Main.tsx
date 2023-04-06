@@ -13,6 +13,7 @@ import {ThemeSwitch} from "./ThemeSwitch";
 import {theme as LightTheme} from "../themes/light";
 import {theme as DarkTheme} from "../themes/dark";
 import {applyThemeProperties, getThemeCookie, listenToThemeCookie} from "../themes/ThemeUtils";
+import {Settings} from "./Settings";
 
 type Props = {};
 
@@ -61,6 +62,7 @@ export const Main: React.FC<Props> = ({}) => {
                                 <div className="title">
                                     <div className="logo"><Logo/></div>
                                     <span>LinkedIn Manager</span>
+                                    <Settings/>
                                     <div className="switch"><ThemeSwitch light={light} setLight={setLight}/></div>
                                 </div>
                             </div>

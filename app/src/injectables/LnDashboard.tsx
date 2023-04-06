@@ -42,7 +42,6 @@ export const LnDashboard: React.FC<Props> = ({}) => {
     const dashboardClickHandler = () => {
         const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow');
         if (targetElement) {
-            console.error(targetElement)
             ReactDOM.render(<BooleanSearch />, targetElement);
         } else {
             console.warn('Target element not found.');

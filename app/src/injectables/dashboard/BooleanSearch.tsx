@@ -5,6 +5,9 @@
 import React, {useEffect} from "react";
 // @ts-ignore
 import stylesheet from "./BooleanSearch.scss";
+import ReactDOM from "react-dom";
+import JobList from "./JobList";
+import Kanban from "./Kanban";
 
 const BooleanSearch = () => {
     function translateToGoogleBooleanSearch(linkedinQuery: string) {
@@ -148,26 +151,40 @@ const BooleanSearch = () => {
         document.getElementById("google-search-button").addEventListener("click", searchOnGoogle);
     }, []);
 
+
+    const jobListClickHandler = () => {
+        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow');
+        if (targetElement) {
+            ReactDOM.render(<JobList />, targetElement);
+        } else {
+            console.warn('Target element not found.');
+        }
+    }
+    const candidatesClickHandler = () => {
+        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow');
+        if (targetElement) {
+            ReactDOM.render(<Kanban />, targetElement);
+        } else {
+            console.warn('Target element not found.');
+        }
+    }
+
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="body">
-                <div className="sidebar">
-                    <img className="imgStyle" src="lnicon.png" alt="Icon"/>
-                    <h6 className="textStyle">LinkedIn Manager</h6>
-                    <button className="btnStyle sidebarBtn">
-                        <img src="peopleicon.png" alt="Icon" width="20" height="20"/>
-                        Candidates
-                    </button>
-                    <button className="btnStyle sidebarBtn">
-                        <img src="search.png" alt="Icon" width="20" height="20"/>
-                        Boolean Search Tool
-                    </button>
-                    <button className="btnStyle sidebarBtn">
-                        <img src="bag.png" alt="Icon" width="20" height="20"/>
-                        Jobs List
-                    </button>
-                </div>
+                <button className="btnStyle sidebarBtn"  onClick={candidatesClickHandler}>
+                    <img src="peopleicon.png" alt="Icon" width="20" height="20"/>
+                    Candidates
+                </button>
+                <button className="btnStyle sidebarBtn">
+                    <img src="search.png" alt="Icon" width="20" height="20"/>
+                    Boolean Search Tool
+                </button>
+                <button className="btnStyle sidebarBtn" onClick={jobListClickHandler}>
+                    <img src="bag.png" alt="Icon" width="20" height="20"/>
+                    Jobs List
+                </button>
                 <div style={{width: "70rem"}}>
                     <h1>Boolean Search Tool</h1>
                     <h2>Filters</h2>
