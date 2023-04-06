@@ -180,7 +180,7 @@ const BooleanSearch = () => {
                     <div className="queryContainers">
                         <label htmlFor="job-title-input">Job Titles to Include:</label>
                         <input
-                            style={{marginRight: "30px"}}
+                            className={"booleanInput"}
                             type="text"
                             id="job-title-input"
                             placeholder="Use AND or OR. i.e: Software Engineer AND Data Scientist"
