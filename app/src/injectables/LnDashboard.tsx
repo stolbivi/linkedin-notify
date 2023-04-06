@@ -10,9 +10,7 @@ import {theme as LightTheme} from "../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../themes/dark";
 import ReactDOM from "react-dom";
-// @ts-ignore
-import BooleanSearch from "src/injectables/dashboard/BooleanSearch/BooleanSearch";
-
+import BooleanSearch from "./dashboard/BooleanSearch";
 
 export const LnDashboardFactory = () => {
     const header = document.getElementsByClassName("global-nav__primary-items");
