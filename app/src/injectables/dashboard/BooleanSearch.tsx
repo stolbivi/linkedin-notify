@@ -52,14 +52,14 @@ const BooleanSearch = () => {
             document.getElementById("google-formatted-results").textContent = "";
         } else {
             const formattedSearchQuery = formatSearchQuery(jobTitleInput, excludeJobTitleInput, companyIncludeInput, companyExcludeInput, generalKeywordIncludeInput, generalKeywordExcludeInput);
-            document.getElementById("formatted-results").textContent = formattedSearchQuery.toLowerCase();
+            document.getElementById("formatted-results").textContent = formattedSearchQuery.replace(/\s(and|or)\s/gi, (match) => match.toUpperCase());
 
             const googleFormattedSearchQuery = translateToGoogleBooleanSearch(formattedSearchQuery);
-            document.getElementById("google-formatted-results").textContent = googleFormattedSearchQuery.toLowerCase();
+            document.getElementById("google-formatted-results").textContent = googleFormattedSearchQuery.replace(/\s(and|or)\s/gi, (match) => match.toUpperCase());
         }
 
         const googleFormattedSearchQuery = translateToGoogleBooleanSearch(formattedSearchQuery);
-        document.getElementById("google-formatted-results").textContent = googleFormattedSearchQuery.toLowerCase();
+        document.getElementById("google-formatted-results").textContent = googleFormattedSearchQuery.replace(/\s(and|or)\s/gi, (match) => match.toUpperCase());
 
 
     }
