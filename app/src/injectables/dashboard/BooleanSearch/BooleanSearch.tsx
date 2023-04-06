@@ -4,7 +4,7 @@
 
 import React, {useEffect} from "react";
 // @ts-ignore
-import stylesheet from "./BooleanSearch.scss";
+import stylesheet from "src/injectables/dashboard/search/BooleanSearch.scss";
 
 const BooleanSearch = () => {
     function translateToGoogleBooleanSearch(linkedinQuery: string) {
@@ -153,18 +153,18 @@ const BooleanSearch = () => {
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="body">
                 <div className="sidebar">
-                    <img className="imgStyle" src="lnicon.png" alt="Icon"/>
+                    <img className="imgStyle" src="src/injectables/dashboard/search/lnicon.png" alt="Icon"/>
                     <h6 className="textStyle">LinkedIn Manager</h6>
                     <button className="btnStyle sidebarBtn">
-                        <img src="peopleicon.png" alt="Icon" width="20" height="20"/>
+                        <img src="src/injectables/dashboard/search/peopleicon.png" alt="Icon" width="20" height="20"/>
                         Candidates
                     </button>
                     <button className="btnStyle sidebarBtn">
-                        <img src="search.png" alt="Icon" width="20" height="20"/>
+                        <img src="src/injectables/dashboard/search/search.png" alt="Icon" width="20" height="20"/>
                         Boolean Search Tool
                     </button>
                     <button className="btnStyle sidebarBtn">
-                        <img src="bag.png" alt="Icon" width="20" height="20"/>
+                        <img src="src/injectables/dashboard/search/bag.png" alt="Icon" width="20" height="20"/>
                         Jobs List
                     </button>
                 </div>
