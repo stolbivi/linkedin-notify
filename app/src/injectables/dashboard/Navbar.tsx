@@ -3,6 +3,9 @@ import JobList from "./JobList";
 import Kanban from "./Kanban";
 import React from "react";
 import BooleanSearch from "./BooleanSearch";
+import peopleIcon from "./images/peopleicon.png";
+import searchIcon from "./images/search.png";
+import bagIcon from "./images/bag.png";
 
 const Navbar = () => {
     const jobListClickHandler = () => {
@@ -32,15 +35,15 @@ const Navbar = () => {
     return (
         <>
             <button className="btnStyle sidebarBtn" onClick={candidatesClickHandler}>
-                <img src={"images/peopleicon.png"} alt="Icon" width="20" height="20"/>
+                <img src={peopleIcon} alt="Icon" width="20" height="20"/>
                 Candidates
             </button>
             <button className="btnStyle sidebarBtn" onClick={booleanSearchClickHandler}>
-                <img src={"images/search.png"} alt="Icon" width="20" height="20"/>
+                <img src={searchIcon} alt="Icon" width="20" height="20"/>
                 Boolean Search Tool
             </button>
             <button className="btnStyle sidebarBtn" onClick={jobListClickHandler}>
-                <img src={"images/bag.png"} alt="Icon" width="20" height="20"/>
+                <img src={bagIcon} alt="Icon" width="20" height="20"/>
                 Jobs List
             </button>
         </>
