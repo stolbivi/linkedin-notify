@@ -8,6 +8,7 @@ import stylesheet from "./BooleanSearch.scss";
 import Navbar from "./Navbar";
 
 const BooleanSearch = () => {
+
     function translateToGoogleBooleanSearch(linkedinQuery: string) {
         const querySegments = linkedinQuery.match(/(\(.*?\))|(-\w+)|(\w+)/g);
         let googleQuery = "";
@@ -30,8 +31,6 @@ const BooleanSearch = () => {
 
         return googleQuery.trim();
     }
-
-
     function searchOnGoogle() {
         const googleFormattedQuery = document.getElementById("google-formatted-results").textContent;
         const googleUrl = "https://www.google.com/search";
@@ -39,7 +38,6 @@ const BooleanSearch = () => {
         const encodedQuery = encodeURIComponent(`${linkedinSite} ${googleFormattedQuery}`);
         window.open(`${googleUrl}?q=${encodedQuery}`, '_blank');
     }
-
     function formatResults() {
         const jobTitleInput = document.getElementById("job-title-input").value;
         const excludeJobTitleInput = document.getElementById("exclude-job-title-input").value;
@@ -63,7 +61,6 @@ const BooleanSearch = () => {
 
 
     }
-
     function formatSearchQuery(includeTitle, excludeTitle, includeCompany, excludeCompany, includeGeneral, excludeGeneral) {
         const formattedJobTitles = includeTitle || excludeTitle ? formatTitles("title", includeTitle, excludeTitle) : "";
         const formattedCompanies = includeCompany || excludeCompany ? formatTitles("company", includeCompany, excludeCompany) : "";
@@ -130,7 +127,6 @@ const BooleanSearch = () => {
 
         return formattedItems.replace(/,/g, ' ');
     }
-
     function searchOnLinkedin() {
         const formattedQuery = document.getElementById("formatted-results").textContent;
         const linkedinUrl = "https://www.linkedin.com/search/results/people/";
@@ -154,15 +150,21 @@ const BooleanSearch = () => {
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="body">
                 <Navbar/>
-                <div style={{width: "70rem"}}>
-                    <h1>Boolean Search Tool</h1>
-                    <h2>Filters</h2>
-                    <p>
+                <div style={{width: "100%"}}>
+                    <h1 className={"booleanText"}>Boolean Search Tool</h1>
+                    <h2 className={"filterText"}>Filters</h2>
+                    <p className={"descriptionText"}>
                         Need help building a candidate list on LinkedIn? We got you covered.
                         Just tell us what job titles, company names or keywords you're after
                         (or not after) in the fields below. Comma-separate them, and you're
                         good to go.
                     </p>
+                    <div className="jobs-selection">
+                        <select className="jobs-dropdown">
+                            <option>No jobs selected</option>
+                        </select>
+                        <button>AI Keyword Generator</button>
+                    </div>
                     <div className="queryContainers">
                         <label htmlFor="job-title-input">Job Titles to Include:</label>
                         <input
