@@ -35,7 +35,7 @@ export const NotesAndChartsFactory = () => {
             const section = document.querySelectorAll('section[data-member-id]');
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                    <NotesAndCharts/>
+                    <NotesAndCharts/>, "NotesAndCharts"
                 );
             }
         }
@@ -43,7 +43,7 @@ export const NotesAndChartsFactory = () => {
             const section = document.getElementsByClassName("scaffold-layout__list-detail msg__list-detail");
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                    <NotesAndCharts convId={"yes"}/>
+                    <NotesAndCharts convId={"yes"}/>, "NotesAndCharts"
                 );
             }
         }
@@ -62,7 +62,7 @@ export const NotesAndChartsFactory = () => {
                             const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                             const id = extractIdFromUrl(link);
                             inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
-                                <NotesAndCharts id={id}/>
+                                <NotesAndCharts id={id}/>, "NotesAndCharts"
                             );
                         }
                     }

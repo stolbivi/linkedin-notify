@@ -23,7 +23,7 @@ export const LastViewedFactory = () => {
             let parent = badgeWrap[0].parentElement.parentElement.parentElement;
             parent.style.position = "relative";
             injectLastChild(parent, "lnm-last-viewed",
-                <LastViewed/>
+                <LastViewed/>, "LastViewed"
             );
         }
     }

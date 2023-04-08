@@ -17,7 +17,7 @@ export const SalaryPillFactory = () => {
             const actions = profileActions[0].getElementsByClassName("pvs-profile-actions");
             if (actions && actions.length > 0) {
                 inject(actions[0], "lnm-salary", "after",
-                    <SalaryPill showSalary={true}/>
+                    <SalaryPill showSalary={true}/>, "Salary"
                 );
             }
         }
@@ -35,7 +35,7 @@ export const SalaryPillFactory = () => {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
                         inject(lastChild, `lnm-salary-${index}`, "before",
-                            <SalaryPill url={link} id={id}/>);
+                            <SalaryPill url={link} id={id}/>, "Salary");
                     }
                 }
             })

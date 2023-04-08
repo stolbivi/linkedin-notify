@@ -20,7 +20,7 @@ export const MapsFactory = () => {
             const receiver = profileBackground[0] as HTMLElement;
             const lastChild = receiver.lastChild;
             inject(lastChild, TAG, "after",
-                <Maps host={receiver}/>,
+                <Maps host={receiver}/>, "Maps"
             );
         }
     }

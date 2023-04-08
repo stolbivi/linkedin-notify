@@ -17,7 +17,7 @@ export const TimeZoneFactory = () => {
     if (window.location.href.indexOf("/messaging/") > 0) {
         const timeWrap = document.getElementsByClassName("artdeco-entity-lockup__image artdeco-entity-lockup__image--type-circle ember-view");
         if (timeWrap && timeWrap.length > 0) {
-                injectLastChild(timeWrap[0], "lnm-time-zone", <TimeZone/>);
+                injectLastChild(timeWrap[0], "lnm-time-zone", <TimeZone/>, "TimeZone");
         }
     }
 }

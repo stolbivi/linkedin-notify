@@ -36,7 +36,9 @@ import {
     showNotesAndCharts,
     switchThemeRequest,
     unlock,
-    postReply
+    postReply,
+    getProfileByUrn,
+    getCompanyByUrn
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -105,6 +107,8 @@ messagesV2.listen(setLastViewed);
 messagesV2.listen(getTheme);
 messagesV2.listen(setTheme);
 messagesV2.listen(postReply);
+messagesV2.listen(getProfileByUrn);
+messagesV2.listen(getCompanyByUrn);
 
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
@@ -270,4 +274,21 @@ chrome.cookies.onChanged.addListener((changeInfo) => {
             });
         });
     }
+});
+
+const visitedUrls: string[] = [];
+chrome.history.onVisited.addListener((historyItem) => {
+    let isInitialLoad = !visitedUrls.includes(historyItem.url);
+    chrome.tabs.query({ active: true }, (tabs) => {
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            func: function (isInitialLoad) {
+                window.postMessage({ type: "modifyElements" , initialLoad: isInitialLoad }, "*");
+            },
+            args: [isInitialLoad],
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+    visitedUrls.push(historyItem.url);
 });

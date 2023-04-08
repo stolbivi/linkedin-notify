@@ -18,7 +18,7 @@ export const CompletionFactory = () => {
         const actions = modalElement.getElementsByClassName("share-box_actions");
         if (actions && actions.length > 0) {
             inject(actions[0], "lnm-completion", "before",
-                <Completion/>
+                <Completion/>,"Completion"
             );
         }
     }

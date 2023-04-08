@@ -530,17 +530,36 @@ export class LinkedInAPI {
         if (vectorImage?.length > 0) {
             const artifacts = extractArtifacts(vectorImage[0].artifacts);
             const rootUrl = vectorImage[0].rootUrl;
-            result = {...result, profilePicture: {rootUrl, artifacts}}
+            result = {...result, profilePicture: {rootUrl, artifacts}, id}
         }
         return result;
     }
+
+    public extractCompany(id: string, response: any): any {
+        let name: any[] = [];
+        let profilePicture = undefined;
+        if (response && response.elements) {
+            const company = response.elements[0];
+            if (company) {
+                name = Array(company.name);
+                const artifacts = extractArtifacts(company.logo.image["com.linkedin.common.VectorImage"].artifacts);
+                const rootUrl = company.logo.image["com.linkedin.common.VectorImage"].rootUrl;
+                profilePicture = {rootUrl, artifacts};
+            }
+        }
+        return {id, name, profilePicture};
+    }
+
 
     public getProfile(token: string, id: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.22e7cccbd773ceef5ed7c2c9d195473a`,
             this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
             .then(response => response.json());
     }
-
+    public getCompanyDetails(token: string, urn: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `organization/companies?decorationId=com.linkedin.voyager.deco.organization.web.WebFullCompanyMain-12&q=universalName&universalName=${urn}`, this.getRequest(token))
+            .then(response => response.json());
+    }
     private getRequest(token: string, headers?: any): any {
         let defaultHeaders = {
             "accept": "application/graphql",

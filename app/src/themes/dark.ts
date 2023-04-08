@@ -132,5 +132,6 @@ export const theme: Theme = {
     "--reply-text-container-color": "#2D3338",
     "--reply-text-area-caret-color": "#a9b1b8",
     "--ln-dashboard-menu-icon-color": "#bcbdbe",
-    "--ln-dashboard-menu-icon-color-hover": "#FFFFFF"
+    "--ln-dashboard-menu-icon-color-hover": "#FFFFFF",
+    "--settings-icon-color": "#FFFFFF"
 }

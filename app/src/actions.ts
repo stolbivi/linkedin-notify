@@ -241,6 +241,21 @@ async function extendNote(token: string, notes: Note[], as: string): Promise<Not
     }));
 }
 
+export const getProfileByUrn = createAction<string, any>("getProfileByUrn",
+    (urn) => getCookies(LINKEDIN_DOMAIN)
+        .then(async cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const profile= await api.getProfile(token,urn);
+            return api.extractProfile(urn, profile);
+        }));
+export const getCompanyByUrn = createAction<string, any>("getCompanyByUrn",
+    (urn) => getCookies(LINKEDIN_DOMAIN)
+        .then(async cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const resp = await api.getCompanyDetails(token,urn);
+            return api.extractCompany(urn, resp);
+        }));
+
 export interface SetStagePayload {
     id: string
     stage: StageEnum

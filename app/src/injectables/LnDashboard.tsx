@@ -16,7 +16,7 @@ export const LnDashboardFactory = () => {
     const header = document.getElementsByClassName("global-nav__primary-items");
     if (header && header.length > 0) {
         injectFirstChild(header[0], "lnm-dashboard",
-            <LnDashboard/>
+            <LnDashboard/>, "LnDashboard"
         );
     }
 }

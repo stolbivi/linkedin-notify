@@ -44,7 +44,7 @@ export const AutoFeatureFactory = () => {
                                 <div style={{paddingLeft: "0.25em", display: "flex"}}>
                                     <AutoFeature url={url} type={"like"}/>
                                     <AutoFeature url={url} type={"repost"}/>
-                                </div>
+                                </div>, "AutoFeature"
                             );
                         }
                     }

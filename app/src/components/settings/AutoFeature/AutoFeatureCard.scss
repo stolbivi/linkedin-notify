@@ -1,0 +1,40 @@
+@import "./src/themes/primary";
+@import "./src/components/BaseCard";
+
+.notification-card {
+  @extend .base-card;
+  cursor: pointer;
+  padding-bottom: 10px;
+  padding-top: 16px;
+
+  .card-message {
+    margin: 1em;
+    margin-bottom: 0px;
+  }
+}
+.no-data {
+  width: 100%;
+  padding: 4em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $reply-text-area-caret-color;
+}
+
+.auto-feature-text {
+  color: $reply-text-area-caret-color;
+}
+
+.switch-color {
+  height: 22px !important;
+  width: 47px !important;
+  background-color: white;
+}
+.switch-color:checked {
+  height: 22px !important;
+  width: 47px !important;
+  color: green;
+  background-color: green;
+  border-color: green;
+  outline-color: green;
+}

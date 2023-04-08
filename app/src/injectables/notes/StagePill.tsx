@@ -20,7 +20,7 @@ export const StagePillFactory = () => {
                 header[0].parentElement.style.display = "flex";
                 header[0].style.paddingRight = "0.5em";
                 injectLastChild(header[0].parentElement, "lnm-stage",
-                    <StagePill url={window.location.href}/>
+                    <StagePill url={window.location.href}/>, "StagePill"
                 );
             }
         }
@@ -33,7 +33,7 @@ export const StagePillFactory = () => {
                 if (nameHeader && nameHeader.length > 0) {
                     (nameHeader[0].parentElement as HTMLElement).style.paddingRight = "0.5em";
                     injectLastChild(nameHeader[0].parentElement, "lnm-stage",
-                        <StagePill convUrl={window.location.href}/>
+                        <StagePill convUrl={window.location.href}/>, "StagePill"
                     );
                 }
             }

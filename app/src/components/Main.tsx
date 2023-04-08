@@ -13,7 +13,10 @@ import {ThemeSwitch} from "./ThemeSwitch";
 import {theme as LightTheme} from "../themes/light";
 import {theme as DarkTheme} from "../themes/dark";
 import {applyThemeProperties, getThemeCookie, listenToThemeCookie} from "../themes/ThemeUtils";
-import {Settings} from "./Settings";
+import {Settings} from "./settings/Settings";
+import {SettingTabs, SettingTabTypes} from "./settings/SettingTabs";
+import ProFeaturesList from "./settings/ProFeatures/ProFeaturesList";
+import AutoFeaturesList from "./settings/AutoFeature/AutoFeaturesList";
 
 type Props = {};
 
@@ -25,6 +28,7 @@ export const Main: React.FC<Props> = ({}) => {
     const [badges, setBadges] = useState({} as Badges);
     const [isLogged, setIsLogged] = useState(false);
     const [tab, setTab] = useState(0);
+    const [settingTabs, setSettingTabs] = useState(0);
 
     const rootElement = useRef<HTMLDivElement>();
 
@@ -62,22 +66,31 @@ export const Main: React.FC<Props> = ({}) => {
                                 <div className="title">
                                     <div className="logo"><Logo/></div>
                                     <span>LinkedIn Manager</span>
-                                    <Settings/>
+                                    <Settings setSettingTabs={setSettingTabs}/>
                                     <div className="switch"><ThemeSwitch light={light} setLight={setLight}/></div>
                                 </div>
                             </div>
-                            <Tabs onTab={setTab} badges={badges}/>
+                            {
+                                settingTabs ? (
+                                    <SettingTabs onTab={setTab}/>
+                                ) : (
+                                    <Tabs onTab={setTab} badges={badges}/>
+                                )
+                            }
                         </div>
                         <div className="scroll">
-                            {
-                                tab === TabTypes.MyNetwork && <Invitations/>
-                            }
-                            {
-                                tab === TabTypes.Messages && <Conversations setBadges={setBadges}/>
-                            }
-                            {
-                                tab === TabTypes.Notifications && <Notifications setBadges={setBadges}/>
-                            }
+                            {settingTabs ? (
+                                <>
+                                    {tab === SettingTabTypes.ProFeatures && <ProFeaturesList />}
+                                    {tab === SettingTabTypes.AutoFeatures && <AutoFeaturesList />}
+                                </>
+                            ) : (
+                                <>
+                                    {tab === TabTypes.MyNetwork && <Invitations />}
+                                    {tab === TabTypes.Messages && <Conversations setBadges={setBadges} />}
+                                    {tab === TabTypes.Notifications && <Notifications setBadges={setBadges} />}
+                                </>
+                            )}
                         </div>
                     </div>
                 }
