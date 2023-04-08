@@ -13,8 +13,6 @@ import {LastViewedFactory} from "./injectables/LastViewed";
 import {TimeZoneFactory} from "./injectables/TimeZone";
 import {LnDashboardFactory} from "./injectables/LnDashboard";
 import {unmountComponent} from "./utils/InjectHelper";
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 
 console.debug('LinkedIn Manager extension engaged');
 
