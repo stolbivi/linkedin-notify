@@ -409,7 +409,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             <label>Track Candidates</label>
                                             <div className="assigned-job">
                                                 <p>Assigned Job: </p>
-                                                <select className="assigned-job-dropdown">
+                                                <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
                                                     <option>Enter Job Name</option>
                                                 </select>
                                             </div>

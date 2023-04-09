@@ -6,6 +6,7 @@ import BooleanSearch from "./BooleanSearch";
 import peopleIcon from "./images/peopleicon.png";
 import searchIcon from "./images/search.png";
 import bagIcon from "./images/bag.png";
+import stylesheet from "./Navbar.scss"
 
 const Navbar = () => {
     const [isJobListClicked, setIsJobListClicked] = useState(false);
@@ -53,7 +54,8 @@ const Navbar = () => {
 
     return (
         <>
-            <div className="lnm-dashboard-navbar" style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
+            <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
+            <div className="lnm-dashboard-navbar">
                 <button className={`navbarBtn ${isCandidatesClicked ? 'clicked' : ''}`} onClick={candidatesClickHandler}>
                     <img src={peopleIcon} alt="Icon" width="20" height="20"/>
                     Candidates
