@@ -25,9 +25,9 @@ export const columnsSlice = createSlice({
 
       const cardId = action.payload
 
-      const column = state.columns.find(item => item.id === IStatus.BACKLOG)
+      const column = state.columns.find(item => item.id === IStatus.AVAILABILITY)
   
-      const columns = state.columns.filter(item => item.id !== IStatus.BACKLOG)
+      const columns = state.columns.filter(item => item.id !== IStatus.AVAILABILITY)
 
       if(column) {
         const updatedColumn = {

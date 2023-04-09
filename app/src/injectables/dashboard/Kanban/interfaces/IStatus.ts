@@ -1,9 +1,9 @@
 enum IStatus {
-  BACKLOG = 'Backlog',
-  TO_DO = 'To do',
-  DOING = 'Doing',
-  IN_REVIEW = 'In Review',
-  DONE = 'Done'
+  AVAILABILITY = 'Availability',
+  STATUS = 'Status',
+  TYPE = 'Type',
+  GEOGRAPHY = 'Geography',
+  GROUPS = 'Groups'
 } 
 
 export default IStatus;

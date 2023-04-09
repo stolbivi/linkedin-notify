@@ -42,7 +42,6 @@ export const Header = styled.div`
   flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 0 10rem;
 
   @media(max-width: ${SCREEN_BREAKPOINTS.EXTRA_LARGE}px) {
     flex-direction: column;

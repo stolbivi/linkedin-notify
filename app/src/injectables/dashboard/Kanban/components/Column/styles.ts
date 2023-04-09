@@ -9,7 +9,7 @@ export const Container = styled.div<ContainerProps>`
   width: 300px;
 
   ${({ isFirstColumn }) => isFirstColumn && `
-    margin-left: 10rem;
+    
   `}
 
   @media(max-width: ${SCREEN_BREAKPOINTS.EXTRA_LARGE}px) {

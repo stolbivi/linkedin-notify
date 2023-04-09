@@ -130,47 +130,14 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ toggleTheme }) => {
   useEffect(() => {
     dispatch(filterCards({categories: selectedCategories}))
   }, [selectedCategories])
-  
-  
+
+
   return (
     <>
       <Container>
         <Header>
-          <TitleAndSwitch>
-            <h1>Kanban <span>Board</span></h1>
-            <Switch
-              onChange={toggleTheme}
-              checked={title === 'light'}
-              checkedIcon={<Sun/>}
-              uncheckedIcon={ <Moon/>}
-              onColor={colors.primary}
-              offColor={colors.switch}
-            />
-          </TitleAndSwitch>
-          <SearchAndFilters>
-            <SearchInput/>
-            <FiltersContainer>
-              {Object.values(ICategory).map(category => (
-                <LabelContainer 
-                  key={category}
-                  color={() => getCategoryBackgroundColor(theme, category)}
-                  onClick={() => handleChangeCheckbox(category)}
-                >
-                  <input 
-                    type='checkbox' 
-                    name={category} 
-                    value={category}
-                    checked={selectedCategories.includes(category)} 
-                    onChange={() => handleChangeCheckbox(category)}
-                  />
-                  <label>{category}</label>
-                </LabelContainer>
-              ))}
-          </FiltersContainer>
-          </SearchAndFilters>
-          
+            <h1>Candidates</h1>
         </Header>
-        
         <StatusesColumnsContainer>
           <DragDropContext onDragEnd={onDragEnd}>
             {columns.map((column, index) => {
@@ -181,12 +148,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ toggleTheme }) => {
                 const foundedCard = cards.find(card => card.id === cardId);
                 if (foundedCard) cardsArray.push(foundedCard);
               })
-            
+
               return (
-                <Column 
-                  key={column.id} 
+                <Column
+                  key={column.id}
                   index={index}
-                  status={column.id} 
+                  status={column.id}
                   cards={cardsArray}
                 />
             )})}

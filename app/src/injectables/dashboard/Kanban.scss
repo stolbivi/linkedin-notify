@@ -1,0 +1,36 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+.body {
+  background-color: #f9f2f28c;
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  width: 1200px;
+  margin: auto;
+  padding: 20px;
+  padding-right: 100px;
+  padding-top: 40px;
+}
+
+.navbarBtn {
+  height: 37px;
+  width: 200px;
+  left: 0px;
+  top: 0px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  color: #383637;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 176.4%;
+  margin-left: 0px;
+  margin-right: 14px;
+  margin-top: 10px;
+}
+
+.navbarBtn.clicked {
+  background-color: #FFFFFF;
+}
+
