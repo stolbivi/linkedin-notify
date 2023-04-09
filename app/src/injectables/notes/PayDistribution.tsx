@@ -5,6 +5,7 @@ import "./PayDistribution.scss";
 
 type Props = {
     salary: Salary;
+    editable: boolean;
 };
 
 interface Sample {
@@ -18,8 +19,7 @@ interface Distribution {
     right: Sample;
 }
 
-export const PayDistribution: React.FC<Props> = ({ salary }) => {
-    const [isEditable, setIsEditable] = useState<boolean>(false);
+export const PayDistribution: React.FC<Props> = ({ salary , editable}) => {
     const [distribution, setDistribution] = useState<Distribution>({
         left: {percent: 10, value: ""},
         middle: {percent: 80, value: ""},
@@ -30,8 +30,6 @@ export const PayDistribution: React.FC<Props> = ({ salary }) => {
         percent && percent.toFixed(0) + "%";
 
     useEffect(() => {
-        console.log("Salary: ", salary);
-
         function formatValue(value: number) {
             return `${salary.symbol}${Number(value / 1000).toFixed(0)}K`;
         }
@@ -60,12 +58,9 @@ export const PayDistribution: React.FC<Props> = ({ salary }) => {
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
         const newDistribution = {...distribution};
+        // @ts-ignore
         newDistribution[key].value = event.target.value;
         setDistribution(newDistribution);
-    };
-
-    const handleEdit = () => {
-        setIsEditable(!isEditable);
     };
 
     return (
@@ -73,15 +68,15 @@ export const PayDistribution: React.FC<Props> = ({ salary }) => {
             <div className="bar-container">
                 <div className="bar-left" style={{width: distribution?.left?.percent + "%"}}>
                     <React.Fragment>
-                        {isEditable ? (
-                                <input
-                                    className="input-field"
-                                    type="text"
-                                    value={distribution?.left?.value}
-                                    onChange={(e) => handleChange(e, "left")}
-                                />
+                        {editable ? (
+                            <input
+                                className="input-field"
+                                type="text"
+                                value={distribution?.left?.value}
+                                onChange={(e) => handleChange(e, "left")}
+                            />
                         ) : (
-                                <span>{distribution?.left?.value}</span>
+                            <span>{distribution?.left?.value}</span>
                         )}
                         <span>{formatPercent(10)}</span>
                         <div className="bar-line"/>
@@ -89,7 +84,7 @@ export const PayDistribution: React.FC<Props> = ({ salary }) => {
                 </div>
                 <div className="bar-middle">
                     <React.Fragment>
-                        {isEditable ? (
+                        {editable ? (
                             <input
                                 className="input-field"
                                 type="text"
@@ -105,7 +100,7 @@ export const PayDistribution: React.FC<Props> = ({ salary }) => {
                 </div>
                 <div className="bar-right" style={{width: distribution?.right?.percent + "%"}}>
                     <React.Fragment>
-                        {isEditable ? (
+                        {editable ? (
                             <input
                                 className="input-field"
                                 type="text"
@@ -119,8 +114,8 @@ export const PayDistribution: React.FC<Props> = ({ salary }) => {
                         <div className="bar-line"/>
                     </React.Fragment>
                 </div>
+
             </div>
-            <button onClick={handleEdit}>{isEditable ? "Save" : "Edit"}</button>
         </React.Fragment>
     );
 }

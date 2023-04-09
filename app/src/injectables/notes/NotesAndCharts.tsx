@@ -151,9 +151,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
     const lastNoteRef = useRef();
-    const [stageParents] = useState([...stageParentsData])
-    const [customStages, setCustomStages] = useState<UserStage[]>([])
-    const [activeStageParent, setActiveStageParent] = useState<StageParentData>(StageParentData.AVAILABILITY)
+    const [stageParents] = useState([...stageParentsData]);
+    const [customStages, setCustomStages] = useState<UserStage[]>([]);
+    const [activeStageParent, setActiveStageParent] = useState<StageParentData>(StageParentData.AVAILABILITY);
+    const [editButton, setEditButton] = useState(false);
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -339,11 +340,14 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
 
     useEffect(() => console.log(customStages), [customStages])
 
-    function editOnClick(event: React.MouseEvent<SVGSVGElement>) {
+    const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
         event.stopPropagation();
-        alert("OK");
+        setEditButton(!editButton);
     }
 
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
     return (
         <React.Fragment>
             {show &&
@@ -376,9 +380,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                         <div data-role={CollapsibleRole.Static}>
                                             <div className="d-flex">
                                                 <section className="label-section">
-                                                    <div
-                                                        className="label-salary">{salaryInternal && getSalaryValue(salaryInternal)} year
-                                                    </div>
+                                                    {
+                                                        editButton?(<input className="label-salary" placeholder={salaryInternal && getSalaryValue(salaryInternal)}></input>)
+                                                            :(<div className="label-salary">{salaryInternal && getSalaryValue(salaryInternal)} year</div>)
+                                                    }
                                                     <div className="label-position">
                                                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
                                                              xmlns="http://www.w3.org/2000/svg">
@@ -393,7 +398,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                     </div>
                                                 </section>
                                                 <section className="chart-section">
-                                                    {salaryInternal && <PayDistribution salary={salaryInternal}/>}
+                                                    {salaryInternal && <PayDistribution salary={salaryInternal} editable={editButton}/>}
                                                 </section>
                                             </div>
                                         </div>
