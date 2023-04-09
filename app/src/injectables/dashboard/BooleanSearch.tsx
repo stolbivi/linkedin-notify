@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-
 import React, {useEffect} from "react";
 // @ts-ignore
 import stylesheet from "./BooleanSearch.scss";
-import Navbar from "./Navbar";
 
 const BooleanSearch = () => {
 
@@ -149,7 +147,6 @@ const BooleanSearch = () => {
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="body">
-                <Navbar/>
                 <div style={{width: "100%"}}>
                     <h1 className={"booleanText"}>Boolean Search Tool</h1>
                     <h2 className={"filterText"}>Filters</h2>

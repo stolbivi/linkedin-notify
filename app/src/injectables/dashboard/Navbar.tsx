@@ -10,10 +10,10 @@ import bagIcon from "./images/bag.png";
 const Navbar = () => {
     const [isJobListClicked, setIsJobListClicked] = useState(false);
     const [isCandidatesClicked, setIsCandidatesClicked] = useState(false);
-    const [isBooleanSearchClicked, setIsBooleanSearchClicked] = useState(false);
+    const [isBooleanSearchClicked, setIsBooleanSearchClicked] = useState(true);
 
     const jobListClickHandler = () => {
-        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow') as HTMLElement;
+        const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
         if (targetElement) {
             targetElement.style.width = 'auto';
             ReactDOM.render(<JobList />, targetElement);
@@ -26,7 +26,7 @@ const Navbar = () => {
     }
 
     const candidatesClickHandler = () => {
-        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow') as HTMLElement;
+        const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
         if (targetElement) {
             targetElement.style.width = 'auto';
             ReactDOM.render(<Kanban />, targetElement);
@@ -39,7 +39,7 @@ const Navbar = () => {
     }
 
     const booleanSearchClickHandler = () => {
-        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow') as HTMLElement;
+        const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
         if (targetElement) {
             targetElement.style.width = 'auto';
             ReactDOM.render(<BooleanSearch />, targetElement);
@@ -53,18 +53,21 @@ const Navbar = () => {
 
     return (
         <>
-            <button className={`navbarBtn ${isCandidatesClicked ? 'clicked' : ''}`} onClick={candidatesClickHandler}>
-                <img src={peopleIcon} alt="Icon" width="20" height="20"/>
-                Candidates
-            </button>
-            <button className={`navbarBtn ${isBooleanSearchClicked ? 'clicked' : ''}`} onClick={booleanSearchClickHandler}>
-                <img src={searchIcon} alt="Icon" width="20" height="20"/>
-                Boolean Search Tool
-            </button>
-            <button className={`navbarBtn ${isJobListClicked ? 'clicked' : ''}`} onClick={jobListClickHandler}>
-                <img src={bagIcon} alt="Icon" width="20" height="20"/>
-                Jobs List
-            </button>
+            <div className="lnm-dashboard-navbar" style={{ display: "flex", justifyContent: "center", alignItems: "center"}}>
+                <button className={`navbarBtn ${isCandidatesClicked ? 'clicked' : ''}`} onClick={candidatesClickHandler}>
+                    <img src={peopleIcon} alt="Icon" width="20" height="20"/>
+                    Candidates
+                </button>
+                <button className={`navbarBtn ${isBooleanSearchClicked ? 'clicked' : ''}`} onClick={booleanSearchClickHandler}>
+                    <img src={searchIcon} alt="Icon" width="20" height="20"/>
+                    Boolean Search Tool
+                </button>
+                <button className={`navbarBtn ${isJobListClicked ? 'clicked' : ''}`} onClick={jobListClickHandler}>
+                    <img src={bagIcon} alt="Icon" width="20" height="20"/>
+                    Jobs List
+                </button>
+            </div>
+            <div className="lnm-dashboard-content"/>
         </>
     )
 }

@@ -11,6 +11,7 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../themes/dark";
 import ReactDOM from "react-dom";
 import BooleanSearch from "./dashboard/BooleanSearch";
+import Navbar from "./dashboard/Navbar";
 
 export const LnDashboardFactory = () => {
     const header = document.getElementsByClassName("global-nav__primary-items");
@@ -40,11 +41,18 @@ export const LnDashboard: React.FC<Props> = ({}) => {
             }));
     }, []);
     const dashboardClickHandler = () => {
-        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow');
-        if (targetElement) {
-            ReactDOM.render(<BooleanSearch />, targetElement);
+        const navBarElement = document.querySelector('.scaffold-layout.scaffold-layout--breakpoint-xl');
+        if (navBarElement) {
+            ReactDOM.render(<Navbar/>, navBarElement);
+            const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
+            if (targetElement) {
+                targetElement.style.width = 'auto';
+                ReactDOM.render(<BooleanSearch />, targetElement);
+            } else {
+                console.warn('Target element not found.');
+            }
         } else {
-            console.warn('Target element not found.');
+            console.warn('Navbar element not found.');
         }
     }
     return (

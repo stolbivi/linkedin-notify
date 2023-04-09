@@ -1,5 +1,4 @@
 import React from "react";
-import Navbar from "./Navbar";
 // @ts-ignore
 import stylesheet from "./JobsList.scss";
 const JobList = () => {
@@ -7,7 +6,6 @@ const JobList = () => {
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="body">
-                <Navbar/>
                 <div style={{marginTop: "10px"}}>
                     <h1 className={"booleanText"}>Jobs List</h1>
                     <div className="search-box">

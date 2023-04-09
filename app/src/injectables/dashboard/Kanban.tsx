@@ -1,5 +1,4 @@
 import React from "react";
-import Navbar from "./Navbar";
 // @ts-ignore
 import stylesheet from "./Kanban.scss";
 import { useState } from 'react';
@@ -23,7 +22,6 @@ const Kanban = () => {
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="body">
-                <Navbar/>
                 <Provider store={store}>
                     <ThemeProvider theme={theme}>
                         <ModalProvider>
