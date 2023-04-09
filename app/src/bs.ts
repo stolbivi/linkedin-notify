@@ -5,11 +5,13 @@ import {BackendAPI} from "./services/BackendAPI";
 import {
     completion,
     conversationAck,
+    createCustomStage,
     getBadges,
     getConversationDetails,
     getConversationProfile,
     getConversations,
     getCookies,
+    getCustomStages,
     getFeatures,
     getInvitations,
     getIsLogged,
@@ -109,6 +111,8 @@ messagesV2.listen(setTheme);
 messagesV2.listen(postReply);
 messagesV2.listen(getProfileByUrn);
 messagesV2.listen(getCompanyByUrn);
+messagesV2.listen(getCustomStages);
+messagesV2.listen(createCustomStage);
 
 // listening to cookies store events
 listenToThemeCookie((cookie) => {

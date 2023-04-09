@@ -46,6 +46,13 @@ export interface Features {
     updatedAt: string
 }
 
+export interface UserStage {
+    text: string;
+    userId: string;
+    id?: string;
+    stageId: number;
+}
+
 export interface Note {
     id?: string
     profile: string
@@ -55,6 +62,7 @@ export interface Note {
     stageTo?: number
     createdAt?: string
     updatedAt?: string
+    stageText?: string
 }
 
 export interface NoteExtended extends Note {

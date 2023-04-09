@@ -1,11 +1,11 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {FormEvent, useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {getSalaryValue, Salary} from "../SalaryPill";
 import {PayDistribution} from "./PayDistribution";
-import {StageEnum, StageSwitch} from "./StageSwitch";
+import {StageEnum, StageLabels, StageSwitch} from "./StageSwitch";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {extractIdFromUrl, NoteExtended, VERBOSE} from "../../global";
+import {extractIdFromUrl, NoteExtended, UserStage, VERBOSE} from "../../global";
 import {inject} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
@@ -14,7 +14,9 @@ import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
+    createCustomStage,
     getConversationProfile,
+    getCustomStages,
     getNotesByProfile,
     getSalary,
     getStages,
@@ -27,6 +29,9 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import stylesheet from "./NotesAndCharts.scss";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
+import UpChevron from "../../icons/UpChevron";
+import DownChevron from "../../icons/DownChevron";
+// import { useCustomStages } from "../../hooks/customStages";
 
 export const NotesAndChartsFactory = () => {
     setTimeout(() => {
@@ -76,11 +81,60 @@ type Props = {
     stage?: StageEnum
     salary?: Salary
     id?: string
-    convId?:string
+    convId?: string
 };
 
+export enum StageParentData {
+    AVAILABILITY = "Availability",
+    GEOGRAPHY = "Geography",
+    STATUS = "Status",
+    TYPE = "Type",
+    TAG = "Tag"
+}
 
-export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
+export const stageParentsData = [
+    {name: StageParentData.AVAILABILITY},
+    {name: StageParentData.GEOGRAPHY},
+    {name: StageParentData.STATUS},
+    {name: StageParentData.TYPE},
+    {name: StageParentData.TAG}
+]
+
+export const stageChildData = {
+    [StageParentData.AVAILABILITY]: [
+        {name: StageEnum.Not_Looking_Currently},
+        {name: StageEnum.Open_To_New_Offers},
+        {name: StageEnum.Passive_Candidate},
+        {name: StageEnum.Actively_Looking},
+        {name: StageEnum.Future_Interest}
+    ],
+    [StageParentData.GEOGRAPHY]: [
+        {name: StageEnum.Relocation},
+        {name: StageEnum.Commute},
+        {name: StageEnum.Hybrid},
+        {name: StageEnum.Remote}
+    ],
+    [StageParentData.STATUS]: [
+        {name: StageEnum.Contacted},
+        {name: StageEnum.Pending_Response},
+        {name: StageEnum.Interview_Scheduled},
+        {name: StageEnum.Offer_Extended},
+        {name: StageEnum.Hired},
+        {name: StageEnum.Rejected}
+    ],
+    [StageParentData.TYPE]: [
+        {name: StageEnum.Part_Time},
+        {name: StageEnum.Full_Time},
+        {name: StageEnum.Permanent},
+        {name: StageEnum.Contract},
+        {name: StageEnum.Freelance}
+    ],
+    [StageParentData.TAG]: [
+        {name: StageEnum.Commute}
+    ]
+}
+
+export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => {
 
     const MAX_LENGTH = 200;
 
@@ -97,15 +151,19 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
     const lastNoteRef = useRef();
+    const [stageParents] = useState([...stageParentsData])
+    const [customStages, setCustomStages] = useState<UserStage[]>([])
+    const [activeStageParent, setActiveStageParent] = useState<StageParentData>(StageParentData.AVAILABILITY)
 
     const messages = new MessagesV2(VERBOSE);
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
     useEffect(() => {
-        window.addEventListener('popstate', () => {
+        const listener = () => {
             setShow(false);
-        });
+        }
+        window.addEventListener('popstate', listener);
         messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
             (payload) => {
                 if (id && payload?.id !== id) {
@@ -118,10 +176,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
             }));
         // getting data
         setCompleted(false);
-        if(convId) {
+        if (convId) {
             messages.request(getConversationProfile(extractIdFromUrl(window.location.href)))
-                .then((r:any) => {
-                    const entityUrns = r.participants.map((participant:any) => {
+                .then((r: any) => {
+                    const entityUrns = r.participants.map((participant: any) => {
                         return participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3];
                     });
                     messages.request(getSalary(entityUrns[0]))
@@ -152,11 +210,14 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
                 const notesPromise = messages.request(getNotesByProfile(salary.urn))
                     .then((r) => setNotes(r.response))
                     .catch(e => console.error(e.error));
-                Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
+                const customStagePromise = messages.request(getCustomStages())
+                    .then((r) => setCustomStages(r))
+                    .catch(e => console.error(e.error));
+                Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
             }).catch(e => console.error(e.error));
         }
-
-    }, []);
+        return () => window.removeEventListener('popstate', listener)
+    }, [window.location.href]);
 
     useEffect(() => {
         if (show) {
@@ -171,11 +232,18 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
         setPostAllowed(text && text.value.length > 0);
     }, [text]);
 
+    useEffect(() => console.log('custom-stages', customStages), [customStages])
+
     const appendNote = (note: NoteExtended) => {
         setNotes([...notes, note]);
         setTimeout(() => {
             // @ts-ignore
-            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
+            lastNoteRef?.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+                inline: 'nearest',
+                marginBottom: 50
+            });
         }, 200);
     }
 
@@ -193,7 +261,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
                         appendNote(r.note.response);
                         setTimeout(() => {
                             // @ts-ignore
-                            lastNoteRef?.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest', marginBottom: 50  });
+                            lastNoteRef?.current?.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'end',
+                                inline: 'nearest',
+                                marginBottom: 50
+                            });
                         }, 200);
                     }
                     setEditable(true);
@@ -220,6 +293,51 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
     const onExpanded = () => {
         setShowChart(true);
     }
+
+    const getStage = (stage: number) => {
+        if (stage < 0) {
+            return <div className={"stage inactive"}><label>No stage</label></div>
+        }
+        return <div className={"stage " + StageLabels[stage].class}>
+            <label>{StageLabels[stage].label}</label>
+        </div>
+    }
+
+    const CreateNewGroup = () => {
+        const [isCreating, setIsCreating] = useState(false)
+        const [customName, setCustomName] = useState('')
+        const [loading, setLoading] = useState(false)
+
+        const handleCustomTagSubmit = async (e: FormEvent) => {
+            e.preventDefault();
+            if (customName === '') return;
+            setLoading(true)
+            messages.request(createCustomStage({text: customName}))
+                .then((r) => {
+                    let temp = [...customStages]
+                    const {stageId, text, userId, id} = r
+                    temp.push({stageId, text, userId, id})
+                    console.log(temp)
+                    setCustomStages(temp)
+                })
+                .catch(err => console.error(err))
+                .finally(() => setLoading(false))
+        }
+
+        return (
+            <React.Fragment>
+                {loading ? <>loading...</> : <div onClick={!isCreating ? () => setIsCreating(true) : undefined}
+                                                  className={`create-new-group-wrapper ${isCreating ? "is-creating" : ""}`}>
+                    {isCreating ? <form onSubmit={handleCustomTagSubmit}><input value={customName}
+                                                                                onChange={e => setCustomName(e.currentTarget.value)}
+                                                                                placeholder='Enter New Group Here'/>
+                    </form> : '+ Create New Group'}
+                </div>}
+            </React.Fragment>
+        )
+    }
+
+    useEffect(() => console.log(customStages), [customStages])
 
     return (
         <React.Fragment>
@@ -273,64 +391,81 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id,convId}) => {
                                     </Collapsible>
                                 )}
                                 {showNotes && salaryInternal &&
-                                    <div className="stage-container">
-                                        <span>Pick a stage</span>
-                                        <div className="stages">
-                                            <StageSwitch type={StageEnum.Interested} activeStage={stageInternal}
-                                                         setStage={setStageInternal}
-                                                         id={salaryInternal.urn} appendNote={appendNote}/>
-                                            <StageSwitch type={StageEnum.NotInterested} activeStage={stageInternal}
-                                                         setStage={setStageInternal}
-                                                         id={salaryInternal.urn} appendNote={appendNote}/>
-                                            <StageSwitch type={StageEnum.Interviewing} activeStage={stageInternal}
-                                                         setStage={setStageInternal}
-                                                         id={salaryInternal.urn} appendNote={appendNote}/>
-                                            <StageSwitch type={StageEnum.FailedInterview} activeStage={stageInternal}
-                                                         setStage={setStageInternal} id={salaryInternal.urn}
-                                                         appendNote={appendNote}/>
-                                            <StageSwitch type={StageEnum.Hired} activeStage={stageInternal}
-                                                         setStage={setStageInternal}
-                                                         id={salaryInternal.urn} appendNote={appendNote}/>
+                                    <Collapsible initialOpened={false}>
+                                        <div data-role={CollapsibleRole.Title} className="title-child">
+                                            <label>Pick a stage</label>
                                         </div>
-                                    </div>
-                                }
-                                {showNotes && (
-                                    <Collapsible initialOpened={showNotes}>
-                                    <div data-role={CollapsibleRole.Title} className="title-child">
-                                        <label>Notes</label>
-                                        <label className="notes-counter">{notes ? notes.length : 0}</label>
-                                    </div>
-                                    <div data-role={CollapsibleRole.Collapsible}>
-                                        <div className="scroll-container h-300">
-                                            <div className="scroll-content">
-                                                {completed && notes?.map((n, i) => (
-                                                    <NoteCard key={i} note={n}
-                                                              currentCount={i} totalCount={notes.length} lastNoteRef={lastNoteRef}/>)
-                                                )
-                                                }
-                                                {completed && notes.length == 0 &&
-                                                    <div className="no-notes">
-                                                        <NoNotes/>
-                                                        <div>No notes yet</div>
-                                                    </div>}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div data-role={CollapsibleRole.Footer} className="footer-child">
-                                        <div className="text-input-container">
-                                            <div className="text-input">
-                                                <input type="text" onKeyUp={onKeyUp} onChange={onChange}
-                                                       disabled={!editable}
-                                                       placeholder="Leave a note" value={text?.value}/>
-                                                <div onClick={() => postNote(text?.value)}
-                                                     className={postAllowed ? "submit-allowed" : "submit-disabled"}>
-                                                    <Submit/>
+                                        <div data-role={CollapsibleRole.Collapsible}>
+                                            <div className="stage-parents-container">
+                                                {stageParents.map(stage => <div
+                                                    onClick={() => setActiveStageParent(prev => prev === stage.name ? null : stage.name)}
+                                                    className={activeStageParent === stage.name ? "active-item" : "item"}>
+                                                    {stage.name}
+                                                    {activeStageParent === stage.name ? <UpChevron/> : <DownChevron/>}
+                                                </div>)}
+                                                <div className="nested-childs">
+                                                    {stageChildData[activeStageParent]?.map?.(child => activeStageParent !== "Tag" ?
+                                                        <StageSwitch type={child.name} activeStage={stageInternal}
+                                                                     setStage={setStageInternal} id={salaryInternal.urn}
+                                                                     appendNote={appendNote}>
+                                                        </StageSwitch> :
+                                                        <div className="custom-stages-wrapper">
+                                                            {customStages?.map?.(customStage => <StageSwitch
+                                                                                    activeStage={stageInternal}
+                                                                                    customText={customStage.text} classType="interested"
+                                                                                    setStage={setStageInternal}
+                                                                                    id={customStage?.stageId?.toString()}
+                                                                                    appendNote={appendNote}/>
+                                                            )}
+                                                            <CreateNewGroup/>
+                                                        </div>)}
+                                                </div>
+                                                <div className="selected-stages">
+                                                    Selected
+                                                    tags: {notes?.length ? notes?.map(note => <>{getStage(note.stageTo)}</>) : 'no selected tags'}
                                                 </div>
                                             </div>
                                         </div>
-                                        <Credits/>
-                                    </div>
-                                </Collapsible>
+                                    </Collapsible>
+                                }
+                                {showNotes && (
+                                    <Collapsible initialOpened={showNotes}>
+                                        <div data-role={CollapsibleRole.Title} className="title-child">
+                                            <label>Notes</label>
+                                            <label className="notes-counter">{notes ? notes.length : 0}</label>
+                                        </div>
+                                        <div data-role={CollapsibleRole.Collapsible}>
+                                            <div className="scroll-container h-300">
+                                                <div className="scroll-content">
+                                                    {completed && notes?.map((n, i) => (
+                                                        <NoteCard key={i} note={n}
+                                                                  currentCount={i} totalCount={notes.length}
+                                                                  lastNoteRef={lastNoteRef}/>)
+                                                    )
+                                                    }
+                                                    {completed && notes.length == 0 &&
+                                                        <div className="no-notes">
+                                                            <NoNotes/>
+                                                            <div>No notes yet</div>
+                                                        </div>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div data-role={CollapsibleRole.Footer} className="footer-child">
+                                            <div className="text-input-container">
+                                                <div className="text-input">
+                                                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
+                                                           disabled={!editable}
+                                                           placeholder="Leave a note" value={text?.value}/>
+                                                    <div onClick={() => postNote(text?.value)}
+                                                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
+                                                        <Submit/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <Credits/>
+                                        </div>
+                                    </Collapsible>
                                 )}
                             </NotesContainer>}
                         </React.Fragment>

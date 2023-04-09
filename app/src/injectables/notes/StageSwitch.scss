@@ -58,5 +58,8 @@
 }
 
 .inactive {
-  background-color: $stage-inactive;
+  background-color: white;
+  color: #8B8B8B;
+  border: 1px solid #8B8B8B;
+  border-radius: 37px;
 }

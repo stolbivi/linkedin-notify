@@ -260,6 +260,7 @@ export interface SetStagePayload {
     id: string
     stage: StageEnum
     stageFrom: StageEnum
+    stageText?: string;
 }
 
 export const setStage = createAction<SetStagePayload, any>("setStage",
@@ -273,6 +274,7 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
                 author,
                 stageFrom: payload.stageFrom,
                 stageTo: payload.stage,
+                stageText: payload.stageText || undefined
             });
             const noteExtended = await extendNote(token, [note.response], author);
             const stage = await backEndAPI.setStage(payload.id, payload.stage, author);
@@ -337,6 +339,7 @@ export interface PostNotePayload {
     id: string
     stageTo: StageEnum
     text: string
+    stateText?: string
 }
 
 export const postNote = createAction<PostNotePayload, any>("postNote",
@@ -350,10 +353,33 @@ export const postNote = createAction<PostNotePayload, any>("postNote",
                 author,
                 stageTo: payload.stageTo,
                 text: payload.text,
+                stageText: payload.stateText
             });
             const noteExtended = await extendNote(token, [note.response], author);
             return {note: {response: noteExtended[0]}};
         }));
+
+export interface CreateCustomStagePayload  {
+    text: string
+}
+
+export const createCustomStage = createAction("createCustomStage",
+    (payload: { text: string }) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.postCustomStage(payload)
+            return response
+        }));
+
+export const getCustomStages = createAction("getCustomStages",
+        () => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            console.log('in action creator get custom stages')
+            const { response } = await backEndAPI.getCustomStages()
+            return response
+        })
+)
 
 // TODO add to store
 export const getLastViewed = createAction<string, any>("getLastViewed",

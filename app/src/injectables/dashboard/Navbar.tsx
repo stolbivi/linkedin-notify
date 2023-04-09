@@ -13,8 +13,9 @@ const Navbar = () => {
     const [isBooleanSearchClicked, setIsBooleanSearchClicked] = useState(false);
 
     const jobListClickHandler = () => {
-        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow');
+        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow') as HTMLElement;
         if (targetElement) {
+            targetElement.style.width = 'auto';
             ReactDOM.render(<JobList />, targetElement);
             setIsJobListClicked(true);
             setIsCandidatesClicked(false);
@@ -25,8 +26,9 @@ const Navbar = () => {
     }
 
     const candidatesClickHandler = () => {
-        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow');
+        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow') as HTMLElement;
         if (targetElement) {
+            targetElement.style.width = 'auto';
             ReactDOM.render(<Kanban />, targetElement);
             setIsJobListClicked(false);
             setIsCandidatesClicked(true);
@@ -37,8 +39,9 @@ const Navbar = () => {
     }
 
     const booleanSearchClickHandler = () => {
-        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow');
+        const targetElement = document.querySelector('.scaffold-layout__inner.scaffold-layout-container.scaffold-layout-container--reflow') as HTMLElement;
         if (targetElement) {
+            targetElement.style.width = 'auto';
             ReactDOM.render(<BooleanSearch />, targetElement);
             setIsJobListClicked(false);
             setIsCandidatesClicked(false);

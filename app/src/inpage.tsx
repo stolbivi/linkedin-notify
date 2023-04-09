@@ -14,6 +14,7 @@ import {TimeZoneFactory} from "./injectables/TimeZone";
 import {LnDashboardFactory} from "./injectables/LnDashboard";
 import {unmountComponent} from "./utils/InjectHelper";
 
+
 console.debug('LinkedIn Manager extension engaged');
 
 const dynamicUI = new DynamicUI();
@@ -84,7 +85,7 @@ window.addEventListener("message", (event) => {
     } else if(event.data.type === "modifyElements") {
         initialLoad = event.data.initialLoad;
         const proFeatures = JSON.parse(sessionStorage.getItem("proFeatures"));
-        Object.values(proFeatures).forEach(feature => {
+        proFeatures && Object.keys(proFeatures).length > 0 && Object.values(proFeatures).forEach(feature => {
             if(feature.isChanged) {
                 if(!feature.isActive) {
                     if("AutoFeature" === feature.id) {

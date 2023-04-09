@@ -8,7 +8,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import { getStages, showNotesAndCharts} from "../../actions";
+import {getStages, showNotesAndCharts} from "../../actions";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -73,13 +73,17 @@ export const StagePill: React.FC<Props> = ({url, convUrl}) => {
                     setType(s);
                 }
             }).finally(() => setCompleted(true));
+
     }, [accessState, urlInternal]);
 
     useEffect(() => {
-        window.addEventListener('popstate', () => {
+        const listener = () => {
             setUrlInternal(window.location.href);
-        });
-    }, [])
+        }
+        window.addEventListener('popstate', listener);
+
+        return () => window.removeEventListener('popstate', listener)
+    }, [window.location.href])
 
     const onClick = () => {
         if (showNotes) {

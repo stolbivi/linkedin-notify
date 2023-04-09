@@ -1,10 +1,25 @@
 import {BaseAPI, Response} from "./BaseAPI";
-import {BACKEND_API, Features, Note, Shared, Subscriptions} from "../global";
+import {BACKEND_API, Features, Note, Shared, Subscriptions, UserStage} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
 import {SetFeaturePayload} from "../actions";
 import {LastViewed} from "../store/LastViewedReducers";
 
 export class BackendAPI extends BaseAPI {
+
+    public getCustomStages(): Promise<Response<UserStage[]>> {
+        console.log('in backend api get custom stages')
+        return this.fetchRequest(
+            `${BACKEND_API}stage/userStages`,
+            this.getRequest("GET")
+        )
+    }
+
+    public postCustomStage(payload: { text: string }): Promise<Response<UserStage>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/userStage`,
+            this.getRequest("POST", payload)
+        )
+    }
 
     public getCompletion(prompt: string): Promise<any> {
         return this.fetchRequest(
