@@ -391,9 +391,15 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                     </Collapsible>
                                 )}
                                 {showNotes && salaryInternal &&
-                                    <Collapsible initialOpened={false}>
-                                        <div data-role={CollapsibleRole.Title} className="title-child">
-                                            <label>Pick a stage</label>
+                                    <Collapsible initialOpened={true}>
+                                        <div data-role={CollapsibleRole.Title} className="title-child assigned">
+                                            <label>Track Candidates</label>
+                                            <div className="assigned-job">
+                                                <p>Assigned Job: </p>
+                                                <select className="assigned-job-dropdown">
+                                                    <option>Enter Job Name</option>
+                                                </select>
+                                            </div>
                                         </div>
                                         <div data-role={CollapsibleRole.Collapsible}>
                                             <div className="stage-parents-container">

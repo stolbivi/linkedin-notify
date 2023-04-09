@@ -159,6 +159,7 @@ const BooleanSearch = () => {
                         (or not after) in the fields below. Comma-separate them, and you're
                         good to go.
                     </p>
+                    <p>Jobs</p>
                     <div className="jobs-selection">
                         <select className="jobs-dropdown">
                             <option>No jobs selected</option>
@@ -230,6 +231,16 @@ const BooleanSearch = () => {
                             id="general-keyword-exclude-input"
                             placeholder="Seperate with Comma. i.e: Macos, Mainframe"
                         />
+                    </div>
+                    <br/>
+                    <div className="preset-text">
+                        <p>Preset</p>
+                    </div>
+                    <div className="preset-selection">
+                        <select className="preset-dropdown">
+                            <option>No preset selected</option>
+                        </select>
+                        <button>Save Preset</button>
                     </div>
                     <br/>
                     <h2>Custom Search</h2>

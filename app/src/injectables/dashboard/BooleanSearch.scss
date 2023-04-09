@@ -169,7 +169,7 @@ pre {
   margin-left: 30px;
 }
 #google-search-button {
-  background-color: #383637;
+  background-color: #b30003;
   color: #fff;
   height: 41px;
   width: 147px;
@@ -218,6 +218,7 @@ pre[contenteditable="true"]:empty:before {
   line-height: 176.4%;
   display: flex;
   align-items: center;
+  justify-content: center;
   color: #585858;
   background-color: #E8E8E8;
   border-radius: 5px;
@@ -229,4 +230,47 @@ pre[contenteditable="true"]:empty:before {
   letter-spacing: 0em;
 }
 
+.preset-text {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right: 373px;
+}
 
+.preset-selection {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.preset-dropdown {
+  box-sizing: border-box;
+  width: 261px;
+  height: 41px;
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 5px;
+  margin-right: 10px;
+  padding-left: 10px;
+}
+
+.preset-selection button {
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 176.4%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #585858;
+  background-color: #E8E8E8;
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 10px;
+  width: 150px;
+  height: 41px;
+  text-align: left;
+  letter-spacing: 0em;
+}

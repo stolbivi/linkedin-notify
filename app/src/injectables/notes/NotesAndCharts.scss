@@ -94,6 +94,10 @@
   align-items: center;
 }
 
+.title-child label {
+  flex-basis: 100%;
+}
+
 .stage-container {
   display: flex;
   flex-direction: column;
@@ -203,7 +207,32 @@
 
 }
 
-
 .is-creating {
   border: 1px solid #8B8B8B;
+}
+
+.assigned{
+  flex-wrap: wrap;
+}
+
+.assigned-job {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.assigned-job p {
+  margin-right: 10px;
+}
+
+.assigned-job-dropdown {
+  box-sizing: border-box;
+  width: 261px;
+  height: 41px;
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 5px;
+  margin-right: 10px;
+  padding-left: 10px;
 }
