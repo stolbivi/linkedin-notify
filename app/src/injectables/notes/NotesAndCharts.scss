@@ -138,6 +138,7 @@
 
   .active-item {
     border-radius: 20px;
+    background-color: #dedede;
     border: 1px solid #8B8B8B;
     text-align: center;
     width: 75px;
@@ -236,4 +237,9 @@
   border-radius: 5px;
   margin-right: 10px;
   padding-left: 10px;
+}
+
+.close-button-salary {
+  padding-right: 5%;
+  padding-top: 4%;
 }

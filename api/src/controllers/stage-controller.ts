@@ -2,6 +2,8 @@ import {Body, Delete, Get, Post, Put, Query, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
 import {Stage, StageModel, StageWithId} from "../persistence/stage-model";
+import { UserStages } from "../persistence/user-stages";
+import {User} from "../persistence/user-model";
 
 
 @Route("/api")
@@ -9,6 +11,25 @@ export class StageController extends BaseController {
 
     constructor() {
         super();
+    }
+
+    @Tags("Persistence")
+    @Get("stage/userStages")
+    public async getUserStages(@Request() request: express.Request) {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            const user =  request.user as User;
+            const userStages = await UserStages.scan({ userId: user.id }).exec()
+            console.log('user-stages: ',userStages)
+            console.log('user id ', request.user)
+            return Promise.resolve({ response: userStages, user: request.user });
+        } catch (error) {
+            return this.handleError(error, request);
+        }
     }
 
     @Tags("Persistence")
@@ -106,4 +127,22 @@ export class StageController extends BaseController {
         }
     }
 
+    @Tags("Persistence")
+    @Post("stage/userStage")
+    public async addUserStage(@Request() request: express.Request) {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            const { text } = request.body;
+            const user =  request.user as User;
+            const userStage = await UserStages.create({ userId: user.id, text, stageId: new Date().getTime(), id: (new Date().getTime()+1).toString() })
+            await userStage.save()
+            return Promise.resolve({ response: userStage , user: request.user})
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
 }

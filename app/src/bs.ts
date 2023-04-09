@@ -40,7 +40,8 @@ import {
     unlock,
     postReply,
     getProfileByUrn,
-    getCompanyByUrn
+    getCompanyByUrn,
+    deleteNote
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -113,6 +114,7 @@ messagesV2.listen(getProfileByUrn);
 messagesV2.listen(getCompanyByUrn);
 messagesV2.listen(getCustomStages);
 messagesV2.listen(createCustomStage);
+messagesV2.listen(deleteNote);
 
 // listening to cookies store events
 listenToThemeCookie((cookie) => {

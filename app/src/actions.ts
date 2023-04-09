@@ -437,3 +437,12 @@ export const postReply = createAction<Message, void>("postReply",
         .then(async token => {
             await api.postReply(token, message.conversationId,message.messageBody,message.recipientId);
         }));
+
+export const deleteNote = createAction<string, any>("deleteNote",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.deleteNote(id)
+            return response
+        })
+)

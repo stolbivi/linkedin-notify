@@ -91,6 +91,13 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
+    public deleteNote(noteId: string): Promise<Response<Note>> {
+        return this.fetchRequest(
+            `${BACKEND_API}note/${noteId}`,
+            this.getRequest("DELETE")
+        );
+    }
+
     // incomplete, incomplete_expired, trialing, active, past_due, canceled, unpaid
     public getSubscription(): Promise<Response<Subscriptions>> {
         return this.fetchRequest<Subscriptions>(

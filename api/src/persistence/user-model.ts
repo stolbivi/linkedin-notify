@@ -21,6 +21,7 @@ export interface FeatureRequest {
 export interface User {
     firstName: string
     lastName: string
+    id: string
     email: string
     features?: Feature[]
     createdAt?: string

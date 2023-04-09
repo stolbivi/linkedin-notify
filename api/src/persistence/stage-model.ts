@@ -7,7 +7,26 @@ export enum StageEnum {
     NotInterested,
     Interviewing,
     FailedInterview,
-    Hired
+    Hired,
+    Not_Looking_Currently,
+    Open_To_New_Offers,
+    Passive_Candidate,
+    Actively_Looking,
+    Future_Interest,
+    Relocation,
+    Commute,
+    Hybrid,
+    Remote,
+    Contacted,
+    Pending_Response,
+    Interview_Scheduled,
+    Offer_Extended,
+    Rejected,
+    Part_Time,
+    Full_Time,
+    Permanent,
+    Contract,
+    Freelance
 }
 
 export interface Stage {
@@ -42,6 +61,10 @@ const stageSchema = new dynamoose.Schema({
     },
     stage: {
         type: Number,
+        required: true
+    },
+    groupId: {
+        type: String,
         required: true
     }
 }, {

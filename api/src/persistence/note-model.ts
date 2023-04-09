@@ -9,7 +9,8 @@ export interface Note {
     stageFrom?: number
     stageTo?: number
     createdAt?: string
-    updatedAt?: string
+    updatedAt?: string,
+    stageText?: string;
 }
 
 const noteSchema = new dynamoose.Schema({
@@ -46,9 +47,12 @@ const noteSchema = new dynamoose.Schema({
         type: Number,
         required: false
     },
+    stageText: {
+        type: String
+    }
 }, {
     "saveUnknown": true,
     "timestamps": true
 });
 
-export const NoteModel = dynamoose.model(process.env.TABLE_NOTES, noteSchema);
+export const NoteModel = dynamoose.model(process.env.DEV_TABLE_NOTES, noteSchema);

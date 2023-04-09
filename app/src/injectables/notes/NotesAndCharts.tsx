@@ -14,7 +14,7 @@ import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
-    createCustomStage,
+    createCustomStage, deleteNote,
     getConversationProfile,
     getCustomStages,
     getNotesByProfile,
@@ -31,7 +31,6 @@ import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 import UpChevron from "../../icons/UpChevron";
 import DownChevron from "../../icons/DownChevron";
-// import { useCustomStages } from "../../hooks/customStages";
 
 export const NotesAndChartsFactory = () => {
     setTimeout(() => {
@@ -89,23 +88,23 @@ export enum StageParentData {
     GEOGRAPHY = "Geography",
     STATUS = "Status",
     TYPE = "Type",
-    TAG = "Tag"
+    Groups = "Groups"
 }
 
 export const stageParentsData = [
     {name: StageParentData.AVAILABILITY},
-    {name: StageParentData.GEOGRAPHY},
     {name: StageParentData.STATUS},
     {name: StageParentData.TYPE},
-    {name: StageParentData.TAG}
+    {name: StageParentData.GEOGRAPHY},
+    {name: StageParentData.Groups}
 ]
 
 export const stageChildData = {
     [StageParentData.AVAILABILITY]: [
-        {name: StageEnum.Not_Looking_Currently},
-        {name: StageEnum.Open_To_New_Offers},
         {name: StageEnum.Passive_Candidate},
         {name: StageEnum.Actively_Looking},
+        {name: StageEnum.Open_To_New_Offers},
+        {name: StageEnum.Not_Looking_Currently},
         {name: StageEnum.Future_Interest}
     ],
     [StageParentData.GEOGRAPHY]: [
@@ -129,7 +128,7 @@ export const stageChildData = {
         {name: StageEnum.Contract},
         {name: StageEnum.Freelance}
     ],
-    [StageParentData.TAG]: [
+    [StageParentData.Groups]: [
         {name: StageEnum.Commute}
     ]
 }
@@ -295,13 +294,33 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         setShowChart(true);
     }
 
-    const getStage = (stage: number) => {
+    const removeSelectedTag = (id: string) => {
+        let updatedNotes = [...notes];
+        let tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === id);
+        if (tagToRemoveIndex !== -1) {
+            updatedNotes.splice(tagToRemoveIndex, 1);
+            setNotes(updatedNotes);
+        }
+        messages.request(deleteNote(id))
+            .then((_r) => {});
+        console.log("stage: ",stageInternal);
+        setStageInternal(-1);
+    };
+
+    const getStage = (stage: number, id: string) => {
         if (stage < 0) {
             return <div className={"stage inactive"}><label>No stage</label></div>
         }
-        return <div className={"stage " + StageLabels[stage].class}>
-            <label>{StageLabels[stage].label}</label>
-        </div>
+        return <div className={"stage " + StageLabels[stage].class} style={{width: "27%"}}>
+                    <label>{StageLabels[stage].label}</label>
+                    <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
+                        <svg width="8" height="8" viewBox="0 0 17 17" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 2L15 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                            <path d="M15 2L2 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                        </svg>
+                    </span>
+              </div>
     }
 
     const CreateNewGroup = () => {
@@ -318,7 +337,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                     let temp = [...customStages]
                     const {stageId, text, userId, id} = r
                     temp.push({stageId, text, userId, id})
-                    console.log(temp)
                     setCustomStages(temp)
                 })
                 .catch(err => console.error(err))
@@ -428,7 +446,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                     {activeStageParent === stage.name ? <UpChevron/> : <DownChevron/>}
                                                 </div>)}
                                                 <div className="nested-childs">
-                                                    {stageChildData[activeStageParent]?.map?.(child => activeStageParent !== "Tag" ?
+                                                    {stageChildData[activeStageParent]?.map?.(child => activeStageParent !== "Groups" ?
                                                         <StageSwitch type={child.name} activeStage={stageInternal}
                                                                      setStage={setStageInternal} id={salaryInternal.urn}
                                                                      appendNote={appendNote}>
@@ -446,7 +464,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                 </div>
                                                 <div className="selected-stages">
                                                     Selected
-                                                    tags: {notes?.length ? notes?.map(note => <>{getStage(note.stageTo)}</>) : 'no selected tags'}
+                                                    tags: {notes?.length ? notes?.map(note => <>{getStage(note.stageTo,note.id)}</>) : 'no selected tags'}
                                                 </div>
                                             </div>
                                         </div>
