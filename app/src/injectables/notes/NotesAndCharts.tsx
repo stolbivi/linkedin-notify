@@ -154,8 +154,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [customStages, setCustomStages] = useState<UserStage[]>([]);
     const [activeStageParent, setActiveStageParent] = useState<StageParentData>(StageParentData.AVAILABILITY);
     const [editButton, setEditButton] = useState(false);
-
+    const [salaryLabel, setSalaryLabel] = useState("");
     const messages = new MessagesV2(VERBOSE);
+
+    useEffect(() => {
+        setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal))
+    },[salaryInternal]);
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
@@ -399,8 +403,11 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             <div className="d-flex">
                                                 <section className="label-section">
                                                     {
-                                                        editButton?(<input className="label-salary" placeholder={salaryInternal && getSalaryValue(salaryInternal)}></input>)
-                                                            :(<div className="label-salary">{salaryInternal && getSalaryValue(salaryInternal)} year</div>)
+                                                        editButton
+                                                            ?(<input className="label-salary"
+                                                                     placeholder={salaryLabel}
+                                                                     onChange={(event) => setSalaryLabel(event.target.value)}/>)
+                                                            :(<div className="label-salary">{salaryLabel} year</div>)
                                                     }
                                                     <div className="label-position">
                                                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"

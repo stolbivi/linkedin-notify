@@ -89,7 +89,7 @@ export const PayDistribution: React.FC<Props> = ({ salary , editable}) => {
                                 className="input-field"
                                 type="text"
                                 value={distribution?.middle?.value}
-                                onChange={(e) => handleChange(e, "left")}
+                                onChange={(e) => handleChange(e, "middle")}
                             />
                         ) : (
                             <span>{distribution?.middle?.value}</span>
@@ -105,7 +105,7 @@ export const PayDistribution: React.FC<Props> = ({ salary , editable}) => {
                                 className="input-field"
                                 type="text"
                                 value={distribution?.right?.value}
-                                onChange={(e) => handleChange(e, "left")}
+                                onChange={(e) => handleChange(e, "right")}
                             />
                         ) : (
                             <span>{distribution?.right?.value}</span>
