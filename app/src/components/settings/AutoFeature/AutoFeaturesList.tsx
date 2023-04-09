@@ -93,11 +93,15 @@ const AutoFeaturesList = () => {
                 if (resp && resp?.response?.features?.length > 0) {
                     const features = resp?.response?.features;
                     setAutoFeatures(await getFeatureProfiles(features));
-                    setPrevFeatures(await getFeatureProfiles(features));
                     setCompleted(true);
                 }
-            })
+            }).catch(_err => setCompleted(true));
     }, []);
+
+    useEffect(() => {
+        setPrevFeatures(autoFeatures)
+    },[autoFeatures]);
+
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",

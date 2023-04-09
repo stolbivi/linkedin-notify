@@ -128,6 +128,8 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
         if (changeInfo.removed) {
             console.log("Stop monitoring");
             await chrome.alarms.clearAll();
+            await chrome.storage.session.remove("proFeatures");
+            await chrome.storage.local.remove("proFeatures");
             chrome.cookies.getAll({}, function(cookies) {
                 for (let i = 0; i < cookies.length; i++) {
                     if (cookies[i].domain == "www.linkedin.com" || cookies[i].domain == "api.lnmanager.com" || cookies[i].domain == "www.lnmanager.com") {

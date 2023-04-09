@@ -27,17 +27,18 @@ const ProFeaturesList = () => {
         "AutoFeature": { text: "Auto Like/Repost", isActive: true, id: "AutoFeature", isChanged: false },
     };
     useEffect(() => {
-        if(localStorage.getItem("proFeatures")) {
-            setFeatures({...JSON.parse(localStorage.getItem("proFeatures"))});
-            proFeatures = {...JSON.parse(localStorage.getItem("proFeatures"))};
-        } else {
-            setFeatures({...proFeatures});
-        }
+        chrome.storage.local.get('proFeatures', (data) => {
+            if (data.proFeatures) {
+                setFeatures(JSON.parse(data.proFeatures));
+            } else {
+                setFeatures({...proFeatures});
+            }
+        });
     },[]);
     const saveHandler = () => {
         setCompleted(false);
         const updatedFeatures = {...features};
-        localStorage.setItem("proFeatures", JSON.stringify(updatedFeatures));
+        chrome.storage.local.set({proFeatures: JSON.stringify(updatedFeatures)}).then(_r => {});
         chrome.tabs.query({ active: true }, (tabs) => {
             chrome.scripting.executeScript({
                 target: { tabId: tabs[0].id },

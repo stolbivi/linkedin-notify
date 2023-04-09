@@ -17,6 +17,7 @@ import {Settings} from "./settings/Settings";
 import {SettingTabs, SettingTabTypes} from "./settings/SettingTabs";
 import ProFeaturesList from "./settings/ProFeatures/ProFeaturesList";
 import AutoFeaturesList from "./settings/AutoFeature/AutoFeaturesList";
+import {AccessGuard, AccessState} from "../injectables/AccessGuard";
 
 type Props = {};
 
@@ -29,7 +30,7 @@ export const Main: React.FC<Props> = ({}) => {
     const [isLogged, setIsLogged] = useState(false);
     const [tab, setTab] = useState(0);
     const [settingTabs, setSettingTabs] = useState(0);
-
+    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const rootElement = useRef<HTMLDivElement>();
 
     useEffect(() => {
@@ -66,7 +67,10 @@ export const Main: React.FC<Props> = ({}) => {
                                 <div className="title">
                                     <div className="logo"><Logo/></div>
                                     <span>LinkedIn Manager</span>
-                                    <Settings setSettingTabs={setSettingTabs}/>
+                                    <AccessGuard setAccessState={setAccessState}
+                                                 className={"access-guard-px16 top-right-corner lock-time"}
+                                                 loaderClassName="loader-base top-right-corner loader-px24"/>
+                                    {accessState === AccessState.Valid && <Settings setSettingTabs={setSettingTabs}/>}
                                     <div className="switch"><ThemeSwitch light={light} setLight={setLight}/></div>
                                 </div>
                             </div>
