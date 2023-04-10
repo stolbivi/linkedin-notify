@@ -65,51 +65,60 @@ export const PayDistribution: React.FC<Props> = ({ salary , editable}) => {
 
     return (
         <React.Fragment>
+            {
+                editable ? (
+                    <div className="edit-salary">
+                        <input
+                            className="input-field"
+                            type="text"
+                            value={distribution?.left?.value}
+                            onChange={(e) => handleChange(e, "left")}
+                        />
+                        <input
+                            className="input-field"
+                            type="text"
+                            value={distribution?.middle?.value}
+                            onChange={(e) => handleChange(e, "middle")}
+                        />
+                        <input
+                            className="input-field"
+                            type="text"
+                            value={distribution?.right?.value}
+                            onChange={(e) => handleChange(e, "right")}
+                        />
+                    </div>
+                ): null
+            }
             <div className="bar-container">
                 <div className="bar-left" style={{width: distribution?.left?.percent + "%"}}>
                     <React.Fragment>
-                        {editable ? (
-                            <input
-                                className="input-field"
-                                type="text"
-                                value={distribution?.left?.value}
-                                onChange={(e) => handleChange(e, "left")}
-                            />
-                        ) : (
-                            <span>{distribution?.left?.value}</span>
-                        )}
+                        {
+                            !editable ? (
+                                <span>{distribution?.left?.value}</span>
+                            ) : null
+                        }
                         <span>{formatPercent(10)}</span>
                         <div className="bar-line"/>
                     </React.Fragment>
                 </div>
                 <div className="bar-middle">
                     <React.Fragment>
-                        {editable ? (
-                            <input
-                                className="input-field"
-                                type="text"
-                                value={distribution?.middle?.value}
-                                onChange={(e) => handleChange(e, "middle")}
-                            />
-                        ) : (
-                            <span>{distribution?.middle?.value}</span>
-                        )}
+                        {
+                            !editable ? (
+                                <span>{distribution?.middle?.value}</span>
+                            ) : null
+                        }
                         <span>{formatPercent(10)}</span>
                         <div className="bar-line"/>
                     </React.Fragment>
                 </div>
                 <div className="bar-right" style={{width: distribution?.right?.percent + "%"}}>
                     <React.Fragment>
-                        {editable ? (
-                            <input
-                                className="input-field"
-                                type="text"
-                                value={distribution?.right?.value}
-                                onChange={(e) => handleChange(e, "right")}
-                            />
-                        ) : (
-                            <span>{distribution?.right?.value}</span>
-                        )}
+                        {
+                            !editable ? (
+                                <span>{distribution?.right?.value}</span>
+                            ) : null
+                        }
                         <span>{formatPercent(10)}</span>
                         <div className="bar-line"/>
                     </React.Fragment>

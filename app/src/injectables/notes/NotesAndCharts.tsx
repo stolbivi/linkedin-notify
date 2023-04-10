@@ -404,7 +404,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                 <section className="label-section">
                                                     {
                                                         editButton
-                                                            ?(<input className="label-salary"
+                                                            ?(<input className="label-salary-edit"
                                                                      placeholder={salaryLabel}
                                                                      onChange={(event) => setSalaryLabel(event.target.value)}/>)
                                                             :(<div className="label-salary">{salaryLabel} year</div>)
