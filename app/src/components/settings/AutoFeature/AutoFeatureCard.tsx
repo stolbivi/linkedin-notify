@@ -60,20 +60,20 @@ export const AutoFeatureCard: React.FC<Props> = ({autoFeature, updatedFeatures})
     return (
         <>
             <div className="card-holder row" ref={rootElement}>
-                <div className={"notification-card"}>
-                    {picture.length > 0 &&
-                        <div className="card-image" style={{paddingLeft: "4%"}}>
+                <div className="notification-card" style={{display: "grid", gridTemplateColumns: "3fr 1fr 1fr"}}>
+                    <div className="auto-feature-user">
+                        {picture.length > 0 && <div className="card-image" style={{paddingLeft: "4%"}}>
                             <img src={picture} alt="img"/>
-                        </div>
-                    }
-                    <div style={{paddingLeft: "1%"}} className="auto-feature-text">{autoFeature.name[0]}</div>
-                    <div className="form-check form-switch" style={{marginLeft: "25%"}}>
-                        <input className="form-check-input switch-color" type="checkbox" id="autoLike" defaultChecked={autoFeature.types.includes("like")}
-                               onChange={()=>setFeature(autoFeature,"like")}/>
+                        </div>}
+                        <div style={{paddingLeft: "1%"}} className="auto-feature-text">{autoFeature.name[0]}</div>
                     </div>
-                    <div className="form-check form-switch" style={{marginLeft: "13%"}}>
+                    <div className="form-check form-switch" style={{textAlign: "center"}}>
+                        <input className="form-check-input switch-color" type="checkbox" id="autoLike" defaultChecked={autoFeature.types.includes("like")}
+                               onChange={() => setFeature(autoFeature, "like")} />
+                    </div>
+                    <div className="form-check form-switch" style={{textAlign: "center"}}>
                         <input className="form-check-input switch-color" type="checkbox" id="autoRepost" defaultChecked={autoFeature.types.includes("repost")}
-                               onChange={()=>setFeature(autoFeature,"repost")}/>
+                               onChange={() => setFeature(autoFeature, "repost")} />
                     </div>
                 </div>
             </div>

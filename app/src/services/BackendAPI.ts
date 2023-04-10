@@ -1,5 +1,5 @@
 import {BaseAPI, Response} from "./BaseAPI";
-import {BACKEND_API, Features, Note, Shared, Subscriptions, UserStage} from "../global";
+import {BACKEND_API, Features, Job, Note, Shared, Subscriptions, UserStage} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
 import {SetFeaturePayload} from "../actions";
 import {LastViewed} from "../store/LastViewedReducers";
@@ -131,6 +131,34 @@ export class BackendAPI extends BaseAPI {
         return this.fetchRequest(
             `${BACKEND_API}shared`,
             this.getRequest("POST", shared)
+        );
+    }
+
+    public getJobs(): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job`,
+            this.getRequest("GET")
+        );
+    }
+
+    public postJob(job: Job): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job`,
+            this.getRequest("POST", job)
+        );
+    }
+
+    public updateJob(job: Job): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/${job.id}`,
+            this.getRequest("PUT", job)
+        );
+    }
+
+    public deleteJob(jobId: string): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/${jobId}`,
+            this.getRequest("DELETE")
         );
     }
 

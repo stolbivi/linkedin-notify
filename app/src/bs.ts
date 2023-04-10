@@ -41,7 +41,11 @@ import {
     postReply,
     getProfileByUrn,
     getCompanyByUrn,
-    deleteNote
+    deleteNote,
+    postJob,
+    getJobs,
+    updateJob,
+    deleteJob
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -115,6 +119,10 @@ messagesV2.listen(getCompanyByUrn);
 messagesV2.listen(getCustomStages);
 messagesV2.listen(createCustomStage);
 messagesV2.listen(deleteNote);
+messagesV2.listen(postJob);
+messagesV2.listen(getJobs);
+messagesV2.listen(updateJob);
+messagesV2.listen(deleteJob);
 
 // listening to cookies store events
 listenToThemeCookie((cookie) => {

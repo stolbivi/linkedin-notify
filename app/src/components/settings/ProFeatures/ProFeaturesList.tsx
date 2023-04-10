@@ -91,16 +91,16 @@ const ProFeaturesList = () => {
         <div className="w-100" style={{ height: "600px" }} ref={rootElement}>
                 <>
                     <Loader show={!completed} className="p-5" heightValue="600px"/>
-                    <div style={{padding:"2%"}}>
+                    <div style={{padding:"2%", display: "grid", gridTemplateColumns: "3fr 1fr"}}>
                         <span style={{marginRight: "55%", marginLeft: "4%"}} className="pro-feature-text">Pro Feature</span>
                         <span style={{marginRight: "5%"}} className="pro-feature-text">On/Off</span>
                     </div>
                     {
                         Object.values(features).map(feature => (
                             <div className="card-holder row" key={feature.id}>
-                                <div className={"notification-card"}>
-                                    <span className="pro-feature-text">{feature.text}</span>
-                                    <div className="form-check form-switch" style={{marginLeft: "25%"}}>
+                                <div className={"notification-card"} style={{display: "grid", gridTemplateColumns: "3fr 1fr"}}>
+                                    <div className="pro-feature-text" style={{paddingLeft: "4%"}}>{feature.text}</div>
+                                    <div className="form-check form-switch" style={{textAlign: "center"}}>
                                         <input className="form-check-input switch-color" type="checkbox" checked={feature.isActive}
                                                onChange={() => toggleCheck(feature.id)} />
                                     </div>

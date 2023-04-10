@@ -123,10 +123,10 @@ const AutoFeaturesList = () => {
             {completed && autoFeatures.length == 0 && <div className="no-data">No Auto Features found</div>}
             {completed && autoFeatures && Object.keys(autoFeatures).length > 0 && (
                 <>
-                    <div style={{padding:"2%"}}>
-                        <span style={{marginRight: "45%", marginLeft: "4%"}} className="auto-feature-text">User</span>
-                        <span style={{marginRight: "5%"}} className="auto-feature-text">Auto Like</span>
-                        <span style={{marginRight: "5%"}} className="auto-feature-text">Auto Repost</span>
+                    <div style={{padding:"2%", display: "grid", gridTemplateColumns: "3fr 1fr 1fr"}} >
+                        <span style={{marginLeft: "4%"}} className="auto-feature-text">User</span>
+                        <span className="auto-feature-text">Auto Like</span>
+                        <span className="auto-feature-text">Auto Repost</span>
                     </div>
                     {Object.entries(autoFeatures).map(([id, feature]) => (
                         <AutoFeatureCard autoFeature={feature} id={id} key={id} updatedFeatures={updatedFeatures}/>

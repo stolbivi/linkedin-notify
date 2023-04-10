@@ -1,6 +1,17 @@
 import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {LinkedInAPI} from "./services/LinkedInAPI";
-import {Badges, Features, Invitation, LINKEDIN_DOMAIN, Message, Note, NoteExtended, SHARE_URN, VERBOSE} from "./global";
+import {
+    Badges,
+    Features,
+    Invitation,
+    Job,
+    LINKEDIN_DOMAIN,
+    Message,
+    Note,
+    NoteExtended,
+    SHARE_URN,
+    VERBOSE
+} from "./global";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
 import {Response} from "./services/BaseAPI";
@@ -446,3 +457,15 @@ export const deleteNote = createAction<string, any>("deleteNote",
             return response
         })
 )
+
+export const postJob = createAction<Job, Response<Job>>("postJob",
+    (job) => backEndAPI.postJob(job));
+
+export const getJobs = createAction<{}, Response<Job>>("getJobs",
+    () => backEndAPI.getJobs());
+
+export const updateJob = createAction<Job, Response<Job>>("postJob",
+    (job) => backEndAPI.updateJob(job));
+
+export const deleteJob = createAction<string, Response<Job>>("deleteJob",
+    (id) => backEndAPI.deleteJob(id));

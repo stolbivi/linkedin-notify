@@ -120,3 +120,15 @@ export interface Message {
     conversationId?: string,
     recipientId?: string
 }
+
+export interface Job {
+    id?: string
+    title?: string
+    salary?: string
+    company?: string
+    hiringContact?: string
+    type?: string
+    geography?: string
+    status?: string
+    assigned?: string
+}
