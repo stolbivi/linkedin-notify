@@ -24,7 +24,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const { columns } = useAppSelector((state => state.columns));
   const { visible } = useModal();
   const [activeButton, setActiveButton] = useState(null);
-  const [selectedCategories, setSelectedCategories] = useState<ICategory[]>(Object.values(ICategory));
+  const [selectedCategories] = useState<ICategory[]>(Object.values(ICategory));
 
   const dispatch = useAppDispatch();
   
@@ -121,7 +121,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     dispatch(filterCards({categories: selectedCategories}))
   }, [selectedCategories])
 
-  function handleClick(button) {
+  function handleClick(button: string) {
     setActiveButton(button);
   }
 

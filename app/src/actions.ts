@@ -458,14 +458,32 @@ export const deleteNote = createAction<string, any>("deleteNote",
         })
 )
 
-export const postJob = createAction<Job, Response<Job>>("postJob",
-    (job) => backEndAPI.postJob(job));
+export const postJob = createAction<Job, any>("postJob",
+    (job) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.postJob(job)
+            return response
+        })
+)
 
-export const getJobs = createAction<{}, Response<Job>>("getJobs",
+export const getJobs = createAction<{}, any>("getJobs",
     () => backEndAPI.getJobs());
 
-export const updateJob = createAction<Job, Response<Job>>("postJob",
-    (job) => backEndAPI.updateJob(job));
+export const updateJob = createAction<Job, any>("updateJob",
+    (job) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.updateJob(job)
+            return response
+        })
+)
 
-export const deleteJob = createAction<string, Response<Job>>("deleteJob",
-    (id) => backEndAPI.deleteJob(id));
+export const deleteJob = createAction<string, any>("deleteJob",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.deleteJob(id)
+            return response
+        })
+)

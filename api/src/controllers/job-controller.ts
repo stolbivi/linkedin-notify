@@ -102,6 +102,7 @@ export class JobController extends BaseController {
 
         try {
             const toSave = {...body};
+            delete toSave.id;
             const saved = await JobModel.update(id, toSave);
             let message: any = {response: saved.toJSON()};
             if (request?.user) {
