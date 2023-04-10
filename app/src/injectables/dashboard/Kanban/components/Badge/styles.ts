@@ -6,7 +6,7 @@ interface BadgeContainerProps{
 
 export const BadgeContainer = styled.div<BadgeContainerProps>`
   background-color: ${({color}) => color};
-  border-radius: 5px;
+  border-radius: 16px;
   
   display: flex;
   justify-content: center;

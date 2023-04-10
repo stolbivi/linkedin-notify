@@ -20,7 +20,6 @@ export default createGlobalStyle`
     font-size: 3rem;
     line-height: 3rem;
     padding-bottom: 1rem;
-    color: ${({ theme }) => theme.colors.text_secondary};
 
     span{
       color: ${({ theme }) => theme.colors.primary};

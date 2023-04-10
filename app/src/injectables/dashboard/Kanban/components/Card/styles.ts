@@ -12,7 +12,7 @@ export const CardContainer = styled.div<CardContainerProps>`
   background-color: ${({ theme }) => theme.colors.components_background};
   opacity:  ${({ hideCard }) => hideCard ? 0.2 : 1};
 
-  width: 300px;
+  width: 220px;
   height: 110px;
   margin: 0.7rem 0;
   padding: 1.2rem 1rem 0.7rem 1rem;
@@ -33,19 +33,18 @@ export const CardContainer = styled.div<CardContainerProps>`
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    font-size: 13px;
   }
 `
 
 export const CardBorder = styled.div<ColorProps>`
   cursor: grab;
   position: absolute;
-  width: calc(100% + 2px);
   top: -1px;
   left: -1px;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   height: 10px;
-  background-color: ${({color}) => color};
 
   &:before{
     content: '';
@@ -65,8 +64,21 @@ export const CardBottom = styled.div`
   align-items: center;
   justify-content: space-between ;
   width: 100%;
+  border-radius: 16px;
 
   p {
     cursor: pointer !important;
+    font-family: Helvetica;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 11px;
+    letter-spacing: 0em;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0px;
+    font-weight: bold;
+    text-transform: capitalize;
+    padding: 9px 6px;
   }
 `

@@ -10,7 +10,7 @@ export const Container = styled.div`
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  padding: 5rem 0 5rem 0;
+  padding: 4rem 0 5rem 0;
   position: relative;
 
   @media(max-width: ${SCREEN_BREAKPOINTS.EXTRA_LARGE}px) {
@@ -40,9 +40,8 @@ export const Header = styled.div`
   width: 100%;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-left: 400px;
+  align-items: center;
+  justify-content: left;
 
   @media(max-width: ${SCREEN_BREAKPOINTS.EXTRA_LARGE}px) {
     flex-direction: column;

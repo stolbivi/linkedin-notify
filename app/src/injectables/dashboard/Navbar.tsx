@@ -6,6 +6,7 @@ import BooleanSearch from "./BooleanSearch";
 import peopleIcon from "./images/peopleicon.png";
 import searchIcon from "./images/search.png";
 import bagIcon from "./images/bag.png";
+// @ts-ignore
 import stylesheet from "./Navbar.scss"
 
 const Navbar = () => {

@@ -21,8 +21,8 @@ export const Container = styled.div<ContainerProps>`
 
 export const CardsList = styled.div`
   margin-top: 1rem;
-  height: 50vh;
-  width: 300px;
+  height: 100%;
+  width: 220px;
   overflow-y: auto;
   overflow-x: hidden;
 `;

@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-
 import { Draggable } from 'react-beautiful-dnd';
 import { ThemeContext } from 'styled-components';
-
 import getCategoryBackgroundColor from '../../helpers/getCategoryBackgroundColor';
 import { useModal } from '../../hooks/useModal';
 import ICard from '../../interfaces/ICard';
@@ -43,7 +41,7 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
           <h3>{card.title}</h3>
           <CardBottom>
             <Badge category={card.category}/>
-            <p>+ View More</p>
+            <p className="badge-style">+More</p>
           </CardBottom>
         </CardContainer>
       )}
