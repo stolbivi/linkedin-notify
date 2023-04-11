@@ -98,7 +98,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
                     console.error(r.error);
                 } else {
                     setStage(r.stage.response.stage);
-                    appendNote(r.note.response)
+                    appendNote(r.note.response);
                 }
                 setCompleted(true);
             });

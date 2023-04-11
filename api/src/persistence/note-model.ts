@@ -6,8 +6,8 @@ export interface Note {
     profile: string
     author: string
     text?: string
-    stageFrom?: number
-    stageTo?: number
+    stageFrom?: any
+    stageTo?: any
     createdAt?: string
     updatedAt?: string,
     stageText?: string;
@@ -40,11 +40,11 @@ const noteSchema = new dynamoose.Schema({
         required: false
     },
     stageFrom: {
-        type: Number,
+        type: String,
         required: false
     },
     stageTo: {
-        type: Number,
+        type: String,
         required: false
     },
     stageText: {

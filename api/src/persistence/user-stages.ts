@@ -20,6 +20,10 @@ const userStagesSchema = new dynamoose.Schema({
     text: {
         type: String,
         required: true
+    },
+    author: {
+        type: String,
+        required: true
     }
 }, {
     "saveUnknown": true,

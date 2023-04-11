@@ -14,7 +14,7 @@ export class BackendAPI extends BaseAPI {
         )
     }
 
-    public postCustomStage(payload: { text: string }): Promise<Response<UserStage>> {
+    public postCustomStage(payload: { text: string, author: string }): Promise<Response<UserStage>> {
         return this.fetchRequest(
             `${BACKEND_API}stage/userStage`,
             this.getRequest("POST", payload)

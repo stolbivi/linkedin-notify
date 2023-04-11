@@ -378,8 +378,10 @@ export interface CreateCustomStagePayload  {
 export const createCustomStage = createAction("createCustomStage",
     (payload: { text: string }) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
-        .then(async () => {
-            const { response } = await backEndAPI.postCustomStage(payload)
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const author = api.extractProfileUrn(me);
+            const { response } = await backEndAPI.postCustomStage({...payload, author})
             return response
         }));
 

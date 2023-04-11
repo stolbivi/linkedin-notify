@@ -136,9 +136,9 @@ export class StageController extends BaseController {
         }
 
         try {
-            const { text } = request.body;
+            const { text, author } = request.body;
             const user =  request.user as User;
-            const userStage = await UserStages.create({ userId: user.id, text, stageId: new Date().getTime(), id: (new Date().getTime()+1).toString() })
+            const userStage = await UserStages.create({ userId: user.id, text, stageId: new Date().getTime(), id: (new Date().getTime()+1).toString(), author: author })
             await userStage.save()
             return Promise.resolve({ response: userStage , user: request.user})
         } catch (error) {

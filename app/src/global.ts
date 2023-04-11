@@ -51,6 +51,7 @@ export interface UserStage {
     userId: string;
     id?: string;
     stageId: number;
+    author?: string;
 }
 
 export interface Note {
@@ -58,8 +59,8 @@ export interface Note {
     profile: string
     author: string
     text?: string
-    stageFrom?: number
-    stageTo?: number
+    stageFrom?: any
+    stageTo?: any
     createdAt?: string
     updatedAt?: string
     stageText?: string

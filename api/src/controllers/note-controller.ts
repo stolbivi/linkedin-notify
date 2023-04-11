@@ -93,6 +93,9 @@ export class NoteController extends BaseController {
         }
 
         try {
+            if(!body.stageTo) {
+                body.stageTo = body.stageText;
+            }
             const toCreate = {...body, id: uuid()};
             const saved = await NoteModel.create(toCreate);
             let message: any = {response: saved.toJSON()};
