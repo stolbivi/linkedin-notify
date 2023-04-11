@@ -50,10 +50,12 @@ const JobList = () => {
     useEffect(() => {
         messages.request(getJobs())
             .then((r) => {
-                // @ts-ignore
-                setFields(r.response);
-                setFilteredFields(r.response);
-                setCompleted(true);
+                if(!r.message) {
+                    // @ts-ignore
+                    setFields(r.response);
+                    setFilteredFields(r.response);
+                    setCompleted(true);
+                }
             });
     },[]);
 
@@ -84,9 +86,9 @@ const JobList = () => {
                 salary: "",
                 company: "",
                 hiringContact: "",
-                type: "",
-                geography: "",
-                status: "",
+                type: "Part-Time",
+                geography: "Commute",
+                status: "On Hold",
                 assigned: "",
             };
             setFields([...fields, newField]);
@@ -178,7 +180,7 @@ const JobList = () => {
                                 </thead>
                                 <tbody>
                                 {
-                                    filteredFields.length == 0
+                                    filteredFields?.length == 0
                                         ?  (
                                             <tr className="job-column">
                                                 <td colSpan={10}>
@@ -187,7 +189,7 @@ const JobList = () => {
                                             </tr>
                                         )
                                         :
-                                        filteredFields.map((field) => (
+                                        filteredFields?.map((field) => (
                                             <tr key={field.id} className="job-column">
                                                 {Object.keys(field).map((key) => {
                                                     // @ts-ignore
