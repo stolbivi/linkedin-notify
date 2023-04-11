@@ -21,7 +21,7 @@ const Badge: React.FC<BadgeProps> = ({ category }) => {
     }
   }, [category])
 
-  return ( 
+  return (
     <BadgeContainer color={color}>
       <p>{category}</p>
     </BadgeContainer>

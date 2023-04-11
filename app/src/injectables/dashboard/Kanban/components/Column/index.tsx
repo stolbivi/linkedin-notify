@@ -23,7 +23,10 @@ const Column: React.FC<ColumnProps> = ({ status, cards, index }) => {
   return (
     <Container isFirstColumn={index === 0}>
       <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-      <h2 className="status-title">{status}</h2>
+        <div className="status-container">
+            <h2 className="status-title">{status}</h2>
+            <h2 className="status-title-number">3</h2>
+        </div>
       <Droppable droppableId={status}>
         {(provided) => (
           <CardsList ref={provided.innerRef} {...provided.droppableProps}>

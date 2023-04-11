@@ -39,11 +39,15 @@ const JobList = () => {
         hiringContact: "10%",
     };
 
-    const [fields, setFields] = useState([]);
+    const initialFields = [
+        {id: "12312", title: "abc", salary: "23234", company: "1", hiringContact: "23452342341", type: "1", geography: "4", status: "hired", assigned:"2"},
+        {id: "4533", title: "xyz", salary: "23234", company: "1", hiringContact: "7646", type: "4", geography: "3", status: "hired", assigned:"2"}
+    ]
+    const [fields, setFields] = useState(initialFields);
     const [filteredFields, setFilteredFields] = useState([]);
     const [editableField, setEditableField] = useState(null);
     const messages = new MessagesV2(VERBOSE);
-    const [completed, setCompleted] = useState(false);
+    const [completed, setCompleted] = useState(true);
     const [isEditMode, setIsEditMode] = useState(false);
     const [searchText, setSearchText] = useState("");
 

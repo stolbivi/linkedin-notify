@@ -5,8 +5,10 @@ import getCategoryBackgroundColor from '../../helpers/getCategoryBackgroundColor
 import { useModal } from '../../hooks/useModal';
 import ICard from '../../interfaces/ICard';
 import Badge from '../Badge';
-
+import icon from '../Card/image.png';
 import { CardBorder, CardBottom, CardContainer } from './styles';
+// @ts-ignore
+import stylesheet from './styles.scss';
 
 interface CardProps {
   card: ICard;
@@ -37,11 +39,19 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
           {...provided.draggableProps} 
           {...provided.dragHandleProps}
         >
-          <CardBorder color={backgroundColor}/> 
-          <h3>{card.title}</h3>
+          <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
+          <CardBorder color={backgroundColor}/>
+          <div className="card-container">
+            <img src={icon} alt="img" />
+            <div>
+              <h3 className="card-title">Jerome Bell</h3>
+              {/*<h3 className="card-title">{card.title}</h3>*/}
+              <p className="job-detail">UI/UX Designer</p>
+            </div>
+          </div>
           <CardBottom>
             <Badge category={card.category}/>
-            <p className="badge-style">+More</p>
+            <p className="more-text">+More</p>
           </CardBottom>
         </CardContainer>
       )}

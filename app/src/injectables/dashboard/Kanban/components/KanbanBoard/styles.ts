@@ -31,7 +31,6 @@ export const StatusesColumnsContainer = styled.div`
   align-items: flex-start;
   gap: 1.5rem;
   max-width: 100vw;
-  overflow-x: auto;
 
 
 `

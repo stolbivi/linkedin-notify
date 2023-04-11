@@ -113,6 +113,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     setActiveButton(button);
   }
 
+  useEffect(()=>{
+    console.log("columns: ", columns)
+  },[])
+
   return (
     <>
       <Container>

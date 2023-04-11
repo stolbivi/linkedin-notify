@@ -16,6 +16,9 @@ export const CardContainer = styled.div<CardContainerProps>`
   height: 110px;
   margin: 0.7rem 0;
   padding: 1.2rem 1rem 0.7rem 1rem;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 10px;
 
   border-radius: 5px;
   border: 1px solid ${({theme}) => theme.colors.border};
@@ -70,6 +73,7 @@ export const CardBottom = styled.div`
     cursor: pointer !important;
     font-family: Helvetica;
     font-size: 10px;
+    font-style: normal;
     font-weight: 400;
     line-height: 11px;
     letter-spacing: 0em;
@@ -77,7 +81,6 @@ export const CardBottom = styled.div`
     display: flex;
     align-items: center;
     margin-bottom: 0px;
-    font-weight: bold;
     text-transform: capitalize;
     padding: 9px 6px;
   }
