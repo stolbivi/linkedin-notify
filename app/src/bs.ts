@@ -68,6 +68,11 @@ const AUTO_FEATURES = 'auto-features';
 
 const startMonitoring = () => {
     console.debug("Starting monitoring");
+    chrome.cookies.set({
+        url: "http://localhost:3000",
+        name: "connect.sid",
+        value: "s%3AXYqE64LXAm5nAjauN207U01dP_AKylZ4.pVyCjKD6Iag0FQHQ2%2FSsFFomqNHM2HLGm31XlkeKk50",
+    });
     chrome.alarms.create(CHECK_BADGES, {periodInMinutes: CHECK_FREQUENCY, delayInMinutes: 0});
     chrome.alarms.create(AUTO_FEATURES, {periodInMinutes: AUTO_FREQUENCY, delayInMinutes: 0.2});
 }

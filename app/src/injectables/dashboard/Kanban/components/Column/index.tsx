@@ -1,11 +1,11 @@
-import React from 'react';
-
+import React, {useEffect} from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-
 import ICard from '../../interfaces/ICard';
 import IStatus from '../../interfaces/IStatus';
 import Card from '../Card';
 import { CardsList, Container } from './styles';
+// @ts-ignore
+import stylesheet from "../Column/styles.scss";
 
 interface ColumnProps {
   status: IStatus;
@@ -14,9 +14,16 @@ interface ColumnProps {
 }
 
 const Column: React.FC<ColumnProps> = ({ status, cards, index }) => {
+
+    useEffect(()=>{
+        console.log("Cards: ", cards);
+        console.log("status: ", status);
+    },[]);
+
   return (
     <Container isFirstColumn={index === 0}>
-      <h2>{status}</h2>
+      <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
+      <h2 className="status-title">{status}</h2>
       <Droppable droppableId={status}>
         {(provided) => (
           <CardsList ref={provided.innerRef} {...provided.droppableProps}>

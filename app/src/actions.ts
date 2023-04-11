@@ -297,6 +297,7 @@ export interface ShowNotesAndChartsPayload {
     id?: string
     showSalary: boolean
     showNotes: boolean
+    setSalary?:any
 }
 
 // TODO add to store

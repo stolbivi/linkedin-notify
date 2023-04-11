@@ -135,7 +135,7 @@
 
   .item {
     border-radius: 20px;
-    background-color: 1px solid #F1F1F1;
+    background-color: #F1F1F1;
     width: 75px;
     cursor: pointer;
     transition: all 0.1s ease-in-out;
@@ -152,7 +152,8 @@
 
   .active-item {
     border-radius: 20px;
-    background-color: #dedede;
+    background-color: #8B8B8B;
+    color: #ffffff !important;
     border: 1px solid #8B8B8B;
     text-align: center;
     width: 75px;
@@ -246,14 +247,31 @@
   box-sizing: border-box;
   width: 261px;
   height: 41px;
-  background: #FFFFFF;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: $notes-and-charts-background;
+  border: 1px solid $notes-color-3;
   border-radius: 5px;
   margin-right: 10px;
   padding-left: 10px;
+  color: $notes-color-3;
 }
 
 .close-button-salary {
   padding-right: 5%;
   padding-top: 4%;
+}
+
+.stage-name-title{
+  font-family: Helvetica;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  color: $notes-color-4;
+}
+
+.stage-name-title-active{
+  font-family: Helvetica;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  color: $notes-color-5;
 }

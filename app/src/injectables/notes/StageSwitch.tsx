@@ -38,17 +38,17 @@ export const StageLabels = {
     2: {label: "Interviewing", class: "interviewing"},
     3: {label: "Failed interview", class: "failed"},
     4: {label: "Hired", class: "hired"},
-    5: { label: "Not Looking Currently", class: "inactive" },
-    6: { label: "Open to New Offers", class: "inactive" },
-    7: { label: "Passive Candidate", class: "inactive" },
+    5: { label: "Not Looking Currently", class: "passive" },
+    6: { label: "Open to New Offers", class: "hired" },
+    7: { label: "Passive Candidate", class: "passive" },
     8: { label: "Actively Looking", class: "interviewing" },
-    9: { label: "Future Interest", class: "inactive" },
+    9: { label: "Future Interest", class: "interested" },
     10: { label: "Relocation", class: "interested" },
     11: { label: "Commute", class: "interested" },
     12: { label: "Hybrid", class: "interested" },
     13: { label: "Remote", class: "interested" },
     14: { label: "Contacted", class: "interviewing" },
-    15: { label: "Pending Response", class: "interviewing" },
+    15: { label: "Pending Response", class: "interested" },
     16: { label: "Interview Scheduled", class: "interviewing" },
     17: { label: "Offer Extended", class: "hired" },
     18: { label: "Rejected", class: "failed" },
@@ -69,13 +69,17 @@ type Props = {
     id?: string;
     classType?: string;
     customText?: string;
+    notes?: any;
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, appendNote, classType, customText}) => {
+export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, appendNote, customText, notes}) => {
 
     const [completed, setCompleted] = useState<boolean>(false);
-
     const messages = new MessagesV2(VERBOSE);
+
+    useEffect(()=>{
+        console.log(notes);
+    },[])
 
     useEffect(() => {
         if (activeStage !== undefined) {
@@ -102,7 +106,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
 
     return (
         <React.Fragment>
-            <div className={"stage " + (classType || (StageLabels[type].class || "inactive"))} onClick={onClick}>
+            <div className={"stage inactive"} onClick={onClick}>
                 <div className="loader"><Loader show={!completed || activeStage === undefined}/></div>
                 <label style={{opacity: completed ? 1 : 0}}>{customText || StageLabels[type].label}</label>
             </div>

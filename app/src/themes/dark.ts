@@ -90,6 +90,9 @@ export const theme: Theme = {
     "--notes-counter": "white",
     "--notes-color-1": "rgba(36, 43, 53, 1)",
     "--notes-color-2": "rgba(217, 217, 217, 0.2)",
+    "--notes-color-3": "rgba(255,255,255,0.68)",
+    "--notes-color-4": "rgb(139,139,139)",
+    "--notes-color-5": "rgb(255,254,254)",
 
     "--notes-container": "#CACACA",
     "--notes-container-background": "rgba(29, 34, 38, 1)",

@@ -6,6 +6,7 @@ import "./PayDistribution.scss";
 type Props = {
     salary: Salary;
     editable: boolean;
+    currencySymbol: String;
 };
 
 interface Sample {
@@ -19,7 +20,7 @@ interface Distribution {
     right: Sample;
 }
 
-export const PayDistribution: React.FC<Props> = ({ salary , editable}) => {
+export const PayDistribution: React.FC<Props> = ({ salary , currencySymbol,editable}) => {
     const [distribution, setDistribution] = useState<Distribution>({
         left: {percent: 10, value: ""},
         middle: {percent: 80, value: ""},
@@ -59,7 +60,7 @@ export const PayDistribution: React.FC<Props> = ({ salary , editable}) => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
         const newDistribution = {...distribution};
         // @ts-ignore
-        newDistribution[key].value = event.target.value;
+        newDistribution[key].value = currencySymbol+event.target.value;
         setDistribution(newDistribution);
     };
 
@@ -71,19 +72,19 @@ export const PayDistribution: React.FC<Props> = ({ salary , editable}) => {
                         <input
                             className="input-field"
                             type="text"
-                            value={distribution?.left?.value}
+                            placeholder={distribution?.left?.value}
                             onChange={(e) => handleChange(e, "left")}
                         />
                         <input
                             className="input-field"
                             type="text"
-                            value={distribution?.middle?.value}
+                            placeholder={distribution?.middle?.value}
                             onChange={(e) => handleChange(e, "middle")}
                         />
                         <input
                             className="input-field"
                             type="text"
-                            value={distribution?.right?.value}
+                            placeholder={distribution?.right?.value}
                             onChange={(e) => handleChange(e, "right")}
                         />
                     </div>

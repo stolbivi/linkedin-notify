@@ -154,12 +154,20 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [customStages, setCustomStages] = useState<UserStage[]>([]);
     const [activeStageParent, setActiveStageParent] = useState<StageParentData>(StageParentData.AVAILABILITY);
     const [editButton, setEditButton] = useState(false);
+    const [currencySymbol, setCurrencySymbol] = useState("");
     const [salaryLabel, setSalaryLabel] = useState("");
     const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
-        setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal))
+        setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal));
     },[salaryInternal]);
+
+    useEffect(()=>{
+        console.log("Salary label: ", salaryLabel);
+        if (salaryLabel){
+            setCurrencySymbol(salaryLabel[0]);
+        }
+    },[salaryLabel])
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
@@ -312,16 +320,13 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     };
 
     const getStage = (stage: number, id: string) => {
-        if (stage < 0) {
-            return <div className={"stage inactive"}><label>No stage</label></div>
-        }
         return <div className={"stage " + StageLabels[stage].class} style={{width: "27%"}}>
                     <label>{StageLabels[stage].label}</label>
                     <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
-                        <svg width="8" height="8" viewBox="0 0 17 17" fill="none"
+                        <svg width="3" height="3" viewBox="0 0 17 17" fill="none"
                              xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 2L15 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-                            <path d="M15 2L2 15" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                            <path d="M2 2L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <path d="M15 2L2 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                         </svg>
                     </span>
               </div>
@@ -406,7 +411,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                         editButton
                                                             ?(<input className="label-salary-edit"
                                                                      placeholder={salaryLabel}
-                                                                     onChange={(event) => setSalaryLabel(event.target.value)}/>)
+                                                                     onChange={(event) => setSalaryLabel(currencySymbol+event.target.value)}/>)
                                                             :(<div className="label-salary">{salaryLabel} year</div>)
                                                     }
                                                     <div className="label-position">
@@ -423,7 +428,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                     </div>
                                                 </section>
                                                 <section className="chart-section">
-                                                    {salaryInternal && <PayDistribution salary={salaryInternal} editable={editButton}/>}
+                                                    {salaryInternal && <PayDistribution salary={salaryInternal} currencySymbol={currencySymbol} editable={editButton}/>}
                                                 </section>
                                             </div>
                                         </div>
@@ -434,7 +439,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                     </Collapsible>
                                 )}
                                 {showNotes && salaryInternal &&
-                                    <Collapsible initialOpened={true}>
+                                    <Collapsible initialOpened={true} typeCollapse={true}>
                                         <div data-role={CollapsibleRole.Title} className="title-child assigned">
                                             <label>Track Candidates</label>
                                             <div className="assigned-job">
@@ -449,14 +454,14 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                 {stageParents.map(stage => <div
                                                     onClick={() => setActiveStageParent(prev => prev === stage.name ? null : stage.name)}
                                                     className={activeStageParent === stage.name ? "active-item" : "item"}>
-                                                    {stage.name}
+                                                    <div className={activeStageParent === stage.name ? "stage-name-title-active" : "stage-name-title"}>{stage.name}</div>
                                                     {activeStageParent === stage.name ? <UpChevron/> : <DownChevron/>}
                                                 </div>)}
                                                 <div className="nested-childs">
                                                     {stageChildData[activeStageParent]?.map?.(child => activeStageParent !== "Groups" ?
                                                         <StageSwitch type={child.name} activeStage={stageInternal}
                                                                      setStage={setStageInternal} id={salaryInternal.urn}
-                                                                     appendNote={appendNote}>
+                                                                     appendNote={appendNote} notes={notes}>
                                                         </StageSwitch> :
                                                         <div className="custom-stages-wrapper">
                                                             {customStages?.map?.(customStage => <StageSwitch

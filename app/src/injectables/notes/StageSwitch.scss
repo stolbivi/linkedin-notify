@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-items: center;
-  padding: 6px 11px;
+  padding: 6px 14px;
   border-radius: 37px;
   color: $stage;
   font-family: 'Helvetica';
@@ -57,9 +57,15 @@
   background-color: $stage-hired;
 }
 
+.passive{
+  background-color: $stage-passive;
+  color: #767676;
+}
+
 .inactive {
   background-color: white;
   color: #8B8B8B;
   border: 1px solid #8B8B8B;
   border-radius: 37px;
 }
+
