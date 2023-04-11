@@ -50,11 +50,13 @@ const JobList = () => {
     useEffect(() => {
         messages.request(getJobs())
             .then((r) => {
-                if(!r.message) {
+                setCompleted(true);
+                if(r?.error) {
+                    return;
+                } else {
                     // @ts-ignore
                     setFields(r.response);
                     setFilteredFields(r.response);
-                    setCompleted(true);
                 }
             });
     },[]);
@@ -121,13 +123,13 @@ const JobList = () => {
             setCompleted(false);
             messages.request(postJob(editableField))
                 .then((r) => {
+                    setCompleted(true);
                     let updatedFields = [...fields];
                     updatedFields = updatedFields.filter(field => field.id !== editableField.id);
                     editableField.id = r.id;
                     updatedFields.push(editableField);
                     setFields(updatedFields);
                     setFilteredFields(updatedFields);
-                    setCompleted(true);
                     setEditableField(null);
                 });
         }
