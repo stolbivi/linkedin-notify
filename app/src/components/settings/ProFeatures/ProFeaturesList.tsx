@@ -36,7 +36,6 @@ const ProFeaturesList = () => {
         });
     },[]);
     const saveHandler = () => {
-        setCompleted(false);
         const updatedFeatures = {...features};
         chrome.storage.local.set({proFeatures: JSON.stringify(updatedFeatures)}).then(_r => {});
         chrome.tabs.query({ active: true }, (tabs) => {
@@ -51,9 +50,7 @@ const ProFeaturesList = () => {
                 console.error('Error:', error);
             });
         });
-        setTimeout(() => {
-            setCompleted(true);
-        },500);
+        window.close();
     }
     const resetHandler = () => {
         setFeatures(prevFeatures => {

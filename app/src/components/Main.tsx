@@ -66,7 +66,7 @@ export const Main: React.FC<Props> = ({}) => {
                                 <div className="title">
                                     <div className="logo"><Logo/></div>
                                     <span>LinkedIn Manager</span>
-                                    <Settings setSettingTabs={setSettingTabs}/>
+                                    <Settings setSettingTabs={setSettingTabs} setTab={setTab}/>
                                     <div className="switch"><ThemeSwitch light={light} setLight={setLight}/></div>
                                 </div>
                             </div>
