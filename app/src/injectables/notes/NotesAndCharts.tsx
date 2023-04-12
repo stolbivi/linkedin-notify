@@ -167,8 +167,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         console.log("Salary label: ", salaryLabel);
         if (salaryLabel){
             setCurrencySymbol(salaryLabel[0]);
+            if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
+                (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryLabel;
+            }
         }
     },[salaryLabel])
+
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 

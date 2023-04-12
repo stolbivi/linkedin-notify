@@ -42,6 +42,7 @@ export const LnDashboard: React.FC<Props> = ({}) => {
     }, []);
     const dashboardClickHandler = () => {
         const navBarElement = document.querySelector('.scaffold-layout.scaffold-layout--breakpoint-xl');
+        document.querySelector(".LnDashboard div").shadowRoot.querySelector(".global-nav__primary-item").classList.add("dashboard-active");
         if (navBarElement) {
             ReactDOM.render(<Navbar/>, navBarElement);
             const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
