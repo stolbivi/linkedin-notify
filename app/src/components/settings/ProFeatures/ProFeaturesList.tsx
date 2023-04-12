@@ -88,16 +88,16 @@ const ProFeaturesList = () => {
         <div className="w-100" style={{ height: "600px" }} ref={rootElement}>
                 <>
                     <Loader show={!completed} className="p-5" heightValue="600px"/>
-                    <div style={{padding:"2%", display: "grid", gridTemplateColumns: "3fr 1fr"}}>
-                        <span style={{marginRight: "55%", marginLeft: "4%"}} className="pro-feature-text">Pro Feature</span>
-                        <span style={{marginRight: "5%"}} className="pro-feature-text">On/Off</span>
+                    <div style={{padding:"20px", display: "grid", gridTemplateColumns: "3fr 1fr", marginTop:"7px"}}>
+                        <span className="pro-feature-text">Pro Feature</span>
+                        <span className="pro-feature-toggle">On/Off</span>
                     </div>
                     {
                         Object.values(features).map(feature => (
                             <div className="card-holder row" key={feature.id}>
                                 <div className={"notification-card"} style={{display: "grid", gridTemplateColumns: "3fr 1fr"}}>
-                                    <div className="pro-feature-text" style={{paddingLeft: "4%"}}>{feature.text}</div>
-                                    <div className="form-check form-switch" style={{textAlign: "center"}}>
+                                    <div className="pro-feature-options" style={{paddingLeft: "4%", fontSize:"12px"}}>{feature.text}</div>
+                                    <div className="form-check form-switch" style={{textAlign: "center", paddingLeft:"6.5rem"}}>
                                         <input className="form-check-input switch-color" type="checkbox" checked={feature.isActive}
                                                onChange={() => toggleCheck(feature.id)} />
                                     </div>
@@ -106,8 +106,8 @@ const ProFeaturesList = () => {
                         ))
                     }
                     <div className="row">
-                        <button className="reset-btn" style={{marginLeft: "26%"}} onClick={resetHandler}>Reset</button>
-                        <button className="save-btn" style={{marginLeft: "26%"}} onClick={saveHandler}>Save</button>
+                        <button className="reset-btn" onClick={resetHandler}>Reset</button>
+                        <button className="save-btn" onClick={saveHandler}>Save</button>
                     </div>
                 </>
         </div>

@@ -118,20 +118,20 @@ const AutoFeaturesList = () => {
     }, []);
 
     return (
-        <div className="w-100" style={{ height: "600px" }} ref={rootElement}>
+        <div className="w-100" style={{ height: "600px", display:"flex", flexDirection:"column"}} ref={rootElement}>
             <Loader show={!completed} className="p-5" heightValue="600px"/>
             {completed && autoFeatures.length == 0 && <div className="no-data">No Auto Features found</div>}
             {completed && autoFeatures && Object.keys(autoFeatures).length > 0 && (
                 <>
-                    <div style={{padding:"2%", display: "grid", gridTemplateColumns: "3fr 1fr 1fr"}} >
-                        <span style={{marginLeft: "4%"}} className="auto-feature-text">User</span>
+                    <div style={{padding:"20px", display: "grid", gridTemplateColumns: "3fr 1fr 1fr", marginTop:"7px"}} >
+                        <span style={{marginLeft: "4%"}} className="pro-feature-text">User</span>
                         <span className="auto-feature-text">Auto Like</span>
                         <span className="auto-feature-text">Auto Repost</span>
                     </div>
                     {Object.entries(autoFeatures).map(([id, feature]) => (
                         <AutoFeatureCard autoFeature={feature} id={id} key={id} updatedFeatures={updatedFeatures}/>
                     ))}
-                    <div className="row">
+                    <div className="auto-buttons">
                         <button className="reset-btn" style={{marginLeft: "26%"}} onClick={resetHandler}>Reset</button>
                         <button className="save-btn" style={{marginLeft: "26%"}} onClick={saveHandler}>Save</button>
                     </div>
