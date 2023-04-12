@@ -13,8 +13,9 @@ import {theme as LightTheme} from "../../../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {getTheme,  SwitchThemePayload} from "../../../actions";
 import {theme as DarkTheme} from "../../../themes/dark";
+import {AccessState} from "../../../injectables/AccessGuard";
 
-const AutoFeaturesList = () => {
+const AutoFeaturesList = (props) => {
     const [completed, setCompleted] = useState(false);
     const [autoFeatures, setAutoFeatures] = useState({});
     const [prevFeatures,setPrevFeatures] = useState({});
@@ -22,24 +23,25 @@ const AutoFeaturesList = () => {
     const messages = new MessagesV2(VERBOSE);
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
+    const getIdFromUrn = (urn: string) => {
+        const regex = /(?<=:)[^:]*$/;
+        return urn.match(regex)[0];
+    };
+    const getTypeFromUrn = (urn: string) => {
+        const regex = /(?<=:)(fs_miniCompany|fs_miniProfile)/;
+        return urn.match(regex)[0];
+    };
+
     async function getFeatureProfiles(features) {
         const featureProfiles = {};
-        const getIdFromUrn = (urn: string) => {
-            const regex = /(?<=:)[^:]*$/;
-            return urn.match(regex)[0];
-        };
-        const getTypeFromUrn = (urn: string) => {
-            const regex = /fs_mini(\w+):/;
-            const match = regex.exec(urn);
-            return match ? match[1] : null;
-        };
         for (let feature of features) {
             for (let author of feature.authors) {
                 const id = getIdFromUrn(author);
                 const type = feature.type;
+                const profileType = getTypeFromUrn(author);
                 if (!featureProfiles[id]) {
                     let resp;
-                    if ("Profile" === getTypeFromUrn(author)) {
+                    if ("fs_miniProfile" === profileType) {
                         resp = await messages.request(getProfileByUrn(id));
                     } else {
                         resp = await messages.request(getCompanyByUrn(id));
@@ -87,14 +89,18 @@ const AutoFeaturesList = () => {
     }
 
     useEffect(() => {
-        messages.request(getFeatures())
-            .then(async (resp) => {
-                if (resp && resp?.response?.features?.length > 0) {
-                    const features = resp?.response?.features;
-                    setAutoFeatures(await getFeatureProfiles(features));
+        if(props.accessState === AccessState.Valid) {
+            messages.request(getFeatures())
+                .then(async (resp) => {
+                    if (resp && resp?.response?.features?.length > 0) {
+                        const features = resp?.response?.features;
+                        setAutoFeatures(await getFeatureProfiles(features));
+                    }
                     setCompleted(true);
-                }
-            }).catch(_err => setCompleted(true));
+                }).catch(_err => setCompleted(true));
+        } else {
+            setCompleted(true);
+        }
     }, []);
 
     useEffect(() => {
@@ -119,7 +125,7 @@ const AutoFeaturesList = () => {
     return (
         <div className="w-100" style={{ height: "600px", display:"flex", flexDirection:"column"}} ref={rootElement}>
             <Loader show={!completed} className="p-5" heightValue="600px"/>
-            {completed && autoFeatures.length == 0 && <div className="no-data">No Auto Features found</div>}
+            {completed && Object.keys(autoFeatures).length == 0 && <div className="no-data">No Auto Features found</div>}
             {completed && autoFeatures && Object.keys(autoFeatures).length > 0 && (
                 <>
                     <div style={{padding:"20px", display: "grid", gridTemplateColumns: "3fr 1fr 1fr", marginTop:"7px"}} >
