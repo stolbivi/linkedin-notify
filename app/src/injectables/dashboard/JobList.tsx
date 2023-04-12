@@ -84,23 +84,8 @@ const JobList = () => {
     }, [searchText]);
 
     const handleAddField = () => {
-        setIsEditMode(false);
-        if(!editableField) {
-            const newField = {
-                id: "",
-                title: "",
-                salary: "",
-                company: "",
-                hiringContact: "",
-                type: "Part-Time",
-                geography: "Commute",
-                status: "On Hold",
-                assigned: "",
-            };
-            setFields([...fields, newField]);
-            setFilteredFields([...fields, newField]);
-            setEditableField(newField);
-        }
+        setIsEditMode(true);
+
     };
 
     const handleEditField = (field: any) => {
@@ -168,7 +153,28 @@ const JobList = () => {
                     </div>
                     <Loader show={!completed} className="p-5 job-loader" heightValue="600px"/>
                     {
-                        completed ? (
+                        completed ?
+                            (
+                            isEditMode?(
+                                <div className="group-container">
+                                    <div className="add-group">
+                                        <span className="add-group-text">Add a Group</span>
+                                        <svg className="cross-icon" width="15" height="15" viewBox="0 0 15 15"
+                                             fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <g opacity="0.7">
+                                                <path d="M2 2L13 13" stroke="black" stroke-width="3"
+                                                      stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M13 2L2 13" stroke="black" stroke-width="3"
+                                                      stroke-linecap="round" stroke-linejoin="round"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div className="group-divider"></div>
+                                    <div className="group-name-text">Group name</div>
+                                    <input className="group-name-input" type="text" placeholder="Enter a name"/>
+                                        <button className="confirm-button">Confirm</button>
+                                </div>
+                        ):(
                             <table className="table table-striped jobs-table">
                                 <thead>
                                 <tr>
@@ -274,6 +280,7 @@ const JobList = () => {
                                 }
                                 </tbody>
                             </table>
+                        )
                         ) : null
                     }
                 </div>
