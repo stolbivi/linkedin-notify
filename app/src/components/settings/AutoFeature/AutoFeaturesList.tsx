@@ -25,9 +25,8 @@ const AutoFeaturesList = () => {
     async function getFeatureProfiles(features) {
         const featureProfiles = {};
         const getIdFromUrn = (urn: string) => {
-            const regex = /urn:li:fs_miniProfile:(.*)/;
-            const match = regex.exec(urn);
-            return match ? match[1] : null;
+            const regex = /(?<=:)[^:]*$/;
+            return urn.match(regex)[0];
         };
         const getTypeFromUrn = (urn: string) => {
             const regex = /fs_mini(\w+):/;
