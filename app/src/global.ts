@@ -59,8 +59,8 @@ export interface Note {
     profile: string
     author: string
     text?: string
-    stageFrom?: any
-    stageTo?: any
+    stageFrom?: number
+    stageTo?: number
     createdAt?: string
     updatedAt?: string
     stageText?: string

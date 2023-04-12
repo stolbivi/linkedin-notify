@@ -31,7 +31,6 @@ import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 import UpChevron from "../../icons/UpChevron";
 import DownChevron from "../../icons/DownChevron";
-import {isNumeric} from "mathjs";
 
 export const NotesAndChartsFactory = () => {
     setTimeout(() => {
@@ -324,10 +323,9 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         setStageInternal(-1);
     };
 
-    const getStage = (stage: any, id: string) => {
-        if(isNumeric(stage)) {
-            return <div className={"stage " + StageLabels[Number(stage)].class} style={{width: "27%"}}>
-                <label>{StageLabels[Number(stage)].label}</label>
+    const getStage = (stage: number, id: string) => {
+        return <div className={"stage " + StageLabels[stage].class} style={{width: "27%"}}>
+                    <label>{StageLabels[stage].label}</label>
                 <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
                         <svg width="3" height="3" viewBox="0 0 17 17" fill="none"
                              xmlns="http://www.w3.org/2000/svg">
@@ -336,18 +334,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                         </svg>
                     </span>
             </div>
-        } else {
-            return <div className={"stage interested"} style={{width: "27%"}}>
-                <label>{stage}</label>
-                <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
-                        <svg width="3" height="3" viewBox="0 0 17 17" fill="none"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 2L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                            <path d="M15 2L2 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
-                    </span>
-                </div>
-        }
     }
 
     const CreateNewGroup = () => {
@@ -478,6 +464,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                 <div className="nested-childs">
                                                     {stageChildData[activeStageParent]?.map?.(child => activeStageParent !== "Groups" ?
                                                         <StageSwitch key={salaryInternal.urn} type={child.name} activeStage={stageInternal}
+                                                                     parentStage={Object.values(StageParentData).indexOf(activeStageParent)}
                                                                      setStage={setStageInternal} id={salaryInternal.urn}
                                                                      appendNote={appendNote} notes={notes}>
                                                         </StageSwitch> :

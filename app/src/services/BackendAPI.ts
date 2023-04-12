@@ -63,10 +63,10 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public setStage(id: string, stage: StageEnum, author: string): Promise<Response<any>> {
+    public setStage(id: string, stage: StageEnum, author: string, parentStage: number): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}stage/${id}`,
-            this.getRequest("PUT", {stage, author})
+            this.getRequest("PUT", {stage, author, parentStage})
         );
     }
 

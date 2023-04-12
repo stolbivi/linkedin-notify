@@ -70,9 +70,10 @@ type Props = {
     classType?: string;
     customText?: string;
     notes?: any;
+    parentStage?: number
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, appendNote, customText, notes}) => {
+export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, appendNote, customText, notes, parentStage}) => {
 
     const [completed, setCompleted] = useState<boolean>(false);
     const messages = new MessagesV2(VERBOSE);
@@ -92,7 +93,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
             return;
         }
         setCompleted(false);
-        messages.request(setStageAction({id, stage: type, stageFrom: activeStage, stageText: customText || undefined}))
+        messages.request(setStageAction({id, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage }))
             .then((r) => {
                 if (r.error) {
                     console.error(r.error);

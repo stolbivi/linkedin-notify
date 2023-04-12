@@ -58,6 +58,26 @@ export class StageController extends BaseController {
     }
 
     @Tags("Persistence")
+    @Get("stage/author/{id}")
+    public async findStagesByAuthor(id: string, @Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+        try {
+            let query = StageModel.query("author").eq(id);
+            const result = await query.exec();
+            let message: any = {response: result.map((i: any) => i.toJSON())};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
+    @Tags("Persistence")
     @Post("stage")
     public async create(@Body() body: StageWithId,
                         @Request() request?: express.Request

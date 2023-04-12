@@ -2,6 +2,13 @@ const dynamoose = require("dynamoose");
 
 require("dotenv").config();
 
+export enum ParentStageEnum {
+    AVAILABILITY,
+    GEOGRAPHY,
+    STATUS,
+    TYPE,
+    Groups
+}
 export enum StageEnum {
     Interested,
     NotInterested,
@@ -31,6 +38,7 @@ export enum StageEnum {
 
 export interface Stage {
     stage: StageEnum
+    parentStage?: number
     author?: string
     email?: string
     createdAt?: string
@@ -62,6 +70,10 @@ const stageSchema = new dynamoose.Schema({
     stage: {
         type: Number,
         required: true
+    },
+    parentStage: {
+        type: Number,
+        required: false
     },
     groupId: {
         type: String,

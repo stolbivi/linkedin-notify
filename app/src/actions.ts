@@ -272,6 +272,7 @@ export interface SetStagePayload {
     stage: StageEnum
     stageFrom: StageEnum
     stageText?: string;
+    parentStage?: number
 }
 
 export const setStage = createAction<SetStagePayload, any>("setStage",
@@ -288,7 +289,7 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
                 stageText: payload.stageText || undefined
             });
             const noteExtended = await extendNote(token, [note.response], author);
-            const stage = await backEndAPI.setStage(payload.id, payload.stage, author);
+            const stage = await backEndAPI.setStage(payload.id, payload.stage, author, payload.parentStage);
             return {note: {response: noteExtended[0]}, stage: stage};
         }));
 

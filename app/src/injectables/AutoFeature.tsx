@@ -106,6 +106,7 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
 
     const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
+
         e.stopPropagation();
         setCompleted(false);
         messages.request(setFeaturesAction({author, type, action: active ? "unset" : "set"}))
