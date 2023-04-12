@@ -106,3 +106,71 @@
 .job-column{
   text-align: center !important;
 }
+
+.group-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: auto; /* or a fixed value */
+}
+
+.add-group {
+  width: 150px;
+  height: 47px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 35px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 176.4%;
+  color: #000000;
+  opacity: 0.7;
+  box-sizing: border-box;
+}
+
+.add-group-text {
+  display: flex;
+  align-items: center;
+  height: 21px;
+}
+
+.cross-icon {
+  cursor: pointer;
+}
+
+.group-divider {
+  width: 524px;
+  height: 0px;
+  border-top: 1px solid #000000;
+  opacity: 0.1;
+}
+
+.group-name-text {
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 176.4%;
+  color: #000000;
+  display: flex;
+  align-items: center;
+}
+
+.group-name-input {
+  width: 283px;
+  height: 41px;
+}
+
+.confirm-button {
+  margin-top: 20px;
+  width: 80px;
+  height: 30px;
+  background-color: #383637;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
