@@ -39,6 +39,9 @@ export enum StageEnum {
 export interface Stage {
     stage: StageEnum
     parentStage?: number
+    name?: string
+    designation?:string
+    profileImageUrl?:string
     author?: string
     email?: string
     createdAt?: string
@@ -76,6 +79,18 @@ const stageSchema = new dynamoose.Schema({
         required: false
     },
     groupId: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    designation: {
+        type: String,
+        required: true
+    },
+    profileImageUrl: {
         type: String,
         required: true
     }

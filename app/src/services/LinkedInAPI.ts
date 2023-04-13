@@ -506,33 +506,38 @@ export class LinkedInAPI {
             "credentials": "include"
         }).then(_ => null);
     }
-
     public extractProfile(id: string, response: any): any {
-        const actor = response.included.filter((i: any) => i.actor !== undefined);
-        let name = ["N/A"];
-        let link = undefined;
-        if (actor?.length > 0) {
-            name = JSONPath.query(actor[0], "$.actor.name.text");
-            link = JSONPath.query(actor[0], "$.actor.navigationContext.target");
-        } else {
-            const entity = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
-            if (entity?.length > 0) {
-                const firstName = entity[0].firstName;
-                const lastName = entity[0].lastName;
-                if (firstName && lastName) {
-                    name = [`${firstName} ${lastName}`];
+        try {
+            const actor = response.included.filter((i: any) => i.actor !== undefined);
+            let name = ["N/A"];
+            let link = undefined;
+            if (actor?.length > 0) {
+                name = JSONPath.query(actor[0], "$.actor.name.text");
+                link = JSONPath.query(actor[0], "$.actor.navigationContext.target");
+            } else {
+                const entity = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
+                if (entity?.length > 0) {
+                    const firstName = entity[0].firstName;
+                    const lastName = entity[0].lastName;
+                    if (firstName && lastName) {
+                        name = [`${firstName} ${lastName}`];
+                    }
                 }
             }
+            let result: any = {name, link};
+            const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
+            if(profile && profile[0]) {
+                const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
+                if (vectorImage?.length > 0) {
+                    const artifacts = extractArtifacts(vectorImage[0].artifacts);
+                    const rootUrl = vectorImage[0].rootUrl;
+                    result = {...result, profilePicture: {rootUrl, artifacts}, id}
+                }
+            }
+            return result;
+        } catch (e) {
+            console.error("Error querying JSON path: ", e);
         }
-        let result: any = {name, link};
-        const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
-        const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
-        if (vectorImage?.length > 0) {
-            const artifacts = extractArtifacts(vectorImage[0].artifacts);
-            const rootUrl = vectorImage[0].rootUrl;
-            result = {...result, profilePicture: {rootUrl, artifacts}, id}
-        }
-        return result;
     }
 
     public extractCompany(id: string, response: any): any {

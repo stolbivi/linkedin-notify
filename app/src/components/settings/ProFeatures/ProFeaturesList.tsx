@@ -14,7 +14,7 @@ import {VERBOSE} from "../../../global";
 
 const ProFeaturesList = () => {
     const [features, setFeatures] = useState({});
-    const [completed, setCompleted] = useState(true);
+    const [completed, setCompleted] = useState(false);
     const messages = new MessagesV2(VERBOSE);
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
     let proFeatures = {
@@ -27,6 +27,9 @@ const ProFeaturesList = () => {
         "AutoFeature": { text: "Auto Like/Repost", isActive: true, id: "AutoFeature", isChanged: false },
     };
     useEffect(() => {
+        setTimeout(() => {
+            setCompleted(true);
+        },500);
         chrome.storage.local.get('proFeatures', (data) => {
             if (data.proFeatures) {
                 setFeatures(JSON.parse(data.proFeatures));

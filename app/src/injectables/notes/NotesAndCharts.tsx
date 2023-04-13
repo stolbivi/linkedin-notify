@@ -462,8 +462,8 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                     {activeStageParent === stage.name ? <UpChevron/> : <DownChevron/>}
                                                 </div>)}
                                                 <div className="nested-childs">
-                                                    {stageChildData[activeStageParent]?.map?.(child => activeStageParent !== "Groups" ?
-                                                        <StageSwitch key={salaryInternal.urn} type={child.name} activeStage={stageInternal}
+                                                    {stageChildData[activeStageParent]?.map?.((child,index) => activeStageParent !== "Groups" ?
+                                                        <StageSwitch key={salaryInternal.urn+index} type={child.name} activeStage={stageInternal}
                                                                      parentStage={Object.values(StageParentData).indexOf(activeStageParent)}
                                                                      setStage={setStageInternal} id={salaryInternal.urn}
                                                                      appendNote={appendNote} notes={notes}>

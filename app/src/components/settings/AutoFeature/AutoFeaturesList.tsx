@@ -34,24 +34,32 @@ const AutoFeaturesList = (props) => {
 
     async function getFeatureProfiles(features) {
         const featureProfiles = {};
+        const userIds = new Set();
+        const companyIds = new Set();
         for (let feature of features) {
             for (let author of feature.authors) {
                 const id = getIdFromUrn(author);
                 const type = feature.type;
                 const profileType = getTypeFromUrn(author);
-                if (!featureProfiles[id]) {
-                    let resp;
-                    if ("fs_miniProfile" === profileType) {
-                        resp = await messages.request(getProfileByUrn(id));
-                    } else {
-                        resp = await messages.request(getCompanyByUrn(id));
-                    }
-                    featureProfiles[id] = {...resp, author};
-                    featureProfiles[id].types = [type];
+                if (profileType === "fs_miniProfile") {
+                    userIds.add(id);
                 } else {
-                    featureProfiles[id].types.push(type);
+                    companyIds.add(id);
                 }
+                if (!featureProfiles[id]) {
+                    featureProfiles[id] = { author, types: [] };
+                }
+                featureProfiles[id].types.push(type);
             }
+        }
+        const userProfilesPromise = Promise.all(Array.from(userIds).map((id) => messages.request(getProfileByUrn(id))));
+        const companyProfilesPromise = Promise.all(Array.from(companyIds).map((id) => messages.request(getCompanyByUrn(id))));
+        const [userProfiles, companyProfiles] = await Promise.all([userProfilesPromise, companyProfilesPromise]);
+        for (const profile of userProfiles) {
+            featureProfiles[profile.id] = { ...profile, ...featureProfiles[profile.id] };
+        }
+        for (const profile of companyProfiles) {
+            featureProfiles[profile.id] = { ...profile, ...featureProfiles[profile.id] };
         }
         return featureProfiles;
     }
@@ -59,34 +67,34 @@ const AutoFeaturesList = (props) => {
     const resetHandler = () => {
         setAutoFeatures(JSON.parse(JSON.stringify(prevFeatures)));
     }
-
-    const callFeaturesAction = (author,type,value) => {
-        return messages.request(setFeaturesAction({author, type, action: value}))
-                .then((r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    }
-                });
-    }
-
-    const saveHandler = () => {
+    const callFeaturesAction = async (author, type, value) => {
+        try {
+            const response = await messages.request(setFeaturesAction({ author, type, action: value }));
+            if (response.error) {
+                console.error(response.error);
+            }
+        } catch (error) {
+            console.error("Error in callFeaturesAction:", error);
+        }
+    };
+    const saveHandler = async () => {
         setCompleted(false);
         const featurePromises = [];
         updatedFeatures.current.forEach(feature => {
             const isLiked = feature.types.includes("like") ? "set" : "unset";
             const isReposted = feature.types.includes("repost") ? "set" : "unset";
-            featurePromises.push(callFeaturesAction(feature.author,"like", isLiked));
-            featurePromises.push(callFeaturesAction(feature.author,"repost", isReposted));
+            featurePromises.push(callFeaturesAction(feature.author, "like", isLiked));
+            featurePromises.push(callFeaturesAction(feature.author, "repost", isReposted));
         });
-        Promise.all([...featurePromises])
-            .then(() => {
-                setCompleted(true);
-            })
-            .catch((error) => {
-                console.error("Error saving features:", error);
-                setCompleted(true);
-            });
-    }
+        try {
+            await Promise.all(featurePromises);
+            setCompleted(true);
+        } catch (error) {
+            console.error("Error saving features:", error);
+            setCompleted(true);
+        }
+    };
+
 
     useEffect(() => {
         if(props.accessState === AccessState.Valid) {
@@ -104,7 +112,7 @@ const AutoFeaturesList = (props) => {
     }, []);
 
     useEffect(() => {
-        setPrevFeatures(autoFeatures)
+        setPrevFeatures(JSON.parse(JSON.stringify(autoFeatures)));
     },[autoFeatures]);
 
     useEffect(() => {
@@ -136,7 +144,7 @@ const AutoFeaturesList = (props) => {
                     {Object.entries(autoFeatures).map(([id, feature]) => (
                         <AutoFeatureCard autoFeature={feature} id={id} key={id} updatedFeatures={updatedFeatures}/>
                     ))}
-                    <div className="auto-buttons">
+                    <div style={{marginTop:"10%"}}>
                         <button className="reset-btn" style={{marginLeft: "26%"}} onClick={resetHandler}>Reset</button>
                         <button className="save-btn" style={{marginLeft: "26%"}} onClick={saveHandler}>Save</button>
                     </div>

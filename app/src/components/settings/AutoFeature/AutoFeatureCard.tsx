@@ -65,14 +65,14 @@ export const AutoFeatureCard: React.FC<Props> = ({autoFeature, updatedFeatures})
                         {picture.length > 0 && <div className="card-image" style={{paddingLeft: "4%"}}>
                             <img src={picture} alt="img"/>
                         </div>}
-                        <div style={{paddingLeft: "1%"}} className="auto-feature-text">{autoFeature.name[0]}</div>
+                        <div style={{paddingLeft: "1%"}} className="auto-feature-text">{autoFeature?.name && autoFeature.name[0]}</div>
                     </div>
                     <div className="form-check form-switch" style={{textAlign: "center"}}>
-                        <input className="form-check-input switch-color" type="checkbox" id="autoLike" defaultChecked={autoFeature.types.includes("like")}
+                        <input className="form-check-input switch-color" type="checkbox" id="autoLike" defaultChecked={autoFeature?.types?.includes("like")}
                                onChange={() => setFeature(autoFeature, "like")} />
                     </div>
                     <div className="form-check form-switch" style={{textAlign: "center"}}>
-                        <input className="form-check-input switch-color" type="checkbox" id="autoRepost" defaultChecked={autoFeature.types.includes("repost")}
+                        <input className="form-check-input switch-color" type="checkbox" id="autoRepost" defaultChecked={autoFeature?.types?.includes("repost")}
                                onChange={() => setFeature(autoFeature, "repost")} />
                     </div>
                 </div>
