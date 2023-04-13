@@ -55,6 +55,24 @@ const ProFeaturesList = () => {
         });
         window.close();
     }
+
+    useEffect(() => {
+        const updatedFeatures = {...features};
+        chrome.storage.local.set({proFeatures: JSON.stringify(updatedFeatures)}).then(_r => {});
+        chrome.tabs.query({ active: true }, (tabs) => {
+            chrome.scripting.executeScript({
+                target: { tabId: tabs[0].id },
+                func: function (updatedFeatures) {
+                    sessionStorage.setItem('proFeatures', JSON.stringify(updatedFeatures));
+                    window.postMessage({ type: "modifyElements", initialLoad: false }, "*");
+                },
+                args: [updatedFeatures],
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    },[features]);
+
     const resetHandler = () => {
         setFeatures(prevFeatures => {
             const newFeatures = {...prevFeatures};
@@ -92,7 +110,7 @@ const ProFeaturesList = () => {
                 <>
                     <Loader show={!completed} className="p-5" heightValue="600px"/>
                     <div style={{padding:"20px", display: "grid", gridTemplateColumns: "3fr 1fr", marginTop:"7px"}}>
-                        <span className="pro-feature-text">Pro Feature</span>
+                        <span className="pro-feature-text">Features</span>
                         <span className="pro-feature-toggle">On/Off</span>
                     </div>
                     {
