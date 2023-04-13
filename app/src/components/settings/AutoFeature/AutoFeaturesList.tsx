@@ -136,10 +136,10 @@ const AutoFeaturesList = (props) => {
             {completed && Object.keys(autoFeatures).length == 0 && <div className="no-data">No users marked for auto services</div>}
             {completed && autoFeatures && Object.keys(autoFeatures).length > 0 && (
                 <>
-                    <div style={{padding:"20px", display: "grid", gridTemplateColumns: "3fr 1fr 1fr", marginTop:"7px"}} >
+                    <div style={{padding:"20px", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", marginTop:"7px"}} >
                         <span style={{marginLeft: "4%"}} className="pro-feature-text">Profile</span>
-                        <span className="auto-feature-text">Auto Like</span>
-                        <span className="auto-feature-text">Auto Repost</span>
+                        <span style={{width:"fit-content", marginLeft:"56px"}} className="auto-feature-text">Auto Like</span>
+                        <span style={{marginLeft:"10px"}} className="auto-feature-text">Auto Repost</span>
                     </div>
                     {Object.entries(autoFeatures).map(([id, feature]) => (
                         <AutoFeatureCard autoFeature={feature} id={id} key={id} updatedFeatures={updatedFeatures}/>

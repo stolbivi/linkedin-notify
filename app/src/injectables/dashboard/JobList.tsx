@@ -215,7 +215,6 @@ const JobList = () => {
                                 <table className="table table-striped jobs-table">
                                     <thead>
                                     <tr>
-                                        <th scope="col" className="job-column">ID</th>
                                         <th scope="col" className="job-column">Title</th>
                                         <th scope="col" className="job-column">Salary</th>
                                         <th scope="col" className="job-column">Company</th>
