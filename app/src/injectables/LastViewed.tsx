@@ -10,6 +10,7 @@ import {formatDateToday} from "../services/UIHelpers";
 // @ts-ignore
 import stylesheet from "./LastViewed.scss";
 import {getLastViewed, setLastViewed as setLastViewedAction} from "../actions";
+import {localStore} from "../store/LocalStore";
 
 export const LastViewedFactory = () => {
     // individual profile
@@ -35,6 +36,11 @@ export const LastViewed: React.FC<Props> = ({}) => {
     const [lastViewed, setLastViewed] = useState<Date>();
 
     const messages = new MessagesV2(VERBOSE);
+
+    localStore.subscribe(() => {
+        // TODO debug only
+        console.log("Local Store:", localStore.getState());
+    })
 
     useEffect(() => {
         messages.request(getLastViewed(extractIdFromUrl(window.location.href)))

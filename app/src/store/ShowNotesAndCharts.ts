@@ -1,25 +1,23 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {TabAwarePayload, TabAwareState} from "./MasterStore";
 
-export interface LastViewed {
-    profile: string
-    author: string
-    createdAt?: string
-    updatedAt?: string
-    hide?: boolean
+export interface ShowNotesAndCharts {
+    id?: string
+    showSalary: boolean
+    showNotes: boolean
 }
 
-const initialState: TabAwareState<LastViewed> = {}
+const initialState: TabAwareState<ShowNotesAndCharts> = {}
 
 const slice = createSlice({
     name: "lastViewedState",
     initialState,
     reducers: {
-        setLastViewed: (state, action: PayloadAction<TabAwarePayload<LastViewed>>) => {
+        setShowNotesAndCharts: (state, action: PayloadAction<TabAwarePayload<ShowNotesAndCharts>>) => {
             state[action.payload.tabId] = action.payload.payload;
         }
     }
 });
 
-export const {setLastViewed} = slice.actions
+export const {setShowNotesAndCharts} = slice.actions
 export default slice.reducer

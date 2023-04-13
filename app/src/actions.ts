@@ -1,21 +1,19 @@
 import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {LinkedInAPI} from "./services/LinkedInAPI";
-import {Badges, Features, Invitation, LINKEDIN_DOMAIN, Note, NoteExtended, SHARE_URN, VERBOSE} from "./global";
+import {Badges, Features, Invitation, LINKEDIN_DOMAIN, Note, NoteExtended, SHARE_URN} from "./global";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
 import {Response} from "./services/BaseAPI";
 import {StageEnum} from "./injectables/notes/StageSwitch";
-import {MessagesV2, Tabs} from "@stolbivi/pirojok";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
-import {store} from "./store/Store";
+import {masterStore} from "./store/MasterStore";
 import {setLastViewed as setLastViewedAction} from "./store/LastViewedReducers";
+import {setShowNotesAndCharts as setShowNotesAndChartsAction, ShowNotesAndCharts} from "./store/ShowNotesAndCharts";
 import Cookie = chrome.cookies.Cookie;
 
-const messagesV2 = new MessagesV2(VERBOSE);
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
 const mapsAPI = new MapsAPI();
-const tabs = new Tabs();
 
 /**
  * Returns all cookies of the store for particular domain, requires host permissions in manifest
@@ -251,19 +249,12 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
             return {note: {response: noteExtended[0]}, stage: stage};
         }));
 
-
-export interface ShowNotesAndChartsPayload {
-    id?: string
-    showSalary: boolean
-    showNotes: boolean
-}
-
 // TODO add to store
-const showNotesAndChartsRequest = createRequest<ShowNotesAndChartsPayload, void>("showNotesAndCharts");
-
-export const showNotesAndCharts = createAction<ShowNotesAndChartsPayload, any>("showNotesAndChartsProxy",
-    (payload) => tabs.withCurrentTab()
-        .then(tab => messagesV2.requestTab(tab?.id, showNotesAndChartsRequest(payload).toAction())));
+export const showNotesAndCharts = createAction<ShowNotesAndCharts, any>("showNotesAndChartsProxy",
+    (payload, sender) => {
+        masterStore.dispatch(setShowNotesAndChartsAction({tabId: sender.tab.id, payload}));
+        return Promise.resolve(payload);
+    });
 
 // TODO add to store
 export const getNotesAll = createAction<{}, any>("getNotesAll",
@@ -327,7 +318,6 @@ export const postNote = createAction<PostNotePayload, any>("postNote",
             return {note: {response: noteExtended[0]}};
         }));
 
-// TODO add to store
 export const getLastViewed = createAction<string, any>("getLastViewed",
     (id, sender) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
@@ -345,7 +335,7 @@ export const getLastViewed = createAction<string, any>("getLastViewed",
         })
         .then(response => {
             if (sender.tab) {
-                store.dispatch(setLastViewedAction({tabId: sender.tab.id, payload: response.response}));
+                masterStore.dispatch(setLastViewedAction({tabId: sender.tab.id, payload: response.response}));
             }
             return response;
         }));

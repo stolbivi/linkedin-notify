@@ -13,19 +13,13 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {
-    getNotesByProfile,
-    getSalary,
-    getStages,
-    getTheme,
-    postNote as postNoteAction,
-    ShowNotesAndChartsPayload
-} from "../../actions";
+import {getNotesByProfile, getSalary, getStages, getTheme, postNote as postNoteAction} from "../../actions";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
+import {ShowNotesAndCharts} from "../../store/ShowNotesAndCharts";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -92,7 +86,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
         window.addEventListener('popstate', () => {
             setShow(false);
         });
-        messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
+        messages.listen(createAction<ShowNotesAndCharts, any>("showNotesAndCharts",
             (payload) => {
                 if (id && payload?.id !== id) {
                     return Promise.resolve();
