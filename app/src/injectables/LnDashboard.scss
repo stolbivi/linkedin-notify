@@ -3,7 +3,8 @@
 .ln-dashboard-title {
   font-size: 11px;
   color: $ln-dashboard-menu-icon-color;
-  margin-top: -6px;
+  margin-top: -4px;
+  padding-bottom: 3px;
 }
 .ln-dashboard-svg{
   margin-top: 14%;
@@ -16,4 +17,8 @@
 .global-nav__primary-item:hover .ln-dashboard-title {
   color: $ln-dashboard-menu-icon-color-hover;
   fill: $ln-dashboard-menu-icon-color-hover;
+}
+
+.dashboard-active{
+  border-bottom: 2px solid black;
 }

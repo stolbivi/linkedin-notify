@@ -2,19 +2,22 @@ import React, {useEffect} from "react";
 import {injectFirstChild} from "../utils/InjectHelper";
 // @ts-ignore
 import stylesheet from "./LnDashboard.scss";
-import {getTheme, openUrl as openUrlAction, SwitchThemePayload} from "../actions";
+import {getTheme, SwitchThemePayload} from "../actions";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../global";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../themes/ThemeUtils";
 import {theme as LightTheme} from "../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../themes/dark";
+import ReactDOM from "react-dom";
+import BooleanSearch from "./dashboard/BooleanSearch";
+import Navbar from "./dashboard/Navbar";
 
 export const LnDashboardFactory = () => {
     const header = document.getElementsByClassName("global-nav__primary-items");
     if (header && header.length > 0) {
         injectFirstChild(header[0], "lnm-dashboard",
-            <LnDashboard/>
+            <LnDashboard/>, "LnDashboard"
         );
     }
 }
@@ -37,15 +40,26 @@ export const LnDashboard: React.FC<Props> = ({}) => {
                 return Promise.resolve();
             }));
     }, []);
-    const openUrl = (e: any, url: string) => {
-        e.preventDefault();
-        e.stopPropagation();
-        return messages.request(openUrlAction(url));
+    const dashboardClickHandler = () => {
+        const navBarElement = document.querySelector('.scaffold-layout.scaffold-layout--breakpoint-xl');
+        //document.querySelector(".LnDashboard div").shadowRoot.querySelector(".global-nav__primary-item").classList.add("dashboard-active");
+        if (navBarElement) {
+            ReactDOM.render(<Navbar/>, navBarElement);
+            const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
+            if (targetElement) {
+                targetElement.style.width = 'auto';
+                ReactDOM.render(<BooleanSearch />, targetElement);
+            } else {
+                console.warn('Target element not found.');
+            }
+        } else {
+            console.warn('Navbar element not found.');
+        }
     }
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className="global-nav__primary-item" onClick={(e) => openUrl(e, "/static/LnDashboard.html")} ref={rootElement} style={{cursor:"pointer"}}>
+            <div className="global-nav__primary-item" onClick={dashboardClickHandler} ref={rootElement} style={{cursor:"pointer"}}>
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px"
                      width="24" height="24" className="ln-dashboard-svg" y="0px" viewBox="0 0 400 360.1" xmlSpace="preserve">
                     <g id="o_1_">

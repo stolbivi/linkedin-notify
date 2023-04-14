@@ -31,7 +31,9 @@
     "tabs",
     "alarms",
     "storage",
-    "scripting"
+    "scripting",
+    "webNavigation",
+    "history"
   ],
   "host_permissions": [
     "*://localhost/",

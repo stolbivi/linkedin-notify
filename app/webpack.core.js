@@ -9,7 +9,7 @@ const BABEL_OPTIONS = {
     envName: "development",
 };
 
-const tsEntry = (dist, input, output, definitions) => {
+const tsEntry = (dist, input, output, definitions, commonRules = []) => {
     return {
         entry: input,
         output: {
@@ -40,19 +40,20 @@ const tsEntry = (dist, input, output, definitions) => {
                         options: BABEL_OPTIONS,
                     },
                 },
+                ...commonRules,
             ],
         },
         resolve: {
             extensions: [".ts", ".tsx", ".js", ".jsx"],
-            fallback: {}
+            fallback: {},
         },
         plugins: [
             new webpack.DefinePlugin({
                 ...definitions,
-                "process": {env: {DEBUG: undefined}}
-            })
+                process: { env: { DEBUG: undefined } },
+            }),
         ],
-        devtool: "cheap-module-source-map"
+        devtool: "cheap-module-source-map",
     };
 };
 
@@ -61,7 +62,7 @@ const withCSSInlined = (object) => {
         test: /\.(s[ac]ss|css)$/i,
         use: [
             {
-                loader: 'to-string-loader',
+                loader: "to-string-loader",
             },
             {
                 loader: "css-loader",
@@ -89,11 +90,13 @@ const withCSS = (object, outputCss) => {
             "sass-loader",
         ],
     });
-    object.plugins = object.plugins.concat([
-        new MiniCssExtractPlugin({
-            filename: outputCss,
-        }),
-    ].filter(Boolean));
+    object.plugins = object.plugins.concat(
+        [
+            new MiniCssExtractPlugin({
+                filename: outputCss,
+            }),
+        ].filter(Boolean)
+    );
     return object;
 };
 
@@ -111,16 +114,18 @@ const withHTML = (object, template, outputHtml, outputCss) => {
             "sass-loader",
         ],
     });
-    object.plugins = object.plugins.concat([
-        new MiniCssExtractPlugin({
-            filename: outputCss,
-        }),
-        new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, template),
-            inject: true,
-            filename: outputHtml,
-        }),
-    ].filter(Boolean));
+    object.plugins = object.plugins.concat(
+        [
+            new MiniCssExtractPlugin({
+                filename: outputCss,
+            }),
+            new HtmlWebpackPlugin({
+                template: path.resolve(__dirname, template),
+                inject: true,
+                filename: outputHtml,
+            }),
+        ].filter(Boolean)
+    );
     return object;
 };
 
@@ -128,5 +133,5 @@ module.exports = {
     tsEntry,
     withCSSInlined,
     withCSS,
-    withHTML
+    withHTML,
 };

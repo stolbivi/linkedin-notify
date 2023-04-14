@@ -1,0 +1,67 @@
+@import "./src/themes/primary";
+
+.auto-buttons{
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.reset-btn {
+  box-sizing: border-box;
+  margin-left: 26%;
+  display: flex;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  padding: 6px 40px;
+  gap: 10px;
+  position: absolute;
+  width: 119px;
+  height: 34px;
+  left: 0px;
+  border: 1px solid #909090;
+  border-radius: 37px;
+  align-items: center;
+  background-color: $reply-text-area-color;
+  color: $base-card-message;
+}
+.save-btn {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  position: absolute;
+  width: 113px;
+  height: 34px;
+  left: 129px;
+  background: #25BA34;
+  border: 1px solid #25BA34;
+  border-radius: 37px;
+  margin-left: 26%;
+  padding: 6px 40px;
+  align-items: center;
+}
+
+.no-data {
+  width: 100%;
+  padding: 4em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $reply-text-area-caret-color;
+}
+.auto-feature-text {
+  color: $reply-text-area-caret-color;
+}
+.switch-color {
+  height: 22px !important;
+  width: 47px !important;
+  background-color: white;
+}
+.switch-color:checked {
+  height: 22px !important;
+  width: 47px !important;
+  color: green;
+  background-color: green;
+  border-color: green;
+  outline-color: green;
+}

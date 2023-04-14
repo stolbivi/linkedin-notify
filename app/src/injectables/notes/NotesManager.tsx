@@ -31,7 +31,7 @@ export const NotesManagerFactory = () => {
         const aside = document.getElementsByClassName("scaffold-layout__aside");
         if (aside && aside.length > 0) {
             injectFirstChild(aside[0], "lnm-notes-manager",
-                <NotesManager/>
+                <NotesManager/>, "NotesManager"
             );
         }
     },1000);

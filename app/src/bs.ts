@@ -5,11 +5,13 @@ import {BackendAPI} from "./services/BackendAPI";
 import {
     completion,
     conversationAck,
+    createCustomStage,
     getBadges,
     getConversationDetails,
     getConversationProfile,
     getConversations,
     getCookies,
+    getCustomStages,
     getFeatures,
     getInvitations,
     getIsLogged,
@@ -36,7 +38,14 @@ import {
     showNotesAndCharts,
     switchThemeRequest,
     unlock,
-    postReply
+    postReply,
+    getProfileByUrn,
+    getCompanyByUrn,
+    deleteNote,
+    postJob,
+    getJobs,
+    updateJob,
+    deleteJob
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -105,6 +114,15 @@ messagesV2.listen(setLastViewed);
 messagesV2.listen(getTheme);
 messagesV2.listen(setTheme);
 messagesV2.listen(postReply);
+messagesV2.listen(getProfileByUrn);
+messagesV2.listen(getCompanyByUrn);
+messagesV2.listen(getCustomStages);
+messagesV2.listen(createCustomStage);
+messagesV2.listen(deleteNote);
+messagesV2.listen(postJob);
+messagesV2.listen(getJobs);
+messagesV2.listen(updateJob);
+messagesV2.listen(deleteJob);
 
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
@@ -124,6 +142,8 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
         if (changeInfo.removed) {
             console.log("Stop monitoring");
             await chrome.alarms.clearAll();
+            await chrome.storage.session.remove("proFeatures");
+            await chrome.storage.local.remove("proFeatures");
             chrome.cookies.getAll({}, function(cookies) {
                 for (let i = 0; i < cookies.length; i++) {
                     if (cookies[i].domain == "www.linkedin.com" || cookies[i].domain == "api.lnmanager.com" || cookies[i].domain == "www.lnmanager.com") {
@@ -270,4 +290,21 @@ chrome.cookies.onChanged.addListener((changeInfo) => {
             });
         });
     }
+});
+
+const visitedUrls: string[] = [];
+chrome.history.onVisited.addListener((historyItem) => {
+    let isInitialLoad = !visitedUrls.includes(historyItem.url);
+    chrome.tabs.query({ active: true }, (tabs) => {
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            func: function (isInitialLoad) {
+                window.postMessage({ type: "modifyElements" , initialLoad: isInitialLoad }, "*");
+            },
+            args: [isInitialLoad],
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+    visitedUrls.push(historyItem.url);
 });

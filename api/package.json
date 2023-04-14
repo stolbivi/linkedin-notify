@@ -4,7 +4,7 @@
   "description": "API for extension to monitor activity on your LinkedIn profile",
   "main": "dist/app.js",
   "scripts": {
-    "init": "export SET NODE_OPTIONS=--openssl-legacy-provider",
+    "init": "set SET NODE_OPTIONS=--openssl-legacy-provider",
     "update-geo": "cd node_modules/geoip-lite && npm run-script updatedb license_key=l94LXoI7OdAt3RLl",
     "build": "npx tsoa spec-and-routes && tsc",
     "start": "npm run init && node .",

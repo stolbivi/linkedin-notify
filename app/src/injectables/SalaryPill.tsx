@@ -17,7 +17,7 @@ export const SalaryPillFactory = () => {
             const actions = profileActions[0].getElementsByClassName("pvs-profile-actions");
             if (actions && actions.length > 0) {
                 inject(actions[0], "lnm-salary", "after",
-                    <SalaryPill showSalary={true}/>
+                    <SalaryPill showSalary={true}/>, "Salary"
                 );
             }
         }
@@ -35,7 +35,7 @@ export const SalaryPillFactory = () => {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
                         inject(lastChild, `lnm-salary-${index}`, "before",
-                            <SalaryPill url={link} id={id}/>);
+                            <SalaryPill url={link} id={id}/>, "Salary");
                     }
                 }
             })
@@ -109,7 +109,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
 
     const onClick = () => {
         if (salary) {
-            return messages.request(showNotesAndCharts({id, showSalary, showNotes}));
+            return messages.request(showNotesAndCharts({id, showSalary, showNotes, setSalary}));
         }
     }
 
@@ -119,7 +119,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName={"loader-base loader-px24"}/>
             {accessState === AccessState.Valid &&
-                <div className={"salary-pill" + (completed ? " clickable" : "")}
+                <div id="agha" className={"salary-pill" + (completed ? " clickable" : "")}
                      onClick={onClick}>
                     <Loader show={!completed}/>
                     {completed && <span>{getSalaryValue(salary)}</span>}

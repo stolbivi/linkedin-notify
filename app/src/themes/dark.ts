@@ -90,6 +90,9 @@ export const theme: Theme = {
     "--notes-counter": "white",
     "--notes-color-1": "rgba(36, 43, 53, 1)",
     "--notes-color-2": "rgba(217, 217, 217, 0.2)",
+    "--notes-color-3": "rgba(255,255,255,0.68)",
+    "--notes-color-4": "rgb(139,139,139)",
+    "--notes-color-5": "rgb(255,254,254)",
 
     "--notes-container": "#CACACA",
     "--notes-container-background": "rgba(29, 34, 38, 1)",
@@ -132,5 +135,6 @@ export const theme: Theme = {
     "--reply-text-container-color": "#2D3338",
     "--reply-text-area-caret-color": "#a9b1b8",
     "--ln-dashboard-menu-icon-color": "#bcbdbe",
-    "--ln-dashboard-menu-icon-color-hover": "#FFFFFF"
+    "--ln-dashboard-menu-icon-color-hover": "#FFFFFF",
+    "--settings-icon-color": "#FFFFFF"
 }

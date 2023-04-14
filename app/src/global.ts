@@ -46,6 +46,14 @@ export interface Features {
     updatedAt: string
 }
 
+export interface UserStage {
+    text: string;
+    userId: string;
+    id?: string;
+    stageId: number;
+    author?: string;
+}
+
 export interface Note {
     id?: string
     profile: string
@@ -55,6 +63,7 @@ export interface Note {
     stageTo?: number
     createdAt?: string
     updatedAt?: string
+    stageText?: string
 }
 
 export interface NoteExtended extends Note {
@@ -111,4 +120,16 @@ export interface Message {
     messageBody?: string,
     conversationId?: string,
     recipientId?: string
+}
+
+export interface Job {
+    id?: string
+    title?: string
+    salary?: string
+    company?: string
+    hiringContact?: string
+    type?: string
+    geography?: string
+    status?: string
+    assigned?: string
 }
