@@ -13,6 +13,7 @@ export interface Job {
     geography?: string
     status?: string
     assigned?: string
+    description?: string
 }
 
 const jobSchema = new dynamoose.Schema({
@@ -53,9 +54,13 @@ const jobSchema = new dynamoose.Schema({
         type: String,
         required: true
     },
-    assigned: {
+    description: {
         type: String,
         required: true
+    },
+    assigned: {
+        type: String,
+        required: false
     }
 }, {
     "saveUnknown": true,

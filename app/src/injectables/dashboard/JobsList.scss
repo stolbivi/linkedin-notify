@@ -112,6 +112,7 @@
   line-height: 14px;
   letter-spacing: 0em;
   color: #909090;
+  cursor: pointer;
 }
 
 .add-group {
@@ -182,11 +183,13 @@
 
 .edit-container {
   background-color: #ffffff;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   flex-wrap: wrap;
   justify-content: center;
-  padding-top: 20px;
-  margin-top: 83px;
+  padding-top: 13px;
+  padding-left: 18px;
+  margin-top: 30px;
 }
 
 .edit-container-lower{
@@ -211,19 +214,19 @@
 .edit-select{
   padding-right: 98px;
   border: none !important;
-  opacity: 30%;
+  box-shadow: none;
   margin-top: 7px;
   font-size: 12px;
 }
 
 .edit-input{
   width: 160px !important;
-  opacity: 30%;
+  box-shadow: none !important;
   margin-top: 7px;
 }
 
 .edit-description{
-  margin-left: 67px;
+  margin-left: 17px;
   margin-bottom: 50px;
   width: 138%;
   display: flex;
@@ -243,7 +246,6 @@
 .edit-description-input{
   margin-top: 10px;
   height: 70px!important;
-  opacity: 30%;
   text-align: left;
   vertical-align: top;
   font-size: 15px;
@@ -292,10 +294,14 @@
 }
 
 .edit-header-text{
-  font-family: Helvetica;
-  font-size: 28px;
-  font-weight: 700;
   margin-top: 17px;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  border: none;
+  outline: none;
+  box-shadow: none !important;
+  -moz-box-shadow: none;
+  background-color: transparent;
 }
 
 .job-back-text{
@@ -303,4 +309,5 @@
   font-size: 12px;
   font-weight: 700;
   margin-left: 5px;
+  cursor: pointer;
 }

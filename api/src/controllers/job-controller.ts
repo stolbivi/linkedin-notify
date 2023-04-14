@@ -32,7 +32,8 @@ export class JobController extends BaseController {
                 type: job.type,
                 geography: job.geography,
                 status: job.status,
-                assigned: job.assigned
+                assigned: job.assigned,
+                description: job.description
             }))
             return Promise.resolve({ response: resolvedJobs, user: request.user });
         } catch (error) {
