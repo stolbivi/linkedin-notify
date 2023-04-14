@@ -1,37 +1,28 @@
-import {configureStore, PayloadAction, Store} from "@reduxjs/toolkit"
-import lastViewedReducer, {LastViewed} from "./LastViewedReducers";
+import {configureStore, createListenerMiddleware} from "@reduxjs/toolkit"
+import lastViewedReducer, {getLastViewedAction, LastViewed} from "./LastViewedReducer";
 import showNotesAndChartsReducer, {ShowNotesAndCharts} from "./ShowNotesAndCharts";
-import {createFromRequest} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
-import {MessagesV2} from "@stolbivi/pirojok";
-import {VERBOSE} from "../global";
-import {propagateRequest} from "./Listeners";
-import {TabAwarePayload} from "./MasterStore";
+import completionReducer, {Completion} from "./CompletionReducer";
+import initListeners from "./Effects";
 
-const messages = new MessagesV2(VERBOSE);
+export const listenerMiddleware = createListenerMiddleware();
+initListeners();
 
-messages.listen(createFromRequest<PayloadAction<TabAwarePayload<any>>, void>(propagateRequest,
-    (action) => {
-        console.debug("Received tab action:", action.payload.tabId, "payload:", action.payload.payload);
-        // localStore.dispatch(action);
-        return Promise.resolve();
-    }));
-
-export interface CompletenessAwareState<State> {
-    completed: boolean
-    state: State
-}
-
-export interface RootState {
-    lastViewed: CompletenessAwareState<LastViewed>
-    showNotesAndCharts: CompletenessAwareState<ShowNotesAndCharts>
+interface RootState {
+    lastViewed: LastViewed
+    showNotesAndCharts: ShowNotesAndCharts
+    completion: Completion
 }
 
 export const localStore = configureStore({
     reducer: {
         lastViewed: lastViewedReducer,
-        showNotesAndCharts: showNotesAndChartsReducer
-    }
+        showNotesAndCharts: showNotesAndChartsReducer,
+        completion: completionReducer
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().prepend(listenerMiddleware.middleware),
 });
 
-export const selectLastViewed = (store: Store<RootState>) => store.getState().lastViewed;
-export const selectShowNotesAndCharts = (store: Store<RootState>) => store.getState().showNotesAndCharts;
+export const selectLastViewed = (state: RootState) => state.lastViewed;
+export const selectLastViewedCompletion = (state: RootState) => state.completion[getLastViewedAction.type];
+export const selectShowNotesAndCharts = (state: RootState) => state.showNotesAndCharts;

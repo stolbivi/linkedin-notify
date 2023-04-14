@@ -1,5 +1,4 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {TabAwarePayload, TabAwareState} from "./MasterStore";
 
 export interface ShowNotesAndCharts {
     id?: string
@@ -7,14 +6,16 @@ export interface ShowNotesAndCharts {
     showNotes: boolean
 }
 
-const initialState: TabAwareState<ShowNotesAndCharts> = {}
+const initialState: ShowNotesAndCharts = {showSalary: false, showNotes: false};
 
 const slice = createSlice({
     name: "lastViewedState",
     initialState,
     reducers: {
-        setShowNotesAndCharts: (state, action: PayloadAction<TabAwarePayload<ShowNotesAndCharts>>) => {
-            state[action.payload.tabId] = action.payload.payload;
+        setShowNotesAndCharts: (state, action: PayloadAction<ShowNotesAndCharts>) => {
+            state.id = action.payload.id;
+            state.showSalary = action.payload.showSalary;
+            state.showNotes = action.payload.showNotes;
         }
     }
 });

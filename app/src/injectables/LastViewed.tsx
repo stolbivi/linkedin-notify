@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {MessagesV2} from "@stolbivi/pirojok";
-import {extractIdFromUrl, VERBOSE} from "../global";
+import {extractIdFromUrl} from "../global";
 import {injectLastChild} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
 import {Clock} from "../icons/Clock";
 import {Loader} from "../components/Loader";
 import {formatDateToday} from "../services/UIHelpers";
+import {Provider, shallowEqual, useSelector} from "react-redux";
+import {localStore, selectLastViewed, selectLastViewedCompletion} from "../store/LocalStore";
+import {getLastViewedAction, LastViewed as LastViewedData} from "../store/LastViewedReducer";
 
 // @ts-ignore
 import stylesheet from "./LastViewed.scss";
-import {getLastViewed, setLastViewed as setLastViewedAction} from "../actions";
-import {localStore} from "../store/LocalStore";
 
 export const LastViewedFactory = () => {
     // individual profile
@@ -20,7 +20,9 @@ export const LastViewedFactory = () => {
             let parent = badgeWrap[0].parentElement.parentElement.parentElement;
             parent.style.position = "relative";
             injectLastChild(parent, "lnm-last-viewed",
-                <LastViewed/>
+                <Provider store={localStore}>
+                    <LastViewed/>
+                </Provider>
             );
         }
     }
@@ -32,43 +34,28 @@ export const LastViewed: React.FC<Props> = ({}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [show, setShow] = useState<boolean>(true);
-    const [completed, setCompleted] = useState<boolean>(false);
-    const [lastViewed, setLastViewed] = useState<Date>();
-
-    const messages = new MessagesV2(VERBOSE);
-
-    localStore.subscribe(() => {
-        // TODO debug only
-        console.log("Local Store:", localStore.getState());
-    })
+    const completed: boolean = useSelector(selectLastViewedCompletion, shallowEqual);
+    const lastViewed: LastViewedData = useSelector(selectLastViewed, shallowEqual);
 
     useEffect(() => {
-        messages.request(getLastViewed(extractIdFromUrl(window.location.href)))
-            .then((r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    if (r?.response?.hide) {
-                        setShow(false);
-                    } else if (r?.response?.length > 0) {
-                        setLastViewed(new Date(r?.response[0].updatedAt));
-                    } else {
-                        setLastViewed(new Date());
-                    }
-                }
-            }).finally(() => setCompleted(true));
+        localStore.dispatch(getLastViewedAction(extractIdFromUrl(window.location.href)));
     }, []);
 
     useEffect(() => {
         if (lastViewed) {
-            messages.request(setLastViewedAction(extractIdFromUrl(window.location.href)))
-                .then((r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    }
-                }).finally(() => setCompleted(true));
+            if (lastViewed.hide) {
+                setShow(false);
+            }
         }
     }, [lastViewed]);
+
+    const getLastViewedValue = (lastViewed: LastViewedData) => {
+        if (lastViewed.updatedAt) {
+            return new Date(lastViewed.updatedAt);
+        } else {
+            return new Date();
+        }
+    }
 
     return (
         <React.Fragment>
@@ -83,7 +70,7 @@ export const LastViewed: React.FC<Props> = ({}) => {
                         <React.Fragment>
                             <Clock/>
                             <label>Last viewed on:</label>
-                            <span>{formatDateToday(lastViewed)}</span>
+                            <span>{formatDateToday(getLastViewedValue(lastViewed))}</span>
                         </React.Fragment>}
                 </div>}
         </React.Fragment>

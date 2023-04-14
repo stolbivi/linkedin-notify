@@ -6,9 +6,8 @@ import {MapsAPI} from "./services/MapsAPI";
 import {Response} from "./services/BaseAPI";
 import {StageEnum} from "./injectables/notes/StageSwitch";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
-import {masterStore} from "./store/MasterStore";
-import {setLastViewed as setLastViewedAction} from "./store/LastViewedReducers";
-import {setShowNotesAndCharts as setShowNotesAndChartsAction, ShowNotesAndCharts} from "./store/ShowNotesAndCharts";
+import {LastViewed} from "./store/LastViewedReducer";
+import {ShowNotesAndCharts} from "./store/ShowNotesAndCharts";
 import Cookie = chrome.cookies.Cookie;
 
 const api = new LinkedInAPI();
@@ -251,8 +250,8 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
 
 // TODO add to store
 export const showNotesAndCharts = createAction<ShowNotesAndCharts, any>("showNotesAndChartsProxy",
-    (payload, sender) => {
-        masterStore.dispatch(setShowNotesAndChartsAction({tabId: sender.tab.id, payload}));
+    (payload) => {
+        // masterStore.dispatch(setShowNotesAndChartsAction({tabId: sender.tab.id, payload}));
         return Promise.resolve(payload);
     });
 
@@ -318,8 +317,8 @@ export const postNote = createAction<PostNotePayload, any>("postNote",
             return {note: {response: noteExtended[0]}};
         }));
 
-export const getLastViewed = createAction<string, any>("getLastViewed",
-    (id, sender) => getCookies(LINKEDIN_DOMAIN)
+export const getLastViewed = createAction<string, LastViewed>("getLastViewed",
+    (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
             const experienceResponse = await api.getExperience(token, id);
@@ -328,17 +327,12 @@ export const getLastViewed = createAction<string, any>("getLastViewed",
             const me = await api.getMe(token);
             const as = api.extractProfileUrn(me);
             if (profile === as) {
-                return {response: {profile: me, author: as, hide: true}}
+                return {response: [{profile: me, author: as, hide: true} as LastViewed]}
             } else {
                 return backEndAPI.getLastViewed(profile, as);
             }
         })
-        .then(response => {
-            if (sender.tab) {
-                masterStore.dispatch(setLastViewedAction({tabId: sender.tab.id, payload: response.response}));
-            }
-            return response;
-        }));
+        .then(response => response.response?.pop()));
 
 export const setLastViewed = createAction<string, any>("setLastViewed",
     (id) => getCookies(LINKEDIN_DOMAIN)

@@ -36,7 +36,6 @@ import {
     unlock
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
-import {masterStore} from "./store/MasterStore";
 
 const messagesV2 = new MessagesV2(VERBOSE);
 const tabs = new Tabs();
@@ -215,8 +214,3 @@ chrome.alarms.onAlarm.addListener(a => {
             return autoFeatures();
     }
 });
-
-masterStore.subscribe(() => {
-    // TODO debug only
-    console.log("Store:", masterStore.getState());
-})
