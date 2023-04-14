@@ -4,21 +4,23 @@ export interface ShowNotesAndCharts {
     id?: string
     showSalary: boolean
     showNotes: boolean
+    show: boolean
 }
 
-const initialState: ShowNotesAndCharts = {showSalary: false, showNotes: false};
+const initialState: ShowNotesAndCharts = {showSalary: false, showNotes: false, show: false};
 
 const slice = createSlice({
     name: "lastViewedState",
     initialState,
     reducers: {
-        setShowNotesAndCharts: (state, action: PayloadAction<ShowNotesAndCharts>) => {
+        showNotesAndChartsAction: (state, action: PayloadAction<ShowNotesAndCharts>) => {
             state.id = action.payload.id;
             state.showSalary = action.payload.showSalary;
             state.showNotes = action.payload.showNotes;
+            state.show = action.payload.show;
         }
     }
 });
 
-export const {setShowNotesAndCharts} = slice.actions
+export const {showNotesAndChartsAction} = slice.actions
 export default slice.reducer

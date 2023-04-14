@@ -31,7 +31,6 @@ import {
     setLastViewed,
     setStage,
     setTheme,
-    showNotesAndCharts,
     switchThemeRequest,
     unlock
 } from "./actions";
@@ -89,7 +88,6 @@ messagesV2.listen(getFeatures);
 messagesV2.listen(setFeatures);
 messagesV2.listen(getStages);
 messagesV2.listen(setStage);
-messagesV2.listen(showNotesAndCharts);
 messagesV2.listen(getNotesAll);
 messagesV2.listen(getNotesByProfile);
 messagesV2.listen(postNote);

@@ -14,12 +14,14 @@ import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {getNotesByProfile, getSalary, getStages, getTheme, postNote as postNoteAction} from "../../actions";
-import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
-// @ts-ignore
-import stylesheet from "./NotesAndCharts.scss";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
-import {ShowNotesAndCharts} from "../../store/ShowNotesAndCharts";
+import {ShowNotesAndCharts, showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
+import {localStore, selectShowNotesAndCharts} from "../../store/LocalStore";
+import {Provider, shallowEqual, useSelector} from "react-redux";
+
+// @ts-ignore
+import stylesheet from "./NotesAndCharts.scss";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -27,7 +29,9 @@ export const NotesAndChartsFactory = () => {
         const section = document.querySelectorAll('section[data-member-id]');
         if (section && section.length > 0) {
             inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                <NotesAndCharts/>
+                <Provider store={localStore}>
+                    <NotesAndCharts/>
+                </Provider>
             );
         }
     }
@@ -45,7 +49,9 @@ export const NotesAndChartsFactory = () => {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
                         inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
-                            <NotesAndCharts id={id}/>
+                            <Provider store={localStore}>
+                                <NotesAndCharts id={id}/>
+                            </Provider>
                         );
                     }
                 }
@@ -60,14 +66,12 @@ type Props = {
     id?: string
 };
 
-
 export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
 
     const MAX_LENGTH = 200;
 
     const [showSalary, setShowSalary] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
-    const [show, setShow] = useState<boolean>(false);
     const [showChart, setShowChart] = useState<boolean>(false);
     const [completed, setCompleted] = useState<boolean>(false);
     const [minimized, setMinimized] = useState<boolean>(true);
@@ -77,6 +81,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
+    const showNotesAndCharts: ShowNotesAndCharts = useSelector(selectShowNotesAndCharts, shallowEqual);
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -84,21 +89,11 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
 
     useEffect(() => {
         window.addEventListener('popstate', () => {
-            setShow(false);
+            localStore.dispatch(showNotesAndChartsAction({showSalary: false, showNotes: false, show: false}));
         });
-        messages.listen(createAction<ShowNotesAndCharts, any>("showNotesAndCharts",
-            (payload) => {
-                if (id && payload?.id !== id) {
-                    return Promise.resolve();
-                }
-                setShowNotes(payload?.showNotes)
-                setShowSalary(payload?.showSalary)
-                setShow(true);
-                return Promise.resolve();
-            }));
         // getting data
         setCompleted(false);
-        messages.request(getSalary(extractIdFromUrl(window.location.href)))
+        messages.request(getSalary(id ? id : extractIdFromUrl(window.location.href)))
             .then((r) => {
                 const salary = {...r.result, title: r.title, urn: r.urn};
                 setSalaryInternal(salary);
@@ -115,21 +110,26 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     }, []);
 
     useEffect(() => {
-        if (show) {
+        setPostAllowed(text && text.value.length > 0);
+    }, [text]);
+
+    useEffect(() => {
+        console.log("show charts:", showNotesAndCharts);
+        setShowNotes(showNotesAndCharts.showNotes)
+        setShowSalary(showNotesAndCharts.showSalary)
+        if (showNotesAndCharts.show) {
             messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
             setTimeout(() => setMinimized(false), 100);
         } else {
             setMinimized(true);
         }
-    }, [show]);
-
-    useEffect(() => {
-        setPostAllowed(text && text.value.length > 0);
-    }, [text]);
+    }, [showNotesAndCharts]);
 
     const appendNote = (note: NoteExtended) => {
         setNotes([...notes, note]);
     }
+
+    const canShow = () => showNotesAndCharts.show && (id ? showNotesAndCharts.id === id : true);
 
     const postNote = (text: string) => {
         if (text && text !== "") {
@@ -161,8 +161,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     }
 
     const close = () => {
-        setShow(false);
-        setShowChart(false);
+        localStore.dispatch(showNotesAndChartsAction({showSalary: false, showNotes: false, show: false}));
     }
 
     const onExpanded = () => {
@@ -171,7 +170,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
 
     return (
         <React.Fragment>
-            {show &&
+            {canShow() &&
                 <React.Fragment>
                     <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
                     <div onTransitionEnd={() => onExpanded()}

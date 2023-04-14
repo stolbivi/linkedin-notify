@@ -5,10 +5,13 @@ import {StageEnum, StageLabels} from "./StageSwitch";
 import {injectLastChild} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {AccessGuard, AccessState} from "../AccessGuard";
+import {getStages} from "../../actions";
+import {localStore} from "../../store/LocalStore";
+import {Provider} from "react-redux";
+import {showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import {getStages, showNotesAndCharts} from "../../actions";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -20,7 +23,9 @@ export const StagePillFactory = () => {
                 header[0].parentElement.style.display = "flex";
                 header[0].style.paddingRight = "0.5em";
                 injectLastChild(header[0].parentElement, "lnm-stage",
-                    <StagePill url={window.location.href}/>
+                    <Provider store={localStore}>
+                        <StagePill url={window.location.href}/>
+                    </Provider>
                 );
             }
         }
@@ -67,7 +72,7 @@ export const StagePill: React.FC<Props> = ({url}) => {
         if (showNotes) {
             setShowNotes(false);
         } else {
-            return messages.request(showNotesAndCharts({showSalary: false, showNotes: true}));
+            localStore.dispatch(showNotesAndChartsAction({showSalary: false, showNotes: true, show: true}));
         }
     }
 

@@ -4,7 +4,10 @@ import {extractIdFromUrl, VERBOSE} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
-import {getSalary, showNotesAndCharts} from "../actions";
+import {getSalary} from "../actions";
+import {localStore} from "../store/LocalStore";
+import {Provider} from "react-redux";
+import {showNotesAndChartsAction} from "../store/ShowNotesAndCharts";
 
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
@@ -17,7 +20,9 @@ export const SalaryPillFactory = () => {
             const actions = profileActions[0].getElementsByClassName("pvs-profile-actions");
             if (actions && actions.length > 0) {
                 inject(actions[0], "lnm-salary", "after",
-                    <SalaryPill showSalary={true}/>
+                    <Provider store={localStore}>
+                        <SalaryPill showSalary={true}/>
+                    </Provider>
                 );
             }
         }
@@ -35,7 +40,10 @@ export const SalaryPillFactory = () => {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
                         inject(lastChild, `lnm-salary-${index}`, "before",
-                            <SalaryPill url={link} id={id}/>);
+                            <Provider store={localStore}>
+                                <SalaryPill url={link} id={id}/>
+                            </Provider>
+                        );
                     }
                 }
             })
@@ -109,7 +117,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
 
     const onClick = () => {
         if (salary) {
-            return messages.request(showNotesAndCharts({id, showSalary, showNotes}));
+            localStore.dispatch(showNotesAndChartsAction({id, showSalary, showNotes, show: true}));
         }
     }
 

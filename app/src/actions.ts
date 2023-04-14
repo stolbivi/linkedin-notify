@@ -7,7 +7,6 @@ import {Response} from "./services/BaseAPI";
 import {StageEnum} from "./injectables/notes/StageSwitch";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
 import {LastViewed} from "./store/LastViewedReducer";
-import {ShowNotesAndCharts} from "./store/ShowNotesAndCharts";
 import Cookie = chrome.cookies.Cookie;
 
 const api = new LinkedInAPI();
@@ -247,13 +246,6 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
             const stage = await backEndAPI.setStage(payload.id, payload.stage, author);
             return {note: {response: noteExtended[0]}, stage: stage};
         }));
-
-// TODO add to store
-export const showNotesAndCharts = createAction<ShowNotesAndCharts, any>("showNotesAndChartsProxy",
-    (payload) => {
-        // masterStore.dispatch(setShowNotesAndChartsAction({tabId: sender.tab.id, payload}));
-        return Promise.resolve(payload);
-    });
 
 // TODO add to store
 export const getNotesAll = createAction<{}, any>("getNotesAll",
