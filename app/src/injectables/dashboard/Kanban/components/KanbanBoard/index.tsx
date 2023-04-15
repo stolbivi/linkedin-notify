@@ -18,7 +18,7 @@ import {filterCards, setCards} from '../../store/slices/cards.slice';
 import stylesheet from './styles.scss';
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../../../../../global";
-import {getAuthorStages, setStageFromKanban} from "../../../../../actions";
+import {getAuthorStages, postNote, setStageFromKanban} from "../../../../../actions";
 import {Loader} from "../../../../../components/Loader";
 
 interface KanbanBoardProps {
@@ -120,6 +120,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     dispatch(setColumns(updatedColumns))
     dispatch(setCards(updatedCards))
     messages.request(setStageFromKanban({id: draggableId, stage: Object.values(ICategory).indexOf(destination.droppableId)}))
+        .then((_r) => {console.log(_r)});
+    messages.request(postNote(
+        {id: draggableId, stageFrom: Object.values(ICategory).indexOf(source.droppableId) ,stageTo:Object.values(ICategory).indexOf(destination.droppableId)}))
         .then((_r) => {console.log(_r)});
   }
   useEffect(() => {

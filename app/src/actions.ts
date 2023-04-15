@@ -365,8 +365,9 @@ export const getNotesByProfile = createAction<string, any>("getNotesByProfile",
 
 export interface PostNotePayload {
     id: string
+    stageFrom?: StageEnum
     stageTo: StageEnum
-    text: string
+    text?: string
     stateText?: string
 }
 
@@ -379,6 +380,7 @@ export const postNote = createAction<PostNotePayload, any>("postNote",
             const note = await backEndAPI.postNote({
                 profile: payload.id,
                 author,
+                stageFrom: payload.stageFrom,
                 stageTo: payload.stageTo,
                 text: payload.text,
                 stageText: payload.stateText
