@@ -1,13 +1,18 @@
 @import "../themes/primary";
 
+.body{
+  display: flex;
+  align-items: center;
+}
+
 .ln-dashboard-title {
   font-size: 11px;
   color: $ln-dashboard-menu-icon-color;
-  margin-top: -4px;
+  margin-top: -5px;
   padding-bottom: 3px;
 }
 .ln-dashboard-svg{
-  margin-top: 14%;
+  margin-top: 10%;
   margin-left: 25%
 }
 .ln-dashboard-svg-color{

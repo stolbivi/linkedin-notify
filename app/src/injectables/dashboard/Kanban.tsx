@@ -7,7 +7,6 @@ import { ThemeProvider } from 'styled-components';
 import KanbanBoard from './Kanban/components/KanbanBoard';
 import { ModalProvider } from './Kanban/hooks/useModal';
 import store from './Kanban/store';
-import GlobalStyle from './Kanban/styles/global';
 import darkTheme from './Kanban/styles/themes/dark';
 import lightTheme from './Kanban/styles/themes/light';
 
@@ -26,7 +25,6 @@ const Kanban = () => {
                     <ThemeProvider theme={theme}>
                         <ModalProvider>
                             <div className="App">
-                                <GlobalStyle/>
                                 <KanbanBoard toggleTheme={toggleTheme}/>
                             </div>
                         </ModalProvider>

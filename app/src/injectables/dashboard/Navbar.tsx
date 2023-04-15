@@ -58,15 +58,15 @@ const Navbar = () => {
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="lnm-dashboard-navbar">
                 <button className={`navbarBtn ${isCandidatesClicked ? 'clicked' : ''}`} onClick={candidatesClickHandler}>
-                    <img src={peopleIcon} alt="Icon" width="20" height="20"/>
+                    <img src={peopleIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}} />
                     Candidates
                 </button>
                 <button className={`navbarBtn ${isBooleanSearchClicked ? 'clicked' : ''}`} onClick={booleanSearchClickHandler}>
-                    <img src={searchIcon} alt="Icon" width="20" height="20"/>
+                    <img src={searchIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}}/>
                     Boolean Search Tool
                 </button>
                 <button className={`navbarBtn ${isJobListClicked ? 'clicked' : ''}`} onClick={jobListClickHandler}>
-                    <img src={bagIcon} alt="Icon" width="20" height="20"/>
+                    <img src={bagIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}}/>
                     Jobs List
                 </button>
             </div>
