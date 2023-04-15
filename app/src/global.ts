@@ -132,4 +132,5 @@ export interface Job {
     geography?: string
     status?: string
     assigned?: string
+    description?: string
 }

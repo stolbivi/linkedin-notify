@@ -1,7 +1,7 @@
 import {Body, Delete, Get, Post, Put, Query, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
-import {Stage, StageModel, StageWithId} from "../persistence/stage-model";
+import {ParentStageEnum, Stage, StageEnum, StageModel, StageWithId} from "../persistence/stage-model";
 import { UserStages } from "../persistence/user-stages";
 import {User} from "../persistence/user-model";
 
@@ -68,8 +68,39 @@ export class StageController extends BaseController {
             let query = StageModel.query("author").eq(id);
             const result = await query.exec();
             let message: any = {response: result.map((i: any) => i.toJSON())};
+            const data = {};
+            message.response.forEach((item: { parentStage: string | number; stage: string | number; name: any; designation: any; id: any; profileImg: any; }) => {
+                // @ts-ignore
+                let parentStage = ParentStageEnum[item.parentStage];
+                if(!parentStage) {
+                    parentStage = "OTHER";
+                }
+                // @ts-ignore
+                const stage = StageEnum[item.stage];
+
+                // @ts-ignore
+                if (!data[parentStage]) {
+                    // @ts-ignore
+                    data[parentStage] = {};
+                }
+
+                // @ts-ignore
+                if (!data[parentStage][stage]) {
+                    // @ts-ignore
+                    data[parentStage][stage] = [];
+                }
+                // @ts-ignore
+                data[parentStage][stage].push({
+                    name: item.name,
+                    designation: item.designation,
+                    profileId: item.id,
+                    profileImg: item.profileImg,
+                    status: parentStage,
+                    category: stage?.replace(/_/g, ' ')
+                });
+            });
             if (request?.user) {
-                message = {...message, user: request.user};
+                message = {data, user: request.user};
             }
             return Promise.resolve(message);
         } catch (error) {

@@ -4,9 +4,9 @@ require("dotenv").config();
 
 export enum ParentStageEnum {
     AVAILABILITY,
-    GEOGRAPHY,
     STATUS,
     TYPE,
+    GEOGRAPHY,
     Groups
 }
 export enum StageEnum {
@@ -41,7 +41,7 @@ export interface Stage {
     parentStage?: number
     name?: string
     designation?:string
-    profileImageUrl?:string
+    profileImg?:string
     author?: string
     email?: string
     createdAt?: string
@@ -90,7 +90,7 @@ const stageSchema = new dynamoose.Schema({
         type: String,
         required: true
     },
-    profileImageUrl: {
+    profileImg: {
         type: String,
         required: true
     }

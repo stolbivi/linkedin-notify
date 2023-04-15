@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import React, {useEffect, useState} from 'react';
 import {DragDropContext, DropResult} from 'react-beautiful-dnd';
 import ICard from '../../interfaces/ICard';
@@ -13,6 +16,10 @@ import {setColumns} from '../../store/slices/columns.slice';
 import {filterCards, setCards} from '../../store/slices/cards.slice';
 // @ts-ignore
 import stylesheet from './styles.scss';
+import {MessagesV2} from "@stolbivi/pirojok";
+import {VERBOSE} from "../../../../../global";
+import {getAuthorStages} from "../../../../../actions";
+import {Loader} from "../../../../../components/Loader";
 
 interface KanbanBoardProps {
   toggleTheme: () => void;
@@ -23,11 +30,26 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const { cards } = useAppSelector((state => state.cards));
   const { columns } = useAppSelector((state => state.columns));
   const { visible } = useModal();
-  const [activeButton, setActiveButton] = useState(null);
+  const [activeButton, setActiveButton] = useState(IStatus.ALL);
   const [selectedCategories] = useState<ICategory[]>(Object.values(ICategory));
-
+  const messages = new MessagesV2(VERBOSE);
   const dispatch = useAppDispatch();
-  
+  const [completed, setCompleted] = useState(false);
+  const [kanbanData, setKanbanData] = useState({});
+  useEffect(() => {
+    messages.request(getAuthorStages())
+        .then((resp) => {
+          if (resp.data) {
+            setKanbanData(resp.data);
+            setCompleted(true);
+          }
+        });
+  },[]);
+
+  useEffect(() => {
+    populateKanbanData(IStatus.ALL);
+  },[kanbanData])
+
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
@@ -102,7 +124,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
 
     dispatch(setColumns(updatedColumns))
     dispatch(setCards(updatedCards))
-
   }
 
   useEffect(() => {
@@ -110,12 +131,90 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   }, [selectedCategories])
 
   function handleClick(button: string) {
+    populateKanbanData(button);
     setActiveButton(button);
   }
 
-  useEffect(()=>{
-    console.log("columns: ", columns)
-  },[])
+  const populateKanbanData = (parentCategory: string) => {
+    const updatedCards: ICard[] = [];
+    let cardsIdsByStatus = {};
+    let subCategories = [IStatus.AVAILABILITY,IStatus.STATUS,IStatus.TYPE,IStatus.GEOGRAPHY,IStatus.GROUPS];
+    if(parentCategory === IStatus.AVAILABILITY) {
+      subCategories = [ICategory.Passive_Candidate,ICategory.Actively_Looking,ICategory.Open_To_New_Offers,ICategory.Not_Looking_Currently,ICategory.Future_Interest];
+    } else if (parentCategory === IStatus.STATUS) {
+      subCategories = [ICategory.Contacted,ICategory.Pending_Response,ICategory.Interview_Scheduled,ICategory.Offer_Extended,ICategory.Hired,ICategory.Rejected];
+    } else if (parentCategory === IStatus.TYPE) {
+      subCategories = [ICategory.Part_Time,ICategory.Full_Time,ICategory.Permanent,ICategory.Contract,ICategory.Freelance];
+    } else if (parentCategory === IStatus.GEOGRAPHY) {
+      subCategories = [ICategory.Relocation,ICategory.Commute,ICategory.Hybrid,ICategory.Remote];
+    }
+    subCategories.forEach(value => {
+      cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
+    });
+    if(parentCategory === IStatus.ALL) {
+      for (const [_parentStageKey, parentStage] of Object.entries(kanbanData)) {
+        for (const [_stageKey, stage] of Object.entries(parentStage)) {
+          for (const item of stage) {
+            const cardId = item.profileId;
+            updatedCards.push({
+              id: cardId,
+              category: item.category,
+              title: item.name,
+              description: item.name,
+              status: item.status,
+              name: item.name,
+              designation: item.designation,
+              profileImg: item.profileImg,
+              hidden: false
+            });
+            // @ts-ignore
+            if (!cardsIdsByStatus[item.status]) {
+              // @ts-ignore
+              cardsIdsByStatus[item.status] = [];
+            }
+            // @ts-ignore
+            cardsIdsByStatus[item.status].push(cardId);
+          }
+        }
+      }
+    } else {
+      Object.values(kanbanData[parentCategory]).map(stage => {
+        for (const item of stage) {
+          const cardId = item.profileId;
+          updatedCards.push({
+            id: cardId,
+            category: item.category,
+            title: item.name,
+            description: item.name,
+            status: item.category,
+            name: item.name,
+            designation: item.designation,
+            profileImg: item.profileImg,
+            hidden: false
+          });
+          // @ts-ignore
+          if (!cardsIdsByStatus[item.category]) {
+            // @ts-ignore
+            cardsIdsByStatus[item.category] = [];
+          }
+          // @ts-ignore
+          cardsIdsByStatus[item.category].push(cardId);
+        }
+      });
+    }
+    let updatedColumns: IColumn[] = [];
+    subCategories.forEach(value => {
+      updatedColumns.push(
+          {
+            id: value,
+            title: value,
+            cardsIds: cardsIdsByStatus[value]
+          }
+      )
+    });
+    dispatch(setColumns(updatedColumns));
+    dispatch(setCards(updatedCards));
+  }
 
   return (
     <>
@@ -131,47 +230,54 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
           </button>
           <h3 className="shared-title">Shared with: </h3>
         </Header>
-        <div className="button-container">
-          <button className={`button ${activeButton === 'All' ? 'active' : ''}`} onClick={() => handleClick('All')}>
-            All
-          </button>
-          <button className={`button ${activeButton === 'Availability' ? 'active' : ''}`} onClick={() => handleClick('Availability')}>
-            Availability
-          </button>
-          <button className={`button ${activeButton === 'Status' ? 'active' : ''}`} onClick={() => handleClick('Status')}>
-            Status
-          </button>
-          <button className={`button ${activeButton === 'Type' ? 'active' : ''}`} onClick={() => handleClick('Type')}>
-            Type
-          </button>
-          <button className={`button ${activeButton === 'Geography' ? 'active' : ''}`} onClick={() => handleClick('Geography')}>
-            Geography
-          </button>
-          <button className={`button ${activeButton === 'Groups' ? 'active' : ''}`} onClick={() => handleClick('Groups')}>
-            Groups
-          </button>
-        </div>
-        <StatusesColumnsContainer>
-          <DragDropContext onDragEnd={onDragEnd}>
-            {columns.map((column, index) => {
+        <Loader show={!completed} className="p-5 kanban-loader" heightValue="600px"/>
+        {
+          completed ? (
+              <>
+                <div className="button-container">
+                    <button className={`button ${activeButton === IStatus.ALL ? 'active' : ''}`} onClick={() => handleClick(IStatus.ALL)}>
+                      All
+                    </button>
+                    <button className={`button ${activeButton === IStatus.AVAILABILITY ? 'active' : ''}`} onClick={() => handleClick(IStatus.AVAILABILITY)}>
+                      Availability
+                    </button>
+                    <button className={`button ${activeButton === IStatus.STATUS ? 'active' : ''}`} onClick={() => handleClick(IStatus.STATUS)}>
+                      Status
+                    </button>
+                    <button className={`button ${activeButton === IStatus.TYPE ? 'active' : ''}`} onClick={() => handleClick(IStatus.TYPE)}>
+                      Type
+                    </button>
+                    <button className={`button ${activeButton === IStatus.GEOGRAPHY ? 'active' : ''}`} onClick={() => handleClick(IStatus.GEOGRAPHY)}>
+                      Geography
+                    </button>
+                    <button className={`button ${activeButton === IStatus.GROUPS ? 'active' : ''}`} onClick={() => handleClick(IStatus.GROUPS)}>
+                      Groups
+                    </button>
+                  </div>
+                <StatusesColumnsContainer>
+                <DragDropContext onDragEnd={onDragEnd}>
+                  {columns.map((column, index) => {
 
-              const cardsArray: ICard[] = [];
+                    const cardsArray: ICard[] = [];
 
-              column.cardsIds.forEach(cardId => {
-                const foundedCard = cards.find(card => card.id === cardId);
-                if (foundedCard) cardsArray.push(foundedCard);
-              })
+                    column.cardsIds.forEach(cardId => {
+                      const foundedCard = cards.find(card => card.id === cardId);
+                      if (foundedCard) cardsArray.push(foundedCard);
+                    })
 
-              return (
-                <Column
-                  key={column.id}
-                  index={index}
-                  status={column.id}
-                  cards={cardsArray}
-                />
-            )})}
-          </DragDropContext>
-        </StatusesColumnsContainer>
+                    return (
+                        <Column
+                            key={column.id}
+                            index={index}
+                            status={column.id}
+                            cards={cardsArray}
+                        />
+                    )})}
+                </DragDropContext>
+              </StatusesColumnsContainer>
+              </>
+          ) : null
+        }
       </Container>
       <Modal visible={visible}/>
     </>

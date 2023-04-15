@@ -85,9 +85,9 @@ type Props = {
 
 export enum StageParentData {
     AVAILABILITY = "Availability",
-    GEOGRAPHY = "Geography",
     STATUS = "Status",
     TYPE = "Type",
+    GEOGRAPHY = "Geography",
     Groups = "Groups"
 }
 

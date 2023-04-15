@@ -25,7 +25,7 @@ const Column: React.FC<ColumnProps> = ({ status, cards, index }) => {
       <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
         <div className="status-container">
             <h2 className="status-title">{status}</h2>
-            <h2 className="status-title-number">3</h2>
+            <h2 className="status-title-number">{cards.filter(card => card.status === status).length}</h2>
         </div>
       <Droppable droppableId={status}>
         {(provided) => (

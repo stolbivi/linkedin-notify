@@ -5,7 +5,6 @@ import getCategoryBackgroundColor from '../../helpers/getCategoryBackgroundColor
 import { useModal } from '../../hooks/useModal';
 import ICard from '../../interfaces/ICard';
 import Badge from '../Badge';
-import icon from '../Card/image.png';
 import { CardBorder, CardBottom, CardContainer } from './styles';
 // @ts-ignore
 import stylesheet from './styles.scss';
@@ -42,11 +41,10 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
           <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
           <CardBorder color={backgroundColor}/>
           <div className="card-container">
-            <img src={icon} alt="img" />
+            <img src={card.profileImg} alt="img" width={50} height={50}/>
             <div>
-              <h3 className="card-title">Jerome Bell</h3>
-              {/*<h3 className="card-title">{card.title}</h3>*/}
-              <p className="job-detail">UI/UX Designer</p>
+              <h3 className="card-title">{card.name}</h3>
+              <p className="job-detail">{card.designation}</p>
             </div>
           </div>
           <CardBottom>

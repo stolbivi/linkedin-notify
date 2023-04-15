@@ -289,8 +289,15 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
                 stageText: payload.stageText || undefined
             });
             const noteExtended = await extendNote(token, [note.response], author);
-            const stage = await backEndAPI.setStage(payload.id, payload.stage, author, payload.parentStage);
-            return {note: {response: noteExtended[0]}, stage: stage};
+            let profile= await api.getProfileDetails(token,payload.id);
+            let rcpntPrfl = {name: "", designation: "", profileImg: ""};
+            if(profile && profile.included[0]) {
+                profile = profile.included[0];
+                rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
+                    designation: profile.occupation, profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment }
+            }
+            const stage = await backEndAPI.setStage(payload.id, payload.stage, author, payload.parentStage, rcpntPrfl.name, rcpntPrfl.designation, rcpntPrfl.profileImg);
+            return {note: {response: noteExtended[0]}, stage: stage};;
         }));
 
 
@@ -491,3 +498,12 @@ export const deleteJob = createAction<string, any>("deleteJob",
             return response
         })
 )
+
+export const getAuthorStages = createAction("getAuthorStages",
+    () => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const author = api.extractProfileUrn(me);
+            return await backEndAPI.getAuthorStages(author)
+        }));

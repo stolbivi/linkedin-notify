@@ -561,6 +561,13 @@ export class LinkedInAPI {
             this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
             .then(response => response.json());
     }
+
+    public getProfileDetails(token: string, id: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `identity/profiles/${id}`,
+            this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
+            .then(response => response.json());
+    }
+
     public getCompanyDetails(token: string, urn: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + `organization/companies?decorationId=com.linkedin.voyager.deco.organization.web.WebFullCompanyMain-12&q=universalName&universalName=${urn}`, this.getRequest(token))
             .then(response => response.json());

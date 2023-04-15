@@ -7,7 +7,10 @@ interface ICard {
   title: string,
   description: string,
   status: IStatus,
-  hidden: boolean
+  hidden: boolean,
+  name: string,
+  designation: string,
+  profileImg: string
 }
 
 export default ICard;
