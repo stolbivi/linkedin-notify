@@ -18,7 +18,7 @@ import {filterCards, setCards} from '../../store/slices/cards.slice';
 import stylesheet from './styles.scss';
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../../../../../global";
-import {getAuthorStages} from "../../../../../actions";
+import {getAuthorStages, setStageFromKanban} from "../../../../../actions";
 import {Loader} from "../../../../../components/Loader";
 
 interface KanbanBoardProps {
@@ -26,7 +26,6 @@ interface KanbanBoardProps {
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = () => {
-
   const { cards } = useAppSelector((state => state.cards));
   const { columns } = useAppSelector((state => state.columns));
   const { visible } = useModal();
@@ -45,16 +44,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
           }
         });
   },[]);
-
   useEffect(() => {
     populateKanbanData(IStatus.ALL);
   },[kanbanData])
-
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
-
+    if(activeButton === IStatus.ALL) return;
     if (!destination) return;
-
     if (
         destination.droppableId === source.droppableId && 
         destination.index === source.index
@@ -121,20 +117,18 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
       if (column.id === newSourceColumn.id) return newSourceColumn;
       else return column;
     }) ;
-
     dispatch(setColumns(updatedColumns))
     dispatch(setCards(updatedCards))
+    messages.request(setStageFromKanban({id: draggableId, stage: Object.values(ICategory).indexOf(destination.droppableId)}))
+        .then((_r) => {console.log(_r)});
   }
-
   useEffect(() => {
     dispatch(filterCards({categories: selectedCategories}))
   }, [selectedCategories])
-
   function handleClick(button: string) {
     populateKanbanData(button);
     setActiveButton(button);
   }
-
   const populateKanbanData = (parentCategory: string) => {
     const updatedCards: ICard[] = [];
     let cardsIdsByStatus = {};

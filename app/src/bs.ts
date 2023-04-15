@@ -46,7 +46,8 @@ import {
     getJobs,
     updateJob,
     deleteJob,
-    getAuthorStages
+    getAuthorStages,
+    setStageFromKanban
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -124,6 +125,7 @@ messagesV2.listen(getJobs);
 messagesV2.listen(updateJob);
 messagesV2.listen(deleteJob);
 messagesV2.listen(getAuthorStages);
+messagesV2.listen(setStageFromKanban);
 
 // listening to cookies store events
 listenToThemeCookie((cookie) => {

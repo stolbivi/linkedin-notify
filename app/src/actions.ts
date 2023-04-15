@@ -300,6 +300,14 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
             return {note: {response: noteExtended[0]}, stage: stage};;
         }));
 
+export const setStageFromKanban = createAction<SetStagePayload, any>("setStageFromKanban",
+    (payload) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const me = await api.getMe(token);
+            const author = api.extractProfileUrn(me);
+            return  await backEndAPI.setStageFromKanban(payload.id, payload.stage, author);
+        }));
 
 export interface ShowNotesAndChartsPayload {
     id?: string

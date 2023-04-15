@@ -70,6 +70,13 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
+    public setStageFromKanban(id: string, stage?: StageEnum, as?: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/${id}`+ (as ? `?as=${as}` : "") + (stage ? `&stage=${stage}` : ""),
+            this.getRequest("PUT", {})
+        );
+    }
+
     public getAuthorStages(id: string): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}stage/author/${id}`,

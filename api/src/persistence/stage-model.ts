@@ -37,7 +37,7 @@ export enum StageEnum {
 }
 
 export interface Stage {
-    stage: StageEnum
+    stage?: StageEnum
     parentStage?: number
     name?: string
     designation?:string
@@ -49,7 +49,7 @@ export interface Stage {
 }
 
 export interface StageWithId extends Stage {
-    id: string
+    id?: string
 }
 
 const stageSchema = new dynamoose.Schema({

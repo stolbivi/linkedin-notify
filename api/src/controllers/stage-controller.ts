@@ -96,7 +96,7 @@ export class StageController extends BaseController {
                     profileId: item.id,
                     profileImg: item.profileImg,
                     status: parentStage,
-                    category: stage?.replace(/_/g, ' ')
+                    category: stage?.replace(/_/g,' ')
                 });
             });
             if (request?.user) {
@@ -133,15 +133,23 @@ export class StageController extends BaseController {
     @Tags("Persistence")
     @Put("stage/{id}")
     public async update(id: string,
-                        @Body() body: Stage,
+                        @Query() as?: string,
+                        @Query() stage?: StageEnum,
+                        @Body() body?: StageWithId,
                         @Request() request?: express.Request
     ): Promise<any> {
         if (this.abruptOnNoSession(request)) {
             this.setStatus(403);
             return Promise.resolve("Please, sign in to use premium features");
         }
-
         try {
+            if(Object.keys(body).length === 0) {
+                let query = StageModel.query("id").eq(id).where("author").eq(as);
+                const result = await query.exec();
+                body = this.getFirst(result);
+                body.stage = stage;
+                delete body.id;
+            }
             const toSave = {...body};
             delete toSave.createdAt;
             delete toSave.updatedAt;
