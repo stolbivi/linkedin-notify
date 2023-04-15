@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {CompleteEnabled} from "./LocalStore";
 
 export interface LastViewed {
     profile: string
@@ -16,12 +17,9 @@ const slice = createSlice({
     reducers: {
         getLastViewedAction: (_1, _2: PayloadAction<string>) => {
         },
-        setLastViewedAction: (state, action: PayloadAction<LastViewed>) => {
-            state.profile = action.payload.profile;
-            state.author = action.payload.author;
-            state.createdAt = action.payload.createdAt;
-            state.updatedAt = action.payload.updatedAt;
-            state.hide = action.payload.hide;
+        setLastViewedAction: (state, action: PayloadAction<CompleteEnabled<LastViewed>>) => {
+            // @ts-ignore
+            Object.keys(action.payload).forEach(key => state[key] = action.payload[key]);
         }
     }
 });

@@ -1,28 +1,43 @@
 import {configureStore, createListenerMiddleware} from "@reduxjs/toolkit"
-import lastViewedReducer, {getLastViewedAction, LastViewed} from "./LastViewedReducer";
+import lastViewedReducer, {LastViewed} from "./LastViewedReducer";
 import showNotesAndChartsReducer, {ShowNotesAndCharts} from "./ShowNotesAndCharts";
-import completionReducer, {Completion} from "./CompletionReducer";
 import initListeners from "./Effects";
+import salaryReducer, {Salary} from "./SalaryReducer";
 
 export const listenerMiddleware = createListenerMiddleware();
 initListeners();
 
+export interface Completion {
+    completed?: boolean
+}
+
+export type CompleteEnabled<T> = Partial<T> & Completion;
+
+export interface IdAwareState<State> {
+    [key: string]: State
+}
+
+export interface IdAwareRequest<State> {
+    id: string
+    state: State
+}
+
 interface RootState {
-    lastViewed: LastViewed
-    showNotesAndCharts: ShowNotesAndCharts
-    completion: Completion
+    lastViewed: CompleteEnabled<LastViewed>
+    showNotesAndCharts: IdAwareState<ShowNotesAndCharts>
+    salary: IdAwareState<CompleteEnabled<Salary>>
 }
 
 export const localStore = configureStore({
     reducer: {
         lastViewed: lastViewedReducer,
         showNotesAndCharts: showNotesAndChartsReducer,
-        completion: completionReducer
+        salary: salaryReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().prepend(listenerMiddleware.middleware),
 });
 
 export const selectLastViewed = (state: RootState) => state.lastViewed;
-export const selectLastViewedCompletion = (state: RootState) => state.completion[getLastViewedAction.type];
 export const selectShowNotesAndCharts = (state: RootState) => state.showNotesAndCharts;
+export const selectSalary = (state: RootState) => state.salary;

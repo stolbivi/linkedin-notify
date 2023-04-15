@@ -125,7 +125,6 @@ export const setFeatures = createAction<SetFeaturePayload, Response<Features>>("
 export const getSubscription = createAction<{}, any>("getSubscription",
     () => backEndAPI.getSubscription());
 
-// TODO add to store
 export const getSalary = createAction<string, any>("getSalary",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))

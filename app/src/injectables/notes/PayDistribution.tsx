@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Salary} from "../SalaryPill";
+import {Salary} from "../../store/SalaryReducer";
 
 import "./PayDistribution.scss";
 

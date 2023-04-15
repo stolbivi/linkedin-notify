@@ -60,9 +60,9 @@ export const Maps: React.FC<Props> = ({host}) => {
         });
         messages.request(getSubscription())
             .then((r) => {
-                // TODO FIXME
-                // setDisabled(false);
-                // return Promise.resolve();
+                // TODO FIXME AccessGuard
+                setDisabled(false);
+                return Promise.resolve();
                 if (r.status === 403) {
                     setDisabled(true);
                 } else if (r.subscriptions?.length > 0) {

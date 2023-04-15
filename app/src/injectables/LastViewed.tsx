@@ -6,7 +6,7 @@ import {Clock} from "../icons/Clock";
 import {Loader} from "../components/Loader";
 import {formatDateToday} from "../services/UIHelpers";
 import {Provider, shallowEqual, useSelector} from "react-redux";
-import {localStore, selectLastViewed, selectLastViewedCompletion} from "../store/LocalStore";
+import {CompleteEnabled, localStore, selectLastViewed} from "../store/LocalStore";
 import {getLastViewedAction, LastViewed as LastViewedData} from "../store/LastViewedReducer";
 
 // @ts-ignore
@@ -33,23 +33,15 @@ type Props = {};
 export const LastViewed: React.FC<Props> = ({}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
-    const [show, setShow] = useState<boolean>(true);
-    const completed: boolean = useSelector(selectLastViewedCompletion, shallowEqual);
-    const lastViewed: LastViewedData = useSelector(selectLastViewed, shallowEqual);
+    const lastViewed: CompleteEnabled<LastViewedData> = useSelector(selectLastViewed, shallowEqual);
 
     useEffect(() => {
         localStore.dispatch(getLastViewedAction(extractIdFromUrl(window.location.href)));
     }, []);
 
-    useEffect(() => {
-        if (lastViewed) {
-            if (lastViewed.hide) {
-                setShow(false);
-            }
-        }
-    }, [lastViewed]);
+    const canShow = () => !lastViewed.hide;
 
-    const getLastViewedValue = (lastViewed: LastViewedData) => {
+    const getLastViewedValue = (lastViewed: CompleteEnabled<LastViewedData>) => {
         if (lastViewed.updatedAt) {
             return new Date(lastViewed.updatedAt);
         } else {
@@ -63,10 +55,10 @@ export const LastViewed: React.FC<Props> = ({}) => {
             <AccessGuard setAccessState={setAccessState}
                          className={"access-guard-px16 top-right-corner"}
                          loaderClassName="loader-base top-right-corner loader-px24"/>
-            {accessState === AccessState.Valid && show &&
+            {accessState === AccessState.Valid && canShow() &&
                 <div className="last-viewed top-right-corner">
-                    <Loader show={!completed}/>
-                    {completed &&
+                    <Loader show={!lastViewed.completed}/>
+                    {lastViewed.completed &&
                         <React.Fragment>
                             <Clock/>
                             <label>Last viewed on:</label>

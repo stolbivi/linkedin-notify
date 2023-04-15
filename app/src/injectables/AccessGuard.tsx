@@ -33,7 +33,7 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
     useEffect(() => {
         messages.request(getSubscription())
             .then((r) => {
-                // TODO FIXME
+                // TODO FIXME AccessGuard
                 setState(AccessState.Valid);
                 setAccessState(AccessState.Valid);
                 return;

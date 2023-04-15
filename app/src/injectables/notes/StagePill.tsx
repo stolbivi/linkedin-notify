@@ -72,7 +72,10 @@ export const StagePill: React.FC<Props> = ({url}) => {
         if (showNotes) {
             setShowNotes(false);
         } else {
-            localStore.dispatch(showNotesAndChartsAction({showSalary: false, showNotes: true, show: true}));
+            localStore.dispatch(showNotesAndChartsAction({
+                id: extractIdFromUrl(window.location.href),
+                state: {showSalary: false, showNotes: true, show: true}
+            }));
         }
     }
 

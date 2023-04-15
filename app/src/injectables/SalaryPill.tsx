@@ -1,14 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {MessagesV2} from "@stolbivi/pirojok";
-import {extractIdFromUrl, VERBOSE} from "../global";
+import {extractIdFromUrl} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
-import {getSalary} from "../actions";
-import {localStore} from "../store/LocalStore";
-import {Provider} from "react-redux";
+import {CompleteEnabled, localStore, selectSalary} from "../store/LocalStore";
+import {Provider, shallowEqual, useSelector} from "react-redux";
 import {showNotesAndChartsAction} from "../store/ShowNotesAndCharts";
-
+import {getSalaryAction, Salary} from "../store/SalaryReducer";
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
 
@@ -21,7 +19,7 @@ export const SalaryPillFactory = () => {
             if (actions && actions.length > 0) {
                 inject(actions[0], "lnm-salary", "after",
                     <Provider store={localStore}>
-                        <SalaryPill showSalary={true}/>
+                        <SalaryPill showSalary={true} id={extractIdFromUrl(window.location.href)}/>
                     </Provider>
                 );
             }
@@ -52,26 +50,11 @@ export const SalaryPillFactory = () => {
 }
 
 type Props = {
+    id: string
     url?: string
     showSalary?: boolean
     showNotes?: boolean
-    id?: string
 };
-
-export interface Salary {
-    urn?: string
-    title?: string
-    symbol?: string
-    formattedPay?: string
-    formattedPayValue?: number
-    progressivePay?: string
-    progressivePayValue?: number
-    note?: string
-    payDistribution?: string[]
-    payDistributionValues?: number[]
-    payPeriodAnnual?: string[]
-    experienceYears?: number
-}
 
 export const getSalaryValue = (salary: Salary) => {
     if (salary.progressivePay) {
@@ -83,27 +66,15 @@ export const getSalaryValue = (salary: Salary) => {
 
 export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNotes = false}) => {
 
-    const messages = new MessagesV2(VERBOSE);
-
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
-    const [salary, setSalary] = useState<Salary>({formattedPay: "", note: ""});
-    const [completed, setCompleted] = useState<boolean>(false);
     const [urlInternal, setUrlInternal] = useState<string>(url);
+    const salary: CompleteEnabled<Salary> = useSelector(selectSalary, shallowEqual)[id];
 
     useEffect(() => {
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
-        setCompleted(false);
-        messages.request(getSalary(extractIdFromUrl(urlInternal)))
-            .then((r) => {
-                if (r.error) {
-                    setSalary({formattedPay: "N/A", note: r.error});
-                } else {
-                    setSalary({...r.result, title: r.title, urn: r.urn});
-                }
-                setCompleted(true);
-            });
+        localStore.dispatch(getSalaryAction({id: id, state: extractIdFromUrl(urlInternal)}));
     }, [accessState, urlInternal]);
 
     useEffect(() => {
@@ -117,7 +88,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
 
     const onClick = () => {
         if (salary) {
-            localStore.dispatch(showNotesAndChartsAction({id, showSalary, showNotes, show: true}));
+            localStore.dispatch(showNotesAndChartsAction({id: id, state: {showSalary, showNotes, show: true}}));
         }
     }
 
@@ -127,10 +98,10 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName={"loader-base loader-px24"}/>
             {accessState === AccessState.Valid &&
-                <div className={"salary-pill" + (completed ? " clickable" : "")}
+                <div className={"salary-pill" + (salary?.completed ? " clickable" : "")}
                      onClick={onClick}>
-                    <Loader show={!completed}/>
-                    {completed && <span>{getSalaryValue(salary)}</span>}
+                    <Loader show={!salary?.completed}/>
+                    {salary?.completed && salary && <span>{getSalaryValue(salary)}</span>}
                 </div>}
         </React.Fragment>
     );

@@ -1,10 +1,10 @@
 import {getLastViewedAction, setLastViewedAction} from "./LastViewedReducer";
 import {PayloadAction} from "@reduxjs/toolkit";
-import {setCompletionAction} from "./CompletionReducer";
-import {getLastViewed, setLastViewed} from "../actions";
-import {listenerMiddleware} from "./LocalStore";
+import {getLastViewed, getSalary, setLastViewed} from "../actions";
+import {IdAwareRequest, listenerMiddleware} from "./LocalStore";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
+import {getSalaryAction, setSalaryAction} from "./SalaryReducer";
 
 export default () => {
     console.log("Initializing effects");
@@ -14,7 +14,7 @@ export default () => {
     listenerMiddleware.startListening({
         predicate: (action) => action.type === getLastViewedAction.type,
         effect: async (action: PayloadAction<string>, listenerApi) => {
-            listenerApi.dispatch(setCompletionAction({key: getLastViewedAction.type, value: false}));
+            listenerApi.dispatch(setLastViewedAction({completed: false}));
             let lastViewed = await messages.request(getLastViewed(action.payload));
             if (lastViewed.error) {
                 console.error(lastViewed.error);
@@ -25,7 +25,19 @@ export default () => {
             if (lastViewedUpdated.error) {
                 console.error(lastViewedUpdated.error);
             }
-            listenerApi.dispatch(setCompletionAction({key: getLastViewedAction.type, value: true}));
+            listenerApi.dispatch(setLastViewedAction({completed: true}));
+        },
+    });
+
+    listenerMiddleware.startListening({
+        predicate: (action) => action.type === getSalaryAction.type,
+        effect: async (action: PayloadAction<IdAwareRequest<string>>, listenerApi) => {
+            listenerApi.dispatch(setSalaryAction({id: action.payload.id, state: {completed: false}}));
+            let r = await messages.request(getSalary(action.payload.state));
+            let salary = r.error
+                ? {formattedPay: "N/A", note: r.error}
+                : {...r.result, title: r.title, urn: r.urn};
+            listenerApi.dispatch(setSalaryAction({id: action.payload.id, state: {...salary, completed: true}}));
         },
     });
 

@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {IdAwareRequest, IdAwareState} from "./LocalStore";
 
 export interface ShowNotesAndCharts {
     id?: string
@@ -7,17 +8,14 @@ export interface ShowNotesAndCharts {
     show: boolean
 }
 
-const initialState: ShowNotesAndCharts = {showSalary: false, showNotes: false, show: false};
+const initialState: IdAwareState<ShowNotesAndCharts> = {};
 
 const slice = createSlice({
     name: "lastViewedState",
     initialState,
     reducers: {
-        showNotesAndChartsAction: (state, action: PayloadAction<ShowNotesAndCharts>) => {
-            state.id = action.payload.id;
-            state.showSalary = action.payload.showSalary;
-            state.showNotes = action.payload.showNotes;
-            state.show = action.payload.show;
+        showNotesAndChartsAction: (state, action: PayloadAction<IdAwareRequest<ShowNotesAndCharts>>) => {
+            state[action.payload.id] = action.payload.state;
         }
     }
 });
