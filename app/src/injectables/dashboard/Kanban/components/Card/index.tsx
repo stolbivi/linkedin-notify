@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { ThemeContext } from 'styled-components';
 import getCategoryBackgroundColor from '../../helpers/getCategoryBackgroundColor';
-import { useModal } from '../../hooks/useModal';
 import ICard from '../../interfaces/ICard';
 import Badge from '../Badge';
 import { CardBorder, CardBottom, CardContainer } from './styles';
@@ -19,7 +18,6 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
 
   const [backgroundColor, setBackgroundColor] = useState<string>(theme.colors.primary);
 
-  const { toggleVisibility } = useModal();
 
   useEffect(() => {
     if (card) {
@@ -32,7 +30,7 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
     <Draggable draggableId={card.id} index={index}>
       {provided => (
         <CardContainer 
-          onClick={() => toggleVisibility(card)} 
+          onClick={()=>window.open(`https://www.linkedin.com/in/${card.id}`, '_blank')}
           hideCard={card.hidden}
           ref={provided.innerRef} 
           {...provided.draggableProps} 

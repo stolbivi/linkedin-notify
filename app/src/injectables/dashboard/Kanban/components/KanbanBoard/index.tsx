@@ -133,9 +133,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     setActiveButton(button);
   }
   const populateKanbanData = (parentCategory: string) => {
+    debugger
     const updatedCards: ICard[] = [];
     let cardsIdsByStatus = {};
-    let subCategories = [IStatus.AVAILABILITY,IStatus.STATUS,IStatus.TYPE,IStatus.GEOGRAPHY,IStatus.GROUPS];
+    let subCategories = [];
     if(parentCategory === IStatus.AVAILABILITY) {
       subCategories = [ICategory.Passive_Candidate,ICategory.Actively_Looking,ICategory.Open_To_New_Offers,ICategory.Not_Looking_Currently,ICategory.Future_Interest];
     } else if (parentCategory === IStatus.STATUS) {
@@ -144,6 +145,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
       subCategories = [ICategory.Part_Time,ICategory.Full_Time,ICategory.Permanent,ICategory.Contract,ICategory.Freelance];
     } else if (parentCategory === IStatus.GEOGRAPHY) {
       subCategories = [ICategory.Relocation,ICategory.Commute,ICategory.Hybrid,ICategory.Remote];
+    } else if (parentCategory === IStatus.ALL) {
+      subCategories = [IStatus.AVAILABILITY,IStatus.STATUS,IStatus.TYPE,IStatus.GEOGRAPHY,IStatus.GROUPS];
     }
     subCategories.forEach(value => {
       cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
@@ -175,7 +178,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
         }
       }
     } else {
-      Object.values(kanbanData[parentCategory]).map(stage => {
+      kanbanData[parentCategory] && Object.values(kanbanData[parentCategory])?.map(stage => {
         for (const item of stage) {
           const cardId = item.profileId;
           updatedCards.push({
