@@ -200,7 +200,7 @@ const JobList = () => {
                                         }
                                         <div className="edit-container">
                                             <div className="edit-col">
-                                                <span className="edit-col-text">Type</span>
+                                                <span className="edit-col-text" style={{paddingLeft:"4px"}}>Type</span>
                                                 {
                                                     detailsView ? (
                                                         <span>{type}</span>
@@ -216,7 +216,7 @@ const JobList = () => {
                                                 }
                                             </div>
                                             <div className="edit-col">
-                                                <span className="edit-col-text">Geography</span>
+                                                <span className="edit-col-text" style={{paddingLeft:"4px"}}>Geography</span>
                                                 {
                                                     detailsView ? (
                                                         <span>{geography}</span>
@@ -232,7 +232,7 @@ const JobList = () => {
                                                 }
                                             </div>
                                             <div className="edit-col">
-                                                <span className="edit-col-text">Company Name</span>
+                                                <span className="edit-col-text" style={{paddingLeft:"10px"}}>Company Name</span>
                                                 {detailsView ? (
                                                         <span>{company}</span>
                                                     ) : (
@@ -244,7 +244,7 @@ const JobList = () => {
                                                 }
                                             </div>
                                             <div className="edit-col">
-                                                <span className="edit-col-text">Salary</span>
+                                                <span className="edit-col-text" style={{paddingLeft:"10px"}}>Salary</span>
                                                 {detailsView ? (
                                                     <span>{salary}</span>
                                                 ) : (
@@ -256,7 +256,7 @@ const JobList = () => {
                                                 }
                                             </div>
                                             <div className="edit-col">
-                                                <span className="edit-col-text">Hiring Contact</span>
+                                                <span className="edit-col-text" style={{paddingLeft:"10px"}}>Hiring Contact</span>
                                                 {
                                                     detailsView ? (
                                                         <span>{hiringContact}</span>
@@ -268,7 +268,7 @@ const JobList = () => {
                                                 }
                                             </div>
                                             <div className="edit-col">
-                                                <span className="edit-col-text">Status</span>
+                                                <span className="edit-col-text" style={{paddingLeft:"4px"}}>Status</span>
                                                 {
                                                     detailsView ? (
                                                         <span>{status}</span>
