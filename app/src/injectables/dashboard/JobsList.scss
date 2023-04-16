@@ -104,14 +104,26 @@
 
 .job-column{
   text-align: center !important;
-  padding: 15px;
-  font-family: Helvetica;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 14px;
-  letter-spacing: 0em;
-  color: #909090;
-  cursor: pointer;
+  padding: 15px !important;
+  font-family: Helvetica !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 14px !important;
+  letter-spacing: 0em !important;
+  cursor: pointer !important;
+}
+
+.job-table-heading {
+  color: #909090 !important;
+}
+
+.job-table-row {
+  font-family: Helvetica !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 16px !important;
+  letter-spacing: 0em !important;
+  text-align: left !important;
 }
 
 .add-group {

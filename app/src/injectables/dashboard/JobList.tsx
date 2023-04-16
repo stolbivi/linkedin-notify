@@ -323,15 +323,15 @@ const JobList = () => {
                                 <table className="table table-striped jobs-table">
                                     <thead>
                                     <tr>
-                                        <th scope="col" className="job-column">Title</th>
-                                        <th scope="col" className="job-column">Salary</th>
-                                        <th scope="col" className="job-column">Company</th>
-                                        <th scope="col" className="job-column">Hiring Contact</th>
-                                        <th scope="col" className="job-column">Type</th>
-                                        <th scope="col" className="job-column">Geography</th>
-                                        <th scope="col" className="job-column">Status</th>
-                                        <th scope="col" className="job-column">Assigned</th>
-                                        <th scope="col" className="job-column">Action</th>
+                                        <th scope="col" className="job-column job-table-heading">Title</th>
+                                        <th scope="col" className="job-column job-table-heading">Salary</th>
+                                        <th scope="col" className="job-column job-table-heading">Company</th>
+                                        <th scope="col" className="job-column job-table-heading">Hiring Contact</th>
+                                        <th scope="col" className="job-column job-table-heading">Type</th>
+                                        <th scope="col" className="job-column job-table-heading">Geography</th>
+                                        <th scope="col" className="job-column job-table-heading">Status</th>
+                                        <th scope="col" className="job-column job-table-heading">Assigned</th>
+                                        <th scope="col" className="job-column job-table-heading">Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -346,7 +346,7 @@ const JobList = () => {
                                             )
                                             :
                                             filteredFields?.map((field) => (
-                                                <tr key={field.id} className="job-column" onClick={()=>openDetailsView(field)}>
+                                                <tr key={field.id} className="job-column job-table-row" onClick={()=>openDetailsView(field)}>
                                                     <td>
                                                         {field.title}
                                                     </td>
