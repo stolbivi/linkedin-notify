@@ -46,6 +46,7 @@ export interface Stage {
     email?: string
     createdAt?: string
     updatedAt?: string
+    stageText?: string
 }
 
 export interface StageWithId extends Stage {
@@ -93,6 +94,10 @@ const stageSchema = new dynamoose.Schema({
     profileImg: {
         type: String,
         required: true
+    },
+    stageText: {
+        type: String,
+        required: false
     }
 }, {
     "saveUnknown": true,

@@ -14,7 +14,8 @@ import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
-    createCustomStage, deleteNote,
+    createCustomStage,
+    deleteNote,
     getConversationProfile,
     getCustomStages,
     getNotesByProfile,
@@ -324,7 +325,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     };
 
     const getStage = (stage: number, id: string) => {
-        return <div className={"stage " + StageLabels[stage].class} style={{width: "27%"}}>
+        return <div className={"stage " + StageLabels[stage] ? StageLabels[stage].class : "interested"} style={{width: "27%"}}>
                     <label>{StageLabels[stage].label}</label>
                 <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
                         <svg width="3" height="3" viewBox="0 0 17 17" fill="none"
@@ -369,16 +370,20 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         )
     }
 
-    useEffect(() => console.log(customStages), [customStages])
+    useEffect(() => {
+        let count = 24;
+        customStages.map(stage => {
+            // @ts-ignore
+            StageEnum[stage.text] = count++;
+        });
+        console.log(StageEnum)
+    }, [customStages])
 
     const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
         event.stopPropagation();
         setEditButton(!editButton);
     }
 
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
     return (
         <React.Fragment>
             {show &&
@@ -471,10 +476,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                         <div className="custom-stages-wrapper">
                                                             {customStages?.map?.(customStage => <StageSwitch
                                                                                     key={salaryInternal.urn}
+                                                                                    type={StageEnum[customStage.text]}
                                                                                     activeStage={stageInternal}
-                                                                                    customText={customStage.text} classType="interested"
+                                                                                    customText={customStage.text}
+                                                                                    classType="interested"
                                                                                     setStage={setStageInternal}
-                                                                                    id={customStage?.stageId?.toString()}
+                                                                                    id={salaryInternal.urn}
                                                                                     appendNote={appendNote}/>
                                                             )}
                                                             <CreateNewGroup/>
