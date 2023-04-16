@@ -156,13 +156,13 @@ const BooleanSearch = () => {
                         (or not after) in the fields below. Comma-separate them, and you're
                         good to go.
                     </p>
-                    <p>Jobs</p>
-                    <div className="jobs-selection">
-                        <select className="jobs-dropdown">
-                            <option>No jobs selected</option>
-                        </select>
-                        <button>AI Keyword Generator</button>
-                    </div>
+                    {/*<p>Jobs</p>*/}
+                    {/*<div className="jobs-selection">*/}
+                    {/*    <select className="jobs-dropdown">*/}
+                    {/*        <option>No jobs selected</option>*/}
+                    {/*    </select>*/}
+                    {/*    <button>AI Keyword Generator</button>*/}
+                    {/*</div>*/}
                     <div className="queryContainers">
                         <label htmlFor="job-title-input">Job Titles to Include:</label>
                         <input
@@ -230,15 +230,15 @@ const BooleanSearch = () => {
                         />
                     </div>
                     <br/>
-                    <div className="preset-text">
-                        <p>Preset</p>
-                    </div>
-                    <div className="preset-selection">
-                        <select className="preset-dropdown">
-                            <option>No preset selected</option>
-                        </select>
-                        <button>Save Preset</button>
-                    </div>
+                    {/*<div className="preset-text">*/}
+                    {/*    <p>Preset</p>*/}
+                    {/*</div>*/}
+                    {/*<div className="preset-selection">*/}
+                    {/*    <select className="preset-dropdown">*/}
+                    {/*        <option>No preset selected</option>*/}
+                    {/*    </select>*/}
+                    {/*    <button>Save Preset</button>*/}
+                    {/*</div>*/}
                     <br/>
                     <h2>Custom Search</h2>
                     <p>
