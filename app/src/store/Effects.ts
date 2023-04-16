@@ -1,10 +1,19 @@
 import {getLastViewedAction, setLastViewedAction} from "./LastViewedReducer";
 import {PayloadAction} from "@reduxjs/toolkit";
-import {getLastViewed, getSalary, setLastViewed} from "../actions";
+import {
+    getLastViewed,
+    getSalary,
+    getStages,
+    GetStagesPayload,
+    setLastViewed,
+    setStage,
+    SetStagePayload
+} from "../actions";
 import {IdAwareRequest, listenerMiddleware} from "./LocalStore";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
 import {getSalaryAction, setSalaryAction} from "./SalaryReducer";
+import {getStageAction, setStageAction, updateStageAction} from "./StageReducer";
 
 export default () => {
     console.log("Initializing effects");
@@ -38,6 +47,27 @@ export default () => {
                 ? {formattedPay: "N/A", note: r.error}
                 : {...r.result, title: r.title, urn: r.urn};
             listenerApi.dispatch(setSalaryAction({id: action.payload.id, state: {...salary, completed: true}}));
+        },
+    });
+
+    listenerMiddleware.startListening({
+        predicate: (action) => action.type === getStageAction.type,
+        effect: async (action: PayloadAction<IdAwareRequest<GetStagesPayload>>, listenerApi) => {
+            listenerApi.dispatch(setStageAction({id: action.payload.id, state: {completed: false}}));
+            let r = await messages.request(getStages(action.payload.state));
+            const stage = r?.response?.stage >= 0 ? r?.response?.stage : -1;
+            listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, completed: true}}));
+        },
+    });
+
+    listenerMiddleware.startListening({
+        predicate: (action) => action.type === updateStageAction().type,
+        effect: async (action: PayloadAction<IdAwareRequest<SetStagePayload>>, listenerApi) => {
+            listenerApi.dispatch(setStageAction({id: action.payload.id, state: {completed: false}}));
+            let r = await messages.request(setStage(action.payload.state));
+            // TODO update note
+            const stage = r?.stage?.stage >= 0 ? r?.stage?.stage : -1;
+            listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, completed: true}}));
         },
     });
 

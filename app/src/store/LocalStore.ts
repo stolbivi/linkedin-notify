@@ -1,8 +1,10 @@
 import {configureStore, createListenerMiddleware} from "@reduxjs/toolkit"
+import initListeners from "./Effects";
 import lastViewedReducer, {LastViewed} from "./LastViewedReducer";
 import showNotesAndChartsReducer, {ShowNotesAndCharts} from "./ShowNotesAndCharts";
-import initListeners from "./Effects";
 import salaryReducer, {Salary} from "./SalaryReducer";
+import stageReducer from "./StageReducer";
+import {StageResponse} from "../actions";
 
 export const listenerMiddleware = createListenerMiddleware();
 initListeners();
@@ -26,6 +28,7 @@ interface RootState {
     lastViewed: CompleteEnabled<LastViewed>
     showNotesAndCharts: IdAwareState<ShowNotesAndCharts>
     salary: IdAwareState<CompleteEnabled<Salary>>
+    stage: IdAwareState<CompleteEnabled<StageResponse>>
 }
 
 export const localStore = configureStore({
@@ -33,11 +36,17 @@ export const localStore = configureStore({
         lastViewed: lastViewedReducer,
         showNotesAndCharts: showNotesAndChartsReducer,
         salary: salaryReducer,
+        stage: stageReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().prepend(listenerMiddleware.middleware),
 });
 
+localStore.subscribe(() => {
+    console.log('Local store:', localStore.getState());
+})
+
 export const selectLastViewed = (state: RootState) => state.lastViewed;
 export const selectShowNotesAndCharts = (state: RootState) => state.showNotesAndCharts;
 export const selectSalary = (state: RootState) => state.salary;
+export const selectStage = (state: RootState) => state.stage;

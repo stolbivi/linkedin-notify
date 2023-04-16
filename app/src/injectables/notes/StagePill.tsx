@@ -1,17 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {MessagesV2} from "@stolbivi/pirojok";
-import {extractIdFromUrl, VERBOSE} from "../../global";
-import {StageEnum, StageLabels} from "./StageSwitch";
+import {extractIdFromUrl} from "../../global";
+import {StageLabels} from "./StageSwitch";
 import {injectLastChild} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {AccessGuard, AccessState} from "../AccessGuard";
-import {getStages} from "../../actions";
-import {localStore} from "../../store/LocalStore";
-import {Provider} from "react-redux";
+import {CompleteEnabled, localStore, selectStage} from "../../store/LocalStore";
+import {Provider, shallowEqual, useSelector} from "react-redux";
 import {showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
+import {getStageAction, Stage} from "../../store/StageReducer";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -24,7 +23,7 @@ export const StagePillFactory = () => {
                 header[0].style.paddingRight = "0.5em";
                 injectLastChild(header[0].parentElement, "lnm-stage",
                     <Provider store={localStore}>
-                        <StagePill url={window.location.href}/>
+                        <StagePill id={extractIdFromUrl(window.location.href)}/>
                     </Provider>
                 );
             }
@@ -33,40 +32,22 @@ export const StagePillFactory = () => {
 }
 
 type Props = {
-    url: string
+    id: string
 };
 
-export const StagePill: React.FC<Props> = ({url}) => {
+export const StagePill: React.FC<Props> = ({id}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
-    const [type, setType] = useState<StageEnum>(-1);
-    const [completed, setCompleted] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
-    const [urlInternal, setUrlInternal] = useState<string>(url);
-
-    const messages = new MessagesV2(VERBOSE);
+    const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
 
     useEffect(() => {
-        if (accessState !== AccessState.Valid || !urlInternal) {
+        if (accessState !== AccessState.Valid || !id) {
             return;
         }
-        messages.request(getStages({url: extractIdFromUrl(urlInternal)}))
-            .then((r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
-                    setType(s);
-                }
-            }).finally(() => setCompleted(true));
+        localStore.dispatch(getStageAction({id, state: {url: id}}));
 
-    }, [accessState, urlInternal]);
-
-    useEffect(() => {
-        window.addEventListener('popstate', () => {
-            setUrlInternal(window.location.href);
-        });
-    }, [])
+    }, [accessState]);
 
     const onClick = () => {
         if (showNotes) {
@@ -79,7 +60,9 @@ export const StagePill: React.FC<Props> = ({url}) => {
         }
     }
 
-    const getText = () => completed ? StageLabels[type].label : "Loading"
+    const getStage = () => stage?.stage > 0 ? stage?.stage : -1;
+
+    const getText = () => stage?.completed ? StageLabels[getStage()].label : "Loading"
 
     return (
         <React.Fragment>
@@ -87,9 +70,9 @@ export const StagePill: React.FC<Props> = ({url}) => {
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName="loader-base loader-px24"/>
             {accessState === AccessState.Valid &&
-                <div className={"stage " + StageLabels[type].class} onClick={onClick} style={{marginLeft: "1em"}}>
-                    <div className="loader"><Loader show={!completed}/></div>
-                    <label style={{opacity: completed ? 1 : 0}}>{getText()}</label>
+                <div className={"stage " + StageLabels[getStage()].class} onClick={onClick} style={{marginLeft: "1em"}}>
+                    <div className="loader"><Loader show={!stage?.completed}/></div>
+                    <label style={{opacity: stage?.completed ? 1 : 0}}>{getText()}</label>
                 </div>}
         </React.Fragment>
     );

@@ -7,6 +7,7 @@ import {Response} from "./services/BaseAPI";
 import {StageEnum} from "./injectables/notes/StageSwitch";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
 import {LastViewed} from "./store/LastViewedReducer";
+import {Stage} from "./store/StageReducer";
 import Cookie = chrome.cookies.Cookie;
 
 const api = new LinkedInAPI();
@@ -177,8 +178,14 @@ export interface GetStagesPayload {
     url?: string
 }
 
-// TODO add to store
-export const getStages = createAction<GetStagesPayload, Response<any>>("getStages",
+export interface StageResponse {
+    id: string
+    author: string
+    stage: number
+    updatedAt: string
+}
+
+export const getStages = createAction<GetStagesPayload, Response<StageResponse>>("getStages",
     (payload) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -229,7 +236,12 @@ export interface SetStagePayload {
     stageFrom: StageEnum
 }
 
-export const setStage = createAction<SetStagePayload, any>("setStage",
+export interface SetStageResponse {
+    note: NoteExtended
+    stage: Stage
+}
+
+export const setStage = createAction<SetStagePayload, SetStageResponse>("setStage",
     (payload) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -243,7 +255,7 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
             });
             const noteExtended = await extendNote(token, [note.response], author);
             const stage = await backEndAPI.setStage(payload.id, payload.stage, author);
-            return {note: {response: noteExtended[0]}, stage: stage};
+            return {note: noteExtended[0], stage: stage.response};
         }));
 
 // TODO add to store

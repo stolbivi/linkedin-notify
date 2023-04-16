@@ -13,13 +13,14 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getNotesByProfile, getSalary, getStages, getTheme, postNote as postNoteAction} from "../../actions";
+import {getNotesByProfile, getSalary, getTheme, postNote as postNoteAction} from "../../actions";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 import {ShowNotesAndCharts, showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
-import {localStore, selectShowNotesAndCharts} from "../../store/LocalStore";
+import {CompleteEnabled, localStore, selectShowNotesAndCharts, selectStage} from "../../store/LocalStore";
 import {Provider, shallowEqual, useSelector} from "react-redux";
 import {Salary} from "../../store/SalaryReducer";
+import {getStageAction, Stage} from "../../store/StageReducer";
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
 
@@ -61,12 +62,10 @@ export const NotesAndChartsFactory = () => {
 }
 
 type Props = {
-    stage?: StageEnum
-    salary?: Salary
     id: string
 };
 
-export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
+export const NotesAndCharts: React.FC<Props> = ({id}) => {
 
     const MAX_LENGTH = 200;
 
@@ -75,13 +74,13 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
     const [showChart, setShowChart] = useState<boolean>(false);
     const [completed, setCompleted] = useState<boolean>(false);
     const [minimized, setMinimized] = useState<boolean>(true);
-    const [stageInternal, setStageInternal] = useState<StageEnum>(stage);
-    const [salaryInternal, setSalaryInternal] = useState<Salary>(salary);
+    const [salaryInternal, setSalaryInternal] = useState<Salary>();
     const [editable, setEditable] = useState<boolean>(true);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
     const showNotesAndCharts: ShowNotesAndCharts = useSelector(selectShowNotesAndCharts, shallowEqual)[id];
+    const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -102,13 +101,11 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                 setSalaryInternal(salary);
                 return salary;
             }).then(salary => {
-            const stagePromise = messages.request(getStages({id: salary.urn}))
-                .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                .catch(e => console.error(e.error));
+            localStore.dispatch(getStageAction({id, state: {id: salary.urn}}));
             const notesPromise = messages.request(getNotesByProfile(salary.urn))
                 .then((r) => setNotes(r.response))
                 .catch(e => console.error(e.error));
-            Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
+            Promise.all([notesPromise]).then(() => setCompleted(true));
         }).catch(e => console.error(e.error));
     }, []);
 
@@ -140,7 +137,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
             setPostAllowed(false);
-            messages.request(postNoteAction({id: salaryInternal.urn, stageTo: stageInternal, text}))
+            messages.request(postNoteAction({id: salaryInternal.urn, stageTo: stage?.stage, text}))
                 .then((r) => {
                     if (r.error) {
                         console.error(r.error);
@@ -227,21 +224,16 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id}) => {
                                     <div className="stage-container">
                                         <span>Pick a stage</span>
                                         <div className="stages">
-                                            <StageSwitch type={StageEnum.Interested} activeStage={stageInternal}
-                                                         setStage={setStageInternal}
-                                                         id={salaryInternal.urn} appendNote={appendNote}/>
-                                            <StageSwitch type={StageEnum.NotInterested} activeStage={stageInternal}
-                                                         setStage={setStageInternal}
-                                                         id={salaryInternal.urn} appendNote={appendNote}/>
-                                            <StageSwitch type={StageEnum.Interviewing} activeStage={stageInternal}
-                                                         setStage={setStageInternal}
-                                                         id={salaryInternal.urn} appendNote={appendNote}/>
-                                            <StageSwitch type={StageEnum.FailedInterview} activeStage={stageInternal}
-                                                         setStage={setStageInternal} id={salaryInternal.urn}
-                                                         appendNote={appendNote}/>
-                                            <StageSwitch type={StageEnum.Hired} activeStage={stageInternal}
-                                                         setStage={setStageInternal}
-                                                         id={salaryInternal.urn} appendNote={appendNote}/>
+                                            <StageSwitch type={StageEnum.Interested} id={id}
+                                                         urn={salaryInternal.urn}/>
+                                            <StageSwitch type={StageEnum.NotInterested} id={id}
+                                                         urn={salaryInternal.urn}/>
+                                            <StageSwitch type={StageEnum.Interviewing} id={id}
+                                                         urn={salaryInternal.urn}/>
+                                            <StageSwitch type={StageEnum.FailedInterview} id={id}
+                                                         urn={salaryInternal.urn}/>
+                                            <StageSwitch type={StageEnum.Hired} id={id}
+                                                         urn={salaryInternal.urn}/>
                                         </div>
                                     </div>}
                                 <Collapsible initialOpened={showNotes}>
