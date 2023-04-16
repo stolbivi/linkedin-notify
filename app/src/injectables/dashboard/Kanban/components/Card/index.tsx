@@ -41,7 +41,7 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
           <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
           <CardBorder color={backgroundColor}/>
           <div className="card-container">
-            <img src={card.profileImg} alt="img" width={50} height={50}/>
+            <img src={card.profileImg} alt="img" width={40} height={40} style={{borderRadius:"100%"}} />
             <div>
               <h3 className="card-title">{card.name}</h3>
               <p className="job-detail">{card.designation}</p>

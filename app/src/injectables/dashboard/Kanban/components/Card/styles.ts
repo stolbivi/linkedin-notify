@@ -48,17 +48,6 @@ export const CardBorder = styled.div<ColorProps>`
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   height: 10px;
-
-  &:before{
-    content: '';
-    height: 0.5px;
-    width: 80px;
-    background-color: #ffffff;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, 0);
-  }
 `
 
 export const CardBottom = styled.div`
