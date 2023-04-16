@@ -5,6 +5,7 @@ import {
     getSalary,
     getStages,
     GetStagesPayload,
+    getTz,
     setLastViewed,
     setStage,
     SetStagePayload
@@ -14,6 +15,7 @@ import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
 import {getSalaryAction, setSalaryAction} from "./SalaryReducer";
 import {getStageAction, setStageAction, updateStageAction} from "./StageReducer";
+import {getGeoTzAction, setGeoTzAction} from "./GeoTzReducer";
 
 export default () => {
     console.log("Initializing effects");
@@ -61,13 +63,22 @@ export default () => {
     });
 
     listenerMiddleware.startListening({
-        predicate: (action) => action.type === updateStageAction().type,
+        predicate: (action) => action.type === updateStageAction.type,
         effect: async (action: PayloadAction<IdAwareRequest<SetStagePayload>>, listenerApi) => {
             listenerApi.dispatch(setStageAction({id: action.payload.id, state: {completed: false}}));
             let r = await messages.request(setStage(action.payload.state));
             // TODO update note
             const stage = r?.stage?.stage >= 0 ? r?.stage?.stage : -1;
             listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, completed: true}}));
+        },
+    });
+
+    listenerMiddleware.startListening({
+        predicate: (action) => action.type === getGeoTzAction.type,
+        effect: async (action: PayloadAction<string>, listenerApi) => {
+            listenerApi.dispatch(setGeoTzAction({completed: false}));
+            let r = await messages.request(getTz(action.payload));
+            listenerApi.dispatch(setGeoTzAction({...r, completed: true}));
         },
     });
 

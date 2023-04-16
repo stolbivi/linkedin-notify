@@ -4,7 +4,8 @@ import lastViewedReducer, {LastViewed} from "./LastViewedReducer";
 import showNotesAndChartsReducer, {ShowNotesAndCharts} from "./ShowNotesAndCharts";
 import salaryReducer, {Salary} from "./SalaryReducer";
 import stageReducer from "./StageReducer";
-import {StageResponse} from "../actions";
+import {GeoTz, StageResponse} from "../actions";
+import geoTzReducer from "./GeoTzReducer";
 
 export const listenerMiddleware = createListenerMiddleware();
 initListeners();
@@ -29,6 +30,7 @@ interface RootState {
     showNotesAndCharts: IdAwareState<ShowNotesAndCharts>
     salary: IdAwareState<CompleteEnabled<Salary>>
     stage: IdAwareState<CompleteEnabled<StageResponse>>
+    geoTz: CompleteEnabled<GeoTz>
 }
 
 export const localStore = configureStore({
@@ -37,6 +39,7 @@ export const localStore = configureStore({
         showNotesAndCharts: showNotesAndChartsReducer,
         salary: salaryReducer,
         stage: stageReducer,
+        geoTz: geoTzReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().prepend(listenerMiddleware.middleware),
@@ -50,3 +53,4 @@ export const selectLastViewed = (state: RootState) => state.lastViewed;
 export const selectShowNotesAndCharts = (state: RootState) => state.showNotesAndCharts;
 export const selectSalary = (state: RootState) => state.salary;
 export const selectStage = (state: RootState) => state.stage;
+export const selectGeoTz = (state: RootState) => state.geoTz;

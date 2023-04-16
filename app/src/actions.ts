@@ -146,8 +146,16 @@ export const getSalary = createAction<string, any>("getSalary",
             return {...response, ...request};
         }));
 
-// TODO add to store
-export const getTz = createAction<string, any>("getTz",
+export interface GeoTz {
+    geo: {
+        lat: any
+        lng: any
+        city: any
+    }
+    tz: any
+}
+
+export const getTz = createAction<string, GeoTz>("getTz",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {

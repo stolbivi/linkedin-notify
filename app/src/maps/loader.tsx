@@ -1,9 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./loader.scss";
 import {MapsLoader} from "./MapsLoader";
+import {Provider} from "react-redux";
+import {localStore} from "../store/LocalStore";
+import "./loader.scss";
 
 ReactDOM.render(
-    <MapsLoader/>,
+    <Provider store={localStore}>
+        <MapsLoader/>
+    </Provider>,
     document.getElementById("root")
 );
