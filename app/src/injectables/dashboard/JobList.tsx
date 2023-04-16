@@ -317,7 +317,7 @@ const JobList = () => {
                                     <input type="text" placeholder="Search..." onChange={(event) => setSearchText(event.target.value)}/>
                                     <i className="fa fa-search"/>
                                     <button className="search-btn" onClick={handleAddField}>
-                                        <span className="search-btn-text">Add a job</span>
+                                        <span className="search-btn-text">+ Add a job</span>
                                     </button>
                                 </div>
                                 <table className="table table-striped jobs-table">
