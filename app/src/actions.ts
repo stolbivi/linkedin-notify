@@ -451,6 +451,43 @@ export const setLastViewed = createAction<string, any>("setLastViewed",
             });
         }));
 
+export const getLastSeen = createAction<string, any>("getLastSeen",
+    (id, sender) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const experienceResponse = await api.getExperience(token, id);
+            const experience = api.extractExperience(experienceResponse);
+            const profile = experience.urn;
+            const me = await api.getMe(token);
+            const as = api.extractProfileUrn(me);
+            if (profile === as) {
+                return {response: {profile: me, author: as, hide: true}}
+            } else {
+                return backEndAPI.getLastViewed(profile, as);
+            }
+        })
+        .then(response => {
+            if (sender.tab) {
+                store.dispatch(setLastViewedAction({tabId: sender.tab.id, payload: response.response}));
+            }
+            return response;
+        }));
+
+export const setLastSeen = createAction<string, any>("setLastSeen",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const experienceResponse = await api.getExperience(token, id);
+            const experience = api.extractExperience(experienceResponse);
+            const profile = experience.urn;
+            const me = await api.getMe(token);
+            const author = api.extractProfileUrn(me);
+            return backEndAPI.postLastViewed({
+                profile,
+                author,
+            });
+        }));
+
 export interface SwitchThemePayload {
     theme: string
 }

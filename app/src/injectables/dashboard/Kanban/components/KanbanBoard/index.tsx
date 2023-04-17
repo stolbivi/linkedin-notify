@@ -133,7 +133,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     setActiveButton(button);
   }
   const populateKanbanData = (parentCategory: string) => {
-    debugger
     const updatedCards: ICard[] = [];
     let cardsIdsByStatus = {};
     let subCategories = [];

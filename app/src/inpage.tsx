@@ -9,6 +9,7 @@ import {MapsFactory} from "./injectables/Maps";
 import {StagePillFactory} from "./injectables/notes/StagePill";
 import {NotesAndChartsFactory} from "./injectables/notes/NotesAndCharts";
 import {NotesManagerFactory} from "./injectables/notes/NotesManager";
+import {LastSeenFactory} from "./injectables/LastSeen";
 import {LastViewedFactory} from "./injectables/LastViewed";
 import {TimeZoneFactory} from "./injectables/TimeZone";
 import {LnDashboardFactory} from "./injectables/LnDashboard";
@@ -29,6 +30,7 @@ const componentFactoryMap = {
     StagePill: { watch: true, element: StagePillFactory},
     NotesAndCharts: { watch: true, element: NotesAndChartsFactory},
     NotesManager: { watch: true, element: NotesManagerFactory},
+    LastSeen: { watch: true, element: LastSeenFactory},
     LastViewed: { watch: true, element: LastViewedFactory},
     TimeZone: { watch: true, element: TimeZoneFactory},
     LnDashboard: { watch: true, element: LnDashboardFactory}
@@ -46,6 +48,7 @@ const injectUI = () => {
                 StagePillFactory();
                 NotesAndChartsFactory();
                 NotesManagerFactory();
+                LastSeenFactory();
                 LastViewedFactory();
                 TimeZoneFactory();
                 LnDashboardFactory();
