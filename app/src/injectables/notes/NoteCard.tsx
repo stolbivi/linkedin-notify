@@ -62,18 +62,19 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => 
                                 <div> {getDescription()}</div>
                             </div>
                         }
-                        <label className="timestamp">{formatDate(new Date(note.timestamp))}</label>
+                        <label className="timestamp">{formatDate(new Date(note.updatedAt))}</label>
                     </div>
                     {note.stageFrom !== undefined && note.stageTo !== undefined &&
-                    <div className="transition">
-                        {getStage(note.stageFrom)}
-                        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path opacity="0.2" d="M1 5H13M13 5L9.57143 1M13 5L9.57143 9" stroke="#909090"
-                                  strokeWidth="2"
-                                  strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        {getStage(note.stageTo)}
-                    </div>}
+                        <div className="transition">
+                            {getStage(note.stageFrom)}
+                            <svg width="14" height="10" viewBox="0 0 14 10" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.2" d="M1 5H13M13 5L9.57143 1M13 5L9.57143 9" stroke="#909090"
+                                      strokeWidth="2"
+                                      strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            {getStage(note.stageTo)}
+                        </div>}
                     {note.text && <div className="text">{note.text}</div>}
                 </div>
             </div>

@@ -15,7 +15,6 @@ import {
     getIsUnlocked,
     getLastViewed,
     getNotesAll,
-    getNotesByProfile,
     getNotifications,
     getSalary,
     getStages,
@@ -89,7 +88,6 @@ messagesV2.listen(setFeatures);
 messagesV2.listen(getStages);
 messagesV2.listen(setStage);
 messagesV2.listen(getNotesAll);
-messagesV2.listen(getNotesByProfile);
 messagesV2.listen(postNote);
 messagesV2.listen(getSubscription);
 messagesV2.listen(getLastViewed);

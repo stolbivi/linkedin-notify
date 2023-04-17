@@ -234,7 +234,7 @@ async function extendNote(token: string, notes: Note[], as: string): Promise<Not
         profileName: cache[n.profile].name[0],
         profileLink: cache[n.profile].link?.length > 0 ? cache[n.profile].link[0] : undefined,
         profilePicture: getPicture(cache[n.profile].profilePicture),
-        timestamp: new Date(n.updatedAt)
+        timestamp: new Date(n.updatedAt).getTime()
     }));
 }
 
@@ -275,16 +275,16 @@ export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesA
             const notes = await backEndAPI.getNotes(as);
             if (notes.response) {
                 return extendNote(token, notes.response, as)
-                    .then(response => {
-                        // @ts-ignore
-                        response.sort((a, b) => b.timestamp - a.timestamp);
-                        return {response} as Response<NoteExtended[]>;
-                    })
+                    .then(response => ({response} as Response<NoteExtended[]>));
             } else {
                 return notes as Response<NoteExtended[]>;
             }
         }));
 
+export const sortAsc = (notes: NoteExtended[]) => notes.sort((a, b) => a.timestamp - b.timestamp);
+export const sortDesc = (notes: NoteExtended[]) => notes.sort((a, b) => b.timestamp - a.timestamp);
+
+// @Deprecated: this API is deprecated and is not used since all notes are now shared via store
 export const getNotesByProfile = createAction<string, Response<NoteExtended[]>>("getNotesByProfile",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
@@ -294,11 +294,7 @@ export const getNotesByProfile = createAction<string, Response<NoteExtended[]>>(
             const notes = await backEndAPI.getNotesByProfile(id, as);
             if (notes.response) {
                 return extendNote(token, notes.response, as)
-                    .then(response => {
-                        // @ts-ignore
-                        response.sort((a, b) => a.timestamp - b.timestamp);
-                        return {response} as Response<NoteExtended[]>;
-                    })
+                    .then(response => ({response} as Response<NoteExtended[]>));
             } else {
                 return notes as Response<NoteExtended[]>;
             }
@@ -310,8 +306,11 @@ export interface PostNotePayload {
     text: string
 }
 
-// TODO add to store
-export const postNote = createAction<PostNotePayload, any>("postNote",
+export interface PostNoteResponse {
+    note: Response<NoteExtended>
+}
+
+export const postNote = createAction<PostNotePayload, PostNoteResponse>("postNote",
     (payload) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {

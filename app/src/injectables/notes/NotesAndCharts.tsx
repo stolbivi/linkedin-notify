@@ -13,7 +13,7 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getTheme, postNote as postNoteAction} from "../../actions";
+import {getTheme, sortAsc} from "../../actions";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 import {ShowNotesAndCharts, showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
@@ -31,7 +31,7 @@ import {getSalaryAction, Salary} from "../../store/SalaryReducer";
 import {getStageAction, Stage} from "../../store/StageReducer";
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
-import {getNotesAction} from "../../store/NotesAllReducer";
+import {getNotesAction, postNoteAction} from "../../store/NotesAllReducer";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -111,7 +111,9 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
         if (salary) {
             localStore.dispatch(getStageAction({id, state: {id: salary.urn}}));
             if (notesAll?.data?.length > 0) {
-                setNotes(notesAll?.data?.filter(n => n.profile === salary.urn));
+                let filtered = notesAll?.data?.filter(n => n.profile === salary.urn);
+                sortAsc(filtered);
+                setNotes(filtered);
             }
         }
     }, [notesAll, salary]);
@@ -136,26 +138,14 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
     const canShow = () => showNotesAndCharts?.show;
     const completed = () => salary?.completed && stage?.completed && notesAll?.completed;
 
-    const appendNote = (note: NoteExtended) => {
-        setNotes([...notes, note]);
-    }
-
     const postNote = (text: string) => {
-        // TODO add to store
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
             setPostAllowed(false);
-            messages.request(postNoteAction({id: salary?.urn, stageTo: stage?.stage, text}))
-                .then((r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    } else {
-                        setText({value: ""});
-                        appendNote(r.note.response)
-                    }
-                    setEditable(true);
-                }).then(/* nada */);
+            localStore.dispatch(postNoteAction({id: salary?.urn, stageTo: stage?.stage, text}));
+            setText({value: ""});
+            setEditable(true);
         }
     }
 

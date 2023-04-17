@@ -10,14 +10,14 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getTheme, openUrl, postNote as postNoteAction, SwitchThemePayload} from "../../actions";
+import {getTheme, openUrl, sortAsc, sortDesc, SwitchThemePayload} from "../../actions";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as LightTheme} from "../../themes/light";
 import {theme as DarkTheme} from "../../themes/dark";
 import {CompleteEnabled, DataWrapper, localStore, selectNotesAll} from "../../store/LocalStore";
 import {Provider, shallowEqual, useSelector} from "react-redux";
-import {getNotesAction} from "../../store/NotesAllReducer";
+import {getNotesAction, postNoteAction} from "../../store/NotesAllReducer";
 import {NotesContainer} from "./NotesContainer";
 
 // @ts-ignore
@@ -111,12 +111,14 @@ export const NotesManager: React.FC<Props> = ({}) => {
             // search by text
             filteredNotes = notesAll?.data?.filter(n => n.profile === selection.profile
                 && checkByText(n, searchText?.toLowerCase()));
+            sortAsc(filteredNotes);
         } else {
             // search by value
             filteredNotes = notesAll?.data?.filter(
                 n => checkByText(n, searchValue.text?.toLowerCase()) &&
                     (stagesCount > 0 ? (searchValue.stages[n.stageFrom] || searchValue.stages[n.stageTo]) : true)
             );
+            sortDesc(filteredNotes);
         }
         setNotes(filteredNotes);
     }, [selection, searchValue, searchText, notesAll]);
@@ -219,27 +221,14 @@ export const NotesManager: React.FC<Props> = ({}) => {
         }
     }
 
-    const appendNote = (_: NoteExtended) => {
-        // TODO append note
-        // setSelectedNotes([...selectedNotes, note]);
-    }
-
     const postNote = (text: string) => {
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
             const lastState = notes[notes.length - 1].stageTo;
-            // TODO append note
-            messages.request(postNoteAction({id: selection.profile, stageTo: lastState, text}))
-                .then((r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    } else {
-                        setText({value: ""});
-                        appendNote(r.note.response)
-                    }
-                    setEditable(true);
-                }).then(/* nada */);
+            localStore.dispatch(postNoteAction({id: selection.profile, stageTo: lastState, text}));
+            setText({value: ""});
+            setEditable(true);
         }
     }
 

@@ -7,6 +7,8 @@ import {
     getStages,
     GetStagesPayload,
     getTz,
+    postNote,
+    PostNotePayload,
     setLastViewed,
     setStage,
     SetStagePayload
@@ -17,7 +19,7 @@ import {extractIdFromUrl, VERBOSE} from "../global";
 import {getSalaryAction, setSalaryAction} from "./SalaryReducer";
 import {getStageAction, setStageAction, updateStageAction} from "./StageReducer";
 import {getGeoTzAction, setGeoTzAction} from "./GeoTzReducer";
-import {getNotesAction, setNotesAction} from "./NotesAllReducer";
+import {appendNoteAction, getNotesAction, postNoteAction, setNotesAction} from "./NotesAllReducer";
 
 export default () => {
     console.log("Initializing effects");
@@ -69,9 +71,11 @@ export default () => {
         effect: async (action: PayloadAction<IdAwareRequest<SetStagePayload>>, listenerApi) => {
             listenerApi.dispatch(setStageAction({id: action.payload.id, state: {completed: false}}));
             let r = await messages.request(setStage(action.payload.state));
-            // TODO update note
             const stage = r?.stage?.stage >= 0 ? r?.stage?.stage : -1;
             listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, completed: true}}));
+            if (!r.error && r.note) {
+                listenerApi.dispatch(appendNoteAction(r.note));
+            }
         },
     });
 
@@ -91,6 +95,17 @@ export default () => {
             let r = await messages.request(getNotesAll());
             let data = r.error ? [] : r.response;
             listenerApi.dispatch(setNotesAction({data, completed: true}));
+        },
+    });
+
+    listenerMiddleware.startListening({
+        predicate: (action) => action.type === postNoteAction.type,
+        effect: async (action: PayloadAction<PostNotePayload>, listenerApi) => {
+            let r = await messages.request(postNote(action.payload));
+            console.log('Added note:', r);
+            if (!r.error && !r.note.error) {
+                listenerApi.dispatch(appendNoteAction(r.note.response));
+            }
         },
     });
 
