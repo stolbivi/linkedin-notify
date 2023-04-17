@@ -2,6 +2,7 @@ import {getLastViewedAction, setLastViewedAction} from "./LastViewedReducer";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {
     getLastViewed,
+    getNotesAll,
     getSalary,
     getStages,
     GetStagesPayload,
@@ -16,6 +17,7 @@ import {extractIdFromUrl, VERBOSE} from "../global";
 import {getSalaryAction, setSalaryAction} from "./SalaryReducer";
 import {getStageAction, setStageAction, updateStageAction} from "./StageReducer";
 import {getGeoTzAction, setGeoTzAction} from "./GeoTzReducer";
+import {getNotesAction, setNotesAction} from "./NotesAllReducer";
 
 export default () => {
     console.log("Initializing effects");
@@ -79,6 +81,16 @@ export default () => {
             listenerApi.dispatch(setGeoTzAction({completed: false}));
             let r = await messages.request(getTz(action.payload));
             listenerApi.dispatch(setGeoTzAction({...r, completed: true}));
+        },
+    });
+
+    listenerMiddleware.startListening({
+        predicate: (action) => action.type === getNotesAction.type,
+        effect: async (_: PayloadAction, listenerApi) => {
+            listenerApi.dispatch(setNotesAction({completed: false}));
+            let r = await messages.request(getNotesAll());
+            let data = r.error ? [] : r.response;
+            listenerApi.dispatch(setNotesAction({data, completed: true}));
         },
     });
 

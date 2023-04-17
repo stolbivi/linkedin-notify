@@ -13,16 +13,25 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getNotesByProfile, getSalary, getTheme, postNote as postNoteAction} from "../../actions";
+import {getTheme, postNote as postNoteAction} from "../../actions";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 import {ShowNotesAndCharts, showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
-import {CompleteEnabled, localStore, selectShowNotesAndCharts, selectStage} from "../../store/LocalStore";
+import {
+    CompleteEnabled,
+    DataWrapper,
+    localStore,
+    selectNotesAll,
+    selectSalary,
+    selectShowNotesAndCharts,
+    selectStage
+} from "../../store/LocalStore";
 import {Provider, shallowEqual, useSelector} from "react-redux";
-import {Salary} from "../../store/SalaryReducer";
+import {getSalaryAction, Salary} from "../../store/SalaryReducer";
 import {getStageAction, Stage} from "../../store/StageReducer";
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
+import {getNotesAction} from "../../store/NotesAllReducer";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -72,15 +81,16 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
     const [showSalary, setShowSalary] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const [showChart, setShowChart] = useState<boolean>(false);
-    const [completed, setCompleted] = useState<boolean>(false);
     const [minimized, setMinimized] = useState<boolean>(true);
-    const [salaryInternal, setSalaryInternal] = useState<Salary>();
     const [editable, setEditable] = useState<boolean>(true);
-    const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
+
     const showNotesAndCharts: ShowNotesAndCharts = useSelector(selectShowNotesAndCharts, shallowEqual)[id];
     const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
+    const salary: CompleteEnabled<Salary> = useSelector(selectSalary, shallowEqual)[id];
+    const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
+    const [notes, setNotes] = useState<NoteExtended[]>([]);
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -93,21 +103,18 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
                 state: {showSalary: false, showNotes: false, show: false}
             }));
         });
-        // getting data
-        setCompleted(false);
-        messages.request(getSalary(id))
-            .then((r) => {
-                const salary = {...r.result, title: r.title, urn: r.urn};
-                setSalaryInternal(salary);
-                return salary;
-            }).then(salary => {
-            localStore.dispatch(getStageAction({id, state: {id: salary.urn}}));
-            const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                .then((r) => setNotes(r.response))
-                .catch(e => console.error(e.error));
-            Promise.all([notesPromise]).then(() => setCompleted(true));
-        }).catch(e => console.error(e.error));
+        localStore.dispatch(getNotesAction());
+        localStore.dispatch(getSalaryAction({id: id, state: id}));
     }, []);
+
+    useEffect(() => {
+        if (salary) {
+            localStore.dispatch(getStageAction({id, state: {id: salary.urn}}));
+            if (notesAll?.data?.length > 0) {
+                setNotes(notesAll?.data?.filter(n => n.profile === salary.urn));
+            }
+        }
+    }, [notesAll, salary]);
 
     useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
@@ -126,18 +133,20 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
         }
     }, [showNotesAndCharts]);
 
+    const canShow = () => showNotesAndCharts?.show;
+    const completed = () => salary?.completed && stage?.completed && notesAll?.completed;
+
     const appendNote = (note: NoteExtended) => {
         setNotes([...notes, note]);
     }
 
-    const canShow = () => showNotesAndCharts?.show;
-
     const postNote = (text: string) => {
+        // TODO add to store
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
             setPostAllowed(false);
-            messages.request(postNoteAction({id: salaryInternal.urn, stageTo: stage?.stage, text}))
+            messages.request(postNoteAction({id: salary?.urn, stageTo: stage?.stage, text}))
                 .then((r) => {
                     if (r.error) {
                         console.error(r.error);
@@ -178,7 +187,7 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
                 <React.Fragment>
                     <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
                     <div onTransitionEnd={() => onExpanded()}
-                         className={"notes-and-charts " + ((completed && !minimized) ? "position-expanded" : "position-collapsed")}
+                         className={"notes-and-charts " + ((completed() && !minimized) ? "position-expanded" : "position-collapsed")}
                          ref={rootElement}>
                         <div className="close-button" onClick={() => close()}>
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
@@ -188,15 +197,15 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
                             </svg>
                         </div>
                         <React.Fragment>
-                            <div className="local-loader"><Loader show={!completed}/></div>
-                            {completed && !minimized && <NotesContainer>
+                            <div className="local-loader"><Loader show={!completed()}/></div>
+                            {completed() && !minimized && <NotesContainer>
                                 <Collapsible initialOpened={showSalary}>
                                     <div data-role={CollapsibleRole.Title}>Avg. Base Salary (GBR)</div>
                                     <div data-role={CollapsibleRole.Static}>
                                         <div className="d-flex">
                                             <section className="label-section">
                                                 <div
-                                                    className="label-salary">{salaryInternal && getSalaryValue(salaryInternal)} year
+                                                    className="label-salary">{salary && getSalaryValue(salary)} year
                                                 </div>
                                                 <div className="label-position">
                                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
@@ -208,32 +217,32 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
                                                             d="M11.838 8.17058C12.1932 8.00568 12.601 8.28659 12.5656 8.67657L12.39 10.6108C12.2675 11.7775 11.7892 12.9675 9.22249 12.9675H4.77749C2.21082 12.9675 1.73249 11.7775 1.60999 10.6167L1.44428 8.79384C1.40924 8.40838 1.80749 8.12779 2.16155 8.28416C2.81221 8.57154 3.72607 8.9543 4.36843 9.138C4.53174 9.1847 4.66361 9.30351 4.74436 9.45294C5.11817 10.1447 5.8659 10.5117 6.92416 10.5117C7.97209 10.5117 8.72823 10.1304 9.10379 9.43564C9.18463 9.2861 9.31674 9.16736 9.48007 9.12021C10.1665 8.92203 11.1498 8.4901 11.838 8.17058Z"
                                                             fill="#909090"/>
                                                     </svg>
-                                                    <span>Position: {salaryInternal?.title}</span>
+                                                    <span>Position: {salary?.title}</span>
                                                 </div>
                                             </section>
                                             <section className="chart-section">
-                                                {salaryInternal && <PayDistribution salary={salaryInternal}/>}
+                                                {salary && <PayDistribution salary={salary}/>}
                                             </section>
                                         </div>
                                     </div>
                                     <div data-role={CollapsibleRole.Collapsible}>
-                                        {showChart && <PayExtrapolationChart salary={salaryInternal} theme={theme}/>}
+                                        {showChart && <PayExtrapolationChart salary={salary} theme={theme}/>}
                                     </div>
                                 </Collapsible>
-                                {salaryInternal &&
+                                {salary &&
                                     <div className="stage-container">
                                         <span>Pick a stage</span>
                                         <div className="stages">
                                             <StageSwitch type={StageEnum.Interested} id={id}
-                                                         urn={salaryInternal.urn}/>
+                                                         urn={salary.urn}/>
                                             <StageSwitch type={StageEnum.NotInterested} id={id}
-                                                         urn={salaryInternal.urn}/>
+                                                         urn={salary.urn}/>
                                             <StageSwitch type={StageEnum.Interviewing} id={id}
-                                                         urn={salaryInternal.urn}/>
+                                                         urn={salary.urn}/>
                                             <StageSwitch type={StageEnum.FailedInterview} id={id}
-                                                         urn={salaryInternal.urn}/>
+                                                         urn={salary.urn}/>
                                             <StageSwitch type={StageEnum.Hired} id={id}
-                                                         urn={salaryInternal.urn}/>
+                                                         urn={salary.urn}/>
                                         </div>
                                     </div>}
                                 <Collapsible initialOpened={showNotes}>
@@ -244,9 +253,9 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
                                     <div data-role={CollapsibleRole.Collapsible}>
                                         <div className="scroll-container h-300">
                                             <div className="scroll-content">
-                                                {completed && notes?.map((n, i) => (
+                                                {completed() && notes?.map((n, i) => (
                                                     <NoteCard key={i} note={n}/>))}
-                                                {completed && notes.length == 0 &&
+                                                {completed() && notes.length == 0 &&
                                                     <div className="no-notes">
                                                         <NoNotes/>
                                                         <div>No notes yet</div>

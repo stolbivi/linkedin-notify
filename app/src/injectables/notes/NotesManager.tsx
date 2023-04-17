@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {NotesContainer} from "./NotesContainer";
 import {NoteExtended, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
@@ -11,26 +10,26 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {
-    getNotesAll,
-    getNotesByProfile,
-    getTheme,
-    openUrl,
-    postNote as postNoteAction,
-    SwitchThemePayload
-} from "../../actions";
+import {getTheme, openUrl, postNote as postNoteAction, SwitchThemePayload} from "../../actions";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
-// @ts-ignore
-import stylesheet from "./NotesManager.scss";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as LightTheme} from "../../themes/light";
 import {theme as DarkTheme} from "../../themes/dark";
+import {CompleteEnabled, DataWrapper, localStore, selectNotesAll} from "../../store/LocalStore";
+import {Provider, shallowEqual, useSelector} from "react-redux";
+import {getNotesAction} from "../../store/NotesAllReducer";
+import {NotesContainer} from "./NotesContainer";
+
+// @ts-ignore
+import stylesheet from "./NotesManager.scss";
 
 export const NotesManagerFactory = () => {
     const aside = document.getElementsByClassName("scaffold-layout__aside");
     if (aside && aside.length > 0) {
         injectFirstChild(aside[0], "lnm-notes-manager",
-            <NotesManager/>
+            <Provider store={localStore}>
+                <NotesManager/>
+            </Provider>
         );
     }
 }
@@ -48,24 +47,23 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const DEFAULT_SEARCH = {text: "", stages: {}};
 
     const messages = new MessagesV2(VERBOSE);
+
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
-    const [completed, setCompleted] = useState<boolean>(false);
-    const [notes, setNotes] = useState<NoteExtended[]>([]);
-    const [notesFiltered, setNotesFiltered] = useState<NoteExtended[]>([]);
-    const [selection, setSelection] = useState<any>();
-    const [selectedNotes, setSelectedNotes] = useState<NoteExtended[]>([]);
-    const [selectedNotesFiltered, setSelectedNotesFiltered] = useState<NoteExtended[]>([]);
     const [editable, setEditable] = useState<boolean>(true);
     const [searchValue, setSearchValue] = useState<SearchValue>(DEFAULT_SEARCH);
     const [searchText, setSearchText] = useState<string>("");
     const [showDropDown, setShowDropDown] = useState<boolean>(false);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
+    const [selection, setSelection] = useState<any>();
+    const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
+    const [notes, setNotes] = useState<NoteExtended[]>([]);
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        // TODO check theme logic below, why 2 similar listeners
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {
                 updateTheme(payload.theme);
@@ -87,17 +85,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
         if (accessState !== AccessState.Valid) {
             return;
         }
-        setCompleted(false);
-        messages.request(getNotesAll())
-            .then((r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    setNotes(r.response);
-                    setNotesFiltered(r.response);
-                }
-            })
-            .finally(() => setCompleted(true));
+        localStore.dispatch(getNotesAction());
     }, [accessState]);
 
     const checkByText = (n: NoteExtended, text: string) => {
@@ -111,30 +99,27 @@ export const NotesManager: React.FC<Props> = ({}) => {
     }
 
     useEffect(() => {
-        const stagesCount = Object.values(searchValue.stages).filter(v => v).length;
-        let filteredNotes = notes.filter(
-            n => checkByText(n, searchValue.text?.toLowerCase()) &&
-                (stagesCount > 0 ? (searchValue.stages[n.stageFrom] || searchValue.stages[n.stageTo]) : true)
-        );
-        setNotesFiltered(filteredNotes);
-    }, [searchValue, notes]);
+        if (selection) {
+            setSearchValue(DEFAULT_SEARCH);
+        }
+    }, [selection])
 
     useEffect(() => {
-        setSearchValue(DEFAULT_SEARCH);
+        const stagesCount = Object.values(searchValue.stages).filter(v => v).length;
+        let filteredNotes;
         if (selection) {
-            setCompleted(false);
-            messages.request(getNotesByProfile(selection.profile))
-                .then((r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    } else {
-                        setSelectedNotes(r.response);
-                        setSelectedNotesFiltered(r.response);
-                        setCompleted(true);
-                    }
-                }).then(/* nada */);
+            // search by text
+            filteredNotes = notesAll?.data?.filter(n => n.profile === selection.profile
+                && checkByText(n, searchText?.toLowerCase()));
+        } else {
+            // search by value
+            filteredNotes = notesAll?.data?.filter(
+                n => checkByText(n, searchValue.text?.toLowerCase()) &&
+                    (stagesCount > 0 ? (searchValue.stages[n.stageFrom] || searchValue.stages[n.stageTo]) : true)
+            );
         }
-    }, [selection]);
+        setNotes(filteredNotes);
+    }, [selection, searchValue, searchText, notesAll]);
 
     const onProfileSelect = (profile: any) => setSelection(profile);
 
@@ -153,7 +138,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
         return <React.Fragment>
             <div className="notes-title">
                 <label>Notes</label>
-                <label className="notes-counter">{notesFiltered ? notesFiltered.length : 0}</label>
+                <label className="notes-counter">{notes ? notes.length : 0}</label>
             </div>
             <div className="search-bar">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -205,9 +190,9 @@ export const NotesManager: React.FC<Props> = ({}) => {
             </div>
             <div className="scroll-container">
                 <div className="scroll-content">
-                    {notesFiltered?.map((n, i) =>
+                    {notes?.map((n, i) =>
                         (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}/>))}
-                    {notesFiltered.length == 0 &&
+                    {notes.length == 0 &&
                         <div className="no-notes">
                             <NoNotes/>
                             <div>No notes yet</div>
@@ -218,13 +203,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
         </React.Fragment>
     }
 
-    const appendNote = (note: NoteExtended) => {
-        setSelectedNotes([...selectedNotes, note]);
-    }
-
     const back = () => {
         setSelection(undefined);
-        setSelectedNotes([]);
         setSearchText("");
     }
 
@@ -239,11 +219,17 @@ export const NotesManager: React.FC<Props> = ({}) => {
         }
     }
 
+    const appendNote = (_: NoteExtended) => {
+        // TODO append note
+        // setSelectedNotes([...selectedNotes, note]);
+    }
+
     const postNote = (text: string) => {
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
-            const lastState = selectedNotes[selectedNotes.length - 1].stageTo;
+            const lastState = notes[notes.length - 1].stageTo;
+            // TODO append note
             messages.request(postNoteAction({id: selection.profile, stageTo: lastState, text}))
                 .then((r) => {
                     if (r.error) {
@@ -256,11 +242,6 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 }).then(/* nada */);
         }
     }
-
-    useEffect(() => {
-        let filteredNotes = selectedNotes.filter(n => checkByText(n, searchText?.toLowerCase()));
-        setSelectedNotesFiltered(filteredNotes);
-    }, [searchText, selectedNotes]);
 
     const updateSearchText = (e: any) => setSearchText(e.target.value?.trim());
 
@@ -287,7 +268,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
             </div>
             <div className="notes-title">
                 <label>Notes</label>
-                <label className="notes-counter">{selectedNotesFiltered ? selectedNotesFiltered.length : 0}</label>
+                <label className="notes-counter">{notes ? notes.length : 0}</label>
             </div>
             <div className="search-bar">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -302,9 +283,9 @@ export const NotesManager: React.FC<Props> = ({}) => {
             </div>
             <div className="scroll-container">
                 <div className="scroll-content">
-                    {selectedNotesFiltered?.map((n, i) =>
+                    {notes?.map((n, i) =>
                         (<NoteCard key={i} note={n}/>))}
-                    {selectedNotesFiltered.length == 0 &&
+                    {notes.length == 0 &&
                         <div className="no-notes">
                             <NoNotes/>
                             <div>No notes yet</div>
@@ -337,9 +318,9 @@ export const NotesManager: React.FC<Props> = ({}) => {
                                  loaderClassName={"loader-base loader-px24"}/>
                     {accessState === AccessState.Valid &&
                         <React.Fragment>
-                            {completed ?
+                            {notesAll?.completed ?
                                 (selection == undefined ? getAllNotes() : getSelectedNotes())
-                                : <div className="centered-loader"><Loader show={!completed}/></div>}
+                                : <div className="centered-loader"><Loader show={!notesAll?.completed}/></div>}
                         </React.Fragment>}
                 </NotesContainer>
             </div>

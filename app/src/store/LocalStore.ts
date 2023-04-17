@@ -6,9 +6,15 @@ import salaryReducer, {Salary} from "./SalaryReducer";
 import stageReducer from "./StageReducer";
 import {GeoTz, StageResponse} from "../actions";
 import geoTzReducer from "./GeoTzReducer";
+import notesAllReducer from "./NotesAllReducer";
+import {NoteExtended} from "../global";
 
 export const listenerMiddleware = createListenerMiddleware();
 initListeners();
+
+export interface DataWrapper<T> {
+    data: T
+}
 
 export interface Completion {
     completed?: boolean
@@ -31,6 +37,8 @@ interface RootState {
     salary: IdAwareState<CompleteEnabled<Salary>>
     stage: IdAwareState<CompleteEnabled<StageResponse>>
     geoTz: CompleteEnabled<GeoTz>
+    notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>>
+    notesSelected: IdAwareState<CompleteEnabled<DataWrapper<NoteExtended[]>>>
 }
 
 export const localStore = configureStore({
@@ -40,12 +48,14 @@ export const localStore = configureStore({
         salary: salaryReducer,
         stage: stageReducer,
         geoTz: geoTzReducer,
+        notesAll: notesAllReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().prepend(listenerMiddleware.middleware),
 });
 
 localStore.subscribe(() => {
+    // TODO remove, debug only
     console.log('Local store:', localStore.getState());
 })
 
@@ -54,3 +64,4 @@ export const selectShowNotesAndCharts = (state: RootState) => state.showNotesAnd
 export const selectSalary = (state: RootState) => state.salary;
 export const selectStage = (state: RootState) => state.stage;
 export const selectGeoTz = (state: RootState) => state.geoTz;
+export const selectNotesAll = (state: RootState) => state.notesAll;

@@ -266,8 +266,7 @@ export const setStage = createAction<SetStagePayload, SetStageResponse>("setStag
             return {note: noteExtended[0], stage: stage.response};
         }));
 
-// TODO add to store
-export const getNotesAll = createAction<{}, any>("getNotesAll",
+export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesAll",
     () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -279,15 +278,14 @@ export const getNotesAll = createAction<{}, any>("getNotesAll",
                     .then(response => {
                         // @ts-ignore
                         response.sort((a, b) => b.timestamp - a.timestamp);
-                        return {response};
+                        return {response} as Response<NoteExtended[]>;
                     })
             } else {
-                return notes;
+                return notes as Response<NoteExtended[]>;
             }
         }));
 
-// TODO add to store
-export const getNotesByProfile = createAction<string, any>("getNotesByProfile",
+export const getNotesByProfile = createAction<string, Response<NoteExtended[]>>("getNotesByProfile",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -299,10 +297,10 @@ export const getNotesByProfile = createAction<string, any>("getNotesByProfile",
                     .then(response => {
                         // @ts-ignore
                         response.sort((a, b) => a.timestamp - b.timestamp);
-                        return {response};
+                        return {response} as Response<NoteExtended[]>;
                     })
             } else {
-                return notes;
+                return notes as Response<NoteExtended[]>;
             }
         }));
 
@@ -312,6 +310,7 @@ export interface PostNotePayload {
     text: string
 }
 
+// TODO add to store
 export const postNote = createAction<PostNotePayload, any>("postNote",
     (payload) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
