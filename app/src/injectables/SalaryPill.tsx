@@ -74,7 +74,9 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
-        localStore.dispatch(getSalaryAction({id: id, state: extractIdFromUrl(urlInternal)}));
+        if (!salary?.completed) {
+            localStore.dispatch(getSalaryAction({id: id, state: extractIdFromUrl(urlInternal)}));
+        }
     }, [accessState, urlInternal]);
 
     useEffect(() => {

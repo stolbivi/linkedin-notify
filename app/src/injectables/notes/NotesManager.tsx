@@ -85,7 +85,9 @@ export const NotesManager: React.FC<Props> = ({}) => {
         if (accessState !== AccessState.Valid) {
             return;
         }
-        localStore.dispatch(getNotesAction());
+        if (!notesAll?.completed) {
+            localStore.dispatch(getNotesAction());
+        }
     }, [accessState]);
 
     const checkByText = (n: NoteExtended, text: string) => {

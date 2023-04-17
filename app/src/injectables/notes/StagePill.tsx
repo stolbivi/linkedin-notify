@@ -45,8 +45,9 @@ export const StagePill: React.FC<Props> = ({id}) => {
         if (accessState !== AccessState.Valid || !id) {
             return;
         }
-        localStore.dispatch(getStageAction({id, state: {url: id}}));
-
+        if (!stage?.completed) {
+            localStore.dispatch(getStageAction({id, state: {url: id}}));
+        }
     }, [accessState]);
 
     const onClick = () => {

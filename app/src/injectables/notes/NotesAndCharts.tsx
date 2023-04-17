@@ -87,8 +87,8 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
     const [text, setText] = useState<{ value: string }>({value: ""});
 
     const showNotesAndCharts: ShowNotesAndCharts = useSelector(selectShowNotesAndCharts, shallowEqual)[id];
-    const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
     const salary: CompleteEnabled<Salary> = useSelector(selectSalary, shallowEqual)[id];
+    const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
     const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
 
@@ -103,13 +103,19 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
                 state: {showSalary: false, showNotes: false, show: false}
             }));
         });
-        localStore.dispatch(getNotesAction());
-        localStore.dispatch(getSalaryAction({id: id, state: id}));
+        if (!notesAll?.completed) {
+            localStore.dispatch(getNotesAction());
+        }
+        if (!salary?.completed) {
+            localStore.dispatch(getSalaryAction({id: id, state: id}));
+        }
     }, []);
 
     useEffect(() => {
         if (salary) {
-            localStore.dispatch(getStageAction({id, state: {id: salary.urn}}));
+            if (!stage?.completed) {
+                localStore.dispatch(getStageAction({id, state: {id: salary.urn}}));
+            }
             if (notesAll?.data?.length > 0) {
                 let filtered = notesAll?.data?.filter(n => n.profile === salary.urn);
                 sortAsc(filtered);
@@ -136,7 +142,7 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
     }, [showNotesAndCharts]);
 
     const canShow = () => showNotesAndCharts?.show;
-    const completed = () => salary?.completed && stage?.completed && notesAll?.completed;
+    const completed = () => salary?.completed;
 
     const postNote = (text: string) => {
         if (text && text !== "") {
