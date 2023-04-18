@@ -111,6 +111,14 @@ const AutoFeaturesList = (props) => {
         }
     }, []);
 
+    const deleteFeature = (feature:any) => {
+        feature.types = [];
+        updatedFeatures.current = [...updatedFeatures.current, feature];
+        const clonedFeatures = JSON.parse(JSON.stringify(autoFeatures));
+        delete clonedFeatures[feature.id];
+        setAutoFeatures(clonedFeatures);
+    }
+
     useEffect(() => {
         setPrevFeatures(JSON.parse(JSON.stringify(autoFeatures)));
     },[autoFeatures]);
@@ -142,7 +150,7 @@ const AutoFeaturesList = (props) => {
                         <span style={{marginLeft:"10px"}} className="auto-feature-text">Auto Repost</span>
                     </div>
                     {Object.entries(autoFeatures).map(([id, feature]) => (
-                        <AutoFeatureCard autoFeature={feature} id={id} key={id} updatedFeatures={updatedFeatures}/>
+                        <AutoFeatureCard autoFeature={feature} id={id} key={id} updatedFeatures={updatedFeatures} deleteFeature={deleteFeature}/>
                     ))}
                     <div style={{marginTop:"10%", marginBottom:"10%"}}>
                         <button className="reset-btn" style={{marginLeft: "26%"}} onClick={closeHandler}>Close</button>

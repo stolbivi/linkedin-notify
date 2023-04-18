@@ -463,22 +463,12 @@ export const getLastSeen = createAction<string, any>("getLastSeen",
             if (profile === as) {
                 return {response: {profile: me, author: as, hide: true}}
             } else {
-                const msgLastSeenResp = await api.getMsgLastSeen(token, profile);
-                console.log(msgLastSeenResp);
-                const responseData = msgLastSeenResp.data;
-                const profileCard = responseData.identityDashProfileCardsByDeferredCards.elements[0];
-                const fixedListComponent = profileCard.topComponents[1].components.fixedListComponent;
-                const miniUpdate = fixedListComponent.components.miniUpdateUrn;
-                const contextualDescription = miniUpdate.contextualDescription;
-                const text = contextualDescription.text.text;
-                const daysAfterBullet = text.split('•')[1].trim();
-
-                console.log(daysAfterBullet);
-
-                /*const presenceLastSeenResp = await api.getPresenceLastSeen(token, as);
-                console.log(msgLastSeenResp,presenceLastSeenResp)*/
-
-                return new Date();
+                const presenceLastSeenResp = await api.getPresenceLastSeen(token, profile);
+                let lastActiveAt = 0;
+                if(presenceLastSeenResp.results && Object.keys(presenceLastSeenResp.results).length > 0) {
+                    lastActiveAt = presenceLastSeenResp.results[`urn:li:fsd_profile:${profile}`]['lastActiveAt'];
+                }
+                return new Date(lastActiveAt * 1000);
             }
         })
         .then(response => {

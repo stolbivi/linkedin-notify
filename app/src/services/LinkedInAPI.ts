@@ -600,21 +600,25 @@ export class LinkedInAPI {
             .then(response => response.json());
     }
 
-    public getPresenceLastSeen(token: string, urn: string) {
-        const id = `urn:li:fsd_profile:${urn}`;
-        const query = `query=(members:(elements:List(${id})),type:PROFILE)&action=PRECENCE_STATUS`;
-        const url = `${LinkedInAPI.BASE}messaging/dash/presenceStatuses?${query}`;
-
-        return fetch(url, {
-            method: "GET",
+    public getPresenceLastSeen(token: string, urn?: string) {
+        return fetch(`${LinkedInAPI.BASE}messaging/dash/presenceStatuses`, {
+            method: "POST",
             headers: {
-                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "Accept": "*/*",
+                "Accept-Language": "en-US,en;q=0.5",
+                "Sec-Fetch-Dest": "empty",
+                "Sec-Fetch-Mode": "no-cors",
+                "Sec-Fetch-Site": "same-origin",
                 "csrf-token": token,
-                "X-Http-Method-Override": "GET"
+                "x-http-method-override": "GET",
+                "content-type": "application/x-www-form-urlencoded",
+                "Pragma": "no-cache",
+                "Cache-Control": "no-cache"
             },
+            body: `ids=List(urn%3Ali%3Afsd_profile%3A${urn})`,
             mode: "cors",
             credentials: "include"
-        }).then(_ => null);
+        }).then(response => response.json());
     }
 
 
