@@ -1,8 +1,10 @@
 import {NoteExtended} from "../../global";
-import React from "react";
+import React, {useEffect} from "react";
 import "./NoteCard.scss";
 import {StageLabels} from "./StageSwitch";
 import {formatDate} from "../../services/UIHelpers";
+import {inject} from "../../utils/InjectHelper";
+import {NotesAndCharts} from "./NotesAndCharts";
 
 type Props = {
     note: NoteExtended
@@ -34,12 +36,27 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
         </div>
     }
 
-    const setWithNote = () => onProfileSelect({
-        profile: note.profile,
-        profileName: note.profileName,
-        profilePicture: note.profilePicture,
-        profileLink: note.profileLink
-    })
+    const setWithNote = () => {
+        console.log("Note: ", note);
+        onProfileSelect({
+            profile: note.profile,
+            profileName: note.profileName,
+            profilePicture: note.profilePicture,
+            profileLink: note.profileLink
+        })
+    }
+
+    useEffect(()=>{
+        if (window.location.href.indexOf("/in/") > 0) {
+            const section = document.querySelector('.text-heading-xlarge.inline.t-24.v-align-middle.break-words')?.innerText;
+            console.log("Section: ", section);
+            setWithNote();
+        }
+        // if (window.location.href.indexOf("/messaging/") > 0) {
+        //     const section = document.getElementsByClassName("scaffold-layout__list-detail msg__list-detail");
+        //     console.log("Section: ", section);
+        // }
+    },[note])
 
     return (
         <div className="note-card" ref={currentCount === totalCount - 1 ? lastNoteRef : null}>

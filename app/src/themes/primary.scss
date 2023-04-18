@@ -10,6 +10,7 @@ $base-card-message: var(--base-card-message);
 $base-card-message-background: var(--base-card-message-background);
 $base-card-unread: var(--base-card-unread);
 $base-card-border: var(--base-card-border);
+$boolean-base-card: var(--boolean-base-card);
 
 $conversation-card-badge: var(--conversation-card-badge);
 $conversation-card-background: var(--conversation-card-background);
@@ -69,6 +70,7 @@ $last-viewed: var(--last-viewed);
 
 $salary-pill: var(--salary-pill);
 
+$navbar-button: var(--navbar-button);
 $note-card-border: var(--note-card-border);
 $note-card-picture: var(--note-card-picture);
 $note-card-author: var(--note-card-author);
@@ -133,3 +135,8 @@ $reply-text-area-caret-color: var(--reply-text-area-caret-color);
 $ln-dashboard-menu-icon-color: var(--ln-dashboard-menu-icon-color);
 $ln-dashboard-menu-icon-color-hover: var(--ln-dashboard-menu-icon-color-hover);
 $settings-icon-color: var(--settings-icon-color);
+
+$navbar-button-text: var(--navbar-button-text);
+$navbar-button-text-clicked: var(--navbar-button-text-clicked);
+$boolean-search-query-container: var(--boolean-search-query-container);
+$boolean-search-query-container-text: var(--boolean-search-query-container-text);

@@ -1,6 +1,8 @@
 @import "~bootstrap/dist/css/bootstrap.css";
+@import "../../themes/primary";
+
 .body {
-  background-color: #f9f2f28c;
+  background-color: $boolean-base-card;
   font-family: Arial, sans-serif;
   max-width: 1200px;
   width: 1200px;
@@ -32,7 +34,7 @@ ul{
   border: none;
   cursor: pointer;
   text-align: center;
-  color: #383637;
+  color: $navbar-button-text;
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 700;
@@ -44,7 +46,8 @@ ul{
 }
 
 .navbarBtn.clicked {
-  background-color: #FFFFFF;
+  background-color: $navbar-button;
+  color: $navbar-button-text-clicked;
 }
 
 #formatted-results {
@@ -107,13 +110,13 @@ img {
   margin-top: 20px;
 }
 .queryContainers {
-  background-color: white;
+  background-color: $boolean-search-query-container;
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
-  border: 1px solid #E4E4E4;
+  border: 1px solid $boolean-search-query-container;
   height: 82px;
 }
 
@@ -140,7 +143,15 @@ img {
   left: 14px;
   top: 8px;
   opacity: 70%;
+  color: $boolean-search-query-container-text;
 }
+
+.queryContainers pre[contentEditable="true"]::before {
+  content: "Boolean search string will appear here";
+  opacity: 70%;
+  color: $boolean-search-query-container-text;
+}
+
 label{
   font-size: 14px;
   font-family: Helvetica;

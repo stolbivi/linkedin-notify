@@ -10,6 +10,7 @@ export const theme: Theme = {
     "--base-card-message-background": "rgba(255, 255, 255, 0.06)",
     "--base-card-unread": "rgba(226,240,253,0.1)",
     "--base-card-border": "#2D3338",
+    "--boolean-base-card": "black",
 
     "--conversation-card-badge": "white",
     "--conversation-card-background": "rgb(10, 102, 194)",
@@ -68,6 +69,8 @@ export const theme: Theme = {
     "--last-viewed": "rgb(255,255,255)",
 
     "--salary-pill": "#117544",
+
+    "--navbar-button": "#2D3338",
 
     "--note-card-border": "rgba(49, 69, 255, 0.1)",
     "--note-card-picture": "black",
@@ -136,5 +139,10 @@ export const theme: Theme = {
     "--reply-text-area-caret-color": "#a9b1b8",
     "--ln-dashboard-menu-icon-color": "#bcbdbe",
     "--ln-dashboard-menu-icon-color-hover": "#FFFFFF",
-    "--settings-icon-color": "#FFFFFF"
+    "--settings-icon-color": "#FFFFFF",
+
+    "--navbar-button-text": "#ffffffcc",
+    "--navbar-button-text-clicked": "#ffffff",
+    "--boolean-search-query-container": "#29303C",
+    "--boolean-search-query-container-text": "#909090"
 }
