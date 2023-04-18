@@ -146,7 +146,7 @@ img {
   color: $boolean-search-query-container-text;
 }
 
-.queryContainers pre[contentEditable="true"]::before {
+.queryContainers pre[contentEditable="true"]::placeholder {
   content: "Boolean search string will appear here";
   opacity: 70%;
   color: $boolean-search-query-container-text;
@@ -166,6 +166,7 @@ pre {
   margin-left: 30px;
   margin-right: 30px;
   font-size: 14px;
+  color: $boolean-search-query-container-text;
 }
 #linkedin-search-button {
   background-color: #1569BF;

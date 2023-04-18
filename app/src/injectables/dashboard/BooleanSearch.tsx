@@ -287,7 +287,7 @@ const BooleanSearch = () => {
                               id="google-formatted-results"
                               contentEditable="true"
                               placeholder="Boolean search string will appear here"
-                          />
+                          ></pre>
                         <button
                             style={{width: "20%", marginRight: "20px", cursor: "pointer"}}
                             id="google-search-button"
