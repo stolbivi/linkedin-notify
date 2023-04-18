@@ -46,18 +46,6 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
         })
     }
 
-    useEffect(()=>{
-        if (window.location.href.indexOf("/in/") > 0) {
-            const section = document.querySelector('.text-heading-xlarge.inline.t-24.v-align-middle.break-words')?.innerText;
-            console.log("Section: ", section);
-            setWithNote();
-        }
-        // if (window.location.href.indexOf("/messaging/") > 0) {
-        //     const section = document.getElementsByClassName("scaffold-layout__list-detail msg__list-detail");
-        //     console.log("Section: ", section);
-        // }
-    },[note])
-
     return (
         <div className="note-card" ref={currentCount === totalCount - 1 ? lastNoteRef : null}>
             <div className="bordered">

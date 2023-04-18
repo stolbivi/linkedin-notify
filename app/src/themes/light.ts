@@ -11,6 +11,7 @@ export const theme: Theme = {
     "--base-card-unread": "#e2f0fd",
     "--base-card-border": "rgba(0, 0, 0, 0.1)",
     "--boolean-base-card": "#f9f2f28c",
+    "--joblist-edit-base-card": "#ffffff",
 
     "--conversation-card-badge": "white",
     "--conversation-card-background": "rgb(10, 102, 194)",

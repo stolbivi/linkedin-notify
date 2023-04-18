@@ -3,13 +3,56 @@
 // @ts-nocheck
 import React, {useEffect, useRef, useState} from "react";
 // @ts-ignore
-import stylesheet from "./JobsList.scss";
+import stylesheet from "./Joblist.scss";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Job, VERBOSE} from "../../global";
-import {deleteJob, getJobs, postJob, updateJob} from "../../actions";
+import {deleteJob, getJobs, getTheme, postJob, SwitchThemePayload, updateJob} from "../../actions";
 import {Loader} from "../../components/Loader";
+import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
+import {theme as LightTheme} from "../../themes/light";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as DarkTheme} from "../../themes/dark";
 
 const JobList = () => {
+
+    const messages = new MessagesV2(VERBOSE);
+    const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
+
+    useEffect(() => {
+        messages.request(getTheme())
+            .then(theme => updateTheme(theme))
+            .catch();
+
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            })
+        );
+
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+
+                const table = document.querySelector('.jobs-table');
+                const isDarkTheme = payload.theme === "dark";
+                const classSet = new Set(['table', 'table-striped', 'jobs-table']);
+
+                if (isDarkTheme) {
+                    classSet.add('table-dark');
+                } else {
+                    classSet.delete('table-dark');
+                }
+
+                table.className = Array.from(classSet).join(' ');
+
+                return Promise.resolve();
+            })
+        );
+    }, []);
+
+
 
     const typesDropdown = {
         "1" : "Part-Time",
@@ -34,7 +77,6 @@ const JobList = () => {
 
     const [fields, setFields] = useState([]);
     const [filteredFields, setFilteredFields] = useState([]);
-    const messages = new MessagesV2(VERBOSE);
     const [completed, setCompleted] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [isAddMode, setIsAddMode] = useState(false);
@@ -173,7 +215,7 @@ const JobList = () => {
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className="body">
+            <div className="body" ref={rootElement}>
                 <div style={{marginTop: "10px"}}>
                     <Loader show={!completed} className="p-5 job-loader" heightValue="600px"/>
                     {
