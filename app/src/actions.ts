@@ -463,29 +463,26 @@ export const getLastSeen = createAction<string, any>("getLastSeen",
             if (profile === as) {
                 return {response: {profile: me, author: as, hide: true}}
             } else {
-                return backEndAPI.getLastViewed(profile, as);
+                const msgLastSeenResp = await api.getMsgLastSeen(token, profile);
+                console.log(msgLastSeenResp);
+                const responseData = msgLastSeenResp.data;
+                const profileCard = responseData.identityDashProfileCardsByDeferredCards.elements[0];
+                const fixedListComponent = profileCard.topComponents[1].components.fixedListComponent;
+                const miniUpdate = fixedListComponent.components.miniUpdateUrn;
+                const contextualDescription = miniUpdate.contextualDescription;
+                const text = contextualDescription.text.text;
+                const daysAfterBullet = text.split('•')[1].trim();
+
+                console.log(daysAfterBullet);
+
+                /*const presenceLastSeenResp = await api.getPresenceLastSeen(token, as);
+                console.log(msgLastSeenResp,presenceLastSeenResp)*/
+
+                return new Date();
             }
         })
         .then(response => {
-            if (sender.tab) {
-                store.dispatch(setLastViewedAction({tabId: sender.tab.id, payload: response.response}));
-            }
             return response;
-        }));
-
-export const setLastSeen = createAction<string, any>("setLastSeen",
-    (id) => getCookies(LINKEDIN_DOMAIN)
-        .then(cookies => api.getCsrfToken(cookies))
-        .then(async token => {
-            const experienceResponse = await api.getExperience(token, id);
-            const experience = api.extractExperience(experienceResponse);
-            const profile = experience.urn;
-            const me = await api.getMe(token);
-            const author = api.extractProfileUrn(me);
-            return backEndAPI.postLastViewed({
-                profile,
-                author,
-            });
         }));
 
 export interface SwitchThemePayload {

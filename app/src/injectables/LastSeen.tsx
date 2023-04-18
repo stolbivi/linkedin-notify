@@ -9,7 +9,7 @@ import {formatDateToday} from "../services/UIHelpers";
 
 // @ts-ignore
 import stylesheet from "./LastSeen.scss";
-import {getLastSeen, getTheme, setLastSeen as setLastSeenAction, SwitchThemePayload} from "../actions";
+import {getLastSeen, getTheme, SwitchThemePayload} from "../actions";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../themes/ThemeUtils";
 import {theme as LightTheme} from "../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
@@ -73,16 +73,6 @@ export const LastSeen: React.FC<Props> = ({}) => {
             }).finally(() => setCompleted(true));
     }, []);
 
-    useEffect(() => {
-        if (lastSeen) {
-            messages.request(setLastSeenAction(extractIdFromUrl(window.location.href)))
-                .then((r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    }
-                }).finally(() => setCompleted(true));
-        }
-    }, [lastSeen]);
 
     return (
         <React.Fragment>

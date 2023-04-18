@@ -595,4 +595,27 @@ export class LinkedInAPI {
             .replace(")", "%29");
     }
 
+    public getMsgLastSeen(token: string, id: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.463cafd0fd1961a6e716e85ae4b0b32a`, this.getRequest(token))
+            .then(response => response.json());
+    }
+
+    public getPresenceLastSeen(token: string, urn: string) {
+        const id = `urn:li:fsd_profile:${urn}`;
+        const query = `query=(members:(elements:List(${id})),type:PROFILE)&action=PRECENCE_STATUS`;
+        const url = `${LinkedInAPI.BASE}messaging/dash/presenceStatuses?${query}`;
+
+        return fetch(url, {
+            method: "GET",
+            headers: {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token,
+                "X-Http-Method-Override": "GET"
+            },
+            mode: "cors",
+            credentials: "include"
+        }).then(_ => null);
+    }
+
+
 }

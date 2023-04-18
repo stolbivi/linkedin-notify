@@ -33,7 +33,6 @@ import {
     openUrl,
     postNote,
     setFeatures,
-    setLastSeen,
     setLastViewed,
     setStage,
     setTheme,
@@ -113,7 +112,6 @@ messagesV2.listen(getNotesByProfile);
 messagesV2.listen(postNote);
 messagesV2.listen(getSubscription);
 messagesV2.listen(getLastSeen);
-messagesV2.listen(setLastSeen);
 messagesV2.listen(getLastViewed);
 messagesV2.listen(setLastViewed);
 messagesV2.listen(getTheme);
