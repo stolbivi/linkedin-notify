@@ -4,8 +4,32 @@
 import React, {useEffect} from "react";
 // @ts-ignore
 import stylesheet from "./BooleanSearch.scss";
+import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
+import {theme as LightTheme} from "../../themes/light";
+import {getTheme, SwitchThemePayload} from "../../actions";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as DarkTheme} from "../../themes/dark";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {VERBOSE} from "../../global";
 
 const BooleanSearch = () => {
+    const messages = new MessagesV2(VERBOSE);
+    const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
+
+    useEffect(() => {
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            }));
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                return Promise.resolve();
+            }));
+    }, []);
 
     function translateToGoogleBooleanSearch(linkedinQuery: string) {
         const querySegments = linkedinQuery.match(/(\(.*?\))|(-\w+)|(\w+)/g);
@@ -146,7 +170,7 @@ const BooleanSearch = () => {
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className="body">
+            <div className="body" ref={rootElement}>
                 <div style={{width: "100%"}}>
                     <h1 className={"booleanText"}>Boolean Search Tool</h1>
                     <h2 className={"filterText"}>Filters</h2>
