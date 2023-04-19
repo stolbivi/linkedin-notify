@@ -47,7 +47,9 @@ import {
     updateJob,
     deleteJob,
     getAuthorStages,
-    setStageFromKanban
+    setStageFromKanban,
+    deleteStage,
+    getUserIdByUrn
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -126,7 +128,8 @@ messagesV2.listen(updateJob);
 messagesV2.listen(deleteJob);
 messagesV2.listen(getAuthorStages);
 messagesV2.listen(setStageFromKanban);
-
+messagesV2.listen(deleteStage);
+messagesV2.listen(getUserIdByUrn);
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
     tabs.withAllTabs().then(tabs => {

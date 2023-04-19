@@ -15,7 +15,7 @@ import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
     createCustomStage,
-    deleteNote,
+    deleteNote, deleteStage,
     getConversationProfile,
     getCustomStages,
     getNotesByProfile,
@@ -320,13 +320,14 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         }
         messages.request(deleteNote(id))
             .then((_r) => {});
-        console.log("stage: ",stageInternal);
+        messages.request(deleteStage(id))
+            .then((_r) => {});
         setStageInternal(-1);
     };
 
     const getStage = (stage: number, id: string) => {
-        return <div className={"stage " + StageLabels[stage] ? StageLabels[stage].class : "interested"} style={{width: "27%"}}>
-                    <label>{StageLabels[stage].label}</label>
+        return <div className={`stage ${StageLabels[stage] ? StageLabels[stage].class : "interested"}`} style={{width: "27%"}}>
+                    <label>{StageLabels[stage]?.label}</label>
                 <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
                         <svg width="3" height="3" viewBox="0 0 17 17" fill="none"
                              xmlns="http://www.w3.org/2000/svg">
@@ -349,9 +350,19 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
             messages.request(createCustomStage({text: customName}))
                 .then((r) => {
                     let temp = [...customStages]
-                    const {stageId, text, userId, id} = r
-                    temp.push({stageId, text, userId, id})
-                    setCustomStages(temp)
+                    const {author, stageId, text, userId, id} = r
+                    temp.push({author, id, stageId, text, userId});
+                    const stageEnumLength = Object.keys(StageEnum).filter(k => isNaN(Number(k))).length;
+                    let count = stageEnumLength + 1;
+                    // @ts-ignore
+                    if(!StageEnum[text]) {
+                        // @ts-ignore
+                        StageEnum[text] = count;
+                    }
+                    if(!StageLabels[count]) {
+                        StageLabels[count] = {label: text, class: "interested"};
+                    }
+                    setCustomStages(temp);
                 })
                 .catch(err => console.error(err))
                 .finally(() => setLoading(false))
@@ -371,12 +382,22 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     }
 
     useEffect(() => {
-        let count = 24;
-        customStages.map(stage => {
-            // @ts-ignore
-            StageEnum[stage.text] = count++;
-        });
-        console.log(StageEnum)
+        if(customStages.length > 0) {
+            const stageEnumLength = Object.keys(StageEnum).filter(k => isNaN(Number(k))).length;
+            let count = stageEnumLength + 1;
+            customStages.map(stage => {
+                // @ts-ignore
+                if(!StageEnum[stage.text]) {
+                    // @ts-ignore
+                    StageEnum[stage.text] = count;
+                }
+                if(!StageLabels[count]) {
+                    StageLabels[count] = {label: stage.text, class: "interested"};
+                }
+                count++;
+            });
+            console.log(StageEnum, StageLabels);
+        }
     }, [customStages])
 
     const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
@@ -478,11 +499,13 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                                     key={salaryInternal.urn}
                                                                                     type={StageEnum[customStage.text]}
                                                                                     activeStage={stageInternal}
+                                                                                    parentStage={Object.values(StageParentData).indexOf(StageParentData.Groups)}
                                                                                     customText={customStage.text}
                                                                                     classType="interested"
                                                                                     setStage={setStageInternal}
                                                                                     id={salaryInternal.urn}
-                                                                                    appendNote={appendNote}/>
+                                                                                    appendNote={appendNote}
+                                                                                    notes={notes}/>
                                                             )}
                                                             <CreateNewGroup/>
                                                         </div>)}

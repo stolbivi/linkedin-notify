@@ -53,6 +53,7 @@ export const StagePill: React.FC<Props> = ({url, convUrl}) => {
     const [completed, setCompleted] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const [urlInternal, setUrlInternal] = useState<string>(url || convUrl);
+    const [stageText, setStageText] = useState(null);
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -71,6 +72,7 @@ export const StagePill: React.FC<Props> = ({url, convUrl}) => {
                 } else {
                     const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
                     setType(s);
+                    setStageText(r?.response?.stageText ? r?.response?.stageText : null);
                 }
             }).finally(() => setCompleted(true));
 
@@ -93,7 +95,7 @@ export const StagePill: React.FC<Props> = ({url, convUrl}) => {
         }
     }
 
-    const getText = () => completed ? StageLabels[type].label : "Loading"
+    const getText = () => completed ? (StageLabels[type] ? StageLabels[type].label : stageText) : "Loading";
 
     return (
         <React.Fragment>
@@ -101,7 +103,7 @@ export const StagePill: React.FC<Props> = ({url, convUrl}) => {
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName="loader-base loader-px24"/>
             {accessState === AccessState.Valid &&
-                <div className={"stage " + StageLabels[type].class} onClick={onClick} style={{marginLeft: "1em"}}>
+                <div className={`stage ${StageLabels[type] ? StageLabels[type].class : 'interested'}`} onClick={onClick} style={{marginLeft: "1em"}}>
                     <div className="loader"><Loader show={!completed}/></div>
                     <label style={{opacity: completed ? 1 : 0}}>{getText()}</label>
                 </div>}

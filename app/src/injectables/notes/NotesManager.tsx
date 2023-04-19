@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
-import {NoteExtended, VERBOSE} from "../../global";
+import {extractIdFromUrl, NoteExtended, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
@@ -14,7 +14,7 @@ import {NoNotes} from "../../icons/NoNotes";
 import {
     getNotesAll,
     getNotesByProfile,
-    getTheme,
+    getTheme, getUserIdByUrn,
     openUrl,
     postNote as postNoteAction,
     SwitchThemePayload
@@ -30,21 +30,29 @@ export const NotesManagerFactory = () => {
     setTimeout(() => {
         const aside = document.getElementsByClassName("scaffold-layout__aside");
         if (aside && aside.length > 0) {
-            injectFirstChild(aside[0], "lnm-notes-manager",
-                <NotesManager/>, "NotesManager"
-            );
+            if (window.location.href.indexOf("/in/") > 0 || window.location.href.indexOf("/messaging/") > 0) {
+                injectFirstChild(aside[0], "lnm-notes-manager",
+                    <NotesManager showProfileNotes={true}/>, "NotesManager"
+                );
+            } else {
+                injectFirstChild(aside[0], "lnm-notes-manager",
+                    <NotesManager/>, "NotesManager"
+                );
+            }
         }
     },1000);
 }
 
-type Props = {};
+type Props = {
+    showProfileNotes?: any
+};
 
 interface SearchValue {
     text: string
     stages: { [key: number]: boolean }
 }
 
-export const NotesManager: React.FC<Props> = ({}) => {
+export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
 
     const MAX_LENGTH = 200;
     const DEFAULT_SEARCH = {text: "", stages: {}};
@@ -138,6 +146,43 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 }).then(/* nada */);
         }
     }, [selection]);
+
+    useEffect(() => {
+        if(showProfileNotes && notes.length > 0) {
+            let url = document.querySelector(".app-aware-link.msg-thread__link-to-profile")?.href;
+            let profileID: string;
+            if(url) {
+                let regex = /\/in\/(.+)/;
+                const match = regex.exec(url);
+                profileID = match[1];
+            }
+            if(!profileID) {
+                messages.request(getUserIdByUrn(extractIdFromUrl(window.location.href)))
+                    .then((profileId) => {
+                        profileID = profileId;
+                        const note = notes.find(noteObj => noteObj.profile === profileID);
+                        if(note) {
+                            setSelection({
+                                profile: note.profile,
+                                profileName: note.profileName,
+                                profilePicture: note.profilePicture,
+                                profileLink: note.profileLink
+                            });
+                        }
+                    });
+            } else {
+               const note = notes.find(noteObj => noteObj.profile === profileID);
+               if(note) {
+                   setSelection({
+                       profile: note.profile,
+                       profileName: note.profileName,
+                       profilePicture: note.profilePicture,
+                       profileLink: note.profileLink
+                   });
+               }
+           }
+        }
+    },[notes]);
 
     const onProfileSelect = (profile: any) => setSelection(profile);
 
