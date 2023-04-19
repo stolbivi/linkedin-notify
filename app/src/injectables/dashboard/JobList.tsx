@@ -19,37 +19,18 @@ const JobList = () => {
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
     useEffect(() => {
-        messages.request(getTheme())
-            .then(theme => updateTheme(theme))
-            .catch();
-
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {
                 updateTheme(payload.theme);
                 return Promise.resolve();
-            })
-        );
-
+            }));
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {
                 let theme = payload.theme === "light" ? LightTheme : DarkTheme;
                 setThemeUtil(theme, rootElement);
-
-                const table = document.querySelector('.jobs-table');
-                const isDarkTheme = payload.theme === "dark";
-                const classSet = new Set(['table', 'table-striped', 'jobs-table']);
-
-                if (isDarkTheme) {
-                    classSet.add('table-dark');
-                } else {
-                    classSet.delete('table-dark');
-                }
-
-                table.className = Array.from(classSet).join(' ');
-
                 return Promise.resolve();
-            })
-        );
+            }));
     }, []);
 
 
@@ -362,7 +343,7 @@ const JobList = () => {
                                         <span className="search-btn-text">+ Add a job</span>
                                     </button>
                                 </div>
-                                <table className="table table-striped jobs-table">
+                                <table className="table table-striped jobs-table table-custom">
                                     <thead>
                                     <tr>
                                         <th scope="col" className="job-column job-table-heading">Title</th>

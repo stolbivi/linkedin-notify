@@ -146,4 +146,6 @@ export const theme: Theme = {
     "--navbar-button-text-clicked": "#383637",
     "--boolean-search-query-container": "white",
     "--boolean-search-query-container-text": "#4A4A4A",
+    "--joblist-table-color": "#FFFFFF",
+    "--joblist-table-strip-color": "#FFFFFF"
 }

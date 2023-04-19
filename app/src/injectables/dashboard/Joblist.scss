@@ -94,6 +94,20 @@
   padding-left: 0px;
 }
 
+.table-custom {
+  background-color: $joblist-table-color;
+}
+
+.jobs-table tr:nth-of-type(odd) {
+  background-color: $joblist-table-strip-color;
+  color: $base-card-message;
+}
+
+.table-custom td,
+.table-custom th {
+  color: $base-card-message !important;
+}
+
 .idCol{
   border: 1px solid rgba(0,0,0,.15)
 }
@@ -205,7 +219,7 @@
 }
 
 .edit-container-lower{
-  background-color: $boolean-base-card;
+  background-color: $joblist-edit-base-card;
   display: flex;
   flex-wrap: wrap;
   justify-content: left;
@@ -268,7 +282,7 @@
   text-align: left;
   vertical-align: top;
   font-size: 15px;
-  color: black;
+  color: $reply-text-area-caret-color;
   opacity: 60%;
 }
 

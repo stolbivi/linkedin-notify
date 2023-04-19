@@ -145,5 +145,7 @@ export const theme: Theme = {
     "--navbar-button-text": "#ffffffcc",
     "--navbar-button-text-clicked": "#ffffff",
     "--boolean-search-query-container": "#29303C",
-    "--boolean-search-query-container-text": "#909090"
+    "--boolean-search-query-container-text": "#909090",
+    "--joblist-table-color": "#515151",
+    "--joblist-table-strip-color": "#2B2F33"
 }
