@@ -1,7 +1,7 @@
 import {Body, Delete, Get, Post, Put, Query, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
-import {ParentStageEnum, Stage, StageEnum, StageModel, StageWithId} from "../persistence/stage-model";
+import {ParentStageEnum, StageModel, StageWithId} from "../persistence/stage-model";
 import { UserStages } from "../persistence/user-stages";
 import {User} from "../persistence/user-model";
 
@@ -134,7 +134,7 @@ export class StageController extends BaseController {
     @Put("stage/{id}")
     public async update(id: string,
                         @Query() as?: string,
-                        @Query() stage?: StageEnum,
+                        @Query() stage?: number,
                         @Body() body?: StageWithId,
                         @Request() request?: express.Request
     ): Promise<any> {

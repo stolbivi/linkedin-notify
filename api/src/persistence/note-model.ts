@@ -48,7 +48,8 @@ const noteSchema = new dynamoose.Schema({
         required: false
     },
     stageText: {
-        type: String
+        type: String,
+        required: false
     }
 }, {
     "saveUnknown": true,

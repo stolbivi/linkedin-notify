@@ -296,8 +296,8 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
                 rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
                     designation: profile.occupation, profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment }
             }
-            const stage = await backEndAPI.setStage(payload.id, payload.stage, author, payload.parentStage, rcpntPrfl.name, rcpntPrfl.designation, rcpntPrfl.profileImg);
-            return {note: {response: noteExtended[0]}, stage: stage};;
+            const stage = await backEndAPI.setStage(note.response.id, payload.stage, author, payload.parentStage, rcpntPrfl.name, rcpntPrfl.designation, rcpntPrfl.profileImg, payload.stageText || undefined);
+            return {note: {response: noteExtended[0]}, stage: stage};
         }));
 
 export const setStageFromKanban = createAction<SetStagePayload, any>("setStageFromKanban",
@@ -503,6 +503,15 @@ export const deleteNote = createAction<string, any>("deleteNote",
         })
 )
 
+export const deleteStage = createAction<string, any>("deleteStage",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.deleteStage(id)
+            return response
+        })
+)
+
 export const postJob = createAction<Job, any>("postJob",
     (job) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
@@ -540,4 +549,13 @@ export const getAuthorStages = createAction("getAuthorStages",
             const me = await api.getMe(token);
             const author = api.extractProfileUrn(me);
             return await backEndAPI.getAuthorStages(author)
+        }));
+
+export const getUserIdByUrn = createAction<string, any>("getUserIdByUrn",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const experienceResponse = await api.getExperience(token, id);
+            const experience = api.extractExperience(experienceResponse);
+            return experience.urn;
         }));

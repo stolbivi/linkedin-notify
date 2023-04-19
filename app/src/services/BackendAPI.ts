@@ -63,10 +63,10 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public setStage(id: string, stage: StageEnum, author: string, parentStage: number, name: string, designation: string, profileImg: string): Promise<Response<any>> {
+    public setStage(id: string, stage: StageEnum, author: string, parentStage: number, name: string, designation: string, profileImg: string, stageText?: string): Promise<Response<any>> {
         return this.fetchRequest(
-            `${BACKEND_API}stage/${id}`,
-            this.getRequest("PUT", {stage, author, parentStage, name, designation, profileImg})
+            `${BACKEND_API}stage`,
+            this.getRequest("POST", {id, stage, author, parentStage, name, designation, profileImg, stageText: stageText || undefined})
         );
     }
 
@@ -172,6 +172,13 @@ export class BackendAPI extends BaseAPI {
     public deleteJob(jobId: string): Promise<Response<Job>> {
         return this.fetchRequest(
             `${BACKEND_API}job/${jobId}`,
+            this.getRequest("DELETE")
+        );
+    }
+
+    public deleteStage(stageId: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/${stageId}`,
             this.getRequest("DELETE")
         );
     }

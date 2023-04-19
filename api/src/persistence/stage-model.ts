@@ -37,7 +37,7 @@ export enum StageEnum {
 }
 
 export interface Stage {
-    stage?: StageEnum
+    stage?: number
     parentStage?: number
     name?: string
     designation?:string
@@ -46,6 +46,7 @@ export interface Stage {
     email?: string
     createdAt?: string
     updatedAt?: string
+    stageText?: string
 }
 
 export interface StageWithId extends Stage {
@@ -56,7 +57,7 @@ const stageSchema = new dynamoose.Schema({
     id: {
         type: String,
         hashKey: true,
-        required: true
+        required: false
     },
     author: {
         type: String,
@@ -80,7 +81,7 @@ const stageSchema = new dynamoose.Schema({
     },
     groupId: {
         type: String,
-        required: true
+        required: false
     },
     name: {
         type: String,
@@ -92,7 +93,11 @@ const stageSchema = new dynamoose.Schema({
     },
     profileImg: {
         type: String,
-        required: true
+        required: false
+    },
+    stageText: {
+        type: String,
+        required: false
     }
 }, {
     "saveUnknown": true,

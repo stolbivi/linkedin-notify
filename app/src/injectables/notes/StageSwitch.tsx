@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Loader} from "../../components/Loader";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {Note, VERBOSE} from "../../global";
+import {Note, NoteExtended, VERBOSE} from "../../global";
 import {setStage as setStageAction} from "../../actions";
 import "./StageSwitch.scss";
 
@@ -69,7 +69,7 @@ type Props = {
     id?: string;
     classType?: string;
     customText?: string;
-    notes?: any;
+    notes?: NoteExtended[];
     parentStage?: number
 };
 
@@ -89,7 +89,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
     }, [activeStage])
 
     const onClick = () => {
-        if (activeStage === type) {
+        if (activeStage === type || notes.find(note => note.stageTo === type)) {
             return;
         }
         setCompleted(false);

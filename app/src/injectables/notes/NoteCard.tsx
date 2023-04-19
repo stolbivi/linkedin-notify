@@ -31,8 +31,8 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
         if (stage < 0) {
             return <div className={"stage inactive"}><label>No stage</label></div>
         }
-        return <div className={"stage " + StageLabels[stage].class}>
-            <label>{StageLabels[stage].label}</label>
+        return <div className={`stage ${StageLabels[stage] ? StageLabels[stage].class : "interested"}`}>
+        <label>{StageLabels[stage]?.label}</label>
         </div>
     }
 
