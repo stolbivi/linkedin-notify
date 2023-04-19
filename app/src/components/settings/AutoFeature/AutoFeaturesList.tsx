@@ -152,12 +152,12 @@ const AutoFeaturesList = (props) => {
                     {Object.entries(autoFeatures).map(([id, feature]) => (
                         <AutoFeatureCard autoFeature={feature} id={id} key={id} updatedFeatures={updatedFeatures} deleteFeature={deleteFeature}/>
                     ))}
-                    <div style={{marginTop:"10%", marginBottom:"10%"}}>
-                        <button className="reset-btn" style={{marginLeft: "26%"}} onClick={closeHandler}>Close</button>
-                        <button className="save-btn" style={{marginLeft: "26%"}} onClick={saveHandler}>Save</button>
-                    </div>
                 </>
             )}
+            <div style={{marginTop:"10%", marginBottom:"10%"}}>
+                <button className="reset-btn" style={{marginLeft: "26%"}} onClick={closeHandler}>Close</button>
+                <button className="save-btn" style={{marginLeft: "26%"}} onClick={saveHandler}>Save</button>
+            </div>
         </div>
     )
 }

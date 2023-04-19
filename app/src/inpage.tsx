@@ -53,9 +53,7 @@ const injectUI = () => {
                 TimeZoneFactory();
                 LnDashboardFactory();
             } else {
-                if (isWatchAutoFeature) {
-                    AutoFeatureFactory();
-                }
+                AutoFeatureFactory();
             }
         }
     });

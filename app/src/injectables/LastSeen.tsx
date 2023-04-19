@@ -3,7 +3,6 @@ import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
 import {injectLastChild} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
-import {Clock} from "../icons/Clock";
 import {Loader} from "../components/Loader";
 import {formatDateToday} from "../services/UIHelpers";
 
@@ -65,15 +64,12 @@ export const LastSeen: React.FC<Props> = ({}) => {
                 } else {
                     if (r?.response?.hide) {
                         setShow(false);
-                    } else if (r?.response?.length > 0) {
-                        setLastSeen(new Date(r?.response[0].updatedAt));
                     } else {
-                        setLastSeen(new Date());
+                        setLastSeen(new Date(r?.response?.lastActiveAt));
                     }
                 }
             }).finally(() => setCompleted(true));
     }, []);
-
 
     return (
         <React.Fragment>

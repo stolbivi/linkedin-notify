@@ -452,7 +452,7 @@ export const setLastViewed = createAction<string, any>("setLastViewed",
         }));
 
 export const getLastSeen = createAction<string, any>("getLastSeen",
-    (id, sender) => getCookies(LINKEDIN_DOMAIN)
+    (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
             const experienceResponse = await api.getExperience(token, id);
@@ -464,15 +464,13 @@ export const getLastSeen = createAction<string, any>("getLastSeen",
                 return {response: {profile: me, author: as, hide: true}}
             } else {
                 const presenceLastSeenResp = await api.getPresenceLastSeen(token, profile);
-                let lastActiveAt = 0;
                 if(presenceLastSeenResp.results && Object.keys(presenceLastSeenResp.results).length > 0) {
-                    lastActiveAt = presenceLastSeenResp.results[`urn:li:fsd_profile:${profile}`]['lastActiveAt'];
+                    const lastActiveAt = presenceLastSeenResp.results[`urn:li:fsd_profile:${profile}`]['lastActiveAt'];
+                    return {response: {lastActiveAt: lastActiveAt}}
+                } else {
+                    return {response: {profile: me, author: as, hide: true}}
                 }
-                return new Date(lastActiveAt * 1000);
             }
-        })
-        .then(response => {
-            return response;
         }));
 
 export interface SwitchThemePayload {
