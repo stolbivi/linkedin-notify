@@ -1,7 +1,7 @@
 import {Body, Delete, Get, Post, Put, Query, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
-import {ParentStageEnum, StageModel, StageWithId} from "../persistence/stage-model";
+import {ParentStageEnum, StageEnum, StageModel, StageWithId} from "../persistence/stage-model";
 import { UserStages } from "../persistence/user-stages";
 import {User} from "../persistence/user-model";
 
@@ -76,7 +76,7 @@ export class StageController extends BaseController {
                     parentStage = "OTHER";
                 }
                 // @ts-ignore
-                const stage = StageEnum[item.stage];
+                const stage = StageEnum[item.stage] ? StageEnum[item.stage] : StageEnum["0"];
 
                 // @ts-ignore
                 if (!data[parentStage]) {
