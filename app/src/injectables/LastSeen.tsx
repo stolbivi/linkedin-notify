@@ -13,7 +13,7 @@ import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../themes/T
 import {theme as LightTheme} from "../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../themes/dark";
-import icon from "../../public/content/icon-16.png";
+import icon from "../../public/content/icon-256.png";
 
 export const LastSeenFactory = () => {
     // individual profile
@@ -82,8 +82,8 @@ export const LastSeen: React.FC<Props> = ({}) => {
                     <Loader show={!completed}/>
                     {completed &&
                         <React.Fragment>
-                            <img src={icon}/>
-                            <label>Last time on LinkedIn:</label>
+                            <img width={15} height={15} src={icon}/>
+                            <label>Last Seen On Linkedin:</label>
                             <span>{formatDateToday(lastSeen)}</span>
                         </React.Fragment>}
                 </div>}

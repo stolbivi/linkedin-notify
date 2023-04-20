@@ -450,16 +450,12 @@ export const setLastViewed = createAction<string, any>("setLastViewed",
                 author,
             });
         }));
-
-
 const findTimeValue = (text: string) => {
-    const regex = /"text":"[^"]+•\s(\d+(s|m|h|d|w|mo|yr))/;
+    const regex = /"text":"[^"]+•\s(\d+(yr|mo|w|d|h|m|s))/;
     const match = text.match(regex);
-
     if (!match || match.length < 2) {
         return null;
     }
-
     return match[1];
 };
 const calculatePostedTime = (timeValue: string) => {
@@ -512,6 +508,7 @@ export const getLastSeen = createAction<string, any>("getLastSeen",
                 if (timeValue) {
                     const postedTime = calculatePostedTime(timeValue);
                     if (postedTime) {
+                        console.log(`The post was created at: ${postedTime.toISOString()}`);
                         profileActivityTime = postedTime.getTime();
                     } else {
                         console.log("Unable to calculate the posted time.");
