@@ -451,6 +451,49 @@ export const setLastViewed = createAction<string, any>("setLastViewed",
             });
         }));
 
+
+const findTimeValue = (text: string) => {
+    const regex = /"text":"[^"]+•\s(\d+(s|m|h|d|w|mo|yr))/;
+    const match = text.match(regex);
+
+    if (!match || match.length < 2) {
+        return null;
+    }
+
+    return match[1];
+};
+const calculatePostedTime = (timeValue: string) => {
+    const currentTime = new Date();
+    const value = parseInt(timeValue.match(/\d+/g)[0]);
+    const unit = timeValue.match(/[a-zA-Z]+/g)[0];
+    switch (unit) {
+        case 's':
+            currentTime.setSeconds(currentTime.getSeconds() - value);
+            break;
+        case 'm':
+            currentTime.setMinutes(currentTime.getMinutes() - value);
+            break;
+        case 'h':
+            currentTime.setHours(currentTime.getHours() - value);
+            break;
+        case 'd':
+            currentTime.setDate(currentTime.getDate() - value);
+            break;
+        case 'w':
+            currentTime.setDate(currentTime.getDate() - value * 7);
+            break;
+        case 'mo':
+            currentTime.setMonth(currentTime.getMonth() - value);
+            break;
+        case 'yr':
+            currentTime.setFullYear(currentTime.getFullYear() - value);
+            break;
+        default:
+            return null;
+    }
+
+    return currentTime;
+};
 export const getLastSeen = createAction<string, any>("getLastSeen",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
@@ -463,13 +506,32 @@ export const getLastSeen = createAction<string, any>("getLastSeen",
             if (profile === as) {
                 return {response: {profile: me, author: as, hide: true}}
             } else {
-                const presenceLastSeenResp = await api.getPresenceLastSeen(token, profile);
-                if(presenceLastSeenResp.results && Object.keys(presenceLastSeenResp.results).length > 0) {
-                    const lastActiveAt = presenceLastSeenResp.results[`urn:li:fsd_profile:${profile}`]['lastActiveAt'];
-                    return {response: {lastActiveAt: lastActiveAt}}
+                const profileActivityResp = await api.getMsgLastSeen(token, profile);
+                const timeValue = findTimeValue(profileActivityResp);
+                let profileActivityTime;
+                if (timeValue) {
+                    const postedTime = calculatePostedTime(timeValue);
+                    if (postedTime) {
+                        profileActivityTime = postedTime.getTime();
+                    } else {
+                        console.log("Unable to calculate the posted time.");
+                    }
                 } else {
-                    return {response: {profile: me, author: as, hide: true}}
+                    console.log("Unable to find the time value in the text.");
                 }
+                const presenceLastSeenResp = await api.getPresenceLastSeen(token, profile);
+                let presenceTime;
+                if(presenceLastSeenResp.results && Object.keys(presenceLastSeenResp.results).length > 0) {
+                    presenceTime = presenceLastSeenResp.results[`urn:li:fsd_profile:${profile}`]['lastActiveAt'];
+                }
+                if (typeof profileActivityTime !== 'number') {
+                    profileActivityTime = 0;
+                }
+                if (typeof presenceTime !== 'number') {
+                    presenceTime = 0;
+                }
+                const earliestTimestamp = Math.max(profileActivityTime, presenceTime);
+                return {response: {lastActiveAt: earliestTimestamp}}
             }
         }));
 

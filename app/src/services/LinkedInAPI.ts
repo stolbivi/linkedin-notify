@@ -597,7 +597,13 @@ export class LinkedInAPI {
 
     public getMsgLastSeen(token: string, id: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.463cafd0fd1961a6e716e85ae4b0b32a`, this.getRequest(token))
-            .then(response => response.json());
+            .then(response => response.text())
+            .then(responseText => {
+                return responseText;
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
 
     public getPresenceLastSeen(token: string, urn?: string) {
