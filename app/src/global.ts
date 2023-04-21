@@ -64,6 +64,7 @@ export interface Note {
     createdAt?: string
     updatedAt?: string
     stageText?: string
+    parentStage?: number
 }
 
 export interface NoteExtended extends Note {

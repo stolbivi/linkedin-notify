@@ -8,7 +8,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import {getStages, showNotesAndCharts} from "../../actions";
+import {getLatestStage, getStages, showNotesAndCharts} from "../../actions";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -65,14 +65,14 @@ export const StagePill: React.FC<Props> = ({url, convUrl}) => {
         if(convUrl) {
             url = sessionStorage.getItem("prf");
         }
-        messages.request(getStages({url: url}))
+        messages.request(getLatestStage(url))
             .then((r) => {
                 if (r.error) {
                     console.error(r.error);
                 } else {
-                    const s = r?.response?.stage >= 0 ? r?.response?.stage : -1;
+                    const s = r?.stage >= 0 ? r?.stage : -1;
                     setType(s);
-                    setStageText(r?.response?.stageText ? r?.response?.stageText : null);
+                    setStageText(r?.stageText ? r?.stageText : null);
                 }
             }).finally(() => setCompleted(true));
 

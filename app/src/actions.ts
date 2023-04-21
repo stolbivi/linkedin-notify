@@ -286,17 +286,21 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
                 author,
                 stageFrom: payload.stageFrom,
                 stageTo: payload.stage,
-                stageText: payload.stageText || undefined
+                stageText: payload.stageText || undefined,
+                parentStage: payload.parentStage
             });
             const noteExtended = await extendNote(token, [note.response], author);
             let profile= await api.getProfileDetails(token,payload.id);
-            let rcpntPrfl = {name: "", designation: "", profileImg: ""};
+            let rcpntPrfl = {name: "", designation: "", profileImg: "", profileId: ""};
             if(profile && profile.included[0]) {
                 profile = profile.included[0];
                 rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
-                    designation: profile.occupation, profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment }
+                    designation: profile.occupation,
+                    profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
+                    profileId: payload.id}
             }
-            const stage = await backEndAPI.setStage(note.response.id, payload.stage, author, payload.parentStage, rcpntPrfl.name, rcpntPrfl.designation, rcpntPrfl.profileImg, payload.stageText || undefined);
+            const prflImg = rcpntPrfl.profileImg ? rcpntPrfl.profileImg : 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
+            const stage = await backEndAPI.setStage(note.response.id, payload.stage, author, payload.parentStage, rcpntPrfl.name, rcpntPrfl.designation, prflImg, payload.stageText || undefined, rcpntPrfl.profileId);
             return {note: {response: noteExtended[0]}, stage: stage};
         }));
 
@@ -306,7 +310,7 @@ export const setStageFromKanban = createAction<SetStagePayload, any>("setStageFr
         .then(async token => {
             const me = await api.getMe(token);
             const author = api.extractProfileUrn(me);
-            return  await backEndAPI.setStageFromKanban(payload.id, payload.stage, author);
+            return  await backEndAPI.setStageFromKanban(payload.id, payload.stage, payload.stageText, author);
         }));
 
 export interface ShowNotesAndChartsPayload {
@@ -615,4 +619,16 @@ export const getUserIdByUrn = createAction<string, any>("getUserIdByUrn",
             const experienceResponse = await api.getExperience(token, id);
             const experience = api.extractExperience(experienceResponse);
             return experience.urn;
+        }));
+
+export const getLatestStage = createAction<string, any>("getLatestStage",
+    (url) => getCookies(LINKEDIN_DOMAIN)
+        .then(async cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const experienceResponse = await api.getExperience(token, url);
+            const experience = api.extractExperience(experienceResponse);
+            const profile = experience.urn;
+            const me = await api.getMe(token);
+            const as = api.extractProfileUrn(me);
+            return backEndAPI.getLatestStage(profile,as);
         }));

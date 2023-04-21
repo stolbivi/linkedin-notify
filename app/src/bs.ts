@@ -50,7 +50,8 @@ import {
     getAuthorStages,
     setStageFromKanban,
     deleteStage,
-    getUserIdByUrn
+    getUserIdByUrn,
+    getLatestStage
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -76,6 +77,7 @@ const startMonitoring = () => {
     chrome.alarms.create(CHECK_BADGES, {periodInMinutes: CHECK_FREQUENCY, delayInMinutes: 0});
     chrome.alarms.create(AUTO_FEATURES, {periodInMinutes: AUTO_FREQUENCY, delayInMinutes: 0.2});
 }
+
 // Main course below! //
 
 getCookies(LINKEDIN_DOMAIN)
@@ -132,6 +134,7 @@ messagesV2.listen(getAuthorStages);
 messagesV2.listen(setStageFromKanban);
 messagesV2.listen(deleteStage);
 messagesV2.listen(getUserIdByUrn);
+messagesV2.listen(getLatestStage);
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
     tabs.withAllTabs().then(tabs => {

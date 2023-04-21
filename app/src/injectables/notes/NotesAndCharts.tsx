@@ -3,7 +3,7 @@ import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {getSalaryValue, Salary} from "../SalaryPill";
 import {PayDistribution} from "./PayDistribution";
-import {StageEnum, StageLabels, StageSwitch} from "./StageSwitch";
+import {stageChildData, StageEnum, StageLabels, StageParentData, stageParentsData, StageSwitch} from "./StageSwitch";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, NoteExtended, UserStage, VERBOSE} from "../../global";
 import {inject} from "../../utils/InjectHelper";
@@ -84,56 +84,6 @@ type Props = {
     convId?: string
 };
 
-export enum StageParentData {
-    AVAILABILITY = "Availability",
-    STATUS = "Status",
-    TYPE = "Type",
-    GEOGRAPHY = "Geography",
-    Groups = "Groups"
-}
-
-export const stageParentsData = [
-    {name: StageParentData.AVAILABILITY},
-    {name: StageParentData.STATUS},
-    {name: StageParentData.TYPE},
-    {name: StageParentData.GEOGRAPHY},
-    {name: StageParentData.Groups}
-]
-
-export const stageChildData = {
-    [StageParentData.AVAILABILITY]: [
-        {name: StageEnum.Passive_Candidate},
-        {name: StageEnum.Actively_Looking},
-        {name: StageEnum.Open_To_New_Offers},
-        {name: StageEnum.Not_Looking_Currently},
-        {name: StageEnum.Future_Interest}
-    ],
-    [StageParentData.GEOGRAPHY]: [
-        {name: StageEnum.Relocation},
-        {name: StageEnum.Commute},
-        {name: StageEnum.Hybrid},
-        {name: StageEnum.Remote}
-    ],
-    [StageParentData.STATUS]: [
-        {name: StageEnum.Contacted},
-        {name: StageEnum.Pending_Response},
-        {name: StageEnum.Interview_Scheduled},
-        {name: StageEnum.Offer_Extended},
-        {name: StageEnum.Hired},
-        {name: StageEnum.Rejected}
-    ],
-    [StageParentData.TYPE]: [
-        {name: StageEnum.Part_Time},
-        {name: StageEnum.Full_Time},
-        {name: StageEnum.Permanent},
-        {name: StageEnum.Contract},
-        {name: StageEnum.Freelance}
-    ],
-    [StageParentData.Groups]: [
-        {name: StageEnum.Commute}
-    ]
-}
-
 export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => {
 
     const MAX_LENGTH = 200;
@@ -164,7 +114,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     },[salaryInternal]);
 
     useEffect(()=>{
-        console.log("Salary label: ", salaryLabel);
         if (salaryLabel){
             setCurrencySymbol(salaryLabel[0]);
             if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
@@ -249,10 +198,14 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         setPostAllowed(text && text.value.length > 0);
     }, [text]);
 
-    useEffect(() => console.log('custom-stages', customStages), [customStages])
-
-    const appendNote = (note: NoteExtended) => {
-        setNotes([...notes, note]);
+    const appendNote = (note: NoteExtended, tagToRemoveIndex?: number) => {
+        if (typeof tagToRemoveIndex === "number" && tagToRemoveIndex !== -1) {
+            let updatedNotes = [...notes,note];
+            updatedNotes.splice(tagToRemoveIndex, 1);
+            setNotes(updatedNotes);
+        } else {
+            setNotes([...notes, note]);
+        }
         setTimeout(() => {
             // @ts-ignore
             lastNoteRef?.current?.scrollIntoView({
@@ -359,7 +312,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                         // @ts-ignore
                         StageEnum[text] = count;
                     }
-                    if(!StageLabels[count]) {
+                    if(!StageLabels[count] && !Object.values(StageLabels).some(({ label }) => label === text)) {
                         StageLabels[count] = {label: text, class: "interested"};
                     }
                     setCustomStages(temp);
@@ -370,13 +323,19 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
 
         return (
             <React.Fragment>
-                {loading ? <>loading...</> : <div onClick={!isCreating ? () => setIsCreating(true) : undefined}
-                                                  className={`create-new-group-wrapper ${isCreating ? "is-creating" : ""}`}>
-                    {isCreating ? <form onSubmit={handleCustomTagSubmit}><input value={customName}
-                                                                                onChange={e => setCustomName(e.currentTarget.value)}
-                                                                                placeholder='Enter New Group Here'/>
-                    </form> : '+ Create New Group'}
-                </div>}
+                {loading
+                    ? <>loading...</>
+                    : <div onClick={!isCreating ? () => setIsCreating(true) : undefined} className={`create-new-group-wrapper ${isCreating ? "is-creating" : ""}`}>
+                        {isCreating ?
+                            <form onSubmit={handleCustomTagSubmit}>
+                                <input value={customName}
+                                       onChange={e => setCustomName(e.currentTarget.value)}
+                                       placeholder='Enter New Group Here'/>
+                            </form>
+                            : '+ Create New Group'
+                        }
+                    </div>
+                }
             </React.Fragment>
         )
     }
@@ -391,20 +350,20 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                     // @ts-ignore
                     StageEnum[stage.text] = count;
                 }
-                if(!StageLabels[count]) {
+                if(!StageLabels[count] && !Object.values(StageLabels).some(({ label }) => label === stage.text)) {
                     StageLabels[count] = {label: stage.text, class: "interested"};
                 }
                 count++;
             });
-            console.log(StageEnum, StageLabels);
         }
-    }, [customStages])
+    }, [customStages]);
 
     const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
         event.stopPropagation();
         setEditButton(!editButton);
     }
 
+    // @ts-ignore
     return (
         <React.Fragment>
             {show &&
@@ -488,24 +447,28 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                     {activeStageParent === stage.name ? <UpChevron/> : <DownChevron/>}
                                                 </div>)}
                                                 <div className="nested-childs">
-                                                    {stageChildData[activeStageParent]?.map?.((child,index) => activeStageParent !== "Groups" ?
+                                                    {stageChildData[activeStageParent]?.map?.((child,index) => activeStageParent !== StageParentData.GROUPS ?
                                                         <StageSwitch key={salaryInternal.urn+index} type={child.name} activeStage={stageInternal}
                                                                      parentStage={Object.values(StageParentData).indexOf(activeStageParent)}
+                                                                     parentStageName={activeStageParent}
                                                                      setStage={setStageInternal} id={salaryInternal.urn}
-                                                                     appendNote={appendNote} notes={notes}>
+                                                                     appendNote={appendNote} notes={notes}
+                                                                     setNotes={setNotes}>
                                                         </StageSwitch> :
                                                         <div className="custom-stages-wrapper">
                                                             {customStages?.map?.(customStage => <StageSwitch
                                                                                     key={salaryInternal.urn}
                                                                                     type={StageEnum[customStage.text]}
                                                                                     activeStage={stageInternal}
-                                                                                    parentStage={Object.values(StageParentData).indexOf(StageParentData.Groups)}
+                                                                                    parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                                                    parentStageName={activeStageParent}
                                                                                     customText={customStage.text}
                                                                                     classType="interested"
                                                                                     setStage={setStageInternal}
                                                                                     id={salaryInternal.urn}
                                                                                     appendNote={appendNote}
-                                                                                    notes={notes}/>
+                                                                                    notes={notes}
+                                                                                    setNotes={setNotes}/>
                                                             )}
                                                             <CreateNewGroup/>
                                                         </div>)}

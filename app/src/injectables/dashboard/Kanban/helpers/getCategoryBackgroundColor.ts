@@ -77,7 +77,7 @@ const getCategoryBackgroundColor = (theme: DefaultTheme, value: ICategory) => {
       return theme.colors.freelance;
 
     default:
-      return theme.colors.primary;
+      return theme.colors.futureInterest;
   }
 }
 

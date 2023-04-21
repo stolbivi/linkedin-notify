@@ -30,7 +30,7 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
     <Draggable draggableId={card.id} index={index}>
       {provided => (
         <CardContainer 
-          onClick={()=>window.open(`https://www.linkedin.com/in/${card.id}`, '_blank')}
+          onClick={()=>window.open(`https://www.linkedin.com/in/${card.profileId}`, '_blank')}
           hideCard={card.hidden}
           ref={provided.innerRef} 
           {...provided.draggableProps} 

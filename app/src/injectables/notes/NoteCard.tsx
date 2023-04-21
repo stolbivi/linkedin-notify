@@ -1,10 +1,8 @@
 import {NoteExtended} from "../../global";
-import React, {useEffect} from "react";
+import React from "react";
 import "./NoteCard.scss";
 import {StageLabels} from "./StageSwitch";
 import {formatDate} from "../../services/UIHelpers";
-import {inject} from "../../utils/InjectHelper";
-import {NotesAndCharts} from "./NotesAndCharts";
 
 type Props = {
     note: NoteExtended

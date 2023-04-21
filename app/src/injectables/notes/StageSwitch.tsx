@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Loader} from "../../components/Loader";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Note, NoteExtended, VERBOSE} from "../../global";
-import {setStage as setStageAction} from "../../actions";
+import {deleteNote, deleteStage, setStage as setStageAction} from "../../actions";
 import "./StageSwitch.scss";
 
 export enum StageEnum {
@@ -61,26 +61,76 @@ export const StageLabels = {
 } as { [key: number]: any }
 StageLabels[-1] = {label: "Add Status", class: "inactive"};
 
+export enum StageParentData {
+    AVAILABILITY = "Availability",
+    STATUS = "Status",
+    TYPE = "Type",
+    GEOGRAPHY = "Geography",
+    GROUPS = "Groups"
+}
+
+export const stageParentsData = [
+    {name: StageParentData.AVAILABILITY},
+    {name: StageParentData.STATUS},
+    {name: StageParentData.TYPE},
+    {name: StageParentData.GEOGRAPHY},
+    {name: StageParentData.GROUPS}
+]
+
+export const stageChildData = {
+    [StageParentData.AVAILABILITY]: [
+        {name: StageEnum.Passive_Candidate},
+        {name: StageEnum.Actively_Looking},
+        {name: StageEnum.Open_To_New_Offers},
+        {name: StageEnum.Not_Looking_Currently},
+        {name: StageEnum.Future_Interest}
+    ],
+    [StageParentData.GEOGRAPHY]: [
+        {name: StageEnum.Relocation},
+        {name: StageEnum.Commute},
+        {name: StageEnum.Hybrid},
+        {name: StageEnum.Remote}
+    ],
+    [StageParentData.STATUS]: [
+        {name: StageEnum.Contacted},
+        {name: StageEnum.Pending_Response},
+        {name: StageEnum.Interview_Scheduled},
+        {name: StageEnum.Offer_Extended},
+        {name: StageEnum.Hired},
+        {name: StageEnum.Rejected}
+    ],
+    [StageParentData.TYPE]: [
+        {name: StageEnum.Part_Time},
+        {name: StageEnum.Full_Time},
+        {name: StageEnum.Permanent},
+        {name: StageEnum.Contract},
+        {name: StageEnum.Freelance}
+    ],
+    [StageParentData.GROUPS]: [
+        {name: StageEnum.Commute}
+    ]
+}
+
+
 type Props = {
     type?: StageEnum
     activeStage?: StageEnum
     setStage?: (s: StageEnum) => void
-    appendNote?: (n: Note) => void
+    appendNote?: (n: Note, tagToRemoveIndex: number) => void
     id?: string;
     classType?: string;
     customText?: string;
     notes?: NoteExtended[];
-    parentStage?: number
+    parentStage?: number;
+    parentStageName?: string;
+    setNotes: any;
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, appendNote, customText, notes, parentStage}) => {
+export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, appendNote, customText,
+                                                 notes, parentStage,parentStageName, setNotes}) => {
 
     const [completed, setCompleted] = useState<boolean>(false);
     const messages = new MessagesV2(VERBOSE);
-
-    useEffect(()=>{
-        console.log(notes);
-    },[])
 
     useEffect(() => {
         if (activeStage !== undefined) {
@@ -92,6 +142,18 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
         if (activeStage === type || notes.find(note => note.stageTo === type)) {
             return;
         }
+        const existingChildStage = notes.find(note => note.parentStage === parentStage);
+        let tagToRemoveIndex: number;
+        if(existingChildStage && parentStageName !== StageParentData.GEOGRAPHY && parentStageName !== StageParentData.GROUPS) {
+            let updatedNotes = [...notes];
+            tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === existingChildStage.id);
+            if (tagToRemoveIndex !== -1) {
+                updatedNotes.splice(tagToRemoveIndex, 1);
+                setNotes(updatedNotes);
+            }
+            messages.request(deleteNote(existingChildStage.id)).then((_r) => {});
+            messages.request(deleteStage(existingChildStage.id)).then((_r) => {});
+        }
         setCompleted(false);
         messages.request(setStageAction({id, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage }))
             .then((r) => {
@@ -99,7 +161,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
                     console.error(r.error);
                 } else {
                     setStage(r.stage.response.stage);
-                    appendNote(r.note.response);
+                    appendNote(r.note.response, tagToRemoveIndex);
                 }
                 setCompleted(true);
             });

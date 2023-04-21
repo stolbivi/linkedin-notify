@@ -63,16 +63,23 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public setStage(id: string, stage: StageEnum, author: string, parentStage: number, name: string, designation: string, profileImg: string, stageText?: string): Promise<Response<any>> {
+    public getLatestStage(id: string, as?: string): Promise<Response<any>> {
         return this.fetchRequest(
-            `${BACKEND_API}stage`,
-            this.getRequest("POST", {id, stage, author, parentStage, name, designation, profileImg, stageText: stageText || undefined})
+            `${BACKEND_API}stage/latest/author/${id}` + (as ? `?as=${as}` : ""),
+            this.getRequest("GET")
         );
     }
 
-    public setStageFromKanban(id: string, stage?: StageEnum, as?: string): Promise<Response<any>> {
+    public setStage(id: string, stage: StageEnum, author: string, parentStage: number, name: string, designation: string, profileImg: string, stageText?: string, profileId?: string): Promise<Response<any>> {
         return this.fetchRequest(
-            `${BACKEND_API}stage/${id}`+ (as ? `?as=${as}` : "") + (stage ? `&stage=${stage}` : ""),
+            `${BACKEND_API}stage`,
+            this.getRequest("POST", {id, stage, author, parentStage, name, designation, profileImg, stageText: stageText || undefined, profileId})
+        );
+    }
+
+    public setStageFromKanban(id: string, stage?: StageEnum, stageText?: string, as?: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/${id}`+ (as ? `?as=${as}` : "") + (stage ? `&stage=${stage}` : "") + (stageText ? `&stageText=${stageText}` : ""),
             this.getRequest("PUT", {})
         );
     }

@@ -7,7 +7,7 @@ export enum ParentStageEnum {
     STATUS,
     TYPE,
     GEOGRAPHY,
-    Groups
+    GROUPS
 }
 export enum StageEnum {
     Interested,
@@ -47,6 +47,7 @@ export interface Stage {
     createdAt?: string
     updatedAt?: string
     stageText?: string
+    profileId?: string
 }
 
 export interface StageWithId extends Stage {
@@ -92,6 +93,10 @@ const stageSchema = new dynamoose.Schema({
         required: true
     },
     profileImg: {
+        type: String,
+        required: false
+    },
+    profileId: {
         type: String,
         required: false
     },

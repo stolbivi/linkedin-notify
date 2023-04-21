@@ -1,17 +1,18 @@
 import React, {useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
-import {extractIdFromUrl, NoteExtended, VERBOSE} from "../../global";
+import {extractIdFromUrl, NoteExtended, UserStage, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
 import {injectFirstChild} from "../../utils/InjectHelper";
 import {StageButton} from "./StageButton";
-import {StageEnum} from "./StageSwitch";
+import {StageEnum, StageLabels} from "./StageSwitch";
 import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
+    getCustomStages,
     getNotesAll,
     getNotesByProfile,
     getTheme, getUserIdByUrn,
@@ -74,6 +75,7 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
     const lastNoteRef = useRef();
+    const [customStages, setCustomStages] = useState<UserStage[]>([]);
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
@@ -88,11 +90,32 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                 setThemeUtil(theme, rootElement);
                 return Promise.resolve();
             }));
+        messages.request(getCustomStages())
+            .then((r) => setCustomStages(r))
+            .catch(e => console.error(e.error));
     }, []);
 
     useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
     }, [text]);
+
+    useEffect(() => {
+        if(customStages.length > 0) {
+            const stageEnumLength = Object.keys(StageEnum).filter(k => isNaN(Number(k))).length;
+            let count = stageEnumLength + 1;
+            customStages.map(stage => {
+                // @ts-ignore
+                if(!StageEnum[stage.text]) {
+                    // @ts-ignore
+                    StageEnum[stage.text] = count;
+                }
+                if(!StageLabels[count]) {
+                    StageLabels[count] = {label: stage.text, class: "interested"};
+                }
+                count++;
+            });
+        }
+    }, [customStages]);
 
     useEffect(() => {
         if (accessState !== AccessState.Valid) {

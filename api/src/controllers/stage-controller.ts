@@ -57,6 +57,31 @@ export class StageController extends BaseController {
         }
     }
 
+
+    @Tags("Persistence")
+    @Get("stage/latest/author/{id}")
+    public async findLatestStage(id: string,
+                                 @Query() as?: string,
+                                 @Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+        try {
+            let query = StageModel.query("author").eq(as).where("profileId").eq(id);
+            const result = await query.exec();
+            let message: any = {response: result.map((i: any) => i.toJSON())};
+            // @ts-ignore
+            const latestObj = message.response.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
+            if (request?.user) {
+                message = {...latestObj, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
     @Tags("Persistence")
     @Get("stage/author/{id}")
     public async findStagesByAuthor(id: string, @Request() request?: express.Request): Promise<any> {
@@ -69,14 +94,14 @@ export class StageController extends BaseController {
             const result = await query.exec();
             let message: any = {response: result.map((i: any) => i.toJSON())};
             const data = {};
-            message.response.forEach((item: { parentStage: string | number; stage: string | number; name: any; designation: any; id: any; profileImg: any; }) => {
+            message.response.forEach((item: { parentStage: string | number; stage: string | number; name: any; designation: any; id: any; profileImg: any; stageText: string; profileId: string; }) => {
                 // @ts-ignore
                 let parentStage = ParentStageEnum[item.parentStage];
                 if(!parentStage) {
                     parentStage = "OTHER";
                 }
                 // @ts-ignore
-                const stage = StageEnum[item.stage] ? StageEnum[item.stage] : StageEnum["0"];
+                const stage = StageEnum[item.stage] ? StageEnum[item.stage] : item.stageText || "OTHER";
 
                 // @ts-ignore
                 if (!data[parentStage]) {
@@ -93,7 +118,8 @@ export class StageController extends BaseController {
                 data[parentStage][stage].push({
                     name: item.name,
                     designation: item.designation,
-                    profileId: item.id,
+                    id: item.id,
+                    profileId: item.profileId,
                     profileImg: item.profileImg,
                     status: parentStage,
                     category: stage?.replace(/_/g,' ')
@@ -134,6 +160,7 @@ export class StageController extends BaseController {
     @Put("stage/{id}")
     public async update(id: string,
                         @Query() as?: string,
+                        @Query() stageText?: string,
                         @Query() stage?: number,
                         @Body() body?: StageWithId,
                         @Request() request?: express.Request
@@ -148,6 +175,7 @@ export class StageController extends BaseController {
                 const result = await query.exec();
                 body = this.getFirst(result);
                 body.stage = stage;
+                body.stageText = stageText;
                 delete body.id;
             }
             const toSave = {...body};

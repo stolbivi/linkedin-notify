@@ -10,7 +10,8 @@ interface ICard {
   hidden: boolean,
   name: string,
   designation: string,
-  profileImg: string
+  profileImg: string,
+  profileId: string
 }
 
 export default ICard;

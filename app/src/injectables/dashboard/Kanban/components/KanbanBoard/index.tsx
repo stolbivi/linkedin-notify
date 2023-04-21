@@ -18,8 +18,9 @@ import {filterCards, setCards} from '../../store/slices/cards.slice';
 import stylesheet from './styles.scss';
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../../../../../global";
-import {getAuthorStages, postNote, setStageFromKanban} from "../../../../../actions";
+import {getAuthorStages, getCustomStages, postNote, setStageFromKanban} from "../../../../../actions";
 import {Loader} from "../../../../../components/Loader";
+import {StageEnum, StageLabels} from "../../../../notes/StageSwitch";
 
 interface KanbanBoardProps {
   toggleTheme: () => void;
@@ -44,9 +45,24 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
           }
         });
   },[]);
+
   useEffect(() => {
+    messages.request(getCustomStages())
+        .then((customStages) => {
+          if(customStages.length > 0) {
+            customStages.map(stage => {
+              // @ts-ignore
+              if(!ICategory[stage.text]) {
+                // @ts-ignore
+                ICategory[stage.text] = stage.text;
+              }
+            });
+          }
+        })
+        .catch(e => console.error(e.error));
     populateKanbanData(IStatus.ALL);
   },[kanbanData])
+
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
     if(activeButton === IStatus.ALL) return;
@@ -58,9 +74,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
 
     const updatedCards: ICard[] = cards.map(card => {
       if (card.id === draggableId) {
-
         const status: IStatus = destination.droppableId as IStatus;
-
         return {
           ...card,
           status
@@ -73,17 +87,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
 
     //Moving cards in the same column
     if (sourceColumn === destinationColumn) {
-
       const newColumnCardsIds = [...destinationColumn.cardsIds];
-
       newColumnCardsIds.splice(source.index, 1);
       newColumnCardsIds.splice(destination.index, 0, draggableId);
-  
       const newDestinationColumn: IColumn = {
         ...destinationColumn,
         cardsIds: newColumnCardsIds
       }
-  
       const updatedColumns: IColumn[] = columns.map(column => {
         if (column.id === newDestinationColumn.id) return newDestinationColumn;
         else return column;
@@ -94,11 +104,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
 
       return
     }
-
     //Moving cards from one column to another
     const sourceCardsIds = [...sourceColumn.cardsIds];
     sourceCardsIds.splice(source.index, 1);
-
     const newSourceColumn: IColumn = {
       ...sourceColumn,
       cardsIds: sourceCardsIds
@@ -116,18 +124,19 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
       if (column.id === newDestinationColumn.id) return newDestinationColumn;
       if (column.id === newSourceColumn.id) return newSourceColumn;
       else return column;
-    }) ;
+    });
     dispatch(setColumns(updatedColumns))
     dispatch(setCards(updatedCards))
-    messages.request(setStageFromKanban({id: draggableId, stage: Object.values(ICategory).indexOf(destination.droppableId)}))
-        .then((_r) => {console.log(_r)});
-    messages.request(postNote(
-        {id: draggableId, stageFrom: Object.values(ICategory).indexOf(source.droppableId) ,stageTo:Object.values(ICategory).indexOf(destination.droppableId)}))
-        .then((_r) => {console.log(_r)});
+    if(activeButton === IStatus.GROUPS) {
+      messages.request(setStageFromKanban({id: draggableId, stage: Object.values(ICategory).indexOf(destination.droppableId), stageText: destination.droppableId})).then((_r) => {console.log(_r)});
+    } else {
+      messages.request(setStageFromKanban({id: draggableId, stage: Object.values(ICategory).indexOf(destination.droppableId)})).then((_r) => {console.log(_r)});
+    }
+    messages.request(postNote({id: draggableId, stageFrom: Object.values(ICategory).indexOf(source.droppableId) ,stageTo:Object.values(ICategory).indexOf(destination.droppableId)})).then((_r) => {console.log(_r)});
   }
   useEffect(() => {
     dispatch(filterCards({categories: selectedCategories}))
-  }, [selectedCategories])
+  }, [selectedCategories]);
   function handleClick(button: string) {
     populateKanbanData(button);
     setActiveButton(button);
@@ -146,6 +155,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
       subCategories = [ICategory.Relocation,ICategory.Commute,ICategory.Hybrid,ICategory.Remote];
     } else if (parentCategory === IStatus.ALL) {
       subCategories = [IStatus.AVAILABILITY,IStatus.STATUS,IStatus.TYPE,IStatus.GEOGRAPHY,IStatus.GROUPS];
+    } else if (parentCategory === IStatus.GROUPS) {
+      subCategories = Object.keys(kanbanData[IStatus.GROUPS]);
     }
     subCategories.forEach(value => {
       cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
@@ -154,9 +165,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
       for (const [_parentStageKey, parentStage] of Object.entries(kanbanData)) {
         for (const [_stageKey, stage] of Object.entries(parentStage)) {
           for (const item of stage) {
-            const cardId = item.profileId;
+            const cardId = item.id;
             updatedCards.push({
               id: cardId,
+              profileId: item.profileId,
               category: item.category,
               title: item.name,
               description: item.name,
@@ -179,9 +191,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     } else {
       kanbanData[parentCategory] && Object.values(kanbanData[parentCategory])?.map(stage => {
         for (const item of stage) {
-          const cardId = item.profileId;
+          const cardId = item.id;
           updatedCards.push({
             id: cardId,
+            profileId: item.profileId,
             category: item.category,
             title: item.name,
             description: item.name,
