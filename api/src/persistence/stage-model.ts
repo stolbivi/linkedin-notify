@@ -15,19 +15,19 @@ export enum StageEnum {
     Interviewing,
     FailedInterview,
     Hired,
-    Not_Looking_Currently,
-    Open_To_New_Offers,
-    Passive_Candidate,
-    Actively_Looking,
-    Future_Interest,
+    Not_Open,
+    Open,
+    Passive,
+    Active,
+    Future,
     Relocation,
     Commute,
     Hybrid,
     Remote,
     Contacted,
-    Pending_Response,
-    Interview_Scheduled,
-    Offer_Extended,
+    Pending,
+    Interview,
+    Offer,
     Rejected,
     Part_Time,
     Full_Time,
@@ -48,6 +48,8 @@ export interface Stage {
     updatedAt?: string
     stageText?: string
     profileId?: string
+    companyName?: string
+    conversationUrn?: string
 }
 
 export interface StageWithId extends Stage {
@@ -101,6 +103,14 @@ const stageSchema = new dynamoose.Schema({
         required: false
     },
     stageText: {
+        type: String,
+        required: false
+    },
+    companyName: {
+        type: String,
+        required: false
+    },
+    conversationUrn: {
         type: String,
         required: false
     }

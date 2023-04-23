@@ -65,7 +65,7 @@ export const LastSeen: React.FC<Props> = ({}) => {
                     if (r?.response?.hide) {
                         setShow(false);
                     } else {
-                        setLastSeen(new Date(r?.response?.lastActiveAt));
+                        setLastSeen(r?.response?.lastActiveAt !== 0 ? new Date(r?.response?.lastActiveAt) : null);
                     }
                 }
             }).finally(() => setCompleted(true));
@@ -84,7 +84,7 @@ export const LastSeen: React.FC<Props> = ({}) => {
                         <React.Fragment>
                             <img width={15} height={15} src={icon}/>
                             <label>Last Seen On Linkedin:</label>
-                            <span>{formatDateToday(lastSeen)}</span>
+                            <span>{lastSeen ? formatDateToday(lastSeen) : 'Unknown'}</span>
                         </React.Fragment>}
                 </div>}
         </React.Fragment>

@@ -290,17 +290,12 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
                 parentStage: payload.parentStage
             });
             const noteExtended = await extendNote(token, [note.response], author);
-            let profile= await api.getProfileDetails(token,payload.id);
-            let rcpntPrfl = {name: "", designation: "", profileImg: "", profileId: ""};
-            if(profile && profile.included[0]) {
-                profile = profile.included[0];
-                rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
-                    designation: profile.occupation,
-                    profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
-                    profileId: payload.id}
-            }
-            const prflImg = rcpntPrfl.profileImg ? rcpntPrfl.profileImg : 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
-            const stage = await backEndAPI.setStage(note.response.id, payload.stage, author, payload.parentStage, rcpntPrfl.name, rcpntPrfl.designation, prflImg, payload.stageText || undefined, rcpntPrfl.profileId);
+            const experienceResponse = await api.getExperience(token, payload.id);
+            const experience = api.extractExperience(experienceResponse);
+            const fullName = experience.profile.firstName + ' ' + experience.profile.lastName;
+            const prflImg = experience.profile.profileImgUrl ? experience.profile.profileImgUrl: 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
+            const stage = await backEndAPI.setStage(note.response.id, payload.stage, author, payload.parentStage, fullName,
+                          experience.profile.designation, prflImg, payload.stageText || undefined, payload.id, experience.company.name, experience.profile.conversationUrn);
             return {note: {response: noteExtended[0]}, stage: stage};
         }));
 

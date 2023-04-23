@@ -11,7 +11,10 @@ interface ICard {
   name: string,
   designation: string,
   profileImg: string,
-  profileId: string
+  profileId: string,
+  companyName: string,
+  conversationUrn: string
+  statuses?: []
 }
 
 export default ICard;

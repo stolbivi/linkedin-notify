@@ -70,10 +70,12 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public setStage(id: string, stage: StageEnum, author: string, parentStage: number, name: string, designation: string, profileImg: string, stageText?: string, profileId?: string): Promise<Response<any>> {
+    public setStage(id: string, stage: StageEnum, author: string, parentStage: number, name: string, designation: string,
+                    profileImg: string, stageText?: string, profileId?: string, companyName?: string, conversationUrn?: string): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}stage`,
-            this.getRequest("POST", {id, stage, author, parentStage, name, designation, profileImg, stageText: stageText || undefined, profileId})
+            this.getRequest("POST", {id, stage, author, parentStage, name,
+                            designation, profileImg, stageText: stageText || undefined, profileId, companyName, conversationUrn})
         );
     }
 
