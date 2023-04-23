@@ -1,6 +1,8 @@
 @import "~bootstrap/dist/css/bootstrap.css";
+@import "../../themes/primary";
+
 .body {
-  background-color: #f9f2f28c;
+  background-color: $boolean-base-card;
   font-family: Arial, sans-serif;
   max-width: 1200px;
   width: 100%;
@@ -20,7 +22,7 @@
   border: none;
   cursor: pointer;
   text-align: center;
-  color: #383637;
+  color: $navbar-button-text;
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 700;
@@ -32,6 +34,7 @@
 }
 
 .navbarBtn.clicked {
-  background-color: #FFFFFF;
+  background-color: $navbar-button;
+  color: $navbar-button-text-clicked;
 }
 

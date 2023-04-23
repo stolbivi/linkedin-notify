@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 // @ts-ignore
 import stylesheet from "./Kanban.scss";
 import { useState } from 'react';
@@ -9,10 +9,34 @@ import { ModalProvider } from './Kanban/hooks/useModal';
 import store from './Kanban/store';
 import darkTheme from './Kanban/styles/themes/dark';
 import lightTheme from './Kanban/styles/themes/light';
+import {MessagesV2} from "@stolbivi/pirojok";
+import {VERBOSE} from "../../global";
+import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
+import {theme as LightTheme} from "../../themes/light";
+import {getTheme, SwitchThemePayload} from "../../actions";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as DarkTheme} from "../../themes/dark";
 
 
 const Kanban = () => {
     const [theme, setTheme] = useState(lightTheme);
+    const messages = new MessagesV2(VERBOSE);
+    const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
+
+    useEffect(() => {
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            }));
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                return Promise.resolve();
+            }));
+    }, []);
 
     const toggleTheme = () => {
         setTheme(theme.title === 'light' ? darkTheme : lightTheme);
@@ -20,7 +44,7 @@ const Kanban = () => {
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className="body">
+            <div className="body" ref={rootElement}>
                 <Provider store={store}>
                     <ThemeProvider theme={theme}>
                         <ModalProvider>

@@ -22,10 +22,6 @@ import {getAuthorStages, getCustomStages, postNote, setStageFromKanban} from "..
 import {Loader} from "../../../../../components/Loader";
 import {StageEnum, StageLabels} from "../../../../notes/StageSwitch";
 
-interface KanbanBoardProps {
-  toggleTheme: () => void;
-}
-
 const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const { cards } = useAppSelector((state => state.cards));
   const { columns } = useAppSelector((state => state.columns));
