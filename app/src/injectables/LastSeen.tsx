@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
-import {injectLastChild} from "../utils/InjectHelper";
+import {injectFirstChild} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
 import {Loader} from "../components/Loader";
 import {formatDateToday} from "../services/UIHelpers";
-
 // @ts-ignore
 import stylesheet from "./LastSeen.scss";
 import {getLastSeen, getTheme, SwitchThemePayload} from "../actions";
@@ -18,11 +17,11 @@ import icon from "../../public/content/icon-256.png";
 export const LastSeenFactory = () => {
     // individual profile
     if (window.location.href.indexOf("/in/") > 0) {
-        const badgeWrap = document.getElementsByClassName("pv-top-card__badge-wrap");
+        const badgeWrap = document.getElementsByClassName("pv-text-details__right-panel");
         if (badgeWrap && badgeWrap.length > 0) {
             let parent = badgeWrap[0].parentElement.parentElement.parentElement;
             parent.style.position = "relative";
-            injectLastChild(parent, "lnm-last-seen",
+            injectFirstChild(badgeWrap[0], "lnm-last-seen",
                 <LastSeen/>, "LastSeen"
             );
         }
@@ -78,7 +77,7 @@ export const LastSeen: React.FC<Props> = ({}) => {
                          className={"access-guard-px16 top-right-corner"}
                          loaderClassName="loader-base top-right-corner loader-px24"/>
             {accessState === AccessState.Valid && show &&
-                <div className="last-seen top-right-corner" ref={rootElement}>
+                <div className="last-seen" ref={rootElement}>
                     <Loader show={!completed}/>
                     {completed &&
                         <React.Fragment>

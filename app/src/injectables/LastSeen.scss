@@ -8,12 +8,10 @@
 }
 
 .last-seen {
-  margin: 0.8em 0.5em;
-  margin-right: 222px;
   display: flex;
   align-items: center;
   justify-items: center;
-  padding: 6px 11px;
+  padding: 7px 6px;
   border-radius: 37px;
   background: $last-viewed-background;
   color: $last-viewed;
@@ -23,7 +21,7 @@
   font-size: 12px;
   user-select: none;
   white-space: nowrap;
-  height: 18px;
+  height: 20px;
 
   .loader {
     position: absolute;
