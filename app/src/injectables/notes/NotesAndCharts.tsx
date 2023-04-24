@@ -129,6 +129,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         const listener = () => {
             setShow(false);
         }
+        debugger;
         window.addEventListener('popstate', listener);
         messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
             (payload) => {

@@ -19,19 +19,19 @@ const getCategoryBackgroundColor = (theme: DefaultTheme, value: ICategory) => {
     case ICategory.Hired:
       return theme.colors.hired;
 
-    case ICategory.Not_Looking_Currently:
+    case ICategory.Not_Open:
       return theme.colors.notLookingCurrently;
 
-    case ICategory.Open_To_New_Offers:
+    case ICategory.Open:
       return theme.colors.openToNewOffers;
 
-    case ICategory.Passive_Candidate:
+    case ICategory.Passive:
       return theme.colors.passiveCandidate;
 
-    case ICategory.Actively_Looking:
+    case ICategory.Active:
       return theme.colors.activelyLooking;
 
-    case ICategory.Future_Interest:
+    case ICategory.Future:
       return theme.colors.futureInterest;
 
     case ICategory.Relocation:
@@ -49,13 +49,13 @@ const getCategoryBackgroundColor = (theme: DefaultTheme, value: ICategory) => {
     case ICategory.Contacted:
       return theme.colors.contacted;
 
-    case ICategory.Pending_Response:
+    case ICategory.Pending:
       return theme.colors.pendingResponse;
 
-    case ICategory.Interview_Scheduled:
+    case ICategory.Interview:
       return theme.colors.interviewScheduled;
 
-    case ICategory.Offer_Extended:
+    case ICategory.Offer:
       return theme.colors.offerExtended;
 
     case ICategory.Rejected:

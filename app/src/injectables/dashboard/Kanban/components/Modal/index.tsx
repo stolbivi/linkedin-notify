@@ -31,7 +31,7 @@ const Modal: React.FC<ModalProps> = ({visible}) => {
 
   const [title, setTitle] = useState<string | undefined>(selectedCard?.title);
   const [description, setDescription] = useState<string | undefined>(selectedCard?.description);
-  const [cardCategory, setCardCategory] = useState<ICategory>(selectedCard?.category || ICategory.FEATURE);
+  const [cardCategory, setCardCategory] = useState<ICategory>(selectedCard?.category || ICategory.Open);
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   const dispatch = useAppDispatch();
@@ -39,7 +39,7 @@ const Modal: React.FC<ModalProps> = ({visible}) => {
   useEffect(() => {
     setTitle(selectedCard?.title);
     setDescription(selectedCard?.description);
-    setCardCategory(selectedCard?.category || ICategory.FEATURE);
+    setCardCategory(selectedCard?.category || ICategory.Open);
   }, [selectedCard, visible])
 
   const handleSave = () => {
@@ -81,7 +81,7 @@ const Modal: React.FC<ModalProps> = ({visible}) => {
     toggleVisibility(undefined);
     setTitle(undefined);
     setDescription(undefined);
-    setCardCategory(ICategory.FEATURE);
+    setCardCategory(ICategory.Open);
     setErrorMessage(undefined);
   }
   
