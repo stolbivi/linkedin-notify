@@ -52,6 +52,14 @@ export const NotesAndChartsFactory = () => {
                 );
             }
         }
+        if (window.location.href.indexOf("/list-view/") > 0) {
+            const section = document.getElementsByClassName("job-column job-table-heading th-action");
+            if (section && section.length > 0) {
+                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                    <NotesAndCharts/>, "NotesAndCharts"
+                );
+            }
+        }
 
         // people's search
         if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
@@ -129,22 +137,26 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         const listener = () => {
             setShow(false);
         }
-        debugger;
         window.addEventListener('popstate', listener);
+        let profileId = extractIdFromUrl(window.location.href);
         messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
             (payload) => {
                 if (id && payload?.id !== id) {
                     return Promise.resolve();
                 }
+                if(payload.profileId) {
+                    profileId = payload.profileId;
+                    console.log("profileId: ", profileId)
+                }
                 setShowNotes(payload?.showNotes)
                 setShowSalary(payload?.showSalary)
                 setShow(true);
                 return Promise.resolve();
-            }));
+        }));
         // getting data
         setCompleted(false);
         if (convId) {
-            messages.request(getConversationProfile(extractIdFromUrl(window.location.href)))
+            messages.request(getConversationProfile(profileId))
                 .then((r: any) => {
                     const entityUrns = r.participants.map((participant: any) => {
                         return participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3];
@@ -165,7 +177,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                     }).catch(e => console.error(e.error));
                 });
         } else {
-            messages.request(getSalary(extractIdFromUrl(window.location.href)))
+            messages.request(getSalary(profileId))
                 .then((r) => {
                     const salary = {...r.result, title: r.title, urn: r.urn};
                     setSalaryInternal(salary);

@@ -90,7 +90,7 @@ const Navbar = () => {
                     <img src={searchIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}}/>
                     Boolean Search Tool
                 </button>
-                <button className={`navbarBtn ${isJobListClicked ? 'clicked' : ''}`} onClick={jobListClickHandler}>
+                <button className={`navbarBtn ${isJobListClicked ? 'clicked' : ''} job-list-navbar`} onClick={jobListClickHandler}>
                     <img src={bagIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}}/>
                     Jobs List
                 </button>

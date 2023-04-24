@@ -41,8 +41,10 @@ export const LnDashboard: React.FC<Props> = ({}) => {
             }));
     }, []);
     const dashboardClickHandler = () => {
-            const navBarElement = document.querySelector('.scaffold-layout.scaffold-layout--breakpoint-xl');
+        const navBarElement = document.querySelector('.scaffold-layout.scaffold-layout--breakpoint-xl');
         if (navBarElement) {
+            const newUrl = 'https://www.linkedin.com/dashboard/';
+            window.history.pushState({ path: newUrl }, '', newUrl);
             ReactDOM.render(<Navbar/>, navBarElement);
             const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
             if (targetElement) {

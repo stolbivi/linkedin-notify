@@ -8,7 +8,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import {getLatestStage, getStages, showNotesAndCharts} from "../../actions";
+import {getLatestStage, showNotesAndCharts} from "../../actions";
 
 export const StagePillFactory = () => {
     // individual profile

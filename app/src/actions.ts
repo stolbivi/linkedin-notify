@@ -313,14 +313,15 @@ export interface ShowNotesAndChartsPayload {
     showSalary: boolean
     showNotes: boolean
     setSalary?:any
+    profileId?: string
 }
 
 // TODO add to store
 const showNotesAndChartsRequest = createRequest<ShowNotesAndChartsPayload, void>("showNotesAndCharts");
 
 export const showNotesAndCharts = createAction<ShowNotesAndChartsPayload, any>("showNotesAndChartsProxy",
-    (payload) => tabs.withCurrentTab()
-        .then(tab => messagesV2.requestTab(tab?.id, showNotesAndChartsRequest(payload).toAction())));
+    (payload, sender) => tabs.withCurrentTab()
+        .then(tab => messagesV2.requestTab(tab?.id || sender?.tab?.id, showNotesAndChartsRequest(payload).toAction())));
 
 // TODO add to store
 export const getNotesAll = createAction<{}, any>("getNotesAll",

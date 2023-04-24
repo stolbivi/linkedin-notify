@@ -1,0 +1,58 @@
+import React, {useEffect, useRef, useState} from 'react';
+import ICard from "../../interfaces/ICard";
+import Badge from "../Badge";
+
+interface BadgeProps {
+  card: ICard
+}
+
+const Status: React.FC<BadgeProps> = ({ card }) => {
+    const [showTooltip, setShowTooltip] = useState(false);
+    const tooltipRef = useRef(null);
+    const badgeRef = useRef(null);
+
+    const handleRemainingClick = () => {
+        setShowTooltip((prev) => !prev);
+    };
+
+    const firstTwoStatuses = card?.statuses?.slice(0, 2) || [];
+    const remainingStatuses = card?.statuses?.slice(2) || [];
+
+    useEffect(() => {
+        const handleClickOutside = (event: { target: any; }) => {
+            if (tooltipRef.current && !tooltipRef.current.contains(event.target)) {
+                setShowTooltip(false);
+            }
+        };
+        window.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            window.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    return (
+        <>
+            <div className="d-flex align-items-center">
+                {firstTwoStatuses.map((category, index) => (
+                    <Badge category={category} key={category + index} />
+                ))}
+            </div>
+            {remainingStatuses.length > 0 && (
+                <div className="d-flex align-items-center position-relative" onClick={handleRemainingClick}>
+                    <span ref={badgeRef} className="badge bg-light text-primary rounded-pill pt-2 pl-3 pr-3 pb-2">+{remainingStatuses.length}</span>
+                    {showTooltip && (
+                        <div className="position-absolute" ref={tooltipRef} style={{ top: '-200%', left: '50%', transform: 'translateX(-50%)' }}>
+                            <div className="bg-white text-white py-2 px-3 rounded d-flex align-items-center" style={{width: "max-content"}}>
+                                {remainingStatuses.map((category, index) => (
+                                    <Badge category={category} key={category + index} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+        </>
+    );
+}
+
+export default Status;

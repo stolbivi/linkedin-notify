@@ -27,6 +27,7 @@ import {
 } from "../../../../../actions";
 import {Loader} from "../../../../../components/Loader";
 import Badge from "../Badge";
+import Status from "../Status";
 
 const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const { cards } = useAppSelector((state => state.cards));
@@ -262,13 +263,26 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     window.open(messageUrl, '_blank')
   }
 
-  const onNotesClick = () => {
+  const onNotesClick = (profileId: string) => {
     if (showNotes) {
       setShowNotes(false);
     } else {
-      return messages.request(showNotesAndCharts({showSalary: false, showNotes: true}));
+      return messages.request(showNotesAndCharts({profileId, showSalary: false, showNotes: true}));
     }
   }
+
+  const listViewClickHandler = () => {
+    const newUrl = 'https://www.linkedin.com/dashboard/list-view/';
+    window.history.pushState({ path: newUrl }, '', newUrl);
+    setListView(true);
+  }
+
+  const cardViewClickHandler = () => {
+    const newUrl = 'https://www.linkedin.com/dashboard/';
+    window.history.pushState({ path: newUrl }, '', newUrl);
+    setListView(false);
+  }
+
 
   return (
     <>
@@ -315,7 +329,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                           <path d="M14 10.1667H2C1.72667 10.1667 1.5 9.93999 1.5 9.66666C1.5 9.39332 1.72667 9.16666 2 9.16666H14C14.2733 9.16666 14.5 9.39332 14.5 9.66666C14.5 9.93999 14.2733 10.1667 14 10.1667Z" fill="#585858"/>
                           <path d="M14 13.5H2C1.72667 13.5 1.5 13.2733 1.5 13C1.5 12.7267 1.72667 12.5 2 12.5H14C14.2733 12.5 14.5 12.7267 14.5 13C14.5 13.2733 14.2733 13.5 14 13.5Z" fill="#585858"/>
                         </svg>
-                        <button className="btn list-btn" onClick={() => setListView(true)}>
+                        <button className="btn list-btn" onClick={listViewClickHandler}>
                           List View
                         </button>
                       </div>
@@ -324,7 +338,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                           <path d="M10.54 13.4533C10.3667 13.4533 10.1867 13.4467 9.99338 13.4267C9.64671 13.4 9.25338 13.3333 8.84671 13.2333L7.72671 12.9667C4.65338 12.24 3.64671 10.6133 4.36671 7.54667L5.02005 4.75333C5.16671 4.12 5.34005 3.60667 5.55338 3.18C6.70005 0.813333 8.89338 1.02667 10.4534 1.39333L11.5667 1.65333C13.1267 2.02 14.1134 2.6 14.6667 3.48667C15.2134 4.37333 15.3 5.51333 14.9334 7.07333L14.28 9.86C13.7067 12.3 12.5134 13.4533 10.54 13.4533ZM8.74671 2.16667C7.63338 2.16667 6.92671 2.62667 6.45338 3.61333C6.28005 3.97333 6.12671 4.42 5.99338 4.98L5.34005 7.77333C4.74671 10.2933 5.43338 11.3933 7.95338 11.9933L9.07338 12.26C9.43338 12.3467 9.77338 12.4 10.08 12.4267C11.8867 12.6067 12.7934 11.8133 13.3 9.63333L13.9534 6.84667C14.2534 5.56 14.2134 4.66 13.8134 4.01333C13.4134 3.36667 12.6267 2.92667 11.3334 2.62667L10.22 2.36667C9.66671 2.23333 9.17338 2.16667 8.74671 2.16667Z" fill="#909090"/>
                           <path d="M5.55353 14.8333C3.8402 14.8333 2.74686 13.8067 2.04686 11.64L1.19353 9.00667C0.246864 6.07334 1.09353 4.42 4.01353 3.47334L5.06686 3.13334C5.41353 3.02667 5.67353 2.95334 5.90686 2.91334C6.09353 2.87334 6.28686 2.94667 6.4002 3.1C6.51353 3.25334 6.53353 3.45334 6.45353 3.62667C6.2802 3.98 6.12686 4.42667 6.0002 4.98667L5.34686 7.78C4.75353 10.3 5.4402 11.4 7.9602 12L9.0802 12.2667C9.4402 12.3533 9.7802 12.4067 10.0869 12.4333C10.3002 12.4533 10.4735 12.6 10.5335 12.8067C10.5869 13.0133 10.5069 13.2267 10.3335 13.3467C9.89353 13.6467 9.3402 13.9 8.6402 14.1267L7.58686 14.4733C6.8202 14.7133 6.15353 14.8333 5.55353 14.8333ZM5.18686 4.14667L4.32686 4.42667C1.94686 5.19334 1.3802 6.31334 2.14686 8.7L3.0002 11.3333C3.77353 13.7133 4.89353 14.2867 7.27353 13.52L8.32686 13.1733C8.36686 13.16 8.4002 13.1467 8.4402 13.1333L7.73353 12.9667C4.6602 12.24 3.65353 10.6133 4.37353 7.54667L5.02686 4.75334C5.07353 4.54 5.12686 4.33334 5.18686 4.14667Z" fill="#909090"/>
                         </svg>
-                        <button className="btn card-btn" onClick={() => setListView(false)}>
+                        <button className="btn card-btn" onClick={cardViewClickHandler}>
                           Card View
                         </button>
                       </div>
@@ -371,9 +385,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                                                 {card.companyName?.substring(0, 20) + "..."}
                                               </td>
                                               <td className="td-status">
-                                                {card?.statuses?.map((category,index) => (
-                                                  <Badge category={category} key={category+index}/>
-                                                ))}
+                                                <Status card={card}/>
                                               </td>
                                               <td>
                                                 <button className="btn" onClick={()=>messagesClickHandler(card.conversationUrn)}>
@@ -383,7 +395,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                                                   </svg>
                                                   <span style={{paddingLeft: "3px"}}>Message</span>
                                                 </button>
-                                                <button className="btn" onClick={onNotesClick}>
+                                                <button className="btn" onClick={()=>onNotesClick(card.profileId)}>
                                                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M10.6665 15.1667H5.33317C3.31984 15.1667 2.1665 14.0134 2.1665 12V5.50004C2.1665 3.40004 3.23317 2.33337 5.33317 2.33337C5.6065 2.33337 5.83317 2.56004 5.83317 2.83337C5.83317 3.10004 5.93984 3.35337 6.12651 3.54004C6.31317 3.72671 6.5665 3.83337 6.83317 3.83337H9.1665C9.71984 3.83337 10.1665 3.38671 10.1665 2.83337C10.1665 2.56004 10.3932 2.33337 10.6665 2.33337C12.7665 2.33337 13.8332 3.40004 13.8332 5.50004V12C13.8332 14.0134 12.6798 15.1667 10.6665 15.1667ZM4.89982 3.34671C3.84649 3.43338 3.1665 3.90671 3.1665 5.50004V12C3.1665 13.48 3.85317 14.1667 5.33317 14.1667H10.6665C12.1465 14.1667 12.8332 13.48 12.8332 12V5.50004C12.8332 3.90671 12.1532 3.44004 11.0999 3.34671C10.8732 4.20004 10.0932 4.83337 9.1665 4.83337H6.83317C6.29984 4.83337 5.79984 4.6267 5.41984 4.2467C5.16651 3.99337 4.99315 3.68671 4.89982 3.34671Z" fill="#585858"/>
                                                     <path d="M9.16683 4.83337H6.8335C6.30016 4.83337 5.80017 4.6267 5.42017 4.2467C5.04017 3.8667 4.8335 3.36671 4.8335 2.83337C4.8335 1.73337 5.7335 0.833374 6.8335 0.833374H9.16683C9.70016 0.833374 10.2002 1.04004 10.5802 1.42004C10.9602 1.80004 11.1668 2.30004 11.1668 2.83337C11.1668 3.93337 10.2668 4.83337 9.16683 4.83337ZM6.8335 1.83337C6.28016 1.83337 5.8335 2.28004 5.8335 2.83337C5.8335 3.10004 5.94016 3.35337 6.12683 3.54004C6.3135 3.72671 6.56683 3.83337 6.8335 3.83337H9.16683C9.72016 3.83337 10.1668 3.38671 10.1668 2.83337C10.1668 2.56671 10.0602 2.31338 9.87349 2.12671C9.68683 1.94004 9.4335 1.83337 9.16683 1.83337H6.8335Z" fill="#585858"/>
