@@ -13,6 +13,7 @@ const slice = createSlice({
     initialState,
     reducers: {
         getStageAction: (_1, _2: PayloadAction<IdAwareRequest<GetStagesPayload>>) => {
+            console.log("getStateAction:", _2);
         },
         setStageAction: (state, action: PayloadAction<IdAwareRequest<CompleteEnabled<Stage>>>) => {
             if (!state[action.payload.id]) {

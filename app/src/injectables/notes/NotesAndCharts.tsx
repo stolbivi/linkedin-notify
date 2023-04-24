@@ -109,13 +109,13 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
         if (!salary?.completed) {
             localStore.dispatch(getSalaryAction({id: id, state: id}));
         }
+        if (!stage?.completed) {
+            localStore.dispatch(getStageAction({id, state: {url: id}}));
+        }
     }, []);
 
     useEffect(() => {
         if (salary) {
-            if (!stage?.completed) {
-                localStore.dispatch(getStageAction({id, state: {id: salary.urn}}));
-            }
             if (notesAll?.data?.length > 0) {
                 let filtered = notesAll?.data?.filter(n => n.profile === salary.urn);
                 sortAsc(filtered);
