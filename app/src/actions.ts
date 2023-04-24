@@ -326,7 +326,7 @@ export const postNote = createAction<PostNotePayload, PostNoteResponse>("postNot
             return {note: {response: noteExtended[0]}};
         }));
 
-export const getLastViewed = createAction<string, LastViewed>("getLastViewed",
+export const getLastViewed = createAction<string, LastViewed[]>("getLastViewed",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -341,7 +341,7 @@ export const getLastViewed = createAction<string, LastViewed>("getLastViewed",
                 return backEndAPI.getLastViewed(profile, as);
             }
         })
-        .then(response => response.response?.pop()));
+        .then(response => response.response));
 
 export const setLastViewed = createAction<string, any>("setLastViewed",
     (id) => getCookies(LINKEDIN_DOMAIN)

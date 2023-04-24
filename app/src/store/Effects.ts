@@ -31,11 +31,13 @@ export default () => {
         effect: async (action: PayloadAction<string>, listenerApi) => {
             listenerApi.dispatch(setLastViewedAction({completed: false}));
             let lastViewed = await messages.request(getLastViewed(action.payload));
-            if (lastViewed.error) {
+            if (lastViewed?.error) {
                 console.error(lastViewed.error);
                 return;
             }
-            listenerApi.dispatch(setLastViewedAction(lastViewed));
+            if (lastViewed.length > 0) {
+                listenerApi.dispatch(setLastViewedAction(lastViewed.pop()));
+            }
             let lastViewedUpdated = await messages.request(setLastViewed(extractIdFromUrl(window.location.href)))
             if (lastViewedUpdated.error) {
                 console.error(lastViewedUpdated.error);
