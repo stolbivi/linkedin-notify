@@ -37,15 +37,9 @@ type Props = {
 
 export const StagePill: React.FC<Props> = ({id}) => {
 
-    console.log("Id from component:", id);
-
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
-
-    useEffect(() => {
-        console.log("Stage", stage);
-    }, [stage]);
 
     useEffect(() => {
         if (accessState !== AccessState.Valid || !id) {

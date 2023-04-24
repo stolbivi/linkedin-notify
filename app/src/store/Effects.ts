@@ -104,7 +104,6 @@ export default () => {
         predicate: (action) => action.type === postNoteAction.type,
         effect: async (action: PayloadAction<PostNotePayload>, listenerApi) => {
             let r = await messages.request(postNote(action.payload));
-            console.log('Added note:', r);
             if (!r.error && !r.note.error) {
                 listenerApi.dispatch(appendNoteAction(r.note.response));
             }
