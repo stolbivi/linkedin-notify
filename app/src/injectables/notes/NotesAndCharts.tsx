@@ -20,6 +20,7 @@ import {ShowNotesAndCharts, showNotesAndChartsAction} from "../../store/ShowNote
 import {
     CompleteEnabled,
     DataWrapper,
+    IdAwareState,
     localStore,
     selectNotesAll,
     selectSalary,
@@ -32,6 +33,7 @@ import {getStageAction, Stage} from "../../store/StageReducer";
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
 import {getNotesAction, postNoteAction} from "../../store/NotesAllReducer";
+import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
 
 export const NotesAndChartsFactory = () => {
     // individual profile
@@ -40,7 +42,7 @@ export const NotesAndChartsFactory = () => {
         if (section && section.length > 0) {
             inject(section[0].lastChild, "lnm-notes-and-charts", "after",
                 <Provider store={localStore}>
-                    <NotesAndCharts id={extractIdFromUrl(window.location.href)}/>
+                    <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={true}/>
                 </Provider>
             );
         }
@@ -72,12 +74,14 @@ export const NotesAndChartsFactory = () => {
 
 type Props = {
     id: string
+    trackUrl?: boolean
 };
 
-export const NotesAndCharts: React.FC<Props> = ({id}) => {
+export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
 
     const MAX_LENGTH = 200;
 
+    const [idInternal, setIdInternal] = useState<string>(id);
     const [showSalary, setShowSalary] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const [showChart, setShowChart] = useState<boolean>(false);
@@ -86,38 +90,37 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
 
-    const showNotesAndCharts: ShowNotesAndCharts = useSelector(selectShowNotesAndCharts, shallowEqual)[id];
-    const salary: CompleteEnabled<Salary> = useSelector(selectSalary, shallowEqual)[id];
-    const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
+    const showNotesAndCharts: IdAwareState<ShowNotesAndCharts> = useSelector(selectShowNotesAndCharts, shallowEqual);
+    const salary: IdAwareState<CompleteEnabled<Salary>> = useSelector(selectSalary, shallowEqual);
+    const stage: IdAwareState<CompleteEnabled<Stage>> = useSelector(selectStage, shallowEqual);
     const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
+
+    const [url] = useUrlChangeSupport(window.location.href);
+
+    useEffect(() => {
+        if (url?.length > 0 && trackUrl) {
+            setIdInternal(extractIdFromUrl(url))
+        }
+    }, [url]);
+
+    const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
+        CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
 
     const messages = new MessagesV2(VERBOSE);
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
     useEffect(() => {
-        window.addEventListener('popstate', () => {
-            localStore.dispatch(showNotesAndChartsAction({
-                id,
-                state: {showSalary: false, showNotes: false, show: false}
-            }));
-        });
-        if (!notesAll?.completed) {
-            localStore.dispatch(getNotesAction());
-        }
-        if (!salary?.completed) {
-            localStore.dispatch(getSalaryAction({id: id, state: id}));
-        }
-        if (!stage?.completed) {
-            localStore.dispatch(getStageAction({id, state: {url: id}}));
-        }
-    }, []);
+        localStore.dispatch(getNotesAction());
+        localStore.dispatch(getSalaryAction({id: idInternal, state: idInternal}));
+        localStore.dispatch(getStageAction({id: idInternal, state: {url: idInternal}}));
+    }, [idInternal]);
 
     useEffect(() => {
-        if (salary) {
+        if (extractFromIdAware(salary)) {
             if (notesAll?.data?.length > 0) {
-                let filtered = notesAll?.data?.filter(n => n.profile === salary.urn);
+                let filtered = notesAll?.data?.filter(n => n.profile === extractFromIdAware(salary).urn);
                 sortAsc(filtered);
                 setNotes(filtered);
             }
@@ -129,10 +132,10 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
     }, [text]);
 
     useEffect(() => {
-        if (showNotesAndCharts) {
-            setShowNotes(showNotesAndCharts.showNotes)
-            setShowSalary(showNotesAndCharts.showSalary)
-            if (showNotesAndCharts.show) {
+        if (extractFromIdAware(showNotesAndCharts)) {
+            setShowNotes(extractFromIdAware(showNotesAndCharts).showNotes)
+            setShowSalary(extractFromIdAware(showNotesAndCharts).showSalary)
+            if (extractFromIdAware(showNotesAndCharts).show) {
                 messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
                 setTimeout(() => setMinimized(false), 100);
             } else {
@@ -141,15 +144,19 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
         }
     }, [showNotesAndCharts]);
 
-    const canShow = () => showNotesAndCharts?.show;
-    const completed = () => salary?.completed;
+    const canShow = () => extractFromIdAware(showNotesAndCharts)?.show;
+    const completed = () => extractFromIdAware(salary).completed;
 
     const postNote = (text: string) => {
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
             setPostAllowed(false);
-            localStore.dispatch(postNoteAction({id: salary?.urn, stageTo: stage?.stage, text}));
+            localStore.dispatch(postNoteAction({
+                id: extractFromIdAware(salary).urn,
+                stageTo: extractFromIdAware(stage).stage,
+                text
+            }));
             setText({value: ""});
             setEditable(true);
         }
@@ -168,7 +175,7 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
 
     const close = () => {
         localStore.dispatch(showNotesAndChartsAction({
-            id,
+            id: idInternal,
             state: {showSalary: false, showNotes: false, show: false}
         }));
     }
@@ -201,7 +208,7 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
                                         <div className="d-flex">
                                             <section className="label-section">
                                                 <div
-                                                    className="label-salary">{salary && getSalaryValue(salary)} year
+                                                    className="label-salary">{extractFromIdAware(salary) && getSalaryValue(extractFromIdAware(salary) as Salary)} year
                                                 </div>
                                                 <div className="label-position">
                                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
@@ -213,32 +220,35 @@ export const NotesAndCharts: React.FC<Props> = ({id}) => {
                                                             d="M11.838 8.17058C12.1932 8.00568 12.601 8.28659 12.5656 8.67657L12.39 10.6108C12.2675 11.7775 11.7892 12.9675 9.22249 12.9675H4.77749C2.21082 12.9675 1.73249 11.7775 1.60999 10.6167L1.44428 8.79384C1.40924 8.40838 1.80749 8.12779 2.16155 8.28416C2.81221 8.57154 3.72607 8.9543 4.36843 9.138C4.53174 9.1847 4.66361 9.30351 4.74436 9.45294C5.11817 10.1447 5.8659 10.5117 6.92416 10.5117C7.97209 10.5117 8.72823 10.1304 9.10379 9.43564C9.18463 9.2861 9.31674 9.16736 9.48007 9.12021C10.1665 8.92203 11.1498 8.4901 11.838 8.17058Z"
                                                             fill="#909090"/>
                                                     </svg>
-                                                    <span>Position: {salary?.title}</span>
+                                                    <span>Position: {extractFromIdAware(salary).title}</span>
                                                 </div>
                                             </section>
                                             <section className="chart-section">
-                                                {salary && <PayDistribution salary={salary}/>}
+                                                {extractFromIdAware(salary) &&
+                                                    <PayDistribution salary={extractFromIdAware(salary) as Salary}/>}
                                             </section>
                                         </div>
                                     </div>
                                     <div data-role={CollapsibleRole.Collapsible}>
-                                        {showChart && <PayExtrapolationChart salary={salary} theme={theme}/>}
+                                        {showChart &&
+                                            <PayExtrapolationChart salary={extractFromIdAware(salary) as Salary}
+                                                                   theme={theme}/>}
                                     </div>
                                 </Collapsible>
-                                {salary &&
+                                {extractFromIdAware(salary) &&
                                     <div className="stage-container">
                                         <span>Pick a stage</span>
                                         <div className="stages">
-                                            <StageSwitch type={StageEnum.Interested} id={id}
-                                                         urn={salary.urn}/>
-                                            <StageSwitch type={StageEnum.NotInterested} id={id}
-                                                         urn={salary.urn}/>
-                                            <StageSwitch type={StageEnum.Interviewing} id={id}
-                                                         urn={salary.urn}/>
-                                            <StageSwitch type={StageEnum.FailedInterview} id={id}
-                                                         urn={salary.urn}/>
-                                            <StageSwitch type={StageEnum.Hired} id={id}
-                                                         urn={salary.urn}/>
+                                            <StageSwitch type={StageEnum.Interested} id={idInternal}
+                                                         urn={extractFromIdAware(salary).urn}/>
+                                            <StageSwitch type={StageEnum.NotInterested} id={idInternal}
+                                                         urn={extractFromIdAware(salary).urn}/>
+                                            <StageSwitch type={StageEnum.Interviewing} id={idInternal}
+                                                         urn={extractFromIdAware(salary).urn}/>
+                                            <StageSwitch type={StageEnum.FailedInterview} id={idInternal}
+                                                         urn={extractFromIdAware(salary).urn}/>
+                                            <StageSwitch type={StageEnum.Hired} id={idInternal}
+                                                         urn={extractFromIdAware(salary).urn}/>
                                         </div>
                                     </div>}
                                 <Collapsible initialOpened={showNotes}>

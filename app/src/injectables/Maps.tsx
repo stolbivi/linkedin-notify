@@ -6,6 +6,7 @@ import {inject} from "../utils/InjectHelper";
 // @ts-ignore
 import stylesheet from "./Maps.scss";
 import {getSubscription} from "../actions";
+import {useUrlChangeSupport} from "../utils/URLChangeSupport";
 
 type Props = {
     host: HTMLElement
@@ -32,7 +33,7 @@ export const Maps: React.FC<Props> = ({host}) => {
 
     const [disabled, setDisabled] = useState(true);
     const [src, setSrc] = useState<string>();
-    const [urlInternal, setUrlInternal] = useState(window.location.href);
+    const [urlInternal] = useUrlChangeSupport(window.location.href);
 
     useEffect(() => {
         for (let i = 0; i < host.children.length; i++) {
@@ -55,9 +56,6 @@ export const Maps: React.FC<Props> = ({host}) => {
     }, [urlInternal]);
 
     useEffect(() => {
-        window.addEventListener('popstate', () => {
-            setUrlInternal(window.location.href);
-        });
         messages.request(getSubscription())
             .then((r) => {
                 // TODO FIXME AccessGuard

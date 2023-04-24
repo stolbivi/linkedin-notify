@@ -11,6 +11,7 @@ import {getLastViewedAction, LastViewed as LastViewedData} from "../store/LastVi
 
 // @ts-ignore
 import stylesheet from "./LastViewed.scss";
+import {useUrlChangeSupport} from "../utils/URLChangeSupport";
 
 export const LastViewedFactory = () => {
     // individual profile
@@ -34,10 +35,13 @@ export const LastViewed: React.FC<Props> = ({}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const lastViewed: CompleteEnabled<LastViewedData> = useSelector(selectLastViewed, shallowEqual);
+    const [url] = useUrlChangeSupport(window.location.href);
 
     useEffect(() => {
-        localStore.dispatch(getLastViewedAction(extractIdFromUrl(window.location.href)));
-    }, []);
+        if (url?.length > 0) {
+            localStore.dispatch(getLastViewedAction(extractIdFromUrl(url)));
+        }
+    }, [url]);
 
     const canShow = () => !lastViewed.hide;
 

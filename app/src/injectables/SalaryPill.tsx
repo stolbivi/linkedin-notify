@@ -9,6 +9,7 @@ import {showNotesAndChartsAction} from "../store/ShowNotesAndCharts";
 import {getSalaryAction, Salary} from "../store/SalaryReducer";
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
+import {useUrlChangeSupport} from "../utils/URLChangeSupport";
 
 export const SalaryPillFactory = () => {
     // individual profile
@@ -19,7 +20,7 @@ export const SalaryPillFactory = () => {
             if (actions && actions.length > 0) {
                 inject(actions[0], "lnm-salary", "after",
                     <Provider store={localStore}>
-                        <SalaryPill showSalary={true} id={extractIdFromUrl(window.location.href)}/>
+                        <SalaryPill showSalary={true} id={extractIdFromUrl(window.location.href)} trackUrl={true}/>
                     </Provider>
                 );
             }
@@ -54,6 +55,7 @@ type Props = {
     url?: string
     showSalary?: boolean
     showNotes?: boolean
+    trackUrl?: boolean
 };
 
 export const getSalaryValue = (salary: Salary) => {
@@ -64,29 +66,20 @@ export const getSalaryValue = (salary: Salary) => {
     }
 }
 
-export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNotes = false}) => {
+export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNotes = false, trackUrl = false}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
-    const [urlInternal, setUrlInternal] = useState<string>(url);
     const salary: CompleteEnabled<Salary> = useSelector(selectSalary, shallowEqual)[id];
+    const [urlInternal] = useUrlChangeSupport(window.location.href);
 
     useEffect(() => {
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
         if (!salary?.completed) {
-            localStore.dispatch(getSalaryAction({id: id, state: extractIdFromUrl(urlInternal)}));
+            localStore.dispatch(getSalaryAction({id: id, state: extractIdFromUrl(trackUrl ? urlInternal : url)}));
         }
     }, [accessState, urlInternal]);
-
-    useEffect(() => {
-        if (!url) {
-            setUrlInternal(window.location.href);
-            window.addEventListener("popstate", () => {
-                setUrlInternal(window.location.href);
-            });
-        }
-    }, []);
 
     const onClick = () => {
         if (salary) {

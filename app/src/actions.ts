@@ -197,7 +197,6 @@ export const getStages = createAction<GetStagesPayload, Response<StageResponse>>
     (payload) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
-            console.log('Get stages payload:', payload);
             const me = await api.getMe(token);
             const as = api.extractProfileUrn(me);
             if (payload.id) {
