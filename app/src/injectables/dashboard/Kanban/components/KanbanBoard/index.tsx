@@ -353,7 +353,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                                                 {card.designation?.substring(0, 20) + "..."}
                                               </td>
                                               <td>
-                                                {card.companyName}
+                                                {card.companyName?.substring(0, 20) + "..."}
                                               </td>
                                               <td style={{display: "flex", alignItems: "center"}}>
                                                 {card?.statuses?.map((category,index) => (
