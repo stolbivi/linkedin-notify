@@ -198,6 +198,7 @@ td {
 
 .right-button-container{
   margin-left: auto;
+  display: flex;
 }
 
 .job-detail{
@@ -218,4 +219,18 @@ td {
   position: relative !important;
   opacity: inherit !important;
   pointer-events: all !important;
+}
+
+.list-btn{
+  font-size: 12px;
+  font-weight: 700;
+  font-family: Helvetica;
+  color: #585858;
+}
+
+.card-btn{
+  font-size: 12px;
+  font-weight: 700;
+  font-family: Helvetica;
+  color: #585858;
 }
