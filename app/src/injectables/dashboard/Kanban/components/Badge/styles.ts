@@ -12,10 +12,10 @@ export const BadgeContainer = styled.div<BadgeContainerProps>`
   justify-content: center;
   align-items: center;
   padding: 0 9px;
+  margin-right: 1px;
 
   p {
     color: #fff;
-    text-transform: uppercase;
     padding: 4px 2px;
     font-family: 'Helvetica';
     font-style: normal;

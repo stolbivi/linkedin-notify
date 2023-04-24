@@ -73,7 +73,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     if(activeButton === IStatus.ALL) return;
     if (!destination) return;
     if (
-        destination.droppableId === source.droppableId && 
+        destination.droppableId === source.droppableId &&
         destination.index === source.index
       ) return;
 
@@ -103,7 +103,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
         if (column.id === newDestinationColumn.id) return newDestinationColumn;
         else return column;
       }) ;
-  
+
       dispatch(setColumns(updatedColumns))
       dispatch(setCards(updatedCards))
 
@@ -349,8 +349,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                                           <th scope="col" className="job-column job-table-heading" style={{textAlign: "center !important"}}>Full Name</th>
                                           <th scope="col" className="job-column job-table-heading">Position</th>
                                           <th scope="col" className="job-column job-table-heading">Company Name</th>
-                                          <th scope="col" className="job-column job-table-heading">Status</th>
-                                          <th scope="col" className="job-column job-table-heading" style={{textAlign: "center !important"}}>Action</th>
+                                          <th scope="col" className="job-column job-table-heading th-status">Status</th>
+                                          <th scope="col" className="job-column job-table-heading th-action" style={{textAlign: "center !important"}}>Action</th>
                                         </tr>
                                       </thead>
                                       <tbody>
@@ -362,15 +362,15 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                                               </td>
                                               <td>
                                                 <img src={card.profileImg} alt="img" width={30} height={30} style={{borderRadius:"100%"}} />
-                                                <span style={{padding: "4%"}}>{card.name}</span>
+                                                <span style={{padding: "4%", fontSize:"12px"}}>{card.name}</span>
                                               </td>
-                                              <td>
+                                              <td style={{fontSize:"12px"}}>
                                                 {card.designation?.substring(0, 20) + "..."}
                                               </td>
-                                              <td>
+                                              <td style={{fontSize:"12px"}}>
                                                 {card.companyName?.substring(0, 20) + "..."}
                                               </td>
-                                              <td style={{display: "flex", alignItems: "center"}}>
+                                              <td className="td-status">
                                                 {card?.statuses?.map((category,index) => (
                                                   <Badge category={category} key={category+index}/>
                                                 ))}

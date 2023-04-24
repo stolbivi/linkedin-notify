@@ -135,6 +135,7 @@
 
 .job-table-heading {
   color: #909090 !important;
+  padding: 20px !important;
 }
 
 .job-table-row {
@@ -233,4 +234,18 @@ td {
   font-weight: 700;
   font-family: Helvetica;
   color: #585858;
+}
+
+.td-status{
+  padding-left: 0px !important;
+  display: flex;
+  align-items: center;
+}
+
+.th-status{
+  padding-left: 0px !important;
+}
+
+.th-action{
+  padding-left: 80px !important;
 }
