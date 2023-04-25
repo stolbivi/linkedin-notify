@@ -42,7 +42,7 @@ const Status: React.FC<BadgeProps> = ({ card }) => {
                     <span ref={badgeRef} className="badge bg-light text-primary rounded-pill pt-2 pl-3 pr-3 pb-2">+{remainingStatuses.length}</span>
                     {showTooltip && (
                         <div className="position-absolute" ref={tooltipRef} style={{ top: '-200%', left: '50%', transform: 'translateX(-50%)' }}>
-                            <div className="bg-white text-white py-2 px-3 rounded d-flex align-items-center" style={{width: "max-content"}}>
+                            <div className="bg-white text-white py-2 px-3 rounded d-flex align-items-center" style={{width: "max-content", fontWeight:"300"}}>
                                 {remainingStatuses.map((category, index) => (
                                     <Badge category={category} key={category + index} />
                                 ))}

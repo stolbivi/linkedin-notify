@@ -14,7 +14,7 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ card, index }) => {
-  const theme = useContext(ThemeContext); 
+  const theme = useContext(ThemeContext);
 
   const [backgroundColor, setBackgroundColor] = useState<string>(theme.colors.primary);
 
@@ -29,11 +29,12 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
   return (
     <Draggable draggableId={card.id} index={index}>
       {provided => (
-        <CardContainer 
+        <CardContainer
+          className="card-container-external"
           onClick={()=>window.open(`https://www.linkedin.com/in/${card.profileId}`, '_blank')}
           hideCard={card.hidden}
-          ref={provided.innerRef} 
-          {...provided.draggableProps} 
+          ref={provided.innerRef}
+          {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
           <style dangerouslySetInnerHTML={{__html: stylesheet}}/>

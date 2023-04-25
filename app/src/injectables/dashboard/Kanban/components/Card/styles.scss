@@ -1,3 +1,5 @@
+@import "../../../../../themes/primary";
+
 .job-detail{
   color: rgba(144, 144, 144, 0.59);
   font-family: 'Arial';
@@ -17,6 +19,10 @@
   overflow-x: clip;
 }
 
+.card-container-external{
+  background-color: $kanban-table-container-color;
+}
+
 .card-container img {
   margin-right: 1rem;
 }
@@ -32,7 +38,7 @@
 }
 
 .more-text{
-    color: #727272;
+    color: $kanban-table-more-color;
     text-transform: uppercase;
     padding: 4px 2px;
     font-family: 'Helvetica';

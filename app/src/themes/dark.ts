@@ -147,5 +147,12 @@ export const theme: Theme = {
     "--boolean-search-query-container": "#29303C",
     "--boolean-search-query-container-text": "#909090",
     "--joblist-table-color": "#515151",
-    "--joblist-table-strip-color": "#2B2F33"
+    "--joblist-table-strip-color": "#2B2F33",
+    "--kanban-table-container-color": "#2B2F33",
+    "--kanban-table-more-color": "#FFFFFF",
+    "--kanban-table-status-color": "#FFFFFF",
+    "--kanban-table-list-card-color": "#FFFFFF",
+    "--kanban-table-bottom-border-color": "#ffffff33",
+    "--kanban-table-message-color": "#CACACA",
+    "--kanban-table-action-btn-color": "#FFFFFF"
 }

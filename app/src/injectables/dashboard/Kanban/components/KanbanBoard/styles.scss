@@ -12,7 +12,7 @@
 .share-button {
   display: flex;
   align-items: center;
-  border: 1.5px solid #585858;
+  border: 1.5px solid $kanban-table-message-color;
   border-radius: 4px;
   padding: 8px 11px;
   background-color: transparent;
@@ -32,7 +32,7 @@
   line-height: 14px;
   letter-spacing: 0em;
   text-align: left;
-  color: #585858;
+  color: $kanban-table-message-color;
   padding: 2px 4px;
   border-radius: 4px;
   width: 34px;
@@ -44,13 +44,13 @@
 
 .shared-title{
   margin-left: 20px;
-  color: #585858;
+  color: $kanban-table-message-color;
   font-size: 12px;
 }
 
 .button {
   border: none;
-  border-bottom: 1px solid #0000001c;
+  border-bottom: 1px solid $kanban-table-bottom-border-color;
   margin: 0;
   background-color: transparent;
   font-family: Helvetica;
@@ -61,11 +61,12 @@
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 4px;
+  color: $note-card-text;
 }
 
 .active {
   border-bottom-width: 3px;
-  border-bottom-color: black;
+  border-bottom-color: $note-card-text;
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 4px;
@@ -93,9 +94,8 @@
   padding: 40px 100px 20px 20px;
 }
 
-.jobs-table {
+.list-table {
   width: 1140px;
-  border-radius: 7px;
   background: #FFFFFF;
   padding-left: 0px;
 }
@@ -104,7 +104,7 @@
   background-color: $joblist-table-color;
 }
 
-.jobs-table tr:nth-of-type(odd) {
+.list-table tr:nth-of-type(odd) {
   background-color: $joblist-table-strip-color;
   color: $base-card-message;
 }
@@ -228,14 +228,14 @@ td {
   font-size: 12px;
   font-weight: 700;
   font-family: Helvetica;
-  color: #585858;
+  color: $kanban-table-list-card-color;
 }
 
 .card-btn{
   font-size: 12px;
   font-weight: 700;
   font-family: Helvetica;
-  color: #585858;
+  color: $kanban-table-list-card-color;
 }
 
 .td-status{
@@ -250,4 +250,16 @@ td {
 
 .th-action{
   padding-left: 80px !important;
+}
+
+.opacity-60 {
+  opacity: 0.6;
+}
+
+.action-btn-color{
+  color: $kanban-table-action-btn-color
+}
+
+.icon-color path {
+  fill: $kanban-table-action-btn-color;
 }

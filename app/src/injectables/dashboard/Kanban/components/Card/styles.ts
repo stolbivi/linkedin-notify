@@ -9,7 +9,6 @@ interface CardContainerProps {
 }
 
 export const CardContainer = styled.div<CardContainerProps>`
-  background-color: ${({ theme }) => theme.colors.components_background};
   opacity:  ${({ hideCard }) => hideCard ? 0.2 : 1};
 
   width: 220px;
