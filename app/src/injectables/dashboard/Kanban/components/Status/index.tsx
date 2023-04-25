@@ -1,12 +1,13 @@
 import React, {useEffect, useRef, useState} from 'react';
 import ICard from "../../interfaces/ICard";
+import ICategory from '../../interfaces/ICategory';
 import Badge from "../Badge";
 
 interface BadgeProps {
-  card: ICard
+    card: ICard
 }
 
-const Status: React.FC<BadgeProps> = ({ card }) => {
+const Status: React.FC<BadgeProps> = ({card}) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const tooltipRef = useRef(null);
     const badgeRef = useRef(null);
@@ -15,8 +16,8 @@ const Status: React.FC<BadgeProps> = ({ card }) => {
         setShowTooltip((prev) => !prev);
     };
 
-    const firstTwoStatuses = card?.statuses?.slice(0, 2) || [];
-    const remainingStatuses = card?.statuses?.slice(2) || [];
+    const firstTwoStatuses: any = card?.statuses?.slice(0, 2) || [];
+    const remainingStatuses: any = card?.statuses?.slice(2) || [];
 
     useEffect(() => {
         const handleClickOutside = (event: { target: any; }) => {
@@ -33,7 +34,7 @@ const Status: React.FC<BadgeProps> = ({ card }) => {
     return (
         <>
             <div className="d-flex align-items-center">
-                {firstTwoStatuses.map((category, index) => (
+                {firstTwoStatuses.map((category: ICategory, index: any) => (
                     <Badge category={category} key={category + index} />
                 ))}
             </div>
@@ -43,7 +44,7 @@ const Status: React.FC<BadgeProps> = ({ card }) => {
                     {showTooltip && (
                         <div className="position-absolute" ref={tooltipRef} style={{ top: '-200%', left: '50%', transform: 'translateX(-50%)' }}>
                             <div className="bg-white text-white py-2 px-3 rounded d-flex align-items-center" style={{width: "max-content", fontWeight:"300"}}>
-                                {remainingStatuses.map((category, index) => (
+                                {remainingStatuses.map((category: ICategory, index: any) => (
                                     <Badge category={category} key={category + index} />
                                 ))}
                             </div>

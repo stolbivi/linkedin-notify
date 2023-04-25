@@ -20,7 +20,7 @@ export const StagePillFactory = () => {
                 header[0].parentElement.style.display = "flex";
                 header[0].style.paddingRight = "0.5em";
                 injectLastChild(header[0].parentElement, "lnm-stage",
-                    <StagePill url={window.location.href}/>, "StagePill"
+                    <StagePill url={window.location.href} showStages={true}/>, "StagePill"
                 );
             }
         }
@@ -33,7 +33,7 @@ export const StagePillFactory = () => {
                 if (nameHeader && nameHeader.length > 0) {
                     (nameHeader[0].parentElement as HTMLElement).style.paddingRight = "0.5em";
                     injectLastChild(nameHeader[0].parentElement, "lnm-stage",
-                        <StagePill convUrl={window.location.href}/>, "StagePill"
+                        <StagePill convUrl={window.location.href} showStages={true}/>, "StagePill"
                     );
                 }
             }
@@ -44,9 +44,10 @@ export const StagePillFactory = () => {
 type Props = {
     url?: string,
     convUrl?: string
+    showStages?: boolean
 };
 
-export const StagePill: React.FC<Props> = ({url, convUrl}) => {
+export const StagePill: React.FC<Props> = ({url, convUrl, showStages}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [type, setType] = useState<StageEnum>(-1);
@@ -91,7 +92,7 @@ export const StagePill: React.FC<Props> = ({url, convUrl}) => {
         if (showNotes) {
             setShowNotes(false);
         } else {
-            return messages.request(showNotesAndCharts({showSalary: false, showNotes: true}));
+            return messages.request(showNotesAndCharts({showSalary: false, showNotes: false, showStages}));
         }
     }
 

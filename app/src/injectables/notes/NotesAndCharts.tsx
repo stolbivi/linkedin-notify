@@ -30,8 +30,6 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import stylesheet from "./NotesAndCharts.scss";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
-import UpChevron from "../../icons/UpChevron";
-import DownChevron from "../../icons/DownChevron";
 
 export const NotesAndChartsFactory = () => {
     setTimeout(() => {
@@ -50,13 +48,12 @@ export const NotesAndChartsFactory = () => {
                     <NotesAndCharts convId={"yes"}/>, "NotesAndCharts"
                 );
             }
-        } else {
-            const section = document.getElementsByClassName("job-column job-table-heading th-action");
-            if (section && section.length > 0) {
-                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                    <NotesAndCharts/>, "NotesAndCharts"
-                );
-            }
+        }
+        const section = document.getElementsByClassName("job-column job-table-heading th-action");
+        if (section && section.length > 0) {
+            inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                <NotesAndCharts/>, "NotesAndCharts"
+            );
         }
         // people's search
         if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
@@ -109,10 +106,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const lastNoteRef = useRef();
     const [stageParents] = useState([...stageParentsData]);
     const [customStages, setCustomStages] = useState<UserStage[]>([]);
-    const [activeStageParent, setActiveStageParent] = useState<StageParentData>(StageParentData.AVAILABILITY);
     const [editButton, setEditButton] = useState(false);
     const [currencySymbol, setCurrencySymbol] = useState("");
     const [salaryLabel, setSalaryLabel] = useState("");
+    const [selectedTab, setSelectedTab] = useState("Track");
+    const [fromListView, setFromListView] = useState(false);
+    const [allGroupsMode, setAllGroupsMode] = useState(false);
     const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
@@ -127,7 +126,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
             }
         }
     },[salaryLabel])
-
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
@@ -150,10 +148,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                         .then((r) => setNotes(r.response))
                         .catch(e => console.error(e.error));
                     Promise.all([notesPromise]).then(() => setCompleted(true));
-                    setShowStages(payload?.showStages);
+                    setFromListView(true);
+                    setSelectedTab("Notes");
                 }
                 setShowNotes(payload?.showNotes)
                 setShowSalary(payload?.showSalary)
+                setShowStages(payload?.showStages)
                 setShow(true);
                 return Promise.resolve();
         }));
@@ -296,15 +296,16 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     };
 
     const getStage = (stage: number, id: string) => {
-        return <div className={`stage ${StageLabels[stage] ? StageLabels[stage].class : "interested"}`} style={{width: "27%"}}>
+        return <div className={`stage ${StageLabels[stage] ? StageLabels[stage].class : "interested"}`} style={{width: "15%"}}>
                     <label>{StageLabels[stage]?.label}</label>
                 <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
                         <svg width="3" height="3" viewBox="0 0 17 17" fill="none"
+                             style={{width: "10px"}}
                              xmlns="http://www.w3.org/2000/svg">
                             <path d="M2 2L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                             <path d="M15 2L2 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                         </svg>
-                    </span>
+                </span>
             </div>
     }
 
@@ -342,14 +343,16 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
             <React.Fragment>
                 {loading
                     ? <>loading...</>
-                    : <div onClick={!isCreating ? () => setIsCreating(true) : undefined} className={`create-new-group-wrapper ${isCreating ? "is-creating" : ""}`}>
+                    : <div onClick={!isCreating ? () => setIsCreating(true) : undefined}
+                           style={{cursor: "pointer"}}
+                           className={`create-new-group-wrapper ${isCreating ? "is-creating" : ""}`}>
                         {isCreating ?
                             <form onSubmit={handleCustomTagSubmit}>
                                 <input value={customName}
                                        onChange={e => setCustomName(e.currentTarget.value)}
                                        placeholder='Enter New Group Here'/>
                             </form>
-                            : '+ Create New Group'
+                            : 'Add Group'
                         }
                     </div>
                 }
@@ -380,6 +383,17 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         setEditButton(!editButton);
     }
 
+    useEffect(() => {
+        if("Track" === selectedTab) {
+            setShowStages(true);
+            setShowNotes(false);
+        } else {
+            setShowStages(false);
+            setShowNotes(true);
+        }
+    },[selectedTab]);
+
+
     // @ts-ignore
     return (
         <React.Fragment>
@@ -389,7 +403,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                     <div onTransitionEnd={() => onExpanded()}
                          className={"notes-and-charts " + ((completed && !minimized) ? "position-expanded" : "position-collapsed")}
                          ref={rootElement}
-                         style={{...(!showStages && { left: 'auto' })}}>
+                         style={{...(fromListView && { left: 'auto' })}}>
                         <div className="close-button" onClick={() => close()}>
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -410,7 +424,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                     <path d="M14.8875 7.37252C14.835 7.37252 14.7825 7.36502 14.7375 7.35002C12.765 6.79502 11.1975 5.22752 10.6425 3.25502C10.56 2.95502 10.7325 2.64752 11.0325 2.55752C11.3325 2.47502 11.64 2.64752 11.7225 2.94752C12.1725 4.54502 13.44 5.81252 15.0375 6.26252C15.3375 6.34502 15.51 6.66002 15.4275 6.96002C15.36 7.21502 15.135 7.37252 14.8875 7.37252Z" fill="#1569BF"/>
                                                 </svg>
                                             </div>
-
                                         <div data-role={CollapsibleRole.Static}>
                                             <div className="d-flex">
                                                 <section className="label-section">
@@ -445,67 +458,129 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                         </div>
                                     </Collapsible>
                                 )}
-                                {showNotes && salaryInternal && showStages &&
-                                    <Collapsible initialOpened={true} typeCollapse={true}>
-                                        <div data-role={CollapsibleRole.Title} className="title-child assigned">
-                                            <label>Track Candidates</label>
-                                            <div className="assigned-job">
-                                                <p>Assigned Job: </p>
-                                                <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
-                                                    <option>Enter Job Name</option>
-                                                </select>
-                                            </div>
+                                {
+                                    !fromListView && !showSalary ? (
+                                        <div className="title-child assigned">
+                                            <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")}>
+                                                Track Candidates
+                                            </span>
+                                            <span style={{paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
+                                                  onClick={()=>setSelectedTab("Notes")}>
+                                                Notes
+                                                <label className="notes-counter">{notes ? notes.length : 0}</label>
+                                            </span>
+                                            <hr style={{border:"1px solid #d0cfcf", width: "100%"}}/>
                                         </div>
-                                        <div data-role={CollapsibleRole.Collapsible}>
-                                            <div className="stage-parents-container">
-                                                {stageParents.map(stage => <div
-                                                    onClick={() => setActiveStageParent(prev => prev === stage.name ? null : stage.name)}
-                                                    className={activeStageParent === stage.name ? "active-item" : "item"}>
-                                                    <div className={activeStageParent === stage.name ? "stage-name-title-active" : "stage-name-title"}>{stage.name}</div>
-                                                    {activeStageParent === stage.name ? <UpChevron/> : <DownChevron/>}
-                                                </div>)}
-                                                <div className="nested-childs">
-                                                    {stageChildData[activeStageParent]?.map?.((child,index) => activeStageParent !== StageParentData.GROUPS ?
-                                                        <StageSwitch key={salaryInternal.urn+index} type={child.name} activeStage={stageInternal}
-                                                                     parentStage={Object.values(StageParentData).indexOf(activeStageParent)}
-                                                                     parentStageName={activeStageParent}
-                                                                     setStage={setStageInternal} id={salaryInternal.urn}
-                                                                     appendNote={appendNote} notes={notes}
-                                                                     setNotes={setNotes}>
-                                                        </StageSwitch> :
-                                                        <div className="custom-stages-wrapper">
-                                                            {customStages?.map?.(customStage => <StageSwitch
-                                                                                    key={salaryInternal.urn}
-                                                                                    type={StageEnum[customStage.text]}
-                                                                                    activeStage={stageInternal}
-                                                                                    parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
-                                                                                    parentStageName={activeStageParent}
-                                                                                    customText={customStage.text}
-                                                                                    classType="interested"
-                                                                                    setStage={setStageInternal}
-                                                                                    id={salaryInternal.urn}
-                                                                                    appendNote={appendNote}
-                                                                                    notes={notes}
-                                                                                    setNotes={setNotes}/>
-                                                            )}
-                                                            <CreateNewGroup/>
-                                                        </div>)}
+                                    ) : null
+                                }
+                                {showStages &&
+                                    <>
+                                    {
+                                        allGroupsMode ? (
+                                            <>
+                                                <div onClick={()=>setAllGroupsMode(false)} style={{cursor: "pointer", paddingLeft: "5%", paddingTop: "2%"}}>
+                                                    Go back
+                                                </div>
+                                                <div style={{display:"flex", alignItems:"center", paddingLeft: "5%", paddingTop: "2%", color: "black"}}>
+                                                    Groups
+                                                    <label className="notes-counter">{customStages ? customStages.length : 0}</label>
+                                                </div>
+                                                <div className="stage-parents-container" style={{flexWrap:"wrap"}}>
+                                                    {customStages?.map(customStage => (
+                                                        <div className="nested-childs">
+                                                            <StageSwitch
+                                                                key={salaryInternal.urn}
+                                                                type={StageEnum[customStage.text]}
+                                                                activeStage={stageInternal}
+                                                                parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                                parentStageName={StageParentData.GROUPS}
+                                                                customText={customStage.text}
+                                                                classType="interested"
+                                                                setStage={setStageInternal}
+                                                                id={salaryInternal.urn}
+                                                                appendNote={appendNote}
+                                                                notes={notes}
+                                                                setNotes={setNotes}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </>
+                                            )
+                                            : (
+                                            <div>
+                                                <div className="stage-parents-container">
+                                                    {stageParents.map(stage =>
+                                                        <div className="parent-container">
+                                                            <div>{stage.name}</div>
+                                                            <div className="nested-childs">
+                                                                {stageChildData[stage.name]?.map?.((child,index) => stage.name !== StageParentData.GROUPS ?
+                                                                    <StageSwitch key={salaryInternal.urn+index}
+                                                                                 type={child.name}
+                                                                                 activeStage={stageInternal}
+                                                                                 parentStage={Object.values(StageParentData).indexOf(stage.name)}
+                                                                                 parentStageName={stage.name}
+                                                                                 setStage={setStageInternal} id={salaryInternal.urn}
+                                                                                 appendNote={appendNote} notes={notes}
+                                                                                 setNotes={setNotes}/>
+                                                                    :
+                                                                    <>
+                                                                        {customStages?.slice(0, 4).map(customStage => (
+                                                                            <StageSwitch
+                                                                                key={salaryInternal.urn}
+                                                                                type={StageEnum[customStage.text]}
+                                                                                activeStage={stageInternal}
+                                                                                parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                                                parentStageName={StageParentData.GROUPS}
+                                                                                customText={customStage.text}
+                                                                                classType="interested"
+                                                                                setStage={setStageInternal}
+                                                                                id={salaryInternal.urn}
+                                                                                appendNote={appendNote}
+                                                                                notes={notes}
+                                                                                setNotes={setNotes}
+                                                                            />
+                                                                        ))}
+                                                                        {customStages?.length > 4 && (
+                                                                            <div className="create-new-group-wrapper"
+                                                                                 style={{cursor: "pointer"}}
+                                                                                 onClick={()=>setAllGroupsMode(true)}>
+                                                                                See all ({customStages.length})
+                                                                            </div>
+                                                                        )}
+                                                                        <CreateNewGroup />
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="selected-stages">
                                                     Selected
                                                     tags: {notes?.length ? notes?.map(note => <>{getStage(note.stageTo,note.id)}</>) : 'no selected tags'}
                                                 </div>
+                                                <div className="assigned-job">
+                                                    <p>Assigned Job: </p>
+                                                    <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
+                                                        <option>Enter Job Name</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Collapsible>
+                                        )
+                                    }
+                                    </>
                                 }
                                 {showNotes && (
-                                    <Collapsible initialOpened={showNotes}>
-                                        <div data-role={CollapsibleRole.Title} className="title-child">
-                                            <label>Notes</label>
-                                            <label className="notes-counter">{notes ? notes.length : 0}</label>
-                                        </div>
-                                        <div data-role={CollapsibleRole.Collapsible}>
+                                    <>
+                                        {
+                                            fromListView ? (
+                                                <div className="title-child">
+                                                    <label>Notes</label>
+                                                    <label className="notes-counter">{notes ? notes.length : 0}</label>
+                                                </div>
+                                            ) : null
+                                        }
+                                        <div>
                                             <div className="scroll-container h-300">
                                                 <div className="scroll-content">
                                                     {completed && notes?.map((n, i) => (
@@ -536,9 +611,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             </div>
                                             <Credits/>
                                         </div>
-                                    </Collapsible>
+                                    </>
                                 )}
-                            </NotesContainer>}
+                            </NotesContainer>
+                            }
                         </React.Fragment>
                     </div>
                 </React.Fragment>}

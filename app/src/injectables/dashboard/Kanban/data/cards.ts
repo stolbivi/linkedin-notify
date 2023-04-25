@@ -16,7 +16,7 @@ const mockCards: ICard[] = [
   },
   {
     id: '5be53f27-a69c-4128-bf40-86cd572267a5',
-    category: ICategory.Not_Looking_Currently,
+    category: ICategory.Not_Open,
     title: 'Create clear filters button',
     description: 'The user can select the filters but they should also be able to clear them without having to reload the page',
     status: IStatus.AVAILABILITY,
@@ -27,7 +27,7 @@ const mockCards: ICard[] = [
   },
   {
     id: '6ed5a4b0-1e2c-4b71-ab42-e740f02da496',
-    category: ICategory.Actively_Looking,
+    category: ICategory.Active,
     title: 'Set up the staging environment',
     description: '',
     status: IStatus.AVAILABILITY,
@@ -71,7 +71,7 @@ const mockCards: ICard[] = [
   },
   {
     id: '29065b36-8873-4ccd-8c42-dcff14736650',
-    category: ICategory.Pending_Response,
+    category: ICategory.Pending,
     title: 'Send first deploy to develop environment',
     description: '',
     status: IStatus.GROUPS,

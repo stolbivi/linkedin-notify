@@ -9,11 +9,11 @@ interface ICard {
   status: IStatus,
   hidden: boolean,
   name: string,
-  designation: string,
-  profileImg: string,
-  profileId: string,
-  companyName: string,
-  conversationUrn: string
+  designation?: string,
+  profileImg?: string,
+  profileId?: string,
+  companyName?: string,
+  conversationUrn?: string
   statuses?: []
 }
 

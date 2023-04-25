@@ -17,7 +17,7 @@ export const SalaryPillFactory = () => {
             const actions = profileActions[0].getElementsByClassName("pvs-profile-actions");
             if (actions && actions.length > 0) {
                 inject(actions[0], "lnm-salary", "after",
-                    <SalaryPill showSalary={true}/>, "Salary"
+                    <SalaryPill showSalary={true} showStages={false}/>, "Salary"
                 );
             }
         }
@@ -35,7 +35,7 @@ export const SalaryPillFactory = () => {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
                         inject(lastChild, `lnm-salary-${index}`, "before",
-                            <SalaryPill url={link} id={id}/>, "Salary");
+                            <SalaryPill url={link} id={id} showStages={false}/>, "Salary");
                     }
                 }
             })
@@ -47,6 +47,7 @@ type Props = {
     url?: string
     showSalary?: boolean
     showNotes?: boolean
+    showStages?: boolean
     id?: string
 };
 
@@ -73,7 +74,7 @@ export const getSalaryValue = (salary: Salary) => {
     }
 }
 
-export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNotes = false}) => {
+export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNotes = false, showStages = false}) => {
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -109,7 +110,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
 
     const onClick = () => {
         if (salary) {
-            return messages.request(showNotesAndCharts({id, showSalary, showNotes, setSalary}));
+            return messages.request(showNotesAndCharts({id, showSalary, showNotes, setSalary, showStages}));
         }
     }
 
