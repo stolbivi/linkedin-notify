@@ -43,16 +43,14 @@ export const NotesAndChartsFactory = () => {
                     <NotesAndCharts/>, "NotesAndCharts"
                 );
             }
-        }
-        if (window.location.href.indexOf("/messaging/") > 0) {
+        } else if (window.location.href.indexOf("/messaging/") > 0) {
             const section = document.getElementsByClassName("scaffold-layout__list-detail msg__list-detail");
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts", "after",
                     <NotesAndCharts convId={"yes"}/>, "NotesAndCharts"
                 );
             }
-        }
-        if (window.location.href.indexOf("/list-view/") > 0) {
+        } else {
             const section = document.getElementsByClassName("job-column job-table-heading th-action");
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts", "after",
@@ -60,7 +58,6 @@ export const NotesAndChartsFactory = () => {
                 );
             }
         }
-
         // people's search
         if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
             const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');

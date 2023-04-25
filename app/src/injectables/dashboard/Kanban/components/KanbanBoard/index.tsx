@@ -274,14 +274,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   }
 
   const listViewClickHandler = () => {
-    const newUrl = 'https://www.linkedin.com/dashboard/list-view/';
-    window.history.pushState({ path: newUrl }, '', newUrl);
     setListView(true);
   }
 
   const cardViewClickHandler = () => {
-    const newUrl = 'https://www.linkedin.com/dashboard/';
-    window.history.pushState({ path: newUrl }, '', newUrl);
     setListView(false);
   }
 
