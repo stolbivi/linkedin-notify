@@ -313,7 +313,7 @@ export interface ShowNotesAndChartsPayload {
     id?: string
     showSalary: boolean
     showNotes: boolean
-    showStages: boolean
+    showStages?: boolean
     setSalary?:any
     userId?: string
     profileId?: string
