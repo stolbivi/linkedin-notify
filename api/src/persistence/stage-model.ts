@@ -50,6 +50,7 @@ export interface Stage {
     profileId?: string
     companyName?: string
     conversationUrn?: string
+    userId?: string
 }
 
 export interface StageWithId extends Stage {
@@ -111,6 +112,10 @@ const stageSchema = new dynamoose.Schema({
         required: false
     },
     conversationUrn: {
+        type: String,
+        required: false
+    },
+    userId: {
         type: String,
         required: false
     }

@@ -98,6 +98,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
 
     const [showSalary, setShowSalary] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
+    const [showStages, setShowStages] = useState<boolean>(true);
     const [show, setShow] = useState<boolean>(false);
     const [showChart, setShowChart] = useState<boolean>(false);
     const [completed, setCompleted] = useState<boolean>(false);
@@ -144,9 +145,15 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                 if (id && payload?.id !== id) {
                     return Promise.resolve();
                 }
-                if(payload.profileId) {
-                    profileId = payload.profileId;
-                    console.log("profileId: ", profileId)
+                if(payload.userId) {
+                    profileId = payload?.userId?.trim();
+                    setCompleted(false);
+                    setSalaryInternal({title:"xyz", urn: payload.profileId});
+                    const notesPromise = messages.request(getNotesByProfile(payload.profileId))
+                        .then((r) => setNotes(r.response))
+                        .catch(e => console.error(e.error));
+                    Promise.all([notesPromise]).then(() => setCompleted(true));
+                    setShowStages(payload?.showStages);
                 }
                 setShowNotes(payload?.showNotes)
                 setShowSalary(payload?.showSalary)
@@ -384,7 +391,8 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                     <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
                     <div onTransitionEnd={() => onExpanded()}
                          className={"notes-and-charts " + ((completed && !minimized) ? "position-expanded" : "position-collapsed")}
-                         ref={rootElement}>
+                         ref={rootElement}
+                         style={{...(!showStages && { left: 'auto' })}}>
                         <div className="close-button" onClick={() => close()}>
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -440,7 +448,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                         </div>
                                     </Collapsible>
                                 )}
-                                {showNotes && salaryInternal &&
+                                {showNotes && salaryInternal && showStages &&
                                     <Collapsible initialOpened={true} typeCollapse={true}>
                                         <div data-role={CollapsibleRole.Title} className="title-child assigned">
                                             <label>Track Candidates</label>

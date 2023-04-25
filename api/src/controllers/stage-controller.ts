@@ -95,7 +95,7 @@ export class StageController extends BaseController {
             let message: any = {response: result.map((i: any) => i.toJSON())};
             const data = {};
             message.response.forEach((item: { parentStage: string | number; stage: string | number; name: any; designation: any;
-                                      id: any; profileImg: any; stageText: string; profileId: string; companyName: string; conversationUrn: string;}) => {
+                                      id: any; profileImg: any; stageText: string; profileId: string; companyName: string; conversationUrn: string; userId: string;}) => {
                 // @ts-ignore
                 let parentStage = ParentStageEnum[item.parentStage];
                 if(!parentStage) {
@@ -125,7 +125,8 @@ export class StageController extends BaseController {
                     status: parentStage,
                     category: stage?.replace(/_/g,' '),
                     companyName: item.companyName,
-                    conversationUrn: item.conversationUrn
+                    conversationUrn: item.conversationUrn,
+                    userId: item.userId
                 });
             });
             if (request?.user) {

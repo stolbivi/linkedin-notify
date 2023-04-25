@@ -292,10 +292,11 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
             const noteExtended = await extendNote(token, [note.response], author);
             const experienceResponse = await api.getExperience(token, payload.id);
             const experience = api.extractExperience(experienceResponse);
-            const fullName = experience.profile.firstName + ' ' + experience.profile.lastName;
-            const prflImg = experience.profile.profileImgUrl ? experience.profile.profileImgUrl: 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
+            const fullName = experience?.profile?.firstName + ' ' + experience.profile?.lastName;
+            const prflImg = experience?.profile?.profileImgUrl || 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
             const stage = await backEndAPI.setStage(note.response.id, payload.stage, author, payload.parentStage, fullName,
-                          experience.profile.designation, prflImg, payload.stageText || undefined, payload.id, experience.company.name, experience.profile.conversationUrn);
+                          experience?.profile?.designation, prflImg, payload.stageText || "", payload.id, experience?.company?.name || "",
+                          experience?.profile?.conversationUrn, experience?.profile?.userId);
             return {note: {response: noteExtended[0]}, stage: stage};
         }));
 
@@ -312,7 +313,9 @@ export interface ShowNotesAndChartsPayload {
     id?: string
     showSalary: boolean
     showNotes: boolean
+    showStages: boolean
     setSalary?:any
+    userId?: string
     profileId?: string
 }
 
