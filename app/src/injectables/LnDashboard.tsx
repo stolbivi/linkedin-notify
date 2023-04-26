@@ -10,8 +10,8 @@ import {theme as LightTheme} from "../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../themes/dark";
 import ReactDOM from "react-dom";
-import BooleanSearch from "./dashboard/BooleanSearch";
 import Navbar from "./dashboard/Navbar";
+import Kanban from "./dashboard/Kanban";
 
 export const LnDashboardFactory = () => {
     const header = document.getElementsByClassName("global-nav__primary-items");
@@ -47,7 +47,7 @@ export const LnDashboard: React.FC<Props> = ({}) => {
             const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
             if (targetElement) {
                 targetElement.style.width = 'auto';
-                ReactDOM.render(<BooleanSearch />, targetElement);
+                ReactDOM.render(<Kanban />, targetElement);
             } else {
                 console.warn('Target element not found.');
             }

@@ -21,8 +21,8 @@ const Navbar = () => {
     const messages = new MessagesV2(VERBOSE);
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
     const [isJobListClicked, setIsJobListClicked] = useState(false);
-    const [isCandidatesClicked, setIsCandidatesClicked] = useState(false);
-    const [isBooleanSearchClicked, setIsBooleanSearchClicked] = useState(true);
+    const [isCandidatesClicked, setIsCandidatesClicked] = useState(true);
+    const [isBooleanSearchClicked, setIsBooleanSearchClicked] = useState(false);
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
@@ -86,13 +86,13 @@ const Navbar = () => {
                     <img src={peopleIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}} />
                     Candidates
                 </button>
-                <button className={`navbarBtn ${isBooleanSearchClicked ? 'clicked' : ''}`} onClick={booleanSearchClickHandler}>
-                    <img src={searchIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}}/>
-                    Boolean Search Tool
-                </button>
                 <button className={`navbarBtn ${isJobListClicked ? 'clicked' : ''} job-list-navbar`} onClick={jobListClickHandler}>
                     <img src={bagIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}}/>
                     Jobs List
+                </button>
+                <button className={`navbarBtn ${isBooleanSearchClicked ? 'clicked' : ''}`} onClick={booleanSearchClickHandler}>
+                    <img src={searchIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}}/>
+                    Boolean Search Tool
                 </button>
             </div>
             <div className="lnm-dashboard-content"/>
