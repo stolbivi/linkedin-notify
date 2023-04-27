@@ -35,7 +35,7 @@ export const SalaryPillFactory = () => {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
                         inject(lastChild, `lnm-salary-${index}`, "before",
-                            <SalaryPill url={link} id={id} showStages={false}/>, "Salary");
+                            <SalaryPill url={link} id={id} showStages={false} showSalary={true}/>, "Salary");
                     }
                 }
             })

@@ -18,8 +18,8 @@ export enum ICategory {
   Interview = "Interview",
   Offer = "Offer",
   Rejected = "Rejected",
-  Part_Time = "Part-Time",
-  Full_Time = "Full-Time",
+  Part_Time = "Part Time",
+  Full_Time = "Full Time",
   Permanent = "Permanent",
   Contract = "Contract",
   Freelance = "Freelance"

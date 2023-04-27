@@ -12,6 +12,7 @@ interface ICard {
   designation?: string,
   profileImg?: string,
   profileId?: string,
+  userId?: string,
   companyName?: string,
   conversationUrn?: string
   statuses?: []

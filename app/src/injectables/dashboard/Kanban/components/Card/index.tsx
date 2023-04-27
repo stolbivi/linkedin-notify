@@ -31,7 +31,7 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
       {provided => (
         <CardContainer
           className="card-container-external"
-          onClick={()=>window.open(`https://www.linkedin.com/in/${card.profileId}`, '_blank')}
+          onClick={()=>window.open(`https://www.linkedin.com/in/${card.userId}`, '_blank')}
           hideCard={card.hidden}
           ref={provided.innerRef}
           {...provided.draggableProps}
