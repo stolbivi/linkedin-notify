@@ -24,14 +24,7 @@ export interface Experience {
         entityUrn: string
         url: string
     }
-    profile?: {
-        firstName?: string
-        lastName?: string
-        designation?: string
-        profileImgUrl?: string
-        conversationUrn?: string
-        userId?: string
-    }
+    conversationUrn?: string
 }
 
 export class LinkedInAPI {
@@ -63,46 +56,10 @@ export class LinkedInAPI {
                 company: {name, universalName, entityUrn, url}
             };
         }
-        let firstName = '';
-        let lastName = '';
-        let designation = '';
-        let profileImgUrl = '';
-        let userId;
         const conversationUrn = response.elements[0]?.profileStatefulProfileActions?.primaryActionResolutionResult?.composeOption?.composeNavigationContext?.existingConversationUrn?.split(':').pop();
-        response.elements[0].profileStatefulProfileActions.overflowActions.forEach((action: any) => {
-            if (action.connection && action.connection.memberRelationshipUrn.includes("fsd_memberRelationship")) {
-                firstName = action.connection.memberRelationship.memberRelationshipUnion.connection.connectedMemberResolutionResult.firstName;
-                lastName = action.connection.memberRelationship.memberRelationshipUnion.connection.connectedMemberResolutionResult.lastName;
-                designation = action.connection.memberRelationship.memberRelationshipUnion.connection.connectedMemberResolutionResult.headline;
-                const imgRootUrl = action.connection.memberRelationship.memberRelationshipUnion.connection.connectedMemberResolutionResult?.profilePicture?.displayImageReference?.vectorImage?.rootUrl;
-                const imgArtifacts = action.connection.memberRelationship.memberRelationshipUnion.connection.connectedMemberResolutionResult?.profilePicture?.displayImageReference?.vectorImage?.artifacts[0]?.fileIdentifyingUrlPathSegment;
-                profileImgUrl = (imgRootUrl && imgArtifacts) ? imgRootUrl + imgArtifacts : '';
-                userId = action.connection.memberRelationship.memberRelationshipUnion.connection.connectedMemberResolutionResult.publicIdentifier;
-            }
-        });
-        if(!userId) {
-            if (response.elements[0].profileStatefulProfileActions.primaryAction.connection &&
-                response.elements[0].profileStatefulProfileActions.primaryAction.connection.memberRelationshipUrn.includes("fsd_memberRelationship")) {
-                const action = response.elements[0].profileStatefulProfileActions.primaryAction;
-                firstName = action.connection.memberRelationship.memberRelationshipData.noInvitation.targetInviteeResolutionResult?.firstName;
-                lastName = action.connection.memberRelationship.memberRelationshipData.noInvitation.targetInviteeResolutionResult?.lastName;
-                designation = action.connection.memberRelationship.memberRelationshipData.noInvitation.targetInviteeResolutionResult?.headline;
-                const imgRootUrl = action.connection.memberRelationship.memberRelationshipData.noInvitation.targetInviteeResolutionResult?.profilePicture?.displayImageReference?.vectorImage?.rootUrl;
-                const imgArtifacts = action.connection.memberRelationship.memberRelationshipData.noInvitation.targetInviteeResolutionResult?.profilePicture?.displayImageReference?.vectorImage?.artifacts[0]?.fileIdentifyingUrlPathSegment;
-                profileImgUrl = (imgRootUrl && imgArtifacts) ? imgRootUrl + imgArtifacts : '';
-                userId = action.connection.memberRelationship.memberRelationshipData.noInvitation.targetInviteeResolutionResult?.publicIdentifier;
-            }
-        }
         result = {
             ...result,
-            profile: {
-                firstName,
-                lastName,
-                designation,
-                profileImgUrl,
-                conversationUrn,
-                userId
-            }
+            conversationUrn
         };
         return result;
     }

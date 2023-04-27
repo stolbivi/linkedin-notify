@@ -15,7 +15,6 @@ import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
     createCustomStage,
-    deleteNote, deleteStage,
     getConversationProfile,
     getCustomStages,
     getNotesByProfile,
@@ -281,34 +280,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         setShowChart(true);
     }
 
-    const removeSelectedTag = (id: string) => {
-        let updatedNotes = [...notes];
-        let tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === id);
-        if (tagToRemoveIndex !== -1) {
-            updatedNotes.splice(tagToRemoveIndex, 1);
-            setNotes(updatedNotes);
-        }
-        messages.request(deleteNote(id))
-            .then((_r) => {});
-        messages.request(deleteStage(id))
-            .then((_r) => {});
-        setStageInternal(-1);
-    };
-
-    const getStage = (stage: number, id: string) => {
-        return <div className={`stage ${StageLabels[stage] ? StageLabels[stage].class : "interested"}`} style={{width: "15%"}}>
-                    <label>{StageLabels[stage]?.label}</label>
-                <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
-                        <svg width="3" height="3" viewBox="0 0 17 17" fill="none"
-                             style={{width: "10px"}}
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 2L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                            <path d="M15 2L2 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
-                </span>
-            </div>
-    }
-
     const CreateNewGroup = () => {
         const [isCreating, setIsCreating] = useState(false)
         const [customName, setCustomName] = useState('')
@@ -554,10 +525,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                             </div>
                                                         </div>
                                                     )}
-                                                </div>
-                                                <div className="selected-stages">
-                                                    Selected
-                                                    tags: {notes?.length ? notes?.map(note => <>{getStage(note.stageTo,note.id)}</>) : 'no selected tags'}
                                                 </div>
                                                 <div className="assigned-job">
                                                     <p>Assigned Job: </p>

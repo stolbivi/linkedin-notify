@@ -131,28 +131,39 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
 
     const [completed, setCompleted] = useState<boolean>(false);
     const messages = new MessagesV2(VERBOSE);
+    const [isSelected, setIsSelected] = useState(false);
 
     useEffect(() => {
         if (activeStage !== undefined) {
             setCompleted(true);
         }
-    }, [activeStage])
+        setIsSelected(Boolean(notes.find(note => note.stageTo === type)));
+    }, [activeStage,notes])
+
+    const removeSelectedTag = (id: string, tagToRemoveIndex: number, updatedNotes: any) => {
+        const deleteNotePromise = messages.request(deleteNote(id)).then((_r) => {});
+        const deleteStagePromise = messages.request(deleteStage(id)).then((_r) => {});
+        if (tagToRemoveIndex !== -1) {
+            updatedNotes.splice(tagToRemoveIndex, 1);
+            setNotes(updatedNotes);
+        }
+        setCompleted(false);
+        Promise.all([deleteNotePromise,deleteStagePromise]).then(()=>{
+            setCompleted(true);
+        })
+    };
 
     const onClick = () => {
-        if (activeStage === type || notes.find(note => note.stageTo === type)) {
+        const selectedNote = notes.find(note => note.stageTo === type);
+        let tagToRemoveIndex: number;
+        if (selectedNote && isSelected) {
+            let updatedNotes = [...notes];
+            tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === selectedNote.id);
+            removeSelectedTag(selectedNote.id, tagToRemoveIndex, updatedNotes);
             return;
         }
-        const existingChildStage = notes.find(note => note.parentStage === parentStage);
-        let tagToRemoveIndex: number;
-        if(existingChildStage && parentStageName !== StageParentData.GEOGRAPHY && parentStageName !== StageParentData.GROUPS) {
-            let updatedNotes = [...notes];
-            tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === existingChildStage.id);
-            if (tagToRemoveIndex !== -1) {
-                updatedNotes.splice(tagToRemoveIndex, 1);
-                setNotes(updatedNotes);
-            }
-            messages.request(deleteNote(existingChildStage.id)).then((_r) => {});
-            messages.request(deleteStage(existingChildStage.id)).then((_r) => {});
+        if (activeStage === type || notes.find(note => note.stageTo === type)) {
+            return;
         }
         setCompleted(false);
         messages.request(setStageAction({id, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage }))
@@ -160,6 +171,13 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
                 if (r.error) {
                     console.error(r.error);
                 } else {
+                    const existingChildStage = notes.find(note => note.parentStage === parentStage);
+                    if(existingChildStage && parentStageName !== StageParentData.GEOGRAPHY
+                        && parentStageName !== StageParentData.GROUPS && existingChildStage !== r.stage.response.stage) {
+                        let updatedNotes = [...notes];
+                        tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === existingChildStage.id);
+                        removeSelectedTag(existingChildStage.id, tagToRemoveIndex, updatedNotes);
+                    }
                     setStage(r.stage.response.stage);
                     appendNote(r.note.response, tagToRemoveIndex);
                 }
@@ -169,7 +187,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
 
     return (
         <React.Fragment>
-            <div className={"stage inactive"} onClick={onClick}>
+            <div className={`stage ${(isSelected && StageLabels[type]) ? StageLabels[type].class : "inactive"}`} onClick={onClick}>
                 <div className="loader"><Loader show={!completed || activeStage === undefined}/></div>
                 <label style={{opacity: completed ? 1 : 0}}>{customText || StageLabels[type].label}</label>
             </div>
