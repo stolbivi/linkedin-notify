@@ -8,6 +8,7 @@ import {AccessGuard, AccessState} from "./AccessGuard";
 // @ts-ignore
 import stylesheet from "./AutoFeature.scss";
 import {getFeatures, setFeatures as setFeaturesAction} from "../actions";
+import {Tooltip} from "react-bootstrap";
 
 const LikeSVG = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false">
     <path
@@ -130,11 +131,14 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px10"}
                          loaderClassName={"loader-base loader-px10"} hideTitle/>
             {accessState === AccessState.Valid &&
-                <div className={`auto-pill-${active ? "on" : "off"}`}
-                     onClick={(e) => onClick(e)}>
-                    <Loader show={!completed}/>
-                    {completed && <React.Fragment>Auto {getIcon(type)}</React.Fragment>}
-                </div>}
+                <Tooltip title={type === 'like' ? 'Allows you to automatically like future posts by this user' : 'Allows you to automatically share future posts by this user'}>
+                    <div className={`auto-pill-${active ? "on" : "off"}`}
+                         onClick={(e) => onClick(e)}>
+                        <Loader show={!completed}/>
+                        {completed && <React.Fragment>Auto {getIcon(type)}</React.Fragment>}
+                    </div>
+                </Tooltip>
+            }
         </React.Fragment>
     );
 
