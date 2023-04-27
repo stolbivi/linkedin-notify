@@ -48,7 +48,6 @@ const injectUI = () => {
                 StagePillFactory();
                 NotesAndChartsFactory();
                 NotesManagerFactory();
-                LastSeenFactory();
                 LastViewedFactory();
                 TimeZoneFactory();
                 LnDashboardFactory();
