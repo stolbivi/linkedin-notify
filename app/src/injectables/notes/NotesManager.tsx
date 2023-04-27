@@ -76,6 +76,7 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
     const [text, setText] = useState<{ value: string }>({value: ""});
     const lastNoteRef = useRef();
     const [customStages, setCustomStages] = useState<UserStage[]>([]);
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
@@ -207,6 +208,22 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
         }
     },[notes]);
 
+    useEffect(() => {
+        function handleClickOutside(event: { target: any; }) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                const isDropdownOption = event.target.closest(".dropdown-options");
+                if (!isDropdownOption) {
+                    setShowDropDown(false);
+                }
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [dropdownRef]);
+
     const onProfileSelect = (profile: any) => setSelection(profile);
 
     const updateSearchValueWithText = (e: any) =>
@@ -255,7 +272,7 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                     <svg width="8" height="5" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1 1L4 4L7 1" stroke="#909090" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    {showDropDown && <div className="dropdown-options">
+                    {showDropDown && (<div ref={dropdownRef} className="dropdown-options">
                         <StageButton type={StageEnum.Interested}
                                      selected={searchValue.stages[StageEnum.Interested]}
                                      onSelect={onStageSelected}/>
@@ -271,7 +288,8 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                         <StageButton type={StageEnum.Hired}
                                      selected={searchValue.stages[StageEnum.Hired]}
                                      onSelect={onStageSelected}/>
-                    </div>}
+                    </div>
+                    )}
                 </div>
             </div>
             <div className="scroll-container">
