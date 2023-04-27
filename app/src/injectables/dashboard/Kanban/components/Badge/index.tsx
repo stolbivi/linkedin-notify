@@ -12,14 +12,14 @@ interface BadgeProps {
 const Badge: React.FC<BadgeProps> = ({ category }) => {
   const theme = useContext(ThemeContext); 
 
-  const [color, setColor] = useState<string>(theme.colors.primary);
+  const [color, setColor] = useState<string>(theme.colors.placeholder);
 
   useEffect(() => {
     if (category) {
       const categoryColor = getCategoryBackgroundColor(theme, category);
       setColor(categoryColor);
     }
-  }, [category])
+  }, [category,theme])
 
   return (
     <BadgeContainer color={color}>

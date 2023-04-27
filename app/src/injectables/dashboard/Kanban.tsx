@@ -33,6 +33,7 @@ const Kanban = () => {
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {
                 let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setTheme(payload.theme === 'light' ? lightTheme : darkTheme);
                 setThemeUtil(theme, rootElement);
                 return Promise.resolve();
             }));
