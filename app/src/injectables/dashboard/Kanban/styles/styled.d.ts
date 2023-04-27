@@ -46,6 +46,7 @@ declare module 'styled-components' {
       scrollbar_background: string,
       scrollbar_thumb: string,
       scrollbar_thumb_hover: string,
+      text_black: string
     }
   }
 }

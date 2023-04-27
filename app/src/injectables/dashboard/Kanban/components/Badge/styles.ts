@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 interface BadgeContainerProps{
   color: string;
+  textColor: string;
 }
 
 export const BadgeContainer = styled.div<BadgeContainerProps>`
@@ -15,7 +16,7 @@ export const BadgeContainer = styled.div<BadgeContainerProps>`
   margin-right: 1px;
 
   p {
-    color: #fff;
+    color: ${({textColor}) => textColor};
     padding: 4px 2px;
     font-family: 'Helvetica';
     font-style: normal;
