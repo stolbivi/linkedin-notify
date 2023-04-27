@@ -10,7 +10,7 @@ export const theme: Theme = {
     "--base-card-message-background": "#f6f6f6",
     "--base-card-unread": "#e2f0fd",
     "--base-card-border": "rgba(0, 0, 0, 0.1)",
-    "--boolean-base-card": "#f9f2f28c",
+    "--boolean-base-card": "#f4f4f48c",
     "--joblist-edit-base-card": "#ffffff",
 
     "--conversation-card-badge": "white",

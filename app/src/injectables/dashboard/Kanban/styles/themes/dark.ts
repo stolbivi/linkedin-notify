@@ -10,7 +10,7 @@ const darkTheme = {
     hired: '#25BA34',
     notLookingCurrently: '#4E4E4E',
     openToNewOffers: '#25BA34',
-    passiveCandidate: '#cbc9c9',
+    passiveCandidate: '#4E4E4E',
     activelyLooking: '#EEA73C',
     futureInterest: '#59A5FF',
     relocation: '#59A5FF',
