@@ -45,7 +45,7 @@ export const LnDashboard: React.FC<Props> = ({}) => {
         if (navBarElement) {
             const newUrl = 'https://www.linkedin.com/dashboard/';
             window.history.replaceState({ path: newUrl }, '', newUrl);
-            document.getElementsByClassName("global-nav__primary-link--active")[0].classList.remove("global-nav__primary-link--active");
+            document.getElementsByClassName("global-nav__primary-link--active")[0]?.classList?.remove("global-nav__primary-link--active");
             ReactDOM.render(<Navbar/>, navBarElement);
             const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
             if (targetElement) {

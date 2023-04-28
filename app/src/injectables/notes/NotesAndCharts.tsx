@@ -48,7 +48,7 @@ export const NotesAndChartsFactory = () => {
                 );
             }
         }
-        const section = document.getElementsByClassName("job-column job-table-heading th-action");
+        const section = document.querySelectorAll("#kanban-list-view-btn");
         if (section && section.length > 0) {
             inject(section[0].lastChild, "lnm-notes-and-charts", "after",
                 <NotesAndCharts/>, "NotesAndCharts"
