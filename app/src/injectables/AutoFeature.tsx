@@ -39,12 +39,12 @@ export const AutoFeatureFactory = () => {
                         const target = titles[0].querySelectorAll("a > div > span");
                         if (target && target.length > 0) {
                             const lastItem = target[target.length - 1];
-// @ts-ignore
+                            // @ts-ignore
                             lastItem.style.display = "flex";
                             inject(lastItem.lastChild, `lnm-auto-${activityId}`, "after",
                                 <div style={{paddingLeft: "0.25em", display: "flex"}}>
-                                    <AutoFeature url={url} type={"like"}/>
-                                    <AutoFeature url={url} type={"repost"}/>
+                                    <AutoFeature fromProfile={false} url={url} type={"like"}/>
+                                    <AutoFeature fromProfile={false} url={url} type={"repost"}/>
                                 </div>, "AutoFeature"
                             );
                         }
@@ -56,9 +56,9 @@ export const AutoFeatureFactory = () => {
             const aside = document.getElementsByClassName("text-heading-xlarge inline t-24 v-align-middle break-words");
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
-                    <div style={{paddingLeft: "0.25em", display: "flex", marginLeft: "-5rem"}}>
-                        <AutoFeature url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"like"}/>
-                        <AutoFeature url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"repost"}/>
+                    <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-273px"}}>
+                        <AutoFeature fromProfile={true} url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"like"}/>
+                        <AutoFeature fromProfile={true} url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"repost"}/>
                     </div>, "AutoFeature"
                 );
             }
@@ -67,12 +67,13 @@ export const AutoFeatureFactory = () => {
 }
 
 type Props = {
+    fromProfile: boolean
     type: string
     url: string
 };
 
 // @ts-ignore
-export const AutoFeature: React.FC<Props> = ({type, url}) => {
+export const AutoFeature: React.FC<Props> = ({fromProfile, type, url}) => {
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -143,11 +144,21 @@ export const AutoFeature: React.FC<Props> = ({type, url}) => {
                          loaderClassName={"loader-base loader-px10"} hideTitle/>
             {accessState === AccessState.Valid &&
                 <Tooltip title={type === 'like' ? 'Allows you to automatically like future posts by this user' : 'Allows you to automatically share future posts by this user'}>
-                    <div className={`auto-pill-${active ? "on" : "off"}`}
-                         onClick={(e) => onClick(e)}>
-                        <Loader show={!completed}/>
-                        {completed && <React.Fragment>Auto {getIcon(type)}</React.Fragment>}
-                    </div>
+                    {
+                        fromProfile?(
+                            <div className={`auto-pill-profile-${active ? "on" : "off"}`}
+                                 onClick={(e) => onClick(e)}>
+                                <Loader show={!completed}/>
+                                {completed && <React.Fragment>Auto {getIcon(type)}</React.Fragment>}
+                            </div>
+                        ):(
+                            <div className={`auto-pill-${active ? "on" : "off"}`}
+                                 onClick={(e) => onClick(e)}>
+                                <Loader show={!completed}/>
+                                {completed && <React.Fragment>Auto {getIcon(type)}</React.Fragment>}
+                            </div>
+                        )
+                    }
                 </Tooltip>
             }
         </React.Fragment>
