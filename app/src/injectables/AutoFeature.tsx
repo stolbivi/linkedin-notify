@@ -54,7 +54,6 @@ export const AutoFeatureFactory = () => {
         }
         else if(window.location.href.indexOf("/in/") > 0){
             const aside = document.getElementsByClassName("scaffold-layout scaffold-layout--breakpoint-xl scaffold-layout--main-aside scaffold-layout--reflow pv-profile");
-            console.log("aside: ",aside);
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
                     <div style={{paddingLeft: "0.25em", display: "flex"}}>
