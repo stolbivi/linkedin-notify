@@ -354,15 +354,15 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         setEditButton(!editButton);
     }
 
-    // useEffect(() => {
-    //     if("Track" === selectedTab) {
-    //         setShowStages(true);
-    //         setShowNotes(false);
-    //     } else {
-    //         setShowStages(false);
-    //         setShowNotes(true);
-    //     }
-    // },[selectedTab]);
+    useEffect(() => {
+        if("Track" === selectedTab) {
+            setShowStages(true);
+            setShowNotes(true);
+        } else {
+            setShowStages(true);
+            setShowNotes(true);
+        }
+    },[selectedTab]);
 
     const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${!showSalary ? 'custom-width' : ''}`;
 
@@ -385,7 +385,8 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                         </div>
                         <React.Fragment>
                             <div className="local-loader"><Loader show={!completed}/></div>
-                            {completed && !minimized && <NotesContainer>
+                            {completed && !minimized &&
+                            <NotesContainer>
                                 {showSalary && (
                                     <Collapsible initialOpened={showSalary}>
                                             <div data-role={CollapsibleRole.Title} className="salary-title">
@@ -430,18 +431,16 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                         </div>
                                     </Collapsible>
                                 )}
-                                {
-                                    !fromListView && !showSalary ? (
+                                {!fromListView && !showSalary ? (
                                         <div className="title-child assigned">
                                             <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")}>
                                                 Track Candidates
                                             </span>
-                                            <span style={{paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
+                                            <span style={{marginLeft:"400px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
                                                   onClick={()=>setSelectedTab("Notes")}>
                                                 Notes
                                                 <label className="notes-counter">{notes ? notes.length : 0}</label>
                                             </span>
-                                            <hr style={{border:"1px solid #d0cfcf", width: "100%"}}/>
                                         </div>
                                     ) : null
                                 }
@@ -450,14 +449,14 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                     {
                                         allGroupsMode ? (
                                             <>
-                                                <div onClick={()=>setAllGroupsMode(false)} style={{cursor: "pointer", paddingLeft: "5%", paddingTop: "2%"}}>
+                                                <div onClick={()=>setAllGroupsMode(false)} style={{width:"40%", cursor: "pointer", paddingLeft: "5%", paddingTop: "2%"}}>
                                                     Go back
                                                 </div>
-                                                <div style={{display:"flex", alignItems:"center", paddingLeft: "5%", paddingTop: "2%", color: "black"}}>
+                                                <div style={{width:"40%", display:"flex", alignItems:"center", paddingLeft: "5%", paddingTop: "2%", color: "black"}}>
                                                     Groups
                                                     <label className="notes-counter">{customStages ? customStages.length : 0}</label>
                                                 </div>
-                                                <div className="stage-parents-container" style={{flexWrap:"wrap"}}>
+                                                <div className="stage-parents-container" style={{width:"40%", flexWrap:"wrap"}}>
                                                     {customStages?.map(customStage => (
                                                         <div className="nested-childs">
                                                             <StageSwitch
@@ -480,7 +479,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             </>
                                             )
                                             : (
-                                            <div>
+                                            <div id="outer-container">
                                                 <div className="stage-parents-container">
                                                     {stageParents.map(stage =>
                                                         <div className="parent-container">
@@ -526,12 +525,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                             </div>
                                                         </div>
                                                     )}
-                                                </div>
-                                                <div className="assigned-job">
-                                                    <p>Assigned Job: </p>
-                                                    <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
-                                                        <option>Enter Job Name</option>
-                                                    </select>
+                                                    <div className="assigned-job">
+                                                        <p>Assigned Job: </p>
+                                                        <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
+                                                            <option>Enter Job Name</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
                                         )
