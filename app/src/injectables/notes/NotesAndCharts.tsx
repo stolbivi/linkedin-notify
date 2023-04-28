@@ -354,15 +354,15 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         setEditButton(!editButton);
     }
 
-    useEffect(() => {
-        if("Track" === selectedTab) {
-            setShowStages(true);
-            setShowNotes(false);
-        } else {
-            setShowStages(false);
-            setShowNotes(true);
-        }
-    },[selectedTab]);
+    // useEffect(() => {
+    //     if("Track" === selectedTab) {
+    //         setShowStages(true);
+    //         setShowNotes(false);
+    //     } else {
+    //         setShowStages(false);
+    //         setShowNotes(true);
+    //     }
+    // },[selectedTab]);
 
 
     // @ts-ignore

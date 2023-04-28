@@ -52,6 +52,18 @@ export const AutoFeatureFactory = () => {
                 }
             })
         }
+        else if(window.location.href.indexOf("/in/") > 0){
+            const aside1 = document.getElementsByClassName("scaffold-layout__aside");
+            console.log("aside: ",aside1);
+            if (aside1 && aside1.length > 0) {
+                inject(aside1[0], `lnm-notes-manager`, "after",
+                    <div style={{paddingLeft: "0.25em", display: "flex"}}>
+                        <AutoFeature url={"abc"} type={"like"}/>
+                        <AutoFeature url={"abc"} type={"repost"}/>
+                    </div>, "AutoFeature"
+                );
+            }
+        }
     },1000);
 }
 
