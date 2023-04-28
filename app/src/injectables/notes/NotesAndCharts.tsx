@@ -364,6 +364,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     //     }
     // },[selectedTab]);
 
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${!showSalary ? 'custom-width' : ''}`;
 
     // @ts-ignore
     return (
@@ -372,9 +373,9 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                 <React.Fragment>
                     <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
                     <div onTransitionEnd={() => onExpanded()}
-                         className={"notes-and-charts " + ((completed && !minimized) ? "position-expanded" : "position-collapsed")}
+                         className={notesAndChartsClass}
                          ref={rootElement}
-                         style={{...(fromListView && { left: 'auto' })}}>
+                         style={{...(fromListView && { left: 'auto' }), ...(!showSalary && { width: '1000px !important' })}}>
                         <div className="close-button" onClick={() => close()}>
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
