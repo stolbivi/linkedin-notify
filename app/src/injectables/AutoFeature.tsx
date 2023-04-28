@@ -53,13 +53,13 @@ export const AutoFeatureFactory = () => {
             })
         }
         else if(window.location.href.indexOf("/in/") > 0){
-            const aside1 = document.getElementsByClassName("scaffold-layout__aside");
-            console.log("aside: ",aside1);
-            if (aside1 && aside1.length > 0) {
-                inject(aside1[0], `lnm-notes-manager`, "after",
+            const aside = document.getElementsByClassName("scaffold-layout scaffold-layout--breakpoint-xl scaffold-layout--main-aside scaffold-layout--reflow pv-profile");
+            console.log("aside: ",aside);
+            if (aside && aside.length > 0) {
+                inject(aside[0], `auto-features-profile`, "before",
                     <div style={{paddingLeft: "0.25em", display: "flex"}}>
-                        <AutoFeature url={"abc"} type={"like"}/>
-                        <AutoFeature url={"abc"} type={"repost"}/>
+                        <AutoFeature url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"like"}/>
+                        <AutoFeature url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"repost"}/>
                     </div>, "AutoFeature"
                 );
             }

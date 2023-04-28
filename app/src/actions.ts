@@ -170,6 +170,7 @@ export const getSalary = createAction<string, any>("getSalary",
                 const organization = api.extractOrganization(organizationResponse);
                 request = {...request, organization}
             }
+            delete experience.conversationUrn;
             const response = await backEndAPI.getSalary(request);
             return {...response, ...request};
         }));
@@ -297,9 +298,9 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
             if(profile && profile.included[0]) {
                 profile = profile.included[0];
                 rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
-                    designation: profile.occupation,
-                    profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
-                    profileId: payload.id, userId: profile.publicIdentifier}
+                            designation: profile.occupation,
+                            profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
+                            profileId: payload.id, userId: profile.publicIdentifier}
             }
             const prflImg = rcpntPrfl.profileImg ? rcpntPrfl.profileImg : 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
             const stage = await backEndAPI.setStage(note.response.id, payload.stage, author, payload.parentStage, rcpntPrfl.name,

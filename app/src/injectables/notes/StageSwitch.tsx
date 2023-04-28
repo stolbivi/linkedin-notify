@@ -141,13 +141,13 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
     }, [activeStage,notes])
 
     const removeSelectedTag = (id: string, tagToRemoveIndex: number, updatedNotes: any) => {
+        setCompleted(false);
         const deleteNotePromise = messages.request(deleteNote(id)).then((_r) => {});
         const deleteStagePromise = messages.request(deleteStage(id)).then((_r) => {});
         if (tagToRemoveIndex !== -1) {
             updatedNotes.splice(tagToRemoveIndex, 1);
             setNotes(updatedNotes);
         }
-        setCompleted(false);
         Promise.all([deleteNotePromise,deleteStagePromise]).then(()=>{
             setCompleted(true);
         })
@@ -162,9 +162,6 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
             removeSelectedTag(selectedNote.id, tagToRemoveIndex, updatedNotes);
             return;
         }
-        if (activeStage === type || notes.find(note => note.stageTo === type)) {
-            return;
-        }
         setCompleted(false);
         messages.request(setStageAction({id, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage }))
             .then((r) => {
@@ -176,7 +173,10 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
                         && parentStageName !== StageParentData.GROUPS && existingChildStage !== r.stage.response.stage) {
                         let updatedNotes = [...notes];
                         tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === existingChildStage.id);
-                        removeSelectedTag(existingChildStage.id, tagToRemoveIndex, updatedNotes);
+                        if (tagToRemoveIndex !== -1) {
+                            updatedNotes.splice(tagToRemoveIndex, 1);
+                            setNotes(updatedNotes);
+                        }
                     }
                     setStage(r.stage.response.stage);
                     appendNote(r.note.response, tagToRemoveIndex);

@@ -4,6 +4,7 @@ import {BaseController} from "./base-controller";
 import {ParentStageEnum, StageEnum, StageModel, StageWithId} from "../persistence/stage-model";
 import { UserStages } from "../persistence/user-stages";
 import {User} from "../persistence/user-model";
+import {NoteModel} from "../persistence/note-model";
 
 
 @Route("/api")
@@ -147,8 +148,34 @@ export class StageController extends BaseController {
             this.setStatus(403);
             return Promise.resolve("Please, sign in to use premium features");
         }
-
         try {
+            if(ParentStageEnum.GEOGRAPHY !== body.parentStage && ParentStageEnum.GROUPS !== body.parentStage) {
+                await StageModel.scan("author").eq(body.author)
+                    .where("profileId").eq(body.profileId)
+                    .where("parentStage").eq(body.parentStage)
+                    .exec()
+                    .then((items: any[]) => {
+                        items.forEach((item) => {
+                            item.delete();
+                        });
+                    })
+                    .catch((error: any) => {
+                        console.log(error);
+                    });
+                await NoteModel.scan("author").eq(body.author)
+                    .where("profile").eq(body.profileId)
+                    .where("parentStage").eq(body.parentStage)
+                    .exec()
+                    .then((items: any[]) => {
+                        const filteredItems = items.filter(item => item.id !== body.id);
+                        filteredItems.forEach((item) => {
+                            item.delete();
+                        });
+                    })
+                    .catch((error: any) => {
+                        console.log(error);
+                    });
+            }
             const saved = await StageModel.create(body);
             let message: any = {response: saved.toJSON()};
             if (request?.user) {
