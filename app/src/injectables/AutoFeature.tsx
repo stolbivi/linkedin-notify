@@ -53,10 +53,10 @@ export const AutoFeatureFactory = () => {
             })
         }
         else if(window.location.href.indexOf("/in/") > 0){
-            const aside = document.getElementsByClassName("scaffold-layout scaffold-layout--breakpoint-xl scaffold-layout--main-aside scaffold-layout--reflow pv-profile");
+            const aside = document.getElementsByClassName("text-heading-xlarge inline t-24 v-align-middle break-words");
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
-                    <div style={{paddingLeft: "0.25em", display: "flex"}}>
+                    <div style={{paddingLeft: "0.25em", display: "flex", marginLeft: "-5rem"}}>
                         <AutoFeature url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"like"}/>
                         <AutoFeature url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"repost"}/>
                     </div>, "AutoFeature"
