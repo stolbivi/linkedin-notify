@@ -56,7 +56,7 @@ export const AutoFeatureFactory = () => {
             const aside = document.getElementsByClassName("text-heading-xlarge inline t-24 v-align-middle break-words");
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
-                    <div style={{paddingLeft: "0.25em", display: "flex", marginLeft: "-5rem"}}>
+                    <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-273px"}}>
                         <AutoFeature url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"like"}/>
                         <AutoFeature url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"repost"}/>
                     </div>, "AutoFeature"
