@@ -2,7 +2,9 @@ import {DataGrid} from '@material-ui/data-grid';
 import React from 'react';
 import Status from "../Status";
 // @ts-ignore
-import stylesheet from '../KanbanBoard/styles.scss';
+import stylesheet from './styles.scss';
+// @ts-ignore
+import { makeStyles } from '@material-ui/core/styles';
 
 // @ts-ignore
 const ListView = ({cards, messagesClickHandler, onNotesClick}) => {
@@ -16,8 +18,8 @@ const ListView = ({cards, messagesClickHandler, onNotesClick}) => {
             )
         },
         { field: 'designation', headerName: 'Position', flex: 1, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'left' },
-        { field: 'companyName', headerName: 'Company Name', flex: 1, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'left' },
-        { field: 'status', headerName: 'Status', flex: 1, sortable: true, filterable: false, headerClassName: 'job-column job-table-heading th-status', headerAlign: 'center', align: 'left',
+        { field: 'companyName', headerName: 'Company Name', flex: 1, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'center' },
+        { field: 'status', headerName: 'Status', flex: 1, sortable: true, filterable: false, headerClassName: 'job-column job-table-heading th-status', headerAlign: 'center', align: 'center',
             renderCell: (params) => (
                 <Status card={params.row}/>
             )
@@ -52,20 +54,41 @@ const ListView = ({cards, messagesClickHandler, onNotesClick}) => {
         return params.index % 2 === 0 ? 'stripe-row' : '';
     };
 
+    const useStyles = makeStyles({
+        root: {
+            '& .MuiDataGrid-row': {
+                backgroundColor: 'white',
+            },
+            '& .MuiDataGrid-row:nth-child(even)': {
+                backgroundColor: '#F2F2F2',
+            },
+            '& .MuiDataGrid-cell': {
+                borderBottom: 'none',
+            },
+            '& .MuiDataGrid-root': {
+                border: 'none',
+                padding: '0px'
+            },
+        },
+    });
+
+    const classes = useStyles();
+
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className="table rounded table-striped list-table table-custom" style={{ height: '100%', width: '100%' }}>
+            <div className="table list-table table-custom" style={{ height: '500px', width: '100%' }}>
                 <DataGrid
                     columns={columns}
                     rows={cards}
-                    autoHeight
                     rowHeight={90}
                     checkboxSelection
                     disableSelectionOnClick={false}
                     getRowClassName={getRowClassName}
+                    className={classes.root}
                 />
             </div>
+
         </>
     );
 };

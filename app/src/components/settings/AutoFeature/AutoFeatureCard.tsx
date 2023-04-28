@@ -72,7 +72,7 @@ export const AutoFeatureCard: React.FC<Props> = ({autoFeature, updatedFeatures, 
                         <input className="form-check-input switch-color" type="checkbox" id="autoLike" defaultChecked={autoFeature?.types?.includes("like")}
                                onChange={() => setFeature(autoFeature, "like")} />
                     </div>
-                    <div className="form-check form-switch" style={{textAlign: "center"}}>
+                    <div className="form-check form-switch" style={{textAlign: "center", paddingLeft: "6px"}}>
                         <input style={{marginLeft: "20px"}} className="form-check-input switch-color" type="checkbox" id="autoRepost" defaultChecked={autoFeature?.types?.includes("repost")}
                                onChange={() => setFeature(autoFeature, "repost")} />
                     </div>
