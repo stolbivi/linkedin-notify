@@ -92,7 +92,7 @@ export const StagePill: React.FC<Props> = ({url, convUrl, showStages}) => {
         if (showNotes) {
             setShowNotes(false);
         } else {
-            return messages.request(showNotesAndCharts({showSalary: false, showNotes: false, showStages}));
+            return messages.request(showNotesAndCharts({showSalary: false, showNotes: true, showStages}));
         }
     }
 

@@ -53,10 +53,10 @@ export const AutoFeatureFactory = () => {
             })
         }
         else if(window.location.href.indexOf("/in/") > 0){
-            const aside = document.getElementsByClassName("text-heading-xlarge inline t-24 v-align-middle break-words");
+            const aside = document.getElementsByClassName("pv-top-card--photo text-align-left pv-top-card--photo-resize");
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
-                    <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-273px"}}>
+                    <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-20.5rem"}}>
                         <AutoFeature fromProfile={true} url={`https://www.linkedin.com/in/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"like"}/>
                         <AutoFeature fromProfile={true} url={`https://www.linkedin.com/in/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"repost"}/>
                     </div>, "AutoFeature"

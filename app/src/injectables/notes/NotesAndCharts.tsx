@@ -436,150 +436,156 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")}>
                                                 Track Candidates
                                             </span>
-                                            <span style={{marginLeft:"400px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
-                                                  onClick={()=>setSelectedTab("Notes")}>
-                                                Notes
-                                                <label className="notes-counter">{notes ? notes.length : 0}</label>
-                                            </span>
+                                            {
+                                                !allGroupsMode ? (
+                                                    <span style={{marginLeft:"400px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
+                                                          onClick={()=>setSelectedTab("Notes")}>
+                                                        Notes
+                                                        <label className="notes-counter">{notes ? notes.length : 0}</label>
+                                                    </span>
+                                                ) : null
+                                            }
                                         </div>
                                     ) : null
                                 }
-                                {showStages &&
-                                    <>
-                                    {
-                                        allGroupsMode ? (
-                                            <>
-                                                <div onClick={()=>setAllGroupsMode(false)} style={{width:"40%", cursor: "pointer", paddingLeft: "5%", paddingTop: "2%"}}>
-                                                    Go back
-                                                </div>
-                                                <div style={{width:"40%", display:"flex", alignItems:"center", paddingLeft: "5%", paddingTop: "2%", color: "black"}}>
-                                                    Groups
-                                                    <label className="notes-counter">{customStages ? customStages.length : 0}</label>
-                                                </div>
-                                                <div className="stage-parents-container" style={{width:"40%", flexWrap:"wrap"}}>
-                                                    {customStages?.map(customStage => (
-                                                        <div className="nested-childs">
-                                                            <StageSwitch
-                                                                key={salaryInternal.urn}
-                                                                type={StageEnum[customStage.text]}
-                                                                activeStage={stageInternal}
-                                                                parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
-                                                                parentStageName={StageParentData.GROUPS}
-                                                                customText={customStage.text}
-                                                                classType="interested"
-                                                                setStage={setStageInternal}
-                                                                id={salaryInternal.urn}
-                                                                appendNote={appendNote}
-                                                                notes={notes}
-                                                                setNotes={setNotes}
-                                                            />
+                                <>
+                                {
+                                    allGroupsMode ? (
+                                        <>
+                                            <div onClick={()=>setAllGroupsMode(false)} style={{cursor: "pointer", paddingLeft: "2.2%", paddingTop: "3%"}}>
+                                                Go back
+                                            </div>
+                                            <div style={{display:"flex", alignItems:"center", paddingLeft: "2.2%", paddingTop: "2%", color: "black"}}>
+                                                Groups
+                                                <label className="notes-counter">{customStages ? customStages.length : 0}</label>
+                                            </div>
+                                            <div className="stage-parents-container" style={{flexWrap:"wrap", width: "auto"}}>
+                                                {customStages?.map(customStage => (
+                                                    <div className="nested-childs">
+                                                        <StageSwitch
+                                                            key={salaryInternal.urn}
+                                                            type={StageEnum[customStage.text]}
+                                                            activeStage={stageInternal}
+                                                            parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                            parentStageName={StageParentData.GROUPS}
+                                                            customText={customStage.text}
+                                                            classType="interested"
+                                                            setStage={setStageInternal}
+                                                            id={salaryInternal.urn}
+                                                            appendNote={appendNote}
+                                                            notes={notes}
+                                                            setNotes={setNotes}
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </>
+                                        )
+                                        : (
+                                        <div id="outer-container" style={{...(!fromListView && { display: "flex" })}}>
+                                            {
+                                                showStages ? (
+                                                    <div className="stage-parents-container">
+                                                        {stageParents.map(stage =>
+                                                            <div className="parent-container">
+                                                                <div>{stage.name}</div>
+                                                                <div className="nested-childs">
+                                                                    {stageChildData[stage.name]?.map?.((child,index) => stage.name !== StageParentData.GROUPS ?
+                                                                        <StageSwitch key={salaryInternal.urn+index}
+                                                                                     type={child.name}
+                                                                                     activeStage={stageInternal}
+                                                                                     parentStage={Object.values(StageParentData).indexOf(stage.name)}
+                                                                                     parentStageName={stage.name}
+                                                                                     setStage={setStageInternal} id={salaryInternal.urn}
+                                                                                     appendNote={appendNote} notes={notes}
+                                                                                     setNotes={setNotes}/>
+                                                                        :
+                                                                        <>
+                                                                            {customStages?.slice(0, 4).map(customStage => (
+                                                                                <StageSwitch
+                                                                                    key={salaryInternal.urn}
+                                                                                    type={StageEnum[customStage.text]}
+                                                                                    activeStage={stageInternal}
+                                                                                    parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                                                    parentStageName={StageParentData.GROUPS}
+                                                                                    customText={customStage.text}
+                                                                                    classType="interested"
+                                                                                    setStage={setStageInternal}
+                                                                                    id={salaryInternal.urn}
+                                                                                    appendNote={appendNote}
+                                                                                    notes={notes}
+                                                                                    setNotes={setNotes}
+                                                                                />
+                                                                            ))}
+                                                                            {customStages?.length > 4 && (
+                                                                                <div className="create-new-group-wrapper"
+                                                                                     style={{cursor: "pointer"}}
+                                                                                     onClick={()=>setAllGroupsMode(true)}>
+                                                                                    See all ({customStages.length})
+                                                                                </div>
+                                                                            )}
+                                                                            <CreateNewGroup />
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        <div className="assigned-job">
+                                                            <p>Assigned Job: </p>
+                                                            <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
+                                                                <option>Enter Job Name</option>
+                                                            </select>
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            </>
-                                            )
-                                            : (
-                                            <div id="outer-container">
-                                                <div className="stage-parents-container">
-                                                    {stageParents.map(stage =>
-                                                        <div className="parent-container">
-                                                            <div>{stage.name}</div>
-                                                            <div className="nested-childs">
-                                                                {stageChildData[stage.name]?.map?.((child,index) => stage.name !== StageParentData.GROUPS ?
-                                                                    <StageSwitch key={salaryInternal.urn+index}
-                                                                                 type={child.name}
-                                                                                 activeStage={stageInternal}
-                                                                                 parentStage={Object.values(StageParentData).indexOf(stage.name)}
-                                                                                 parentStageName={stage.name}
-                                                                                 setStage={setStageInternal} id={salaryInternal.urn}
-                                                                                 appendNote={appendNote} notes={notes}
-                                                                                 setNotes={setNotes}/>
-                                                                    :
-                                                                    <>
-                                                                        {customStages?.slice(0, 4).map(customStage => (
-                                                                            <StageSwitch
-                                                                                key={salaryInternal.urn}
-                                                                                type={StageEnum[customStage.text]}
-                                                                                activeStage={stageInternal}
-                                                                                parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
-                                                                                parentStageName={StageParentData.GROUPS}
-                                                                                customText={customStage.text}
-                                                                                classType="interested"
-                                                                                setStage={setStageInternal}
-                                                                                id={salaryInternal.urn}
-                                                                                appendNote={appendNote}
-                                                                                notes={notes}
-                                                                                setNotes={setNotes}
-                                                                            />
-                                                                        ))}
-                                                                        {customStages?.length > 4 && (
-                                                                            <div className="create-new-group-wrapper"
-                                                                                 style={{cursor: "pointer"}}
-                                                                                 onClick={()=>setAllGroupsMode(true)}>
-                                                                                See all ({customStages.length})
-                                                                            </div>
-                                                                        )}
-                                                                        <CreateNewGroup />
-                                                                    </>
-                                                                )}
+                                                    </div>
+                                                ) : null
+                                            }
+                                            {showNotes && !allGroupsMode && (
+                                                <>
+                                                    {
+                                                        fromListView ? (
+                                                            <div className="title-child">
+                                                                <label>Notes</label>
+                                                                <label className="notes-counter">{notes ? notes.length : 0}</label>
+                                                            </div>
+                                                        ) : null
+                                                    }
+                                                    <div style={{width: fromListView ? "103%" : "50%"}}>
+                                                        <div className="scroll-container h-300" style={{height: "278px"}}>
+                                                            <div className="scroll-content">
+                                                                {completed && notes?.map((n, i) => (
+                                                                    <NoteCard key={i} note={n}
+                                                                              currentCount={i} totalCount={notes.length}
+                                                                              lastNoteRef={lastNoteRef}/>)
+                                                                )
+                                                                }
+                                                                {completed && notes.length == 0 &&
+                                                                    <div className="no-notes">
+                                                                        <NoNotes/>
+                                                                        <div>No notes yet</div>
+                                                                    </div>}
                                                             </div>
                                                         </div>
-                                                    )}
-                                                    <div className="assigned-job">
-                                                        <p>Assigned Job: </p>
-                                                        <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
-                                                            <option>Enter Job Name</option>
-                                                        </select>
+                                                        <div data-role={CollapsibleRole.Footer} className="footer-child">
+                                                            <div className="text-input-container">
+                                                                <div className="text-input">
+                                                                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
+                                                                           disabled={!editable}
+                                                                           placeholder="Leave a note" value={text?.value}/>
+                                                                    <div onClick={() => postNote(text?.value)}
+                                                                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
+                                                                        <Submit/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <Credits/>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        )
-                                    }
-                                    </>
+                                                </>
+                                            )}
+                                        </div>
+                                    )
                                 }
-                                {showNotes && (
-                                    <>
-                                        {
-                                            fromListView ? (
-                                                <div className="title-child">
-                                                    <label>Notes</label>
-                                                    <label className="notes-counter">{notes ? notes.length : 0}</label>
-                                                </div>
-                                            ) : null
-                                        }
-                                        <div>
-                                            <div className="scroll-container h-300">
-                                                <div className="scroll-content">
-                                                    {completed && notes?.map((n, i) => (
-                                                        <NoteCard key={i} note={n}
-                                                                  currentCount={i} totalCount={notes.length}
-                                                                  lastNoteRef={lastNoteRef}/>)
-                                                    )
-                                                    }
-                                                    {completed && notes.length == 0 &&
-                                                        <div className="no-notes">
-                                                            <NoNotes/>
-                                                            <div>No notes yet</div>
-                                                        </div>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div data-role={CollapsibleRole.Footer} className="footer-child">
-                                            <div className="text-input-container">
-                                                <div className="text-input">
-                                                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
-                                                           disabled={!editable}
-                                                           placeholder="Leave a note" value={text?.value}/>
-                                                    <div onClick={() => postNote(text?.value)}
-                                                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
-                                                        <Submit/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <Credits/>
-                                        </div>
-                                    </>
-                                )}
+                                </>
                             </NotesContainer>
                             }
                         </React.Fragment>
