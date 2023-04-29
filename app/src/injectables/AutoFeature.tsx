@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Feature, VERBOSE} from "../global";
+import {extractIdFromUrl, Feature, VERBOSE} from "../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
@@ -7,7 +7,7 @@ import {AccessGuard, AccessState} from "./AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./AutoFeature.scss";
-import {getFeatures, setFeatures as setFeaturesAction} from "../actions";
+import {getFeatures, getUserIdByUrn, setFeatures as setFeaturesAction} from "../actions";
 import {Tooltip} from "react-bootstrap";
 
 const LikeSVG = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false">
@@ -57,8 +57,8 @@ export const AutoFeatureFactory = () => {
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
                     <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-273px"}}>
-                        <AutoFeature fromProfile={true} url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"like"}/>
-                        <AutoFeature fromProfile={true} url={"https://www.linkedin.com/in/shwetakukreja?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAACr4O94BEnYTBINM-IXzctVJhfulndR27Us"} type={"repost"}/>
+                        <AutoFeature fromProfile={true} url={`https://www.linkedin.com/in/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"like"}/>
+                        <AutoFeature fromProfile={true} url={`https://www.linkedin.com/in/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"repost"}/>
                     </div>, "AutoFeature"
                 );
             }
@@ -83,6 +83,17 @@ export const AutoFeature: React.FC<Props> = ({fromProfile, type, url}) => {
     const [active, setActive] = useState<boolean>();
     const [author, setAuthor] = useState<string>();
     const [features, setFeatures] = useState<Feature[]>([]);
+    const [customUrl, setCustomUrl] = useState(url);
+
+    useEffect(() => {
+       if(fromProfile) {
+           messages.request(getUserIdByUrn(extractIdFromUrl(window.location.href)))
+               .then((profileId) => {
+                   setCustomUrl(customUrl + profileId);
+               });
+       }
+    },[]);
+
 
     const extractAuthor = (query: URLSearchParams, name: string) => {
         if (query.has(name)) {
@@ -100,10 +111,10 @@ export const AutoFeature: React.FC<Props> = ({fromProfile, type, url}) => {
             return;
         }
         getData();
-        const query = new URL(url);
+        const query = new URL(customUrl);
         extractAuthor(query.searchParams, "miniProfileUrn");
         extractAuthor(query.searchParams, "miniCompanyUrn");
-    }, [accessState]);
+    }, [accessState, customUrl]);
 
     useEffect(() => {
         const typedFeature = features.find(f => f.type === type);

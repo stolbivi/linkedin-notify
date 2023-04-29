@@ -95,16 +95,17 @@ const AutoFeaturesList = (props) => {
         }
     };
 
-
     useEffect(() => {
         if(props.accessState === AccessState.Valid) {
+            setCompleted(false);
             messages.request(getFeatures())
                 .then(async (resp) => {
                     if (resp && resp?.response?.features?.length > 0) {
-                        const features = resp?.response?.features;
-                        setAutoFeatures(await getFeatureProfiles(features));
+                        const features = resp.response.features;
+                        const autoFeatures = await getFeatureProfiles(features);
+                        setAutoFeatures(autoFeatures);
+                        setCompleted(true);
                     }
-                    setCompleted(true);
                 }).catch(_err => setCompleted(true));
         } else {
             setCompleted(true);
