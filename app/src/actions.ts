@@ -164,13 +164,13 @@ export const getSalary = createAction<string, any>("getSalary",
             const experience = api.extractExperience(experienceResponse);
             const titleResponse = await api.getTitle(token, experience.urn);
             const title = api.extractTitle(titleResponse);
+            delete experience.conversationUrn;
             let request = {...title, ...experience, location};
             if (experience.company?.universalName) {
                 const organizationResponse = await api.getOrganization(token, experience.company?.universalName);
                 const organization = api.extractOrganization(organizationResponse);
                 request = {...request, organization}
             }
-            delete experience.conversationUrn;
             const response = await backEndAPI.getSalary(request);
             return {...response, ...request};
         }));

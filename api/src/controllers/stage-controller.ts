@@ -25,8 +25,6 @@ export class StageController extends BaseController {
         try {
             const user =  request.user as User;
             const userStages = await UserStages.scan({ userId: user.id }).exec()
-            console.log('user-stages: ',userStages)
-            console.log('user id ', request.user)
             return Promise.resolve({ response: userStages, user: request.user });
         } catch (error) {
             return this.handleError(error, request);
@@ -74,9 +72,7 @@ export class StageController extends BaseController {
             let message: any = {response: result.map((i: any) => i.toJSON())};
             // @ts-ignore
             const latestObj = message.response.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
-            if (request?.user) {
-                message = {...latestObj, user: request.user};
-            }
+            message = {...latestObj};
             return Promise.resolve(message);
         } catch (error) {
             return this.handleError(error, request);
@@ -149,33 +145,6 @@ export class StageController extends BaseController {
             return Promise.resolve("Please, sign in to use premium features");
         }
         try {
-            if(ParentStageEnum.GEOGRAPHY !== body.parentStage && ParentStageEnum.GROUPS !== body.parentStage) {
-                await StageModel.scan("author").eq(body.author)
-                    .where("profileId").eq(body.profileId)
-                    .where("parentStage").eq(body.parentStage)
-                    .exec()
-                    .then((items: any[]) => {
-                        items.forEach((item) => {
-                            item.delete();
-                        });
-                    })
-                    .catch((error: any) => {
-                        console.log(error);
-                    });
-                await NoteModel.scan("author").eq(body.author)
-                    .where("profile").eq(body.profileId)
-                    .where("parentStage").eq(body.parentStage)
-                    .exec()
-                    .then((items: any[]) => {
-                        const filteredItems = items.filter(item => item.id !== body.id);
-                        filteredItems.forEach((item) => {
-                            item.delete();
-                        });
-                    })
-                    .catch((error: any) => {
-                        console.log(error);
-                    });
-            }
             const saved = await StageModel.create(body);
             let message: any = {response: saved.toJSON()};
             if (request?.user) {

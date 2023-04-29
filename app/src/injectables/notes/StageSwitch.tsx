@@ -93,7 +93,6 @@ export const stageChildData = {
     ],
     [StageParentData.STATUS]: [
         {name: StageEnum.Contacted},
-        {name: StageEnum.Pending},
         {name: StageEnum.Interview},
         {name: StageEnum.Offer},
         {name: StageEnum.Hired},
@@ -132,6 +131,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
     const [completed, setCompleted] = useState<boolean>(false);
     const messages = new MessagesV2(VERBOSE);
     const [isSelected, setIsSelected] = useState(false);
+    const [hovered, setHovered] = useState(false);
 
     useEffect(() => {
         if (activeStage !== undefined) {
@@ -187,7 +187,10 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
 
     return (
         <React.Fragment>
-            <div className={`stage ${(isSelected && StageLabels[type]) ? StageLabels[type].class : "inactive"}`} onClick={onClick}>
+            <div className={`stage ${((isSelected && StageLabels[type]) || hovered) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''}`}
+                 onClick={onClick}
+                 onMouseEnter={() => setHovered(true)}
+                 onMouseLeave={() => setHovered(false)}>
                 <div className="loader"><Loader show={!completed || activeStage === undefined}/></div>
                 <label style={{opacity: completed ? 1 : 0}}>{customText || StageLabels[type].label}</label>
             </div>

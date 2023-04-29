@@ -162,7 +162,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     if(parentCategory === IStatus.AVAILABILITY) {
       subCategories = [ICategory.Passive,ICategory.Active,ICategory.Open,ICategory.Not_Open,ICategory.Future];
     } else if (parentCategory === IStatus.STATUS) {
-      subCategories = [ICategory.Contacted,ICategory.Pending,ICategory.Interview,ICategory.Offer,ICategory.Hired,ICategory.Rejected];
+      subCategories = [ICategory.Contacted,ICategory.Interview,ICategory.Offer,ICategory.Hired,ICategory.Rejected];
     } else if (parentCategory === IStatus.TYPE) {
       subCategories = [ICategory.Part_Time,ICategory.Full_Time,ICategory.Permanent,ICategory.Contract,ICategory.Freelance];
     } else if (parentCategory === IStatus.GEOGRAPHY) {

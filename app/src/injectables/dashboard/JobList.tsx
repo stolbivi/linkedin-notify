@@ -207,13 +207,13 @@ const JobList = () => {
                                 <>
                                     <form onSubmit={handleSaveField}>
                                         <div style={{display: "flex"}}>
-                                            <svg width="4" style={{marginTop: "3px"}} height="7" viewBox="0 0 4 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <svg width="4" style={{marginTop: "3px"}} height="7" viewBox="0 0 4 7" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M3.5 1L1 3.5L3.5 6" stroke="#383637" strokeLinecap="round" strokeLinejoin="round"/>
                                             </svg>
                                             <h3 className={"job-back-text"} onClick={() => {setIsAddMode(false);setIsEditMode(false);setDetailsView(false);}}>Jobs List</h3>
                                         </div>
                                         {detailsView ? (
-                                            <span>{title}</span>
+                                            <span className="details-span">{title}</span>
                                         ) : (
                                             <input required={true} className={"edit-header-text"} type="text"
                                                    value={title}
@@ -227,7 +227,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"4px"}}>Type</span>
                                                 {
                                                     detailsView ? (
-                                                        <span>{type}</span>
+                                                        <span className="details-span">{type}</span>
                                                     ) : (
                                                         <select required={true} className="edit-select" name="dropdown"
                                                                 value={type}
@@ -243,7 +243,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"4px"}}>Geography</span>
                                                 {
                                                     detailsView ? (
-                                                        <span>{geography}</span>
+                                                        <span className="details-span">{geography}</span>
                                                     ) : (
                                                         <select required={true} className="edit-select" name="dropdown"
                                                                 value={geography}
@@ -258,7 +258,7 @@ const JobList = () => {
                                             <div className="edit-col">
                                                 <span className="edit-col-text" style={{paddingLeft:"10px"}}>Company Name</span>
                                                 {detailsView ? (
-                                                        <span>{company}</span>
+                                                        <span className="details-span">{company}</span>
                                                     ) : (
                                                         <input required={true} className="edit-input" type="text"
                                                                value={company} readOnly={detailsView}
@@ -270,7 +270,7 @@ const JobList = () => {
                                             <div className="edit-col">
                                                 <span className="edit-col-text" style={{paddingLeft:"10px"}}>Salary</span>
                                                 {detailsView ? (
-                                                    <span>{salary}</span>
+                                                    <span className="details-span">{salary}</span>
                                                 ) : (
                                                     <input required={true} className="edit-input" type="text"
                                                            value={salary} readOnly={detailsView}
@@ -283,7 +283,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"10px"}}>Hiring Contact</span>
                                                 {
                                                     detailsView ? (
-                                                        <span>{hiringContact}</span>
+                                                        <span className="details-span">{hiringContact}</span>
                                                     ) : (
                                                         <input required={true} className="edit-input" type="text" placeholder="Hiring Contact"
                                                                value={hiringContact} readOnly={detailsView}
@@ -295,7 +295,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"4px"}}>Status</span>
                                                 {
                                                     detailsView ? (
-                                                        <span>{status}</span>
+                                                        <span className="details-span">{status}</span>
                                                     ): (
                                                         <select required={true} className="edit-select" name="dropdown"
                                                                 value={status}
@@ -314,7 +314,7 @@ const JobList = () => {
                                                     <div className="edit-description-text">Description</div>
                                                     {
                                                         detailsView ? (
-                                                            <span> {description}</span>
+                                                            <span className="details-span"> {description}</span>
                                                         ) : (
                                                             <textarea required={true} className="edit-description-input"
                                                                       value={description} readOnly={detailsView}

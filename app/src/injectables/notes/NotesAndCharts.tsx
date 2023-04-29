@@ -16,7 +16,7 @@ import {NoNotes} from "../../icons/NoNotes";
 import {
     createCustomStage,
     getConversationProfile,
-    getCustomStages,
+    getCustomStages, getJobs,
     getNotesByProfile,
     getSalary,
     getStages,
@@ -111,6 +111,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [selectedTab, setSelectedTab] = useState("Track");
     const [fromListView, setFromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
+    const [jobs,setJobs] = useState([]);
     const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
@@ -198,6 +199,18 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                 Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
             }).catch(e => console.error(e.error));
         }
+
+        messages.request(getJobs())
+            .then((r) => {
+                setCompleted(true);
+                if(r?.error) {
+                    return;
+                } else {
+                    setJobs(r.response);
+                }
+            });
+
+
         return () => window.removeEventListener('popstate', listener)
     }, [window.location.href]);
 
@@ -316,12 +329,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                     ? <>loading...</>
                     : <div onClick={!isCreating ? () => setIsCreating(true) : undefined}
                            style={{cursor: "pointer"}}
-                           className={`create-new-group-wrapper ${isCreating ? "is-creating" : ""}`}>
+                           className={`create-new-group-wrapper customPill ${isCreating ? "is-creating" : ""}`}>
                         {isCreating ?
                             <form onSubmit={handleCustomTagSubmit}>
                                 <input value={customName}
                                        onChange={e => setCustomName(e.currentTarget.value)}
-                                       placeholder='Enter New Group Here'/>
+                                       placeholder='Enter Group Name'/>
                             </form>
                             : 'Add Group'
                         }
@@ -438,7 +451,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             </span>
                                             {
                                                 !allGroupsMode ? (
-                                                    <span style={{marginLeft:"400px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
+                                                    <span style={{marginLeft:"455px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
                                                           onClick={()=>setSelectedTab("Notes")}>
                                                         Notes
                                                         <label className="notes-counter">{notes ? notes.length : 0}</label>
@@ -501,7 +514,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                                      setNotes={setNotes}/>
                                                                         :
                                                                         <>
-                                                                            {customStages?.slice(0, 4).map(customStage => (
+                                                                            {customStages?.slice(0, 3).map(customStage => (
                                                                                 <StageSwitch
                                                                                     key={salaryInternal.urn}
                                                                                     type={StageEnum[customStage.text]}
@@ -517,8 +530,8 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                                     setNotes={setNotes}
                                                                                 />
                                                                             ))}
-                                                                            {customStages?.length > 4 && (
-                                                                                <div className="create-new-group-wrapper"
+                                                                            {customStages?.length > 3 && (
+                                                                                <div className="create-new-group-wrapper customPill"
                                                                                      style={{cursor: "pointer"}}
                                                                                      onClick={()=>setAllGroupsMode(true)}>
                                                                                     See all ({customStages.length})
@@ -533,7 +546,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                         <div className="assigned-job">
                                                             <p>Assigned Job: </p>
                                                             <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
-                                                                <option>Enter Job Name</option>
+                                                                <option>Select Job Name</option>
+                                                                {
+                                                                    jobs?.map(job => (
+                                                                        <option className="assigned-job-options" value={job.id}>{job.title}</option>
+                                                                    ))
+                                                                }
                                                             </select>
                                                         </div>
                                                     </div>
@@ -549,15 +567,15 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                             </div>
                                                         ) : null
                                                     }
-                                                    <div style={{width: fromListView ? "103%" : "50%"}}>
-                                                        <div className="scroll-container h-300" style={{height: "278px"}}>
+                                                    <div style={{width: fromListView ? "103%" : "45%"}}>
+                                                        <div className="scroll-container h-300" style={{height: "285px"}}>
                                                             <div className="scroll-content">
                                                                 {completed && notes?.map((n, i) => (
                                                                     <NoteCard key={i} note={n}
                                                                               currentCount={i} totalCount={notes.length}
-                                                                              lastNoteRef={lastNoteRef}/>)
-                                                                )
-                                                                }
+                                                                              lastNoteRef={lastNoteRef}/>
+                                                                    )
+                                                                )}
                                                                 {completed && notes.length == 0 &&
                                                                     <div className="no-notes">
                                                                         <NoNotes/>
