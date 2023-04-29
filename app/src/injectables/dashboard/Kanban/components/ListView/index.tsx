@@ -6,10 +6,50 @@ import stylesheet from './styles.scss';
 // @ts-ignore
 import { makeStyles } from '@material-ui/core/styles';
 
+
 // @ts-ignore
 const ListView = ({cards, messagesClickHandler, onNotesClick}, activeButton) => {
+
+    const useStyles = makeStyles({
+        root: {
+            '& .MuiDataGrid-row': {
+                backgroundColor: '#F2F2F2',
+            },
+            '& .MuiDataGrid-row:nth-child(even)': {
+                backgroundColor: 'white',
+            },
+            '& .MuiDataGrid-cell': {
+                borderBottom: 'none',
+            },
+        },
+        header: {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            fontSize: '12px',
+            height: '50px',
+        },
+        col1: {
+            width: '30%',
+        },
+        col2: {
+            width: '20%',
+        },
+        col3: {
+            width: '20%',
+        },
+        col4: {
+            width: '10%',
+        },
+        col5: {
+            width: '20%',
+        },
+    });
+
+    const classes = useStyles();
+
     const columns = [
-        { field: 'name', headerName: 'Full Name', flex: 1, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'left',
+        { field: 'name', headerName: 'Full Name', flex: 1, sortable: true, filterable: true, headerClassName: classes.header + ' ' + classes.col1, headerAlign: 'center', align: 'left',
             renderCell: (params) => (
                 <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
                      onClick={()=>window.open(`https://www.linkedin.com/in/${params.row.userId}`, '_blank')}>
@@ -18,15 +58,15 @@ const ListView = ({cards, messagesClickHandler, onNotesClick}, activeButton) => 
                 </div>
             )
         },
-        { field: 'designation', headerName: 'Position', flex: 1, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'left' },
-        { field: 'companyName', headerName: 'Company Name', flex: 2, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'center' },
-        { field: 'status', headerName: 'Status', flex: 2, sortable: true, filterable: false, headerClassName: 'job-column job-table-heading th-status', headerAlign: 'center', align: 'center',
+        { field: 'designation', headerName: 'Position', flex: 1, sortable: true, filterable: true, headerClassName: classes.header + ' ' + classes.col2, headerAlign: 'center', align: 'left' },
+        { field: 'companyName', headerName: 'Company Name', flex: 2, sortable: true, filterable: true, headerClassName: classes.header + ' ' + classes.col3, headerAlign: 'center', align: 'center' },
+        { field: 'status', headerName: 'Status', flex: 2, sortable: true, filterable: false, headerClassName: classes.header + ' ' + classes.col4, headerAlign: 'center', align: 'center',
             renderCell: (params) => (
                 <Status card={params.row} activeButton={activeButton}/>
             )
         },
         {
-            field: 'action', headerName: 'Action', flex: 2, sortable: false, filterable: false, headerClassName: 'job-column job-table-heading th-action', headerAlign: 'center', align: 'center',
+            field: 'action', headerName: 'Action', flex: 2, sortable: false, filterable: false, headerClassName: classes.header + ' ' + classes.col5, headerAlign: 'center', align: 'center',
             renderCell: (params) => (
                 <>
                     <button className="btn action-btn-color" onClick={(event)=>messagesClickHandler(event,params.row.conversationUrn)}>
@@ -55,29 +95,9 @@ const ListView = ({cards, messagesClickHandler, onNotesClick}, activeButton) => 
         return params.index % 2 === 0 ? 'stripe-row' : '';
     };
 
-    const useStyles = makeStyles({
-        root: {
-            '& .MuiDataGrid-row': {
-                backgroundColor: 'white',
-            },
-            '& .MuiDataGrid-row:nth-child(even)': {
-                backgroundColor: '#F2F2F2',
-            },
-            '& .MuiDataGrid-cell': {
-                borderBottom: 'none',
-            },
-            '& .MuiDataGrid-root': {
-                border: 'none',
-                padding: '0px'
-            },
-        },
-    });
-
-    const classes = useStyles();
 
     return (
         <>
-            <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="table list-table table-custom" style={{ height: '500px', width: '100%' }}>
                 <DataGrid
                     columns={columns}
