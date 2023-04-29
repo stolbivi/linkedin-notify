@@ -7,21 +7,22 @@ import stylesheet from './styles.scss';
 import { makeStyles } from '@material-ui/core/styles';
 
 // @ts-ignore
-const ListView = ({cards, messagesClickHandler, onNotesClick}) => {
+const ListView = ({cards, messagesClickHandler, onNotesClick}, activeButton) => {
     const columns = [
         { field: 'name', headerName: 'Full Name', flex: 1, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'left',
             renderCell: (params) => (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                     onClick={()=>window.open(`https://www.linkedin.com/in/${params.row.userId}`, '_blank')}>
                     <img src={params.row.profileImg} alt="img" width={30} height={30} style={{ borderRadius: '100%' }} />
                     <span style={{ padding: '4%', fontSize: '12px' }}>{params.row.name}</span>
                 </div>
             )
         },
         { field: 'designation', headerName: 'Position', flex: 1, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'left' },
-        { field: 'companyName', headerName: 'Company Name', flex: 1, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'center' },
-        { field: 'status', headerName: 'Status', flex: 1, sortable: true, filterable: false, headerClassName: 'job-column job-table-heading th-status', headerAlign: 'center', align: 'center',
+        { field: 'companyName', headerName: 'Company Name', flex: 2, sortable: true, filterable: true, headerClassName: 'job-column job-table-heading', headerAlign: 'center', align: 'center' },
+        { field: 'status', headerName: 'Status', flex: 2, sortable: true, filterable: false, headerClassName: 'job-column job-table-heading th-status', headerAlign: 'center', align: 'center',
             renderCell: (params) => (
-                <Status card={params.row}/>
+                <Status card={params.row} activeButton={activeButton}/>
             )
         },
         {
@@ -82,8 +83,6 @@ const ListView = ({cards, messagesClickHandler, onNotesClick}) => {
                     columns={columns}
                     rows={cards}
                     rowHeight={90}
-                    checkboxSelection
-                    disableSelectionOnClick={false}
                     getRowClassName={getRowClassName}
                     className={classes.root}
                 />

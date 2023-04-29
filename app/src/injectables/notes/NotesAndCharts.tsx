@@ -364,7 +364,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         }
     },[selectedTab]);
 
-    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${!showSalary ? 'custom-width' : ''}`;
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary && !fromListView) ? 'custom-width' : ''}`;
 
     // @ts-ignore
     return (

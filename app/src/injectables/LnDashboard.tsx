@@ -43,7 +43,7 @@ export const LnDashboard: React.FC<Props> = ({}) => {
     const dashboardClickHandler = () => {
         const navBarElement = document.querySelector('.scaffold-layout.scaffold-layout--breakpoint-xl');
         if (navBarElement) {
-            const newUrl = 'https://www.linkedin.com/dashboard/';
+            const newUrl = 'https://www.linkedin.com/lndashboard/';
             window.history.replaceState({ path: newUrl }, '', newUrl);
             document.getElementsByClassName("global-nav__primary-link--active")[0]?.classList?.remove("global-nav__primary-link--active");
             ReactDOM.render(<Navbar/>, navBarElement);
