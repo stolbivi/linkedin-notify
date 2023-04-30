@@ -1,6 +1,7 @@
 import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {
+    AssignedJob,
     Badges,
     Features,
     Invitation,
@@ -21,7 +22,6 @@ import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
 import {setLastViewed as setLastViewedAction} from "./store/LastViewedReducers";
 import Cookie = chrome.cookies.Cookie;
-
 const messagesV2 = new MessagesV2(VERBOSE);
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
@@ -583,7 +583,9 @@ export const deleteStage = createAction<string, any>("deleteStage",
 export const postJob = createAction<Job, any>("postJob",
     (job) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
-        .then(async () => {
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            job.author = api.extractProfileUrn(me);
             const { response } = await backEndAPI.postJob(job)
             return response
         })
@@ -595,7 +597,9 @@ export const getJobs = createAction<{}, any>("getJobs",
 export const updateJob = createAction<Job, any>("updateJob",
     (job) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
-        .then(async () => {
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            job.author = api.extractProfileUrn(me);
             const { response } = await backEndAPI.updateJob(job)
             return response
         })
@@ -639,3 +643,31 @@ export const getLatestStage = createAction<string, any>("getLatestStage",
             const as = api.extractProfileUrn(me);
             return backEndAPI.getLatestStage(profile,as);
         }));
+
+export const assignJob = createAction("assignJob",
+    (payload: { jobId: string, url: string}) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const job: AssignedJob = {jobId: payload.jobId, rcpntUserId: payload.url, author: api.extractProfileUrn(me)};
+            const { response } = await backEndAPI.assignJob(job)
+            return response
+        })
+)
+
+export const getAssignedJob = createAction("getAssignedJob",
+    (payload: {url: string}) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const { response } = await backEndAPI.getAssignedJob(payload.url,api.extractProfileUrn(me));
+            return response
+        })
+)
+
+export const getMe = createAction("getMe", () => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            return await api.getMe(token)
+        })
+)

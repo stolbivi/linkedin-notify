@@ -16,7 +16,7 @@ import {NoNotes} from "../../icons/NoNotes";
 import {
     createCustomStage,
     getConversationProfile,
-    getCustomStages, getJobs,
+    getCustomStages,
     getNotesByProfile,
     getSalary,
     getStages,
@@ -29,6 +29,7 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import stylesheet from "./NotesAndCharts.scss";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
+import AssignedJobs from "../../components/AssignedJobs";
 
 export const NotesAndChartsFactory = () => {
     setTimeout(() => {
@@ -111,7 +112,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [selectedTab, setSelectedTab] = useState("Track");
     const [fromListView, setFromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
-    const [jobs,setJobs] = useState([]);
     const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
@@ -199,18 +199,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                 Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
             }).catch(e => console.error(e.error));
         }
-
-        messages.request(getJobs())
-            .then((r) => {
-                setCompleted(true);
-                if(r?.error) {
-                    return;
-                } else {
-                    setJobs(r.response);
-                }
-            });
-
-
         return () => window.removeEventListener('popstate', listener)
     }, [window.location.href]);
 
@@ -549,17 +537,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        <div className="assigned-job">
-                                                            <p>Assigned Job: </p>
-                                                            <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
-                                                                <option>Select Job Name</option>
-                                                                {
-                                                                    jobs?.map(job => (
-                                                                        <option className="assigned-job-options" value={job.id}>{job.title}</option>
-                                                                    ))
-                                                                }
-                                                            </select>
-                                                        </div>
+                                                        <AssignedJobs/>
                                                     </div>
                                                 ) : null
                                             }

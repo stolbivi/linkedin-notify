@@ -134,4 +134,12 @@ export interface Job {
     status?: string
     assigned?: string
     description?: string
+    author?: string
+}
+export interface AssignedJob {
+    id?: string
+    jobId?: string
+    author?: string
+    rcpntUserId?: string
+    assignedBy?: string
 }

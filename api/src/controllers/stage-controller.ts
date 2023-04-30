@@ -4,8 +4,6 @@ import {BaseController} from "./base-controller";
 import {ParentStageEnum, StageEnum, StageModel, StageWithId} from "../persistence/stage-model";
 import { UserStages } from "../persistence/user-stages";
 import {User} from "../persistence/user-model";
-import {NoteModel} from "../persistence/note-model";
-
 
 @Route("/api")
 export class StageController extends BaseController {

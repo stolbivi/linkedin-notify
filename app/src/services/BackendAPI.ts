@@ -1,5 +1,5 @@
 import {BaseAPI, Response} from "./BaseAPI";
-import {BACKEND_API, Features, Job, Note, Shared, Subscriptions, UserStage} from "../global";
+import {AssignedJob, BACKEND_API, Features, Job, Note, Shared, Subscriptions, UserStage} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
 import {SetFeaturePayload} from "../actions";
 import {LastViewed} from "../store/LastViewedReducers";
@@ -192,4 +192,17 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
+    public assignJob(job: AssignedJob): Promise<Response<AssignedJob>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/assign`,
+            this.getRequest("POST", job)
+        );
+    }
+
+    public getAssignedJob(rcpntUserId: string, author: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/assigned/${rcpntUserId}` + (author ? `?author=${author}` : ""),
+            this.getRequest("GET")
+        );
+    }
 }
