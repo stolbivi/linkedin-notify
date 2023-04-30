@@ -62,6 +62,12 @@ export const MapsLoader: React.FC<Props> = ({}) => {
         localStore.dispatch(getGeoTzAction(searchParams.get("id")));
     }, [])
 
+    useEffect(() => {
+        if (src) {
+            mapContainer.current?.contentWindow.location.replace(src);
+        }
+    }, [src])
+
     return (
         <div className="map-loader">
             <div className="map-sub-container">

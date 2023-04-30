@@ -2,11 +2,10 @@ import React, {useEffect, useState} from "react";
 import {extractIdFromUrl, VERBOSE} from "../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {inject} from "../utils/InjectHelper";
-
-// @ts-ignore
-import stylesheet from "./Maps.scss";
 import {getSubscription} from "../actions";
 import {useUrlChangeSupport} from "../utils/URLChangeSupport";
+// @ts-ignore
+import stylesheet from "./Maps.scss";
 
 type Props = {
     host: HTMLElement
@@ -34,6 +33,8 @@ export const Maps: React.FC<Props> = ({host}) => {
     const [disabled, setDisabled] = useState(true);
     const [src, setSrc] = useState<string>();
     const [urlInternal] = useUrlChangeSupport(window.location.href);
+
+    const iframeContainer = React.createRef<HTMLIFrameElement>();
 
     useEffect(() => {
         for (let i = 0; i < host.children.length; i++) {
@@ -75,11 +76,17 @@ export const Maps: React.FC<Props> = ({host}) => {
             }).then(/* nada */);
     }, []);
 
+    useEffect(() => {
+        if (src) {
+            iframeContainer.current?.contentWindow.location.replace(src);
+        }
+    }, [src])
+
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="iframe-container">
-                <iframe scrolling="no" height="200" src={src}></iframe>
+                <iframe scrolling="no" height="200" ref={iframeContainer} src={src}></iframe>
             </div>
         </React.Fragment>
     );
