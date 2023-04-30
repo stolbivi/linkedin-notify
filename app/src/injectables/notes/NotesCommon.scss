@@ -115,6 +115,10 @@
   }
 }
 
+.scroll-container-parent{
+  border-left: 1px solid $add-status-border;
+}
+
 .scroll-container {
   padding: 1.5em;
   display: flex;

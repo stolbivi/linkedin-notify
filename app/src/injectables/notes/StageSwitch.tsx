@@ -187,7 +187,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
 
     return (
         <React.Fragment>
-            <div className={`stage ${((isSelected && StageLabels[type]) || hovered) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''}`}
+            <div className={`pill-parent stage ${((isSelected && StageLabels[type]) || hovered) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''}`}
                  onClick={onClick}
                  onMouseEnter={() => setHovered(true)}
                  onMouseLeave={() => setHovered(false)}>

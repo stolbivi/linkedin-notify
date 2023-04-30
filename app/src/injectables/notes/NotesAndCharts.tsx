@@ -287,11 +287,16 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const close = () => {
         setShow(false);
         setShowChart(false);
+        const body = document.querySelector('body');
+        body.classList.remove('popup-open');
     }
 
     const onExpanded = () => {
         setShowChart(true);
+        const body = document.querySelector('body');
+        body.classList.add('popup-open');
     }
+
 
     const CreateNewGroup = () => {
         const [isCreating, setIsCreating] = useState(false)
@@ -385,7 +390,8 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
             {show &&
                 <React.Fragment>
                     <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-                    <div onTransitionEnd={() => onExpanded()}
+                    <div className="popup-backdrop" onClick={() => close()}></div>
+                    <div id="notes-charts-container" onTransitionEnd={() => onExpanded()}
                          className={notesAndChartsClass}
                          ref={rootElement}
                          style={{...(fromListView && { left: 'auto' }), ...(!showSalary && { width: '1000px !important' })}}>
@@ -451,7 +457,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             </span>
                                             {
                                                 !allGroupsMode ? (
-                                                    <span style={{marginLeft:"455px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
+                                                    <span style={{marginLeft:"398px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
                                                           onClick={()=>setSelectedTab("Notes")}>
                                                         Notes
                                                         <label className="notes-counter">{notes ? notes.length : 0}</label>
@@ -567,8 +573,8 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                             </div>
                                                         ) : null
                                                     }
-                                                    <div style={{width: fromListView ? "103%" : "45%"}}>
-                                                        <div className="scroll-container h-300" style={{height: "285px"}}>
+                                                    <div className="scroll-container-parent" style={{width: fromListView ? "103%" : "45%"}}>
+                                                        <div className="scroll-container h-300" style={{height: "285px", width: "492px", paddingLeft: "26px"}}>
                                                             <div className="scroll-content">
                                                                 {completed && notes?.map((n, i) => (
                                                                     <NoteCard key={i} note={n}

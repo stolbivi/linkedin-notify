@@ -154,5 +154,6 @@ export const theme: Theme = {
     "--kanban-table-list-card-color": "#FFFFFF",
     "--kanban-table-bottom-border-color": "#ffffff33",
     "--kanban-table-message-color": "#CACACA",
-    "--kanban-table-action-btn-color": "#FFFFFF"
+    "--kanban-table-action-btn-color": "#FFFFFF",
+    "--add-status-border": "#ffffff36"
 }

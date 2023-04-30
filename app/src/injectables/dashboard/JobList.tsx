@@ -207,8 +207,8 @@ const JobList = () => {
                                 <>
                                     <form onSubmit={handleSaveField}>
                                         <div style={{display: "flex"}}>
-                                            <svg width="4" style={{marginTop: "3px"}} height="7" viewBox="0 0 4 7" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M3.5 1L1 3.5L3.5 6" stroke="#383637" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <svg style={{marginTop: "3px"}} className="icon-color" width="4" height="7" viewBox="0 0 4 7" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M3.5 1L1 3.5L3.5 6" stroke="#383637" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                                             </svg>
                                             <h3 className={"job-back-text"} onClick={() => {setIsAddMode(false);setIsEditMode(false);setDetailsView(false);}}>Jobs List</h3>
                                         </div>

@@ -349,3 +349,7 @@
 td{
   padding-left: 28px !important;
 }
+
+.icon-color path {
+  stroke: $kanban-table-action-btn-color;
+}

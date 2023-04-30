@@ -8,6 +8,17 @@
 @import "PayExtrapolationChart";
 @import "../Credits";
 
+.popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 10;
+}
+
 .position-collapsed {
   width: 75px;
   height: 75px;
@@ -31,8 +42,8 @@
   border-radius: 9px;
   overflow: hidden;
   padding-top: 1em;
-  padding-left: 0.7em;
-  padding-right: 2.8em;
+  padding-left: 16px;
+  padding-right: 20px;
   position: absolute;
   top: 25px;
   z-index: 15;
@@ -45,8 +56,8 @@
 
   .close-button {
     position: absolute;
-    right: 0.25em;
-    top: 0.25em;
+    right: 10px;
+    top: 10px;
     cursor: pointer;
     width: 1em;
     height: 1em;
@@ -57,8 +68,7 @@
 
   .footer-child {
     margin-top: 0.5em;
-    margin-left: -1.5em;
-    margin-right: -1.5em;
+    margin-right: -6.5em;
   }
 
 }
@@ -131,7 +141,7 @@
 .stage-parents-container {
   display: flex;
   flex-direction: row;
-  width: 55%;
+  width: 48%;
   flex-wrap: wrap;
   padding: 10px;
   margin-bottom: 20px;
