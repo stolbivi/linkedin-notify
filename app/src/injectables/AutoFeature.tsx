@@ -53,12 +53,25 @@ export const AutoFeatureFactory = () => {
             })
         }
         else if(window.location.href.indexOf("/in/") > 0){
+            console.log("In profile");
             const aside = document.getElementsByClassName("pv-top-card--photo text-align-left pv-top-card--photo-resize");
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
                     <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-20.5rem"}}>
                         <AutoFeature fromProfile={true} url={`https://www.linkedin.com/in/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"like"}/>
                         <AutoFeature fromProfile={true} url={`https://www.linkedin.com/in/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"repost"}/>
+                    </div>, "AutoFeature"
+                );
+            }
+        }
+        else if(window.location.href.indexOf("/company/") > 0){
+            console.log("In company");
+            const aside = document.getElementsByClassName("pv-top-card--photo text-align-left pv-top-card--photo-resize");
+            if (aside && aside.length > 0) {
+                inject(aside[0], `auto-features-profile`, "before",
+                    <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-20.5rem"}}>
+                        <AutoFeature fromProfile={true} url={`https://www.linkedin.com/company/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"like"}/>
+                        <AutoFeature fromProfile={true} url={`https://www.linkedin.com/company/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"repost"}/>
                     </div>, "AutoFeature"
                 );
             }
