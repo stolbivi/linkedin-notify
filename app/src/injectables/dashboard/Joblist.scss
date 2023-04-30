@@ -1,14 +1,13 @@
 @import "~bootstrap/dist/css/bootstrap.css";
 @import "../AccessGuard";
+
 .body {
-  //background-color: $boolean-base-card;
   font-family: Arial, sans-serif;
   max-width: 1200px;
   width: 1200px;
+  min-width: 1200px;
   margin: auto;
-  padding: 20px;
-  padding-right: 100px;
-  padding-top: 40px;
+  padding: 40px 100px 20px 20px;
 }
 
 .search-box {
@@ -224,6 +223,7 @@
   flex-wrap: wrap;
   justify-content: left;
   padding-top: 20px;
+  min-height: 350px;
 }
 
 .edit-container-internal{
@@ -245,6 +245,7 @@
   font-size: 12px;
   padding-left: 5px;
   opacity: 60%;
+  background-color: $joblist-edit-input !important;
 }
 
 .edit-select:hover, .edit-select:focus {
@@ -256,6 +257,7 @@
   box-shadow: none !important;
   margin-top: 7px;
   font-size: 13px !important;
+  background-color: $joblist-edit-input !important;
 }
 
 .edit-description{
@@ -278,7 +280,8 @@
 
 .edit-description-input{
   margin-top: 10px;
-  height: 70px!important;
+  height: 233px!important;
+  width: 1045px;
   text-align: left;
   vertical-align: top;
   font-size: 15px;
@@ -295,7 +298,8 @@
 
 .edit-buttons{
   width: 20%;
-  margin-left: 20px;
+  margin-left: 615px;
+  display: flex;
 }
 
 .confirm-button {
@@ -308,7 +312,7 @@
   left: 0px;
   top: 0px;
   padding: 7px 18px 7px 18px;
-  margin-top: 20px;
+  margin-top: 16px;
   margin-left: 25px;
 }
 
@@ -323,11 +327,12 @@
   left: 0px;
   top: 0px;
   padding: 7px 18px 7px 18px;
-  margin-top: 0px;
+  margin-top: 16px;
   margin-left: 25px;
 }
 
 .edit-header-text{
+  width: fit-content;
   margin-top: 17px;
   font-size: 20px !important;
   font-weight: bold !important;

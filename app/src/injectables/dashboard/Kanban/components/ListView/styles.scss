@@ -267,4 +267,11 @@ td {
 
 .details-span {
   color: $base-card-title;
+  font-size: 20px !important;
+  font-weight: 600;
+}
+
+.details-span-col {
+  color: $base-card-title;
+  font-size: 14px !important;
 }

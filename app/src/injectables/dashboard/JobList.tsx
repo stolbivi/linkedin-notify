@@ -213,13 +213,24 @@ const JobList = () => {
                                             <h3 className={"job-back-text"} onClick={() => {setIsAddMode(false);setIsEditMode(false);setDetailsView(false);}}>Jobs List</h3>
                                         </div>
                                         {detailsView ? (
-                                            <span className="details-span">{title}</span>
+                                            <h2 className="details-span">{title}</h2>
                                         ) : (
-                                            <input required={true} className={"edit-header-text"} type="text"
-                                                   value={title}
-                                                   readOnly={detailsView}
-                                                   placeholder={isAddMode ? "Add Job Name" : "Edit Job Name"}
-                                                   onChange={(event) => setTitle(event.target.value)}/>
+                                            <div style={{display: "flex"}}>
+                                                <input required={true} className={"edit-header-text"} type="text"
+                                                       value={title}
+                                                       readOnly={detailsView}
+                                                       placeholder={isAddMode ? "Add Job Name" : "Edit Job Name"}
+                                                       onChange={(event) => setTitle(event.target.value)}
+                                                />
+                                                {
+                                                    !detailsView ? (
+                                                        <div className="edit-buttons">
+                                                            <button className="reset-button" onClick={resetHandler}>Close</button>
+                                                            <button className="confirm-button" type="submit" >Confirm</button>
+                                                        </div>
+                                                    ) : null
+                                                }
+                                            </div>
                                         )
                                         }
                                         <div className="edit-container">
@@ -227,7 +238,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"4px"}}>Type</span>
                                                 {
                                                     detailsView ? (
-                                                        <span className="details-span">{type}</span>
+                                                        <h3 className="details-span-col">{type}</h3>
                                                     ) : (
                                                         <select required={true} className="edit-select" name="dropdown"
                                                                 value={type}
@@ -243,7 +254,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"4px"}}>Geography</span>
                                                 {
                                                     detailsView ? (
-                                                        <span className="details-span">{geography}</span>
+                                                        <h3 className="details-span-col">{geography}</h3>
                                                     ) : (
                                                         <select required={true} className="edit-select" name="dropdown"
                                                                 value={geography}
@@ -258,7 +269,7 @@ const JobList = () => {
                                             <div className="edit-col">
                                                 <span className="edit-col-text" style={{paddingLeft:"10px"}}>Company Name</span>
                                                 {detailsView ? (
-                                                        <span className="details-span">{company}</span>
+                                                        <h3 className="details-span-col">{company}</h3>
                                                     ) : (
                                                         <input required={true} className="edit-input" type="text"
                                                                value={company} readOnly={detailsView}
@@ -270,7 +281,7 @@ const JobList = () => {
                                             <div className="edit-col">
                                                 <span className="edit-col-text" style={{paddingLeft:"10px"}}>Salary</span>
                                                 {detailsView ? (
-                                                    <span className="details-span">{salary}</span>
+                                                    <h3 className="details-span-col">{salary}</h3>
                                                 ) : (
                                                     <input required={true} className="edit-input" type="text"
                                                            value={salary} readOnly={detailsView}
@@ -283,7 +294,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"10px"}}>Hiring Contact</span>
                                                 {
                                                     detailsView ? (
-                                                        <span className="details-span">{hiringContact}</span>
+                                                        <h3 className="details-span-col">{hiringContact}</h3>
                                                     ) : (
                                                         <input required={true} className="edit-input" type="text" placeholder="Hiring Contact"
                                                                value={hiringContact} readOnly={detailsView}
@@ -295,7 +306,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"4px"}}>Status</span>
                                                 {
                                                     detailsView ? (
-                                                        <span className="details-span">{status}</span>
+                                                        <h3 className="details-span-col">{status}</h3>
                                                     ): (
                                                         <select required={true} className="edit-select" name="dropdown"
                                                                 value={status}
@@ -314,7 +325,7 @@ const JobList = () => {
                                                     <div className="edit-description-text">Description</div>
                                                     {
                                                         detailsView ? (
-                                                            <span className="details-span"> {description}</span>
+                                                            <h3 className="details-span-col"> {description}</h3>
                                                         ) : (
                                                             <textarea required={true} className="edit-description-input"
                                                                       value={description} readOnly={detailsView}
@@ -322,14 +333,6 @@ const JobList = () => {
                                                         )
                                                     }
                                                 </div>
-                                                {
-                                                    !detailsView ? (
-                                                        <div className="edit-buttons">
-                                                            <button className="reset-button" onClick={resetHandler}>Reset</button>
-                                                            <button className="confirm-button" type="submit" >Confirm</button>
-                                                        </div>
-                                                    ) : null
-                                                }
                                             </div>
                                         </div>
                                     </form>

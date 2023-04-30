@@ -155,5 +155,6 @@ export const theme: Theme = {
     "--kanban-table-bottom-border-color": "#ffffff33",
     "--kanban-table-message-color": "#CACACA",
     "--kanban-table-action-btn-color": "#FFFFFF",
-    "--add-status-border": "#ffffff36"
+    "--add-status-border": "#ffffff36",
+    "--joblist-edit-input": "#23272c",
 }
