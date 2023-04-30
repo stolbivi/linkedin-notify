@@ -549,6 +549,7 @@ export class LinkedInAPI {
     public extractCompany(id: string, response: any): any {
         let name: any[] = [];
         let profilePicture = undefined;
+        let entityUrn;
         if (response && response.elements) {
             const company = response.elements[0];
             if (company) {
@@ -556,9 +557,10 @@ export class LinkedInAPI {
                 const artifacts = extractArtifacts(company.logo.image["com.linkedin.common.VectorImage"].artifacts);
                 const rootUrl = company.logo.image["com.linkedin.common.VectorImage"].rootUrl;
                 profilePicture = {rootUrl, artifacts};
+                entityUrn = company.entityUrn;
             }
         }
-        return {id, name, profilePicture};
+        return {id, name, profilePicture, entityUrn};
     }
 
 

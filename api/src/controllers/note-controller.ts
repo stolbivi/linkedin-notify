@@ -121,10 +121,12 @@ export class NoteController extends BaseController {
                         console.log(error);
                     });
             }
-            const stageController = new StageController();
-            await stageController.findLatestStage(body.profile,body.author).then(resp => {
-                body.stageFrom = resp?.stage >= 0 ? resp?.stage : -1
-            })
+            if(!body.text) {
+                const stageController = new StageController();
+                await stageController.findLatestStage(body.profile,body.author).then(resp => {
+                    body.stageFrom = resp?.stage >= 0 ? resp?.stage : -1
+                })
+            }
             const toCreate = {...body, id: uuid()};
             const saved = await NoteModel.create(toCreate);
             let message: any = {response: saved.toJSON()};

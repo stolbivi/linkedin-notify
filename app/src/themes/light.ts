@@ -94,7 +94,7 @@ export const theme: Theme = {
     "--notes-counter": "#585858",
     "--notes-color-1": "white",
     "--notes-color-2": "#D9D9D9",
-    "--notes-color-3": "#4A4A4A54",
+    "--notes-color-3": "#0000009e",
     "--notes-color-4": "4A4A4A54",
     "--notes-color-5": "4A4A4A54",
 

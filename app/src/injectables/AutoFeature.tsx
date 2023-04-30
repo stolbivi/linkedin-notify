@@ -7,7 +7,7 @@ import {AccessGuard, AccessState} from "./AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./AutoFeature.scss";
-import {getFeatures, getUserIdByUrn, setFeatures as setFeaturesAction} from "../actions";
+import {getCompanyByUrn, getFeatures, getMe, getUserIdByUrn, setFeatures as setFeaturesAction} from "../actions";
 import {Tooltip} from "react-bootstrap";
 
 const LikeSVG = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false">
@@ -53,7 +53,6 @@ export const AutoFeatureFactory = () => {
             })
         }
         else if(window.location.href.indexOf("/in/") > 0){
-            console.log("In profile");
             const aside = document.getElementsByClassName("pv-top-card--photo text-align-left pv-top-card--photo-resize");
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
@@ -65,13 +64,12 @@ export const AutoFeatureFactory = () => {
             }
         }
         else if(window.location.href.indexOf("/company/") > 0){
-            console.log("In company");
-            const aside = document.getElementsByClassName("pv-top-card--photo text-align-left pv-top-card--photo-resize");
+            const aside = document.getElementsByClassName("live-video-hero-image");
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
-                    <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-20.5rem"}}>
-                        <AutoFeature fromProfile={true} url={`https://www.linkedin.com/company/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"like"}/>
-                        <AutoFeature fromProfile={true} url={`https://www.linkedin.com/company/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"repost"}/>
+                    <div style={{marginLeft: "-8rem", marginTop: "-0.5rem", position: "absolute"}}>
+                        <AutoFeature fromCompany={true} url={`https://www.linkedin.com/company/${extractIdFromUrl(window.location.href)}?miniCompanyUrn=urn%3Ali%3Afs_miniCompany%3A`} type={"like"}/>
+                        <AutoFeature fromCompany={true} url={`https://www.linkedin.com/company/${extractIdFromUrl(window.location.href)}?miniCompanyUrn=urn%3Ali%3Afs_miniCompany%3A`} type={"repost"}/>
                     </div>, "AutoFeature"
                 );
             }
@@ -80,13 +78,14 @@ export const AutoFeatureFactory = () => {
 }
 
 type Props = {
-    fromProfile: boolean
+    fromProfile?: boolean
+    fromCompany?: boolean
     type: string
     url: string
 };
 
 // @ts-ignore
-export const AutoFeature: React.FC<Props> = ({fromProfile, type, url}) => {
+export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url}) => {
 
     const messages = new MessagesV2(VERBOSE);
 
@@ -97,13 +96,28 @@ export const AutoFeature: React.FC<Props> = ({fromProfile, type, url}) => {
     const [author, setAuthor] = useState<string>();
     const [features, setFeatures] = useState<Feature[]>([]);
     const [customUrl, setCustomUrl] = useState(url);
+    const [show, setShow] = useState(true);
 
     useEffect(() => {
        if(fromProfile) {
-           messages.request(getUserIdByUrn(extractIdFromUrl(window.location.href)))
+           const userId = extractIdFromUrl(window.location.href);
+           messages.request(getUserIdByUrn(userId))
                .then((profileId) => {
                    setCustomUrl(customUrl + profileId);
                });
+           messages.request(getMe()).then(resp => {
+               if(userId === resp.miniProfile.publicIdentifier) {
+                   setShow(false);
+               }
+           });
+       }
+       if(fromCompany) {
+            messages.request(getCompanyByUrn(extractIdFromUrl(window.location.href)))
+                .then((resp) => {
+                    const parts = resp.entityUrn.split(":");
+                    const companyId = parts[parts.length - 1];
+                    setCustomUrl(customUrl + companyId);
+                });
        }
     },[]);
 
@@ -143,7 +157,6 @@ export const AutoFeature: React.FC<Props> = ({fromProfile, type, url}) => {
 
     const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
-
         e.stopPropagation();
         setCompleted(false);
         messages.request(setFeaturesAction({author, type, action: active ? "unset" : "set"}))
@@ -166,10 +179,10 @@ export const AutoFeature: React.FC<Props> = ({fromProfile, type, url}) => {
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px10"}
                          loaderClassName={"loader-base loader-px10"} hideTitle/>
-            {accessState === AccessState.Valid &&
+            {accessState === AccessState.Valid && show &&
                 <Tooltip title={type === 'like' ? 'Allows you to automatically like future posts by this user' : 'Allows you to automatically share future posts by this user'}>
                     {
-                        fromProfile?(
+                        (fromProfile || fromCompany) ?(
                             <div className={`auto-pill-profile-${active ? "on" : "off"}`}
                                  onClick={(e) => onClick(e)}>
                                 <Loader show={!completed}/>

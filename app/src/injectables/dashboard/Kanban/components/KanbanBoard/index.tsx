@@ -155,6 +155,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
       setActiveButton(button);
     }
   }
+
   const populateKanbanData = (parentCategory: string) => {
     let updatedCards: ICard[] = [];
     let cardsIdsByStatus = {};
@@ -260,6 +261,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
             return accumulator;
             }, []);
       dispatch(setCards(updatedCards));
+    } else {
+      populateKanbanData(activeButton);
     }
   },[listView,activeButton])
 
