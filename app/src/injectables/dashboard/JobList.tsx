@@ -213,7 +213,7 @@ const JobList = () => {
                                             <h3 className={"job-back-text"} onClick={() => {setIsAddMode(false);setIsEditMode(false);setDetailsView(false);}}>Jobs List</h3>
                                         </div>
                                         {detailsView ? (
-                                            <h2 className="details-span">{title}</h2>
+                                            <span className="details-span">{title}</span>
                                         ) : (
                                             <div style={{display: "flex"}}>
                                                 <input required={true} className={"edit-header-text"} type="text"
@@ -238,7 +238,13 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"4px"}}>Type</span>
                                                 {
                                                     detailsView ? (
-                                                        <h3 className="details-span-col">{type}</h3>
+                                                        <div>
+                                                            <svg style={{marginBottom: "5px"}} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M9.03332 13.4399C8.85998 13.5133 8.67332 13.5799 8.47332 13.6466L7.41998 13.9933C4.77332 14.8466 3.37998 14.1333 2.51998 11.4866L1.66665 8.85328C0.813317 6.20661 1.51998 4.80661 4.16665 3.95328L5.19332 3.61328C5.06665 3.93328 4.95998 4.29995 4.85998 4.71328L4.20665 7.50661C3.47332 10.6466 4.54665 12.3799 7.68665 13.1266L8.80665 13.3933C8.87998 13.4133 8.95998 13.4266 9.03332 13.4399Z" fill="#909090"/>
+                                                                <path d="M11.4467 2.13996L10.3334 1.87996C8.1067 1.3533 6.78004 1.78663 6.00004 3.39996C5.80004 3.80663 5.64004 4.29996 5.50671 4.86663L4.85337 7.65997C4.20004 10.4466 5.06004 11.82 7.84004 12.48L8.96004 12.7466C9.3467 12.84 9.70671 12.9 10.04 12.9266C12.12 13.1266 13.2267 12.1533 13.7867 9.74663L14.44 6.95996C15.0934 4.1733 14.24 2.7933 11.4467 2.13996Z" fill="#909090"/>
+                                                            </svg>
+                                                            <span className="details-span-col">{type}</span>
+                                                        </div>
                                                     ) : (
                                                         <select required={true} className="edit-select" name="dropdown"
                                                                 value={type}
@@ -254,7 +260,12 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"4px"}}>Geography</span>
                                                 {
                                                     detailsView ? (
-                                                        <h3 className="details-span-col">{geography}</h3>
+                                                        <div>
+                                                            <svg style={{marginBottom: "5px", marginLeft: "3px", marginRight: "4px"}} width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path d="M11.7466 4.63329C11.0466 1.55329 8.35994 0.166626 5.99994 0.166626C5.99994 0.166626 5.99994 0.166626 5.99327 0.166626C3.63994 0.166626 0.946608 1.54663 0.246608 4.62663C-0.533392 8.06663 1.57328 10.98 3.47994 12.8133C4.18661 13.4933 5.09328 13.8333 5.99994 13.8333C6.90661 13.8333 7.81328 13.4933 8.51328 12.8133C10.4199 10.98 12.5266 8.07329 11.7466 4.63329ZM5.99994 7.97329C4.83994 7.97329 3.89994 7.03329 3.89994 5.87329C3.89994 4.71329 4.83994 3.77329 5.99994 3.77329C7.15994 3.77329 8.09994 4.71329 8.09994 5.87329C8.09994 7.03329 7.15994 7.97329 5.99994 7.97329Z" fill="#909090"/>
+                                                            </svg>
+                                                            <span className="details-span-col">{geography}</span>
+                                                        </div>
                                                     ) : (
                                                         <select required={true} className="edit-select" name="dropdown"
                                                                 value={geography}
@@ -269,7 +280,13 @@ const JobList = () => {
                                             <div className="edit-col">
                                                 <span className="edit-col-text" style={{paddingLeft:"10px"}}>Company Name</span>
                                                 {detailsView ? (
-                                                        <h3 className="details-span-col">{company}</h3>
+                                                    <div>
+                                                        <svg style={{marginBottom: "5px", marginLeft: "8px", marginRight: "4px"}} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M14.0599 4.65339C13.4933 4.02672 12.5466 3.71339 11.1733 3.71339H11.0133V3.68672C11.0133 2.56672 11.0133 1.18005 8.50661 1.18005H7.49328C4.98661 1.18005 4.98661 2.57339 4.98661 3.68672V3.72005H4.82661C3.44661 3.72005 2.50661 4.03339 1.93994 4.66005C1.27994 5.39339 1.29994 6.38005 1.36661 7.05339L1.37328 7.10005L1.4174 7.56334C1.43166 7.71311 1.51241 7.84856 1.63857 7.93053C1.79893 8.03473 2.02015 8.17572 2.15994 8.25339C2.25328 8.31339 2.35328 8.36672 2.45328 8.42005C3.59328 9.04672 4.84661 9.46672 6.11994 9.67339C6.17994 10.3001 6.45328 11.0334 7.91328 11.0334C9.37328 11.0334 9.65994 10.3067 9.70661 9.66005C11.0666 9.44005 12.3799 8.96672 13.5666 8.27339C13.6066 8.25339 13.6333 8.23339 13.6666 8.21339C13.9104 8.07561 14.1625 7.90836 14.3964 7.74175C14.5099 7.66087 14.582 7.53464 14.5974 7.39613L14.5999 7.37339L14.6333 7.06005C14.6399 7.02005 14.6399 6.98672 14.6466 6.94005C14.6999 6.26672 14.6866 5.34672 14.0599 4.65339ZM8.72661 9.22005C8.72661 9.92672 8.72661 10.0334 7.90661 10.0334C7.08661 10.0334 7.08661 9.90672 7.08661 9.22672V8.38672H8.72661V9.22005ZM5.93994 3.71339V3.68672C5.93994 2.55339 5.93994 2.13339 7.49328 2.13339H8.50661C10.0599 2.13339 10.0599 2.56005 10.0599 3.68672V3.72005H5.93994V3.71339Z" fill="#909090"/>
+                                                            <path d="M13.6456 9.28356C14.0003 9.11764 14.4077 9.39853 14.3723 9.78851L14.1601 12.1267C14.0201 13.46 13.4734 14.82 10.5401 14.82H5.46006C2.52672 14.82 1.98006 13.46 1.84006 12.1334L1.63935 9.92552C1.6043 9.54006 2.00224 9.25952 2.35586 9.41685C3.11559 9.75488 4.25608 10.2378 5.02976 10.454C5.19335 10.4997 5.32589 10.6181 5.40399 10.7689C5.82484 11.5817 6.68651 12.0134 7.91339 12.0134C9.12824 12.0134 9.99995 11.5651 10.4226 10.7492C10.5008 10.5982 10.6338 10.4798 10.7975 10.4337C11.6223 10.2013 12.8451 9.65803 13.6456 9.28356Z" fill="#909090"/>
+                                                        </svg>
+                                                        <span className="details-span-col">{company}</span>
+                                                    </div>
                                                     ) : (
                                                         <input required={true} className="edit-input" type="text"
                                                                value={company} readOnly={detailsView}
@@ -281,7 +298,12 @@ const JobList = () => {
                                             <div className="edit-col">
                                                 <span className="edit-col-text" style={{paddingLeft:"10px"}}>Salary</span>
                                                 {detailsView ? (
-                                                    <h3 className="details-span-col">{salary}</h3>
+                                                    <div>
+                                                        <svg style={{marginBottom: "5px", marginLeft: "9px", marginRight: "4px"}} width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M9.79338 0.333374H4.20671C1.78004 0.333374 0.333374 1.78004 0.333374 4.20671V9.79338C0.333374 12.22 1.78004 13.6667 4.20671 13.6667H9.79338C12.22 13.6667 13.6667 12.22 13.6667 9.79338V4.20671C13.6667 1.78004 12.22 0.333374 9.79338 0.333374ZM8.50671 7.00004C9.02671 7.18004 9.72004 7.56004 9.72004 8.75337C9.72004 9.78004 8.92004 10.6134 7.93337 10.6134H7.50004V11C7.50004 11.2734 7.27337 11.5 7.00004 11.5C6.72671 11.5 6.50004 11.2734 6.50004 11V10.6134H6.26004C5.16671 10.6134 4.28004 9.68671 4.28004 8.55337C4.28004 8.28004 4.50004 8.05337 4.78004 8.05337C5.05337 8.05337 5.28004 8.28004 5.28004 8.55337C5.28004 9.14004 5.72004 9.61337 6.26004 9.61337H6.50004V7.35337L5.49337 7.00004C4.97337 6.82004 4.28004 6.44004 4.28004 5.24671C4.28004 4.22004 5.08004 3.38671 6.06671 3.38671H6.50004V3.00004C6.50004 2.72671 6.72671 2.50004 7.00004 2.50004C7.27337 2.50004 7.50004 2.72671 7.50004 3.00004V3.38671H7.74004C8.83337 3.38671 9.72004 4.31337 9.72004 5.44671C9.72004 5.72004 9.50004 5.94671 9.22004 5.94671C8.94671 5.94671 8.72004 5.72004 8.72004 5.44671C8.72004 4.86004 8.28004 4.38671 7.74004 4.38671H7.50004V6.64671L8.50671 7.00004Z" fill="#909090"/>
+                                                        </svg>
+                                                        <span className="details-span-salary-col">{salary}</span>
+                                                    </div>
                                                 ) : (
                                                     <input required={true} className="edit-input" type="text"
                                                            value={salary} readOnly={detailsView}
@@ -294,7 +316,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"10px"}}>Hiring Contact</span>
                                                 {
                                                     detailsView ? (
-                                                        <h3 className="details-span-col">{hiringContact}</h3>
+                                                        <span style={{marginLeft: "10px"}} className="details-span-col">{hiringContact}</span>
                                                     ) : (
                                                         <input required={true} className="edit-input" type="text" placeholder="Hiring Contact"
                                                                value={hiringContact} readOnly={detailsView}
@@ -306,7 +328,7 @@ const JobList = () => {
                                                 <span className="edit-col-text" style={{paddingLeft:"4px"}}>Status</span>
                                                 {
                                                     detailsView ? (
-                                                        <h3 className="details-span-col">{status}</h3>
+                                                        <span style={{marginLeft: "4px"}} className="details-span-col">{status}</span>
                                                     ): (
                                                         <select required={true} className="edit-select" name="dropdown"
                                                                 value={status}
@@ -325,7 +347,7 @@ const JobList = () => {
                                                     <div className="edit-description-text">Description</div>
                                                     {
                                                         detailsView ? (
-                                                            <h3 className="details-span-col"> {description}</h3>
+                                                            <span className="details-span-col"> {description}</span>
                                                         ) : (
                                                             <textarea required={true} className="edit-description-input"
                                                                       value={description} readOnly={detailsView}
