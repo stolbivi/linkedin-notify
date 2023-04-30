@@ -382,7 +382,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         }
     },[selectedTab]);
 
-    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary && !fromListView) ? 'custom-width' : ''}`;
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary && !fromListView) ? 'custom-width' : 'list-view-popup'}`;
 
     // @ts-ignore
     return (
@@ -567,43 +567,75 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                 <>
                                                     {
                                                         fromListView ? (
-                                                            <div className="title-child">
-                                                                <label>Notes</label>
-                                                                <label className="notes-counter">{notes ? notes.length : 0}</label>
-                                                            </div>
-                                                        ) : null
-                                                    }
-                                                    <div className="scroll-container-parent" style={{width: fromListView ? "103%" : "45%"}}>
-                                                        <div className="scroll-container h-300" style={{height: "285px", width: "492px", paddingLeft: "26px"}}>
-                                                            <div className="scroll-content">
-                                                                {completed && notes?.map((n, i) => (
-                                                                    <NoteCard key={i} note={n}
-                                                                              currentCount={i} totalCount={notes.length}
-                                                                              lastNoteRef={lastNoteRef}/>
-                                                                    )
-                                                                )}
-                                                                {completed && notes.length == 0 &&
+                                                            <>
+                                                                <div className="title-child">
+                                                                    <label>Notes</label>
+                                                                    <label className="notes-counter">{notes ? notes.length : 0}</label>
+                                                                </div>
+                                                                <div style={{width: fromListView ? "103%" : "45%"}}>
+                                                                    <div className="scroll-container h-300" style={{height: "285px", width: "492px", paddingLeft: "26px"}}>
+                                                                        <div className="scroll-content">
+                                                                            {completed && notes?.map((n, i) => (
+                                                                                    <NoteCard key={i} note={n}
+                                                                                              currentCount={i} totalCount={notes.length}
+                                                                                              lastNoteRef={lastNoteRef}/>
+                                                                                )
+                                                                            )}
+                                                                            {completed && notes.length == 0 &&
+                                                                            <div className="no-notes">
+                                                                                <NoNotes/>
+                                                                                <div>No notes yet</div>
+                                                                            </div>}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div data-role={CollapsibleRole.Footer} className="footer-child">
+                                                                        <div className="text-input-container">
+                                                                            <div className="text-input">
+                                                                                <input type="text" onKeyUp={onKeyUp} onChange={onChange}
+                                                                                       disabled={!editable}
+                                                                                       placeholder="Leave a note" value={text?.value}/>
+                                                                                <div onClick={() => postNote(text?.value)}
+                                                                                     className={postAllowed ? "submit-allowed" : "submit-disabled"}>
+                                                                                    <Submit/>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <Credits/>
+                                                                    </div>
+                                                                </div>
+                                                            </>
+                                                        ) : (<div className="scroll-container-parent" style={{width: fromListView ? "103%" : "45%"}}>
+                                                            <div className="scroll-container h-300" style={{height: "285px", width: "492px", paddingLeft: "26px"}}>
+                                                                <div className="scroll-content">
+                                                                    {completed && notes?.map((n, i) => (
+                                                                            <NoteCard key={i} note={n}
+                                                                                      currentCount={i} totalCount={notes.length}
+                                                                                      lastNoteRef={lastNoteRef}/>
+                                                                        )
+                                                                    )}
+                                                                    {completed && notes.length == 0 &&
                                                                     <div className="no-notes">
                                                                         <NoNotes/>
                                                                         <div>No notes yet</div>
                                                                     </div>}
-                                                            </div>
-                                                        </div>
-                                                        <div data-role={CollapsibleRole.Footer} className="footer-child">
-                                                            <div className="text-input-container">
-                                                                <div className="text-input">
-                                                                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
-                                                                           disabled={!editable}
-                                                                           placeholder="Leave a note" value={text?.value}/>
-                                                                    <div onClick={() => postNote(text?.value)}
-                                                                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
-                                                                        <Submit/>
-                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <Credits/>
-                                                        </div>
-                                                    </div>
+                                                            <div data-role={CollapsibleRole.Footer} className="footer-child">
+                                                                <div className="text-input-container">
+                                                                    <div className="text-input">
+                                                                        <input type="text" onKeyUp={onKeyUp} onChange={onChange}
+                                                                               disabled={!editable}
+                                                                               placeholder="Leave a note" value={text?.value}/>
+                                                                        <div onClick={() => postNote(text?.value)}
+                                                                             className={postAllowed ? "submit-allowed" : "submit-disabled"}>
+                                                                            <Submit/>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <Credits/>
+                                                            </div>
+                                                        </div>)
+                                                    }
                                                 </>
                                             )}
                                         </div>
