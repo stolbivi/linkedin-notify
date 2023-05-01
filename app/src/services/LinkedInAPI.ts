@@ -38,7 +38,7 @@ export class LinkedInAPI {
     }
 
     public getCsrfToken(cookies: Cookie[]): string {
-        const token = cookies.find(c => c.name === LinkedInAPI.CSRF);
+        const token = cookies?.reverse?.().find(c => c.name === LinkedInAPI.CSRF);
         return token?.value.replace(/['"]+/g, '');
     }
 
@@ -200,6 +200,12 @@ export class LinkedInAPI {
         return fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerMessages.08934c39ffb80ef0ba3206c05dd01362&variables=(conversationUrn:${this.encode(entityUrn)})`, this.getRequest(token))
             .then(response => response.json());
     }
+
+    public getConversationProfile(token: string, convId: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `messaging/conversations/${convId}`, this.getRequest(token))
+            .then(response => response.json());
+    }
+
 
     public extractConversationDetails(response: any): Array<any> {
         function getSender(s: any) {
@@ -389,7 +395,18 @@ export class LinkedInAPI {
             "credentials": "include"
         }).then(_ => null);
     }
-
+    public handleNewsLetterInvitation(token: string, invitation: Invitation) {
+        return fetch(LinkedInAPI.BASE + `voyagerRelationshipsDashInvitations/urn%3Ali%3Afsd_invitation%3A${invitation.id}?action=${invitation.action}`, {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token,
+            },
+            "body": `{\"invitationType\":\"ORGANIZATION\",\"sharedSecret\":\"${invitation.sharedSecret}\"}`,
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(_ => null);
+    }
     public markAllNotificationsAsSeen(token: string) {
         return fetch(LinkedInAPI.BASE + `voyagerNotificationsDashBadge?action=markAllItemsAsSeen`, {
             "headers": {
@@ -461,40 +478,93 @@ export class LinkedInAPI {
         }).then(_ => null);
     }
 
+    // @ts-ignore
+    public postReply(token: string, conversationId: string, messageBody: string, recipientId: string) {
+        const messageData = {
+            "conversationCreate": {
+                "recipients": [
+                    recipientId
+                ],
+                "eventCreate": {
+                    "value": {
+                        "com.linkedin.voyager.messaging.create.MessageCreate": {
+                            "body": messageBody
+                        }
+                    }
+                },
+                "subtype": "MEMBER_TO_MEMBER"
+            }
+        };
+        return fetch(LinkedInAPI.BASE + `messaging/conversations?action=create`, {
+            "headers": {
+                "accept": "application/vnd.linkedin.normalized+json+2.1",
+                "csrf-token": token
+            },
+            "body": JSON.stringify(messageData),
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(_ => null);
+    }
     public extractProfile(id: string, response: any): any {
-        const actor = response.included.filter((i: any) => i.actor !== undefined);
-        let name = ["N/A"];
-        let link = undefined;
-        if (actor?.length > 0) {
-            name = JSONPath.query(actor[0], "$.actor.name.text");
-            link = JSONPath.query(actor[0], "$.actor.navigationContext.target");
-        } else {
-            const entity = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
-            if (entity?.length > 0) {
-                const firstName = entity[0].firstName;
-                const lastName = entity[0].lastName;
-                if (firstName && lastName) {
-                    name = [`${firstName} ${lastName}`];
+        try {
+            const actor = response.included.filter((i: any) => i.actor !== undefined);
+            let name = ["N/A"];
+            let link = undefined;
+            if (actor?.length > 0) {
+                name = JSONPath.query(actor[0], "$.actor.name.text");
+                link = JSONPath.query(actor[0], "$.actor.navigationContext.target");
+            } else {
+                const entity = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
+                if (entity?.length > 0) {
+                    const firstName = entity[0].firstName;
+                    const lastName = entity[0].lastName;
+                    if (firstName && lastName) {
+                        name = [`${firstName} ${lastName}`];
+                    }
                 }
             }
+            let result: any = {name, link};
+            const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
+            if(profile && profile[0]) {
+                const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
+                if (vectorImage?.length > 0) {
+                    const artifacts = extractArtifacts(vectorImage[0].artifacts);
+                    const rootUrl = vectorImage[0].rootUrl;
+                    result = {...result, profilePicture: {rootUrl, artifacts}, id}
+                }
+            }
+            return result;
+        } catch (e) {
+            console.error("Error querying JSON path: ", e);
         }
-        let result: any = {name, link};
-        const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
-        const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
-        if (vectorImage?.length > 0) {
-            const artifacts = extractArtifacts(vectorImage[0].artifacts);
-            const rootUrl = vectorImage[0].rootUrl;
-            result = {...result, profilePicture: {rootUrl, artifacts}}
-        }
-        return result;
     }
+
+    public extractCompany(id: string, response: any): any {
+        let name: any[] = [];
+        let profilePicture = undefined;
+        if (response && response.elements) {
+            const company = response.elements[0];
+            if (company) {
+                name = Array(company.name);
+                const artifacts = extractArtifacts(company.logo.image["com.linkedin.common.VectorImage"].artifacts);
+                const rootUrl = company.logo.image["com.linkedin.common.VectorImage"].rootUrl;
+                profilePicture = {rootUrl, artifacts};
+            }
+        }
+        return {id, name, profilePicture};
+    }
+
 
     public getProfile(token: string, id: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.22e7cccbd773ceef5ed7c2c9d195473a`,
             this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
             .then(response => response.json());
     }
-
+    public getCompanyDetails(token: string, urn: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `organization/companies?decorationId=com.linkedin.voyager.deco.organization.web.WebFullCompanyMain-12&q=universalName&universalName=${urn}`, this.getRequest(token))
+            .then(response => response.json());
+    }
     private getRequest(token: string, headers?: any): any {
         let defaultHeaders = {
             "accept": "application/graphql",

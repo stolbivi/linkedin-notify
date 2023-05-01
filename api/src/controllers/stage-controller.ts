@@ -2,6 +2,8 @@ import {Body, Delete, Get, Post, Put, Query, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
 import {Stage, StageModel, StageWithId} from "../persistence/stage-model";
+import { UserStages } from "../persistence/user-stages";
+import {User} from "../persistence/user-model";
 
 
 @Route("/api")
@@ -9,6 +11,25 @@ export class StageController extends BaseController {
 
     constructor() {
         super();
+    }
+
+    @Tags("Persistence")
+    @Get("stage/userStages")
+    public async getUserStages(@Request() request: express.Request) {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            const user =  request.user as User;
+            const userStages = await UserStages.scan({ userId: user.id }).exec()
+            console.log('user-stages: ',userStages)
+            console.log('user id ', request.user)
+            return Promise.resolve({ response: userStages, user: request.user });
+        } catch (error) {
+            return this.handleError(error, request);
+        }
     }
 
     @Tags("Persistence")
@@ -27,6 +48,26 @@ export class StageController extends BaseController {
                 : StageModel.query("id").eq(id);
             const result = await query.exec();
             let message: any = {response: this.getFirst(result)};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
+    @Tags("Persistence")
+    @Get("stage/author/{id}")
+    public async findStagesByAuthor(id: string, @Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+        try {
+            let query = StageModel.query("author").eq(id);
+            const result = await query.exec();
+            let message: any = {response: result.map((i: any) => i.toJSON())};
             if (request?.user) {
                 message = {...message, user: request.user};
             }
@@ -106,4 +147,22 @@ export class StageController extends BaseController {
         }
     }
 
+    @Tags("Persistence")
+    @Post("stage/userStage")
+    public async addUserStage(@Request() request: express.Request) {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            const { text, author } = request.body;
+            const user =  request.user as User;
+            const userStage = await UserStages.create({ userId: user.id, text, stageId: new Date().getTime(), id: (new Date().getTime()+1).toString(), author: author })
+            await userStage.save()
+            return Promise.resolve({ response: userStage , user: request.user})
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
 }

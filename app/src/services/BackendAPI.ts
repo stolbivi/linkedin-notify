@@ -1,10 +1,25 @@
 import {BaseAPI, Response} from "./BaseAPI";
-import {BACKEND_API, Features, Note, Shared, Subscriptions} from "../global";
+import {BACKEND_API, Features, Job, Note, Shared, Subscriptions, UserStage} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
 import {SetFeaturePayload} from "../actions";
 import {LastViewed} from "../store/LastViewedReducer";
 
 export class BackendAPI extends BaseAPI {
+
+    public getCustomStages(): Promise<Response<UserStage[]>> {
+        console.log('in backend api get custom stages')
+        return this.fetchRequest(
+            `${BACKEND_API}stage/userStages`,
+            this.getRequest("GET")
+        )
+    }
+
+    public postCustomStage(payload: { text: string, author: string }): Promise<Response<UserStage>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/userStage`,
+            this.getRequest("POST", payload)
+        )
+    }
 
     public getCompletion(prompt: string): Promise<any> {
         return this.fetchRequest(
@@ -48,10 +63,10 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public setStage(id: string, stage: StageEnum, author: string): Promise<Response<any>> {
+    public setStage(id: string, stage: StageEnum, author: string, parentStage: number): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}stage/${id}`,
-            this.getRequest("PUT", {stage, author})
+            this.getRequest("PUT", {stage, author, parentStage})
         );
     }
 
@@ -73,6 +88,13 @@ export class BackendAPI extends BaseAPI {
         return this.fetchRequest(
             `${BACKEND_API}note`,
             this.getRequest("POST", note)
+        );
+    }
+
+    public deleteNote(noteId: string): Promise<Response<Note>> {
+        return this.fetchRequest(
+            `${BACKEND_API}note/${noteId}`,
+            this.getRequest("DELETE")
         );
     }
 
@@ -109,6 +131,34 @@ export class BackendAPI extends BaseAPI {
         return this.fetchRequest(
             `${BACKEND_API}shared`,
             this.getRequest("POST", shared)
+        );
+    }
+
+    public getJobs(): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job`,
+            this.getRequest("GET")
+        );
+    }
+
+    public postJob(job: Job): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job`,
+            this.getRequest("POST", job)
+        );
+    }
+
+    public updateJob(job: Job): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/${job.id}`,
+            this.getRequest("PUT", job)
+        );
+    }
+
+    public deleteJob(jobId: string): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/${jobId}`,
+            this.getRequest("DELETE")
         );
     }
 

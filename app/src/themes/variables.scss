@@ -2,18 +2,18 @@
   --root: white;
 
   --base-card: white;
-  --base-card-hover: #f3f3f3;
+  --base-card-hover: #5454540d;
   --base-card-timestamp: #8D8D8D;
   --base-card-title: rgba(0, 0, 0, 0.9);
   --base-card-message: #909090;
-  --base-card-message-background: rgba(244, 244, 244, 0.38);
+  --base-card-message-background: #D9D9D9;
   --base-card-unread: #e2f0fd;
   --base-card-border: rgba(0, 0, 0, 0.1);
 
   --conversation-card-badge: white;
   --conversation-card-background: rgb(10, 102, 194);
 
-  --details-back: rgba(106, 106, 106, 0.6);
+  --details-back: black;
   --details-reply-background: white;
   --details-reply-background-hover: #e2f0fd;
   --details-reply: rgb(10, 102, 194);
@@ -63,10 +63,10 @@
   --complete-disabled-background: rgba(0, 0, 0, 0.08);
   --complete-disabled: rgba(0, 0, 0, 0.3);
 
-  --last-viewed-background: rgba(88, 88, 88, 0.08);
-  --last-viewed: rgba(88, 88, 88, 1);
+  --last-viewed-background: rgb(76 74 74 / 8%);
+  --last-viewed: rgb(162 158 158);
 
-  --salary-pill: #117544;
+  --salary-pill: #16c328;
 
   --note-card-border: rgb(0 0 0 / 10%);
   --note-card-picture: white;
@@ -89,6 +89,9 @@
   --notes-counter: #585858;
   --notes-color-1: white;
   --notes-color-2: #D9D9D9;
+  --notes-color-3: #4A4A4A54;
+  --notes-color-4: #4A4A4A54;
+  --notes-color-5: #4A4A4A54;
 
   --notes-container: #909090;
   --notes-container-background: #FFFFFF;
@@ -114,10 +117,19 @@
   --stage-failed: rgba(202, 26, 36, 0.74);
   --stage-hired: rgba(17, 117, 68, 0.74);
   --stage-inactive: rgb(144, 144, 144);
+  --stage-passive: #ECECEC;
 
   --theme-switch: white;
   --theme-switch-border: #E4E7EC;
   --theme-switch-icon: #FEBA5C;
   --theme-switch-circle: #FFECD1;
   --theme-switch-circle-border: #FEBA5C;
+  --reply-text-area-color: white;
+  --reply-text-container-color: #f9f9f9;
+  --reply-text-area-caret-color: #000000;
+
+  --ln-dashboard-menu-icon-color: rgb(102, 102, 102);
+  --ln-dashboard-menu-icon-color-hover: #000000;
+  --settings-icon-color: #000000;
+
 }

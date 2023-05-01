@@ -26,8 +26,8 @@ export const Invitations: React.FC<Props> = ({}) => {
     }, []);
 
     return (
-        <div className="w-100">
-            <Loader show={!completed} className="p-5"/>
+        <div className="w-100" style={{ height: "600px" }}>
+            <Loader show={!completed} className="p-5" heightValue="600px"/>
             {completed && invitations.length == 0 && <div className="no-data">No new network invitations</div>}
             {invitations}
         </div>

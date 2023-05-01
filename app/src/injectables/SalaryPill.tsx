@@ -21,7 +21,7 @@ export const SalaryPillFactory = () => {
                 inject(actions[0], "lnm-salary", "after",
                     <Provider store={localStore}>
                         <SalaryPill showSalary={true} id={extractIdFromUrl(window.location.href)} trackUrl={true}/>
-                    </Provider>
+                    </Provider>, "Salary"
                 );
             }
         }
@@ -41,7 +41,7 @@ export const SalaryPillFactory = () => {
                         inject(lastChild, `lnm-salary-${index}`, "before",
                             <Provider store={localStore}>
                                 <SalaryPill url={link} id={id}/>
-                            </Provider>
+                            </Provider>, "Salary"
                         );
                     }
                 }

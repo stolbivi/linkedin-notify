@@ -6,10 +6,14 @@ import {openUrl} from "../actions";
 
 type Props = {
     message: any,
-    onReply: () => void
+    onReply: () => void,
+    currentCount: number,
+    totalCount: number,
+    firstElemRef:any,
+    lastElemRef: any
 };
 
-export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => {
+export const ConversationMessageCard: React.FC<Props> = ({message, onReply, currentCount ,totalCount,firstElemRef, lastElemRef}) => {
 
     const [picture, setPicture] = useState("");
     const [deliveredAt, setDeliveredAt] = useState("");
@@ -30,19 +34,18 @@ export const ConversationMessageCard: React.FC<Props> = ({message, onReply}) => 
     }
 
     return (
-        <div className="card-holder">
-            <div className="message-card">
+        <div className="card-holder"  ref={currentCount === 0 ? firstElemRef : (currentCount === totalCount - 1 ? lastElemRef : null)}>
+            <div className="message-card" style={{overflowWrap:"anywhere", ...(currentCount === totalCount-1 && { paddingBottom: "90px" })}} >
                 <div className="card-pre-section">
-                    <div className="card-timestamp">{deliveredAt}</div>
                     <div className="card-image" onClick={onOpenProfile}>
-                        {message.showPicture && <img src={picture}/>}
-                        {!message.showPicture && <div className="image-space"></div>}
+                        <img src={picture}/>
                     </div>
                 </div>
                 <div className="w-100 d-flex flex-column align-items-start">
                     <div className="w-100 d-flex flex-row align-items-center">
                         <div className="card-title"
                              onClick={onOpenProfile}>{message.sender?.firstName} {message.sender?.lastName}</div>
+                        <div className="card-timestamp message-time-stamp">{deliveredAt}</div>
                     </div>
                     <div className={"card-message" + (message.openOriginal ? " message-no-media" : "")}
                          onClick={message.openOriginal ? onReply : () => {

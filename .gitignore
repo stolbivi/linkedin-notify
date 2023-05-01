@@ -4,5 +4,5 @@
 /api/src/autogen
 /api/public/*.*
 /api/.env
-/api/prod.env
+/api/.env
 .idea

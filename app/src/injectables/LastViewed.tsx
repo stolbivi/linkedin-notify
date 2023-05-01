@@ -12,6 +12,11 @@ import {getLastViewedAction, LastViewed as LastViewedData} from "../store/LastVi
 // @ts-ignore
 import stylesheet from "./LastViewed.scss";
 import {useUrlChangeSupport} from "../utils/URLChangeSupport";
+import {getLastViewed, getTheme, setLastViewed as setLastViewedAction, SwitchThemePayload} from "../actions";
+import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../themes/ThemeUtils";
+import {theme as LightTheme} from "../themes/light";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as DarkTheme} from "../themes/dark";
 
 export const LastViewedFactory = () => {
     // individual profile
@@ -36,6 +41,22 @@ export const LastViewed: React.FC<Props> = ({}) => {
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const lastViewed: CompleteEnabled<LastViewedData> = useSelector(selectLastViewed, shallowEqual);
     const [url] = useUrlChangeSupport(window.location.href);
+    const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
+
+    useEffect(() => {
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            }));
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                return Promise.resolve();
+            }));
+    }, []);
 
     useEffect(() => {
         if (url?.length > 0) {

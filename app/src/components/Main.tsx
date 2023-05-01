@@ -8,11 +8,16 @@ import {Invitations} from "./Invitations";
 import {SignIn} from "./SignIn";
 import "./Main.scss";
 import {Logo} from "../icons/Logo";
-import {getBadges, getIsLogged} from "../actions";
+import {getBadges, getIsLogged, getSubscription} from "../actions";
 import {ThemeSwitch} from "./ThemeSwitch";
 import {theme as LightTheme} from "../themes/light";
 import {theme as DarkTheme} from "../themes/dark";
 import {applyThemeProperties, getThemeCookie, listenToThemeCookie} from "../themes/ThemeUtils";
+import {Settings} from "./settings/Settings";
+import {SettingTabs, SettingTabTypes} from "./settings/SettingTabs";
+import ProFeaturesList from "./settings/ProFeatures/ProFeaturesList";
+import AutoFeaturesList from "./settings/AutoFeature/AutoFeaturesList";
+import {AccessState} from "../injectables/AccessGuard";
 
 type Props = {};
 
@@ -24,7 +29,8 @@ export const Main: React.FC<Props> = ({}) => {
     const [badges, setBadges] = useState({} as Badges);
     const [isLogged, setIsLogged] = useState(false);
     const [tab, setTab] = useState(0);
-
+    const [settingTabs, setSettingTabs] = useState(0);
+    const [accessState, setAccessState] = useState(AccessState.Unknown);
     const rootElement = useRef<HTMLDivElement>();
 
     useEffect(() => {
@@ -40,7 +46,24 @@ export const Main: React.FC<Props> = ({}) => {
             .then((payload) => setIsLogged(payload.isLogged));
         messages.request(getBadges())
             .then((badges) => setBadges(badges));
+        messages.request(getSubscription())
+            .then((r) => {
+                if (r.status === 403) {
+                    setAccessState(AccessState.SignInRequired);
+                } else if (r.subscriptions?.length > 0) {
+                    const subscription = r.subscriptions[0];
+                    if (subscription.status === "trialing" || subscription.status === "active") {
+                        setAccessState(AccessState.Valid);
+                        return;
+                    }
+                }
+                setAccessState(AccessState.Invalid);
+            }).finally(() => {});
     }, []);
+
+    useEffect(() => {
+        chrome.alarms.create("check-badges", {periodInMinutes: 0, delayInMinutes: 0});
+    },[badges]);
 
     useEffect(() => {
         applyThemeProperties(light ? LightTheme : DarkTheme, rootElement);
@@ -57,21 +80,31 @@ export const Main: React.FC<Props> = ({}) => {
                                 <div className="title">
                                     <div className="logo"><Logo/></div>
                                     <span>LinkedIn Manager</span>
+                                    <Settings setSettingTabs={setSettingTabs} setTab={setTab} setAccessState={setAccessState}/>
                                     <div className="switch"><ThemeSwitch light={light} setLight={setLight}/></div>
                                 </div>
                             </div>
-                            <Tabs onTab={setTab} badges={badges}/>
+                            {
+                                settingTabs ? (
+                                    <SettingTabs onTab={setTab}/>
+                                ) : (
+                                    <Tabs onTab={setTab} badges={badges}/>
+                                )
+                            }
                         </div>
                         <div className="scroll">
-                            {
-                                tab === TabTypes.MyNetwork && <Invitations/>
-                            }
-                            {
-                                tab === TabTypes.Messages && <Conversations setBadges={setBadges}/>
-                            }
-                            {
-                                tab === TabTypes.Notifications && <Notifications setBadges={setBadges}/>
-                            }
+                            {settingTabs ? (
+                                <>
+                                    {tab === SettingTabTypes.ProFeatures && <ProFeaturesList />}
+                                    {tab === SettingTabTypes.AutoFeatures && <AutoFeaturesList accessState={accessState}/>}
+                                </>
+                            ) : (
+                                <>
+                                    {tab === TabTypes.MyNetwork && <Invitations />}
+                                    {tab === TabTypes.Messages && <Conversations setBadges={setBadges} />}
+                                    {tab === TabTypes.Notifications && <Notifications setBadges={setBadges} />}
+                                </>
+                            )}
                         </div>
                     </div>
                 }

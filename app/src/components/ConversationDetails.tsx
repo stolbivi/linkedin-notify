@@ -1,24 +1,27 @@
-import React, {useEffect, useState} from "react";
-import {LINKEDIN_DOMAIN} from "../global";
-import {MessagesV2} from "@stolbivi/pirojok";
+import React, {useEffect, useRef, useState} from "react";
 import {ConversationMessageCard} from "./ConversationMessageCard";
 import "./ConversationDetails.scss";
-import {openUrl} from "../actions";
 
 type Props = {
     details: Array<any>
     setShowDetails: (show: boolean) => void
+    onReply: any,
+    selectedRcpnt: any,
+    firstElemRef:any,
+    lastElemRef: any
 };
 
-export const ConversationDetails: React.FC<Props> = ({details, setShowDetails}) => {
+export const ConversationDetails: React.FC<Props> = ({details, setShowDetails, onReply, selectedRcpnt, firstElemRef, lastElemRef}) => {
 
     const [conversationMessages, setConversationMessages] = useState([]);
-
-    const messages = new MessagesV2(true);
+    const replyText = useRef();
+    const cardHolderRef = useRef();
+    const [selfMsg, setSelfMsg] = useState({});
 
     useEffect(() => {
+        setSelfMsg(details.filter(conversation => conversation?.sender?.distance === "SELF")[0]);
         setConversationMessages(details.map((m: any, i: number) =>
-            (<ConversationMessageCard message={m} key={i} onReply={onReply}/>)
+            (<ConversationMessageCard message={m} key={i} onReply={onReply} currentCount={i} totalCount={details.length} firstElemRef={firstElemRef} lastElemRef={lastElemRef}/>)
         ));
     }, [details]);
 
@@ -26,25 +29,44 @@ export const ConversationDetails: React.FC<Props> = ({details, setShowDetails}) 
         setShowDetails(false);
     }
 
-    const onReply = () => {
-        const url = details.pop().backendConversationUrn.split(":").pop();
-        return messages.request(openUrl(`https://${LINKEDIN_DOMAIN}/messaging/thread/` + url));
-    }
-
     return (
-        <div className="details">
+        <div className="details" ref={cardHolderRef}>
             <div className="detail-header">
                 <div className="details-back" onClick={onBack}>
-                    <svg width="700pt" height="700pt" version="1.1" viewBox="200 125 300 300" fill="currentColor">
-                        <g>
-                            <path
-                                d="m419.44 358.4c1.6797 8.9609-3.3594 12.879-11.199 7.8398l-128.24-77.277c-7.8398-5.0391-7.8398-12.879 0-17.359l128.24-77.84c7.8398-5.0391 12.879-1.1211 11.199 7.8398v1.6797c-7.2812 42.559-7.2812 112 0 154.56z"/>
-                        </g>
+                    <svg width="700pt" height="700pt" viewBox="0 0 17 12" fill="none" xmlns="http://www.w3.org/2000/svg"  style={{padding: "7px"}}>
+                        <path opacity="1" d="M16 6H1M1 6L6 1M1 6L6 11" stroke="grey" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
+                    <div className="reply-text-name">
+                        {selectedRcpnt.firstName}  {selectedRcpnt.lastName}
+                    </div>
                 </div>
-                <div className="details-reply" onClick={onReply}>Reply</div>
             </div>
             {conversationMessages}
+            <div>
+                <div className="reply-container">
+                  <textarea
+                      ref={replyText}
+                      className="reply-textarea"
+                      placeholder="Write a message..."
+                      onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              onReply(details[0], replyText, selfMsg);
+                          } else if (e.key === 'Enter' && e.shiftKey) {
+                              const target = e.target as HTMLTextAreaElement;
+                              target.value += "\n";
+                          }
+                      }}
+                  />
+                    <button className="btn btn-sm btn-primary reply-button" onClick={() => onReply(details[0], replyText, selfMsg)}>
+                        <svg className="svg-style" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                            <path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
+
+

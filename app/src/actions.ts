@@ -1,6 +1,18 @@
 import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {Badges, Features, Invitation, LINKEDIN_DOMAIN, Note, NoteExtended, SHARE_URN} from "./global";
+import {
+    Badges,
+    Features,
+    Invitation,
+    Job,
+    LINKEDIN_DOMAIN,
+    Message,
+    Note,
+    NoteExtended,
+    SHARE_URN,
+    VERBOSE
+} from "./global";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
 import {Response} from "./services/BaseAPI";
@@ -75,6 +87,14 @@ export const getConversationDetails = createAction<string, Array<any>>("getConve
             return api.extractConversationDetails(detailsResponse);
         }));
 
+export const getConversationProfile = createAction<string, Array<any>>("getConversationProfile",
+    (convId) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const detailsResponse = await api.getConversationProfile(token, convId);
+            return detailsResponse;
+        }));
+
 export const conversationAck = createAction<string, void>("conversationAck",
     (entityUrn) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
@@ -113,6 +133,11 @@ export const handleInvitation = createAction<Invitation, any>("handleInvitation"
     (invitation) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(token => api.handleInvitation(token, invitation)));
+
+export const handleNewsLetterInvitation = createAction<Invitation, any>("handleNewsLetterInvitation",
+    (invitation) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(token => api.handleNewsLetterInvitation(token, invitation)));
 
 export const completion = createAction<string, any>("completion",
     (text) => backEndAPI.getCompletion(text));
@@ -238,10 +263,27 @@ async function extendNote(token: string, notes: Note[], as: string): Promise<Not
     }));
 }
 
+export const getProfileByUrn = createAction<string, any>("getProfileByUrn",
+    (urn) => getCookies(LINKEDIN_DOMAIN)
+        .then(async cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const profile= await api.getProfile(token,urn);
+            return api.extractProfile(urn, profile);
+        }));
+export const getCompanyByUrn = createAction<string, any>("getCompanyByUrn",
+    (urn) => getCookies(LINKEDIN_DOMAIN)
+        .then(async cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const resp = await api.getCompanyDetails(token,urn);
+            return api.extractCompany(urn, resp);
+        }));
+
 export interface SetStagePayload {
     id: string
     stage: StageEnum
     stageFrom: StageEnum
+    stageText?: string;
+    parentStage?: number
 }
 
 export interface SetStageResponse {
@@ -260,10 +302,11 @@ export const setStage = createAction<SetStagePayload, SetStageResponse>("setStag
                 author,
                 stageFrom: payload.stageFrom,
                 stageTo: payload.stage,
+                stageText: payload.stageText || undefined
             });
             const noteExtended = await extendNote(token, [note.response], author);
-            const stage = await backEndAPI.setStage(payload.id, payload.stage, author);
-            return {note: noteExtended[0], stage: stage.response};
+            const stage = await backEndAPI.setStage(payload.id, payload.stage, author, payload.parentStage);
+            return {note: {response: noteExtended[0]}, stage: stage};
         }));
 
 export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesAll",
@@ -304,6 +347,7 @@ export interface PostNotePayload {
     id: string
     stageTo: StageEnum
     text: string
+    stateText?: string
 }
 
 export interface PostNoteResponse {
@@ -321,6 +365,7 @@ export const postNote = createAction<PostNotePayload, PostNoteResponse>("postNot
                 author,
                 stageTo: payload.stageTo,
                 text: payload.text,
+                stageText: payload.stateText
             });
             const noteExtended = await extendNote(token, [note.response], author);
             return {note: {response: noteExtended[0]}};
@@ -328,6 +373,33 @@ export const postNote = createAction<PostNotePayload, PostNoteResponse>("postNot
 
 export const getLastViewed = createAction<string, LastViewed[]>("getLastViewed",
     (id) => getCookies(LINKEDIN_DOMAIN)
+export interface CreateCustomStagePayload  {
+    text: string
+}
+
+export const createCustomStage = createAction("createCustomStage",
+    (payload: { text: string }) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const author = api.extractProfileUrn(me);
+            const { response } = await backEndAPI.postCustomStage({...payload, author})
+            return response
+        }));
+
+export const getCustomStages = createAction("getCustomStages",
+        () => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            console.log('in action creator get custom stages')
+            const { response } = await backEndAPI.getCustomStages()
+            return response
+        })
+)
+
+// TODO add to store
+export const getLastViewed = createAction<string, any>("getLastViewed",
+    (id, sender) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
             const experienceResponse = await api.getExperience(token, id);
@@ -369,3 +441,49 @@ export const getTheme = createAction<{}, string>("getTheme",
 
 export const setTheme = createAction<string, Cookie>("setTheme",
     (theme) => setThemeCookie(theme));
+
+export const postReply = createAction<Message, void>("postReply",
+    (message) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            await api.postReply(token, message.conversationId,message.messageBody,message.recipientId);
+        }));
+
+export const deleteNote = createAction<string, any>("deleteNote",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.deleteNote(id)
+            return response
+        })
+)
+
+export const postJob = createAction<Job, any>("postJob",
+    (job) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.postJob(job)
+            return response
+        })
+)
+
+export const getJobs = createAction<{}, any>("getJobs",
+    () => backEndAPI.getJobs());
+
+export const updateJob = createAction<Job, any>("updateJob",
+    (job) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.updateJob(job)
+            return response
+        })
+)
+
+export const deleteJob = createAction<string, any>("deleteJob",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.deleteJob(id)
+            return response
+        })
+)

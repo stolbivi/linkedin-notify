@@ -1,14 +1,17 @@
 import {MessagesV2, Tabs} from "@stolbivi/pirojok";
-import {LINKEDIN_DOMAIN, VERBOSE} from "./global";
+import {LINKEDIN_DOMAIN, VERBOSE, LOGIN_URL} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
 import {
     completion,
     conversationAck,
+    createCustomStage,
     getBadges,
     getConversationDetails,
+    getConversationProfile,
     getConversations,
     getCookies,
+    getCustomStages,
     getFeatures,
     getInvitations,
     getIsLogged,
@@ -22,6 +25,7 @@ import {
     getTheme,
     getTz,
     handleInvitation,
+    handleNewsLetterInvitation,
     markNotificationRead,
     markNotificationsSeen,
     openUrl,
@@ -31,7 +35,15 @@ import {
     setStage,
     setTheme,
     switchThemeRequest,
-    unlock
+    unlock,
+    postReply,
+    getProfileByUrn,
+    getCompanyByUrn,
+    deleteNote,
+    postJob,
+    getJobs,
+    updateJob,
+    deleteJob
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 
@@ -74,12 +86,14 @@ messagesV2.listen(getConversations);
 messagesV2.listen(getIsUnlocked);
 messagesV2.listen(unlock);
 messagesV2.listen(getConversationDetails);
+messagesV2.listen(getConversationProfile);
 messagesV2.listen(conversationAck);
 messagesV2.listen(getNotifications);
 messagesV2.listen(markNotificationsSeen);
 messagesV2.listen(markNotificationRead);
 messagesV2.listen(getInvitations);
 messagesV2.listen(handleInvitation);
+messagesV2.listen(handleNewsLetterInvitation);
 messagesV2.listen(completion);
 messagesV2.listen(getSalary);
 messagesV2.listen(getTz);
@@ -94,6 +108,16 @@ messagesV2.listen(getLastViewed);
 messagesV2.listen(setLastViewed);
 messagesV2.listen(getTheme);
 messagesV2.listen(setTheme);
+messagesV2.listen(postReply);
+messagesV2.listen(getProfileByUrn);
+messagesV2.listen(getCompanyByUrn);
+messagesV2.listen(getCustomStages);
+messagesV2.listen(createCustomStage);
+messagesV2.listen(deleteNote);
+messagesV2.listen(postJob);
+messagesV2.listen(getJobs);
+messagesV2.listen(updateJob);
+messagesV2.listen(deleteJob);
 
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
@@ -113,10 +137,25 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
         if (changeInfo.removed) {
             console.log("Stop monitoring");
             await chrome.alarms.clearAll();
-            chrome.action.setIcon({path: "/content/icon-128-logout.png"});
+            await chrome.storage.session.remove("proFeatures");
+            await chrome.storage.local.remove("proFeatures");
+            chrome.cookies.getAll({}, function(cookies) {
+                for (let i = 0; i < cookies.length; i++) {
+                    if (cookies[i].domain == "www.linkedin.com" || cookies[i].domain == "api.lnmanager.com" || cookies[i].domain == "www.lnmanager.com") {
+                        chrome.cookies.remove({
+                            url: "https://" + cookies[i].domain + cookies[i].path,
+                            name: cookies[i].name
+                        });
+                    }
+                }
+            });
+            await chrome.action.setIcon({path: "/content/icon-128-logout.png"});
             await chrome.action.setBadgeText({text: ""});
         } else {
-            startMonitoring();
+            chrome.action.setIcon({path: "/content/icon-128.png"});
+            fetch(LOGIN_URL).then(_resp => {
+                startMonitoring();
+            });
         }
     }
 });
@@ -129,8 +168,8 @@ function checkBadges() {
             if (l) {
                 console.debug('Checking badges');
                 chrome.action.setIcon({path: "/content/icon-128.png"});
-                await chrome.action.setBadgeBackgroundColor({color: "#585858"});
-                await chrome.action.setBadgeText({text: "sync"});
+                //await chrome.action.setBadgeBackgroundColor({color: "#585858"});
+                //await chrome.action.setBadgeText({text: "sync"});
 
                 const token = api.getCsrfToken(cookies);
                 const response = await api.getTabBadges(token);
@@ -209,4 +248,53 @@ chrome.alarms.onAlarm.addListener(a => {
         case AUTO_FEATURES:
             return autoFeatures();
     }
+});
+
+let contentScriptReady = false;
+//@ts-ignore
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.contentScriptReady) {
+        contentScriptReady = true;
+        sendResponse({ success: true });
+    }
+    return true; // Keep the message channel open for the response
+});
+
+chrome.cookies.onChanged.addListener((changeInfo) => {
+    if (
+        contentScriptReady &&
+        changeInfo.cookie &&
+        changeInfo.cookie.name === "li_theme" &&
+        changeInfo.cookie.domain.includes(".linkedin.com")
+    ) {
+        const theme = changeInfo.cookie.value === "dark" ? "dark" : "light";
+        chrome.tabs.query({ active: true }, (tabs) => {
+            chrome.scripting.executeScript({
+                target: { tabId: tabs[0].id },
+                func: function (theme) {
+                    window.postMessage({ theme: theme }, "*");
+                },
+                args: [theme],
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    }
+});
+
+const visitedUrls: string[] = [];
+chrome.history.onVisited.addListener((historyItem) => {
+    let isInitialLoad = !visitedUrls.includes(historyItem.url);
+    chrome.tabs.query({ active: true }, (tabs) => {
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            func: function (isInitialLoad) {
+                window.postMessage({ type: "modifyElements" , initialLoad: isInitialLoad }, "*");
+            },
+            args: [isInitialLoad],
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+    visitedUrls.push(historyItem.url);
 });
