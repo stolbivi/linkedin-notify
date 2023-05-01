@@ -279,7 +279,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     if (showNotes) {
       setShowNotes(false);
     } else {
-      return messages.request(showNotesAndCharts({userId, profileId, showSalary: false, showNotes: true, showStages: false}));
+      return messages.request(showNotesAndCharts({userId, profileId, showSalary: false, showNotes: true, showStages: true}));
     }
   }
 
