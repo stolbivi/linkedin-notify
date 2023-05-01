@@ -120,7 +120,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName={"loader-base loader-px24"}/>
             {accessState === AccessState.Valid &&
-                <div id="agha" className={"salary-pill" + (completed ? " clickable" : "")}
+                <div className={"salary-pill" + (completed ? " clickable" : "")}
                      onClick={onClick}>
                     <Loader show={!completed}/>
                     {completed && <span>{getSalaryValue(salary)}</span>}

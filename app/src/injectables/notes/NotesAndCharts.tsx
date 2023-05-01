@@ -143,13 +143,25 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                 if(payload.userId) {
                     profileId = payload?.userId?.trim();
                     setCompleted(false);
-                    setSalaryInternal({title:"xyz", urn: payload.profileId});
-                    const notesPromise = messages.request(getNotesByProfile(payload.profileId))
-                        .then((r) => setNotes(r.response))
-                        .catch(e => console.error(e.error));
-                    Promise.all([notesPromise]).then(() => setCompleted(true));
-                    setFromListView(true);
-                    setSelectedTab("Notes");
+                    messages.request(getSalary(profileId))
+                        .then((r) => {
+                            const salary = {...r.result, title: r.title, urn: r.urn};
+                            setSalaryInternal(salary);
+                            return salary;
+                        }).then(salary => {
+                        const stagePromise = messages.request(getStages({id: salary.urn}))
+                            .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
+                            .catch(e => console.error(e.error));
+                        const notesPromise = messages.request(getNotesByProfile(salary.urn))
+                            .then((r) => setNotes(r.response))
+                            .catch(e => console.error(e.error));
+                        const customStagePromise = messages.request(getCustomStages())
+                            .then((r) => setCustomStages(r))
+                            .catch(e => console.error(e.error));
+                        Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
+                    }).catch(e => console.error(e.error));
+                    setFromListView(false);
+                    setSelectedTab("Track");
                 }
                 setShowNotes(payload?.showNotes)
                 setShowSalary(payload?.showSalary)
@@ -370,7 +382,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         }
     },[selectedTab]);
 
-    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary && !fromListView) ? 'custom-width' : 'list-view-popup'}`;
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary && !fromListView) ? 'custom-width' : ''} ${(fromListView) ? 'list-view-popup' : ''}`;
 
     // @ts-ignore
     return (
@@ -552,7 +564,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                 </div>
                                                                 <div style={{width: fromListView ? "103%" : "45%"}}>
                                                                     <div className="scroll-container h-300" style={{height: "285px", width: "492px", paddingLeft: "26px"}}>
-                                                                        <div className="scroll-content">
+                                                                        <div style={{marginLeft: "14px"}} className="scroll-content">
                                                                             {completed && notes?.map((n, i) => (
                                                                                     <NoteCard key={i} note={n}
                                                                                               currentCount={i} totalCount={notes.length}
