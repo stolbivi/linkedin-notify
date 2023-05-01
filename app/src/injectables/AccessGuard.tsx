@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {VERBOSE,LOGIN_URL} from "../global";
+import {LOGIN_URL, VERBOSE} from "../global";
 import {Lock} from "../icons/Lock";
 import {Loader} from "../components/Loader";
 import "./AccessGuard.scss";
@@ -72,9 +72,9 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
                 return <div className={"access-guard " + (className ?? "")}
                             onClick={(e) => openUrl(e, status === "Active Free Trial" ? LOGIN_URL : SIGN_UP_URL)}
                             title="Sign up">
-                            <Lock/>
-                            {!hideTitle && <span>{status}</span>}
-                      </div>
+                    <Lock/>
+                    {!hideTitle && <span>{status}</span>}
+                </div>
         }
     }
 

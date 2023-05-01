@@ -38,25 +38,25 @@ export const StageLabels = {
     2: {label: "Interviewing", class: "interviewing"},
     3: {label: "Failed interview", class: "failed"},
     4: {label: "Hired", class: "hired"},
-    5: { label: "Not Looking Currently", class: "passive" },
-    6: { label: "Open to New Offers", class: "hired" },
-    7: { label: "Passive Candidate", class: "passive" },
-    8: { label: "Actively Looking", class: "interviewing" },
-    9: { label: "Future Interest", class: "interested" },
-    10: { label: "Relocation", class: "interested" },
-    11: { label: "Commute", class: "interested" },
-    12: { label: "Hybrid", class: "interested" },
-    13: { label: "Remote", class: "interested" },
-    14: { label: "Contacted", class: "interviewing" },
-    15: { label: "Pending Response", class: "interested" },
-    16: { label: "Interview Scheduled", class: "interviewing" },
-    17: { label: "Offer Extended", class: "hired" },
-    18: { label: "Rejected", class: "failed" },
-    19: { label: "Part-Time", class: "interested" },
-    20: { label: "Full-Time", class: "interested" },
-    21: { label: "Permanent", class: "interested" },
-    22: { label: "Contract", class: "interested" },
-    23: { label: "Freelance", class: "interested" }
+    5: {label: "Not Looking Currently", class: "passive"},
+    6: {label: "Open to New Offers", class: "hired"},
+    7: {label: "Passive Candidate", class: "passive"},
+    8: {label: "Actively Looking", class: "interviewing"},
+    9: {label: "Future Interest", class: "interested"},
+    10: {label: "Relocation", class: "interested"},
+    11: {label: "Commute", class: "interested"},
+    12: {label: "Hybrid", class: "interested"},
+    13: {label: "Remote", class: "interested"},
+    14: {label: "Contacted", class: "interviewing"},
+    15: {label: "Pending Response", class: "interested"},
+    16: {label: "Interview Scheduled", class: "interviewing"},
+    17: {label: "Offer Extended", class: "hired"},
+    18: {label: "Rejected", class: "failed"},
+    19: {label: "Part-Time", class: "interested"},
+    20: {label: "Full-Time", class: "interested"},
+    21: {label: "Permanent", class: "interested"},
+    22: {label: "Contract", class: "interested"},
+    23: {label: "Freelance", class: "interested"}
 
 } as { [key: number]: any }
 StageLabels[-1] = {label: "Add Status", class: "inactive"};
@@ -75,7 +75,10 @@ export const StageSwitch: React.FC<Props> = ({type, id, urn, customText, parentS
 
     const onClick = () => {
         if (stage?.stage !== type) {
-            localStore.dispatch(updateStageAction({id, state: {id: urn, stage: type, stageFrom: stage?.stage, stageText: customText || undefined, parentStage }}));
+            localStore.dispatch(updateStageAction({
+                id,
+                state: {id: urn, stage: type, stageFrom: stage?.stage, stageText: customText || undefined, parentStage}
+            }));
         }
     }
 
