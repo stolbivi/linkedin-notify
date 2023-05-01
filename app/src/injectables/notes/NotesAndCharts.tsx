@@ -563,7 +563,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                     <label className="notes-counter">{notes ? notes.length : 0}</label>
                                                                 </div>
                                                                 <div style={{width: fromListView ? "103%" : "45%"}}>
-                                                                    <div className="scroll-container h-300" style={{height: "285px", width: "492px", paddingLeft: "26px"}}>
+                                                                    <div className="scroll-container h-300" style={{height: "285px", width: "550px", paddingLeft: "26px"}}>
                                                                         <div style={{marginLeft: "14px"}} className="scroll-content">
                                                                             {completed && notes?.map((n, i) => (
                                                                                     <NoteCard key={i} note={n}
@@ -595,7 +595,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                 </div>
                                                             </>
                                                         ) : (<div className="scroll-container-parent" style={{width: fromListView ? "103%" : "45%"}}>
-                                                            <div className="scroll-container h-300" style={{height: "285px", width: "492px", paddingLeft: "26px"}}>
+                                                            <div className="scroll-container h-300" style={{height: "285px", width: "550px", paddingLeft: "26px"}}>
                                                                 <div className="scroll-content">
                                                                     {completed && notes?.map((n, i) => (
                                                                             <NoteCard key={i} note={n}
