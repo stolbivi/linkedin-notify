@@ -9,8 +9,8 @@ type Props = {
     extended?: boolean
     onProfileSelect?: (profile: any) => void
     lastNoteRef?: any
-    currentCount?:number
-    totalCount?:number
+    currentCount?: number
+    totalCount?: number
 };
 
 export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, currentCount, totalCount, lastNoteRef}) => {
@@ -65,7 +65,7 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
                                 <div> {getDescription()}</div>
                             </div>
                         }
-                        <label className="timestamp">{formatDate(new Date(note.updatedAt))}</label>
+                        <label className="timestamp">{formatDate(new Date(note.timestamp))}</label>
                     </div>
                     {note.stageFrom !== undefined && note.stageTo !== undefined &&
                         <div className="transition">

@@ -201,11 +201,16 @@ export class LinkedInAPI {
             .then(response => response.json());
     }
 
+    public extractConversationProfile(response: any) {
+        const entityUrns = response.participants.map((participant: any) =>
+            participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3]);
+        return entityUrns[0];
+    }
+
     public getConversationProfile(token: string, convId: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + `messaging/conversations/${convId}`, this.getRequest(token))
             .then(response => response.json());
     }
-
 
     public extractConversationDetails(response: any): Array<any> {
         function getSender(s: any) {
@@ -395,6 +400,7 @@ export class LinkedInAPI {
             "credentials": "include"
         }).then(_ => null);
     }
+
     public handleNewsLetterInvitation(token: string, invitation: Invitation) {
         return fetch(LinkedInAPI.BASE + `voyagerRelationshipsDashInvitations/urn%3Ali%3Afsd_invitation%3A${invitation.id}?action=${invitation.action}`, {
             "headers": {
@@ -407,6 +413,7 @@ export class LinkedInAPI {
             "credentials": "include"
         }).then(_ => null);
     }
+
     public markAllNotificationsAsSeen(token: string) {
         return fetch(LinkedInAPI.BASE + `voyagerNotificationsDashBadge?action=markAllItemsAsSeen`, {
             "headers": {
@@ -506,6 +513,7 @@ export class LinkedInAPI {
             "credentials": "include"
         }).then(_ => null);
     }
+
     public extractProfile(id: string, response: any): any {
         try {
             const actor = response.included.filter((i: any) => i.actor !== undefined);
@@ -526,7 +534,7 @@ export class LinkedInAPI {
             }
             let result: any = {name, link};
             const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
-            if(profile && profile[0]) {
+            if (profile && profile[0]) {
                 const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
                 if (vectorImage?.length > 0) {
                     const artifacts = extractArtifacts(vectorImage[0].artifacts);
@@ -561,10 +569,12 @@ export class LinkedInAPI {
             this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
             .then(response => response.json());
     }
+
     public getCompanyDetails(token: string, urn: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + `organization/companies?decorationId=com.linkedin.voyager.deco.organization.web.WebFullCompanyMain-12&q=universalName&universalName=${urn}`, this.getRequest(token))
             .then(response => response.json());
     }
+
     private getRequest(token: string, headers?: any): any {
         let defaultHeaders = {
             "accept": "application/graphql",

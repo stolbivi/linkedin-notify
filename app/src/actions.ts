@@ -75,12 +75,12 @@ export const getConversationDetails = createAction<string, Array<any>>("getConve
             return api.extractConversationDetails(detailsResponse);
         }));
 
-export const getConversationProfile = createAction<string, Array<any>>("getConversationProfile",
+export const getConversationProfile = createAction<string, string>("getConversationProfile",
     (convId) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
             const detailsResponse = await api.getConversationProfile(token, convId);
-            return detailsResponse;
+            return api.extractConversationProfile(detailsResponse);
         }));
 
 export const conversationAck = createAction<string, void>("conversationAck",
@@ -247,7 +247,7 @@ async function extendNote(token: string, notes: Note[], as: string): Promise<Not
         profileName: cache[n.profile].name[0],
         profileLink: cache[n.profile].link?.length > 0 ? cache[n.profile].link[0] : undefined,
         profilePicture: getPicture(cache[n.profile].profilePicture),
-        timestamp: new Date(n.updatedAt).getTime()
+        timestamp: new Date(n.updatedAt)
     }));
 }
 
@@ -312,8 +312,8 @@ export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesA
             }
         }));
 
-export const sortAsc = (notes: NoteExtended[]) => notes.sort((a, b) => a.timestamp - b.timestamp);
-export const sortDesc = (notes: NoteExtended[]) => notes.sort((a, b) => b.timestamp - a.timestamp);
+export const sortAsc = (notes: NoteExtended[]) => notes.sort((a, b) => a.timestamp?.getTime() - b.timestamp?.getTime());
+export const sortDesc = (notes: NoteExtended[]) => notes.sort((a, b) => b.timestamp?.getTime() - a.timestamp?.getTime());
 
 // @Deprecated: this API is deprecated and is not used since all notes are now shared via store
 export const getNotesByProfile = createAction<string, Response<NoteExtended[]>>("getNotesByProfile",

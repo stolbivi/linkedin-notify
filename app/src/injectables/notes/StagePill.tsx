@@ -7,11 +7,10 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 import {CompleteEnabled, IdAwareState, localStore, selectStage} from "../../store/LocalStore";
 import {Provider, shallowEqual, useSelector} from "react-redux";
 import {showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
-
-// @ts-ignore
-import stylesheet from "./StageSwitch.scss";
 import {getStageAction, Stage} from "../../store/StageReducer";
 import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
+// @ts-ignore
+import stylesheet from "./StageSwitch.scss";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -25,18 +24,35 @@ export const StagePillFactory = () => {
                 injectLastChild(header[0].parentElement, "lnm-stage",
                     <Provider store={localStore}>
                         <StagePill id={extractIdFromUrl(window.location.href)}/>
-                    </Provider>
+                    </Provider>, "StagePill"
                 );
             }
         }
     }
+    setTimeout(() => {
+        if (window.location.href.indexOf("/messaging/") > 0) {
+            const nameContainer = document.getElementsByClassName("artdeco-entity-lockup__badge ember-view");
+            if (nameContainer && nameContainer.length > 0) {
+                const nameHeader = nameContainer[0].getElementsByClassName("artdeco-entity-lockup__degree");
+                if (nameHeader && nameHeader.length > 0) {
+                    (nameHeader[0].parentElement as HTMLElement).style.paddingRight = "0.5em";
+                    injectLastChild(nameHeader[0].parentElement, "lnm-stage",
+                        <Provider store={localStore}>
+                            <StagePill id={extractIdFromUrl(window.location.href)} usePrf/>
+                        </Provider>, "StagePill"
+                    );
+                }
+            }
+        }
+    }, 700);
 }
 
 type Props = {
     id: string
+    usePrf?: boolean
 };
 
-export const StagePill: React.FC<Props> = ({id}) => {
+export const StagePill: React.FC<Props> = ({id, usePrf}) => {
 
     const [idInternal, setIdInternal] = useState<string>(id);
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
@@ -54,7 +70,8 @@ export const StagePill: React.FC<Props> = ({id}) => {
         if (accessState !== AccessState.Valid || !idInternal) {
             return;
         }
-        localStore.dispatch(getStageAction({id: idInternal, state: {url: idInternal}}));
+        let urlRequest = usePrf ? sessionStorage.getItem("prf") : idInternal;
+        localStore.dispatch(getStageAction({id: idInternal, state: {url: urlRequest}}));
     }, [idInternal, accessState]);
 
     const onClick = () => {

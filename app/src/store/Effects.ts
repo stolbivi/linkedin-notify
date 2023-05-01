@@ -1,6 +1,7 @@
 import {getLastViewedAction, setLastViewedAction} from "./LastViewedReducer";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {
+    getConversationProfile,
     getLastViewed,
     getNotesAll,
     getSalary,
@@ -16,7 +17,7 @@ import {
 import {IdAwareRequest, listenerMiddleware} from "./LocalStore";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
-import {getSalaryAction, setSalaryAction} from "./SalaryReducer";
+import {getSalaryAction, GetSalaryRequest, setSalaryAction} from "./SalaryReducer";
 import {getStageAction, setStageAction, updateStageAction} from "./StageReducer";
 import {getGeoTzAction, setGeoTzAction} from "./GeoTzReducer";
 import {appendNoteAction, getNotesAction, postNoteAction, setNotesAction} from "./NotesAllReducer";
@@ -48,9 +49,13 @@ export default () => {
 
     listenerMiddleware.startListening({
         predicate: (action) => action.type === getSalaryAction.type,
-        effect: async (action: PayloadAction<IdAwareRequest<string>>, listenerApi) => {
+        effect: async (action: PayloadAction<IdAwareRequest<GetSalaryRequest>>, listenerApi) => {
             listenerApi.dispatch(setSalaryAction({id: action.payload.id, state: {completed: false}}));
-            let r = await messages.request(getSalary(action.payload.state));
+            let requestId = action.payload.state.id;
+            if (action.payload.state.conversation) {
+                requestId = await messages.request(getConversationProfile(action.payload.state.id));
+            }
+            let r = await messages.request(getSalary(requestId));
             let salary = r.error
                 ? {formattedPay: "N/A", note: r.error}
                 : {...r.result, title: r.title, urn: r.urn};

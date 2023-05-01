@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {FormEvent, useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {getSalaryValue} from "../SalaryPill";
 import {PayDistribution} from "./PayDistribution";
-import {StageEnum, StageSwitch} from "./StageSwitch";
+import {StageEnum, StageLabels, StageSwitch} from "./StageSwitch";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {extractIdFromUrl, NoteExtended, VERBOSE} from "../../global";
+import {extractIdFromUrl, NoteExtended, UserStage, VERBOSE} from "../../global";
 import {inject} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
@@ -13,7 +13,7 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getTheme, sortAsc} from "../../actions";
+import {createCustomStage, getTheme, sortAsc} from "../../actions";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 import {ShowNotesAndCharts, showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
@@ -34,50 +34,115 @@ import {getStageAction, Stage} from "../../store/StageReducer";
 import stylesheet from "./NotesAndCharts.scss";
 import {getNotesAction, postNoteAction} from "../../store/NotesAllReducer";
 import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
+import UpChevron from "../../icons/UpChevron";
+import DownChevron from "../../icons/DownChevron";
 
 export const NotesAndChartsFactory = () => {
-    // individual profile
-    if (window.location.href.indexOf("/in/") > 0) {
-        const section = document.querySelectorAll('section[data-member-id]');
-        if (section && section.length > 0) {
-            inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                <Provider store={localStore}>
-                    <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={true}/>
-                </Provider>
-            );
+    setTimeout(() => {
+        // individual profile
+        if (window.location.href.indexOf("/in/") > 0) {
+            const section = document.querySelectorAll('section[data-member-id]');
+            if (section && section.length > 0) {
+                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                    <Provider store={localStore}>
+                        <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={true}/>
+                    </Provider>, "NotesAndCharts"
+                );
+            }
         }
-    }
-    // people's search
-    if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
-        const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
-        if (profileCards.length > 0) {
-            profileCards.forEach((card: HTMLDivElement, index) => {
-                card.style.position = "relative";
-                const profileLink = card.querySelectorAll('a[href*="/in/"]');
-                if (profileLink.length > 0) {
-                    const link = profileLink[0].getAttribute("href");
-                    const profileActions = card.getElementsByClassName('entity-result__actions');
-                    if (profileActions.length > 0) {
-                        const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
-                        const id = extractIdFromUrl(link);
-                        inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
-                            <Provider store={localStore}>
-                                <NotesAndCharts id={id}/>
-                            </Provider>
-                        );
+        if (window.location.href.indexOf("/messaging/") > 0) {
+            const section = document.getElementsByClassName("scaffold-layout__list-detail msg__list-detail");
+            if (section && section.length > 0) {
+                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                    <Provider store={localStore}>
+                        <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={true} conversation/>
+                    </Provider>, "NotesAndCharts"
+                );
+            }
+        }
+        // people's search
+        if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
+            const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
+            if (profileCards.length > 0) {
+                profileCards.forEach((card: HTMLDivElement, index) => {
+                    card.style.position = "relative";
+                    const profileLink = card.querySelectorAll('a[href*="/in/"]');
+                    if (profileLink.length > 0) {
+                        const link = profileLink[0].getAttribute("href");
+                        const profileActions = card.getElementsByClassName('entity-result__actions');
+                        if (profileActions.length > 0) {
+                            const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
+                            const id = extractIdFromUrl(link);
+                            inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
+                                <Provider store={localStore}>
+                                    <NotesAndCharts id={id}/>
+                                </Provider>, "NotesAndCharts"
+                            );
+                        }
                     }
-                }
-            })
+                })
+            }
         }
-    }
+    }, 100);
+}
+
+export enum StageParentData {
+    AVAILABILITY = "Availability",
+    GEOGRAPHY = "Geography",
+    STATUS = "Status",
+    TYPE = "Type",
+    Groups = "Groups"
+}
+
+export const stageParentsData = [
+    {name: StageParentData.AVAILABILITY},
+    {name: StageParentData.STATUS},
+    {name: StageParentData.TYPE},
+    {name: StageParentData.GEOGRAPHY},
+    {name: StageParentData.Groups}
+]
+
+export const stageChildData = {
+    [StageParentData.AVAILABILITY]: [
+        {name: StageEnum.Passive_Candidate},
+        {name: StageEnum.Actively_Looking},
+        {name: StageEnum.Open_To_New_Offers},
+        {name: StageEnum.Not_Looking_Currently},
+        {name: StageEnum.Future_Interest}
+    ],
+    [StageParentData.GEOGRAPHY]: [
+        {name: StageEnum.Relocation},
+        {name: StageEnum.Commute},
+        {name: StageEnum.Hybrid},
+        {name: StageEnum.Remote}
+    ],
+    [StageParentData.STATUS]: [
+        {name: StageEnum.Contacted},
+        {name: StageEnum.Pending_Response},
+        {name: StageEnum.Interview_Scheduled},
+        {name: StageEnum.Offer_Extended},
+        {name: StageEnum.Hired},
+        {name: StageEnum.Rejected}
+    ],
+    [StageParentData.TYPE]: [
+        {name: StageEnum.Part_Time},
+        {name: StageEnum.Full_Time},
+        {name: StageEnum.Permanent},
+        {name: StageEnum.Contract},
+        {name: StageEnum.Freelance}
+    ],
+    [StageParentData.Groups]: [
+        {name: StageEnum.Commute}
+    ]
 }
 
 type Props = {
     id: string
     trackUrl?: boolean
+    conversation?: boolean
 };
 
-export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
+export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false}) => {
 
     const MAX_LENGTH = 200;
 
@@ -89,6 +154,14 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
     const [editable, setEditable] = useState<boolean>(true);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
+    const [stageParents] = useState([...stageParentsData]);
+    const [customStages, setCustomStages] = useState<UserStage[]>([]);
+    const [activeStageParent, setActiveStageParent] = useState<StageParentData>(StageParentData.AVAILABILITY);
+    const [editButton, setEditButton] = useState(false);
+    // TODO this has to work through store
+    // TODO is salary label supposed to go into DB? if yes, where's persistence call?π
+    // const [currencySymbol, setCurrencySymbol] = useState("");
+    // const [salaryLabel, setSalaryLabel] = useState("");
 
     const showNotesAndCharts: IdAwareState<ShowNotesAndCharts> = useSelector(selectShowNotesAndCharts, shallowEqual);
     const salary: IdAwareState<CompleteEnabled<Salary>> = useSelector(selectSalary, shallowEqual);
@@ -97,6 +170,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
     const [notes, setNotes] = useState<NoteExtended[]>([]);
 
     const [url] = useUrlChangeSupport(window.location.href);
+
+    const lastNoteRef = useRef();
 
     useEffect(() => {
         if (url?.length > 0 && trackUrl) {
@@ -113,7 +188,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
 
     useEffect(() => {
         localStore.dispatch(getNotesAction());
-        localStore.dispatch(getSalaryAction({id: idInternal, state: idInternal}));
+        localStore.dispatch(getSalaryAction({id: idInternal, state: {id: idInternal, conversation: conversation}}));
         localStore.dispatch(getStageAction({id: idInternal, state: {url: idInternal}}));
     }, [idInternal]);
 
@@ -144,6 +219,17 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
         }
     }, [showNotesAndCharts]);
 
+    // TODO below must work through the store and variable interpolation, updating low-level html content can cause massive performance downgrade as React cannot detect that
+    // useEffect(()=>{
+    //     console.log("Salary label: ", salaryLabel);
+    //     if (salaryLabel){
+    //         setCurrencySymbol(salaryLabel[0]);
+    //         if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
+    //             (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryLabel;
+    //         }
+    //     }
+    // },[salaryLabel])
+
     const canShow = () => extractFromIdAware(showNotesAndCharts)?.show;
     const completed = () => extractFromIdAware(salary).completed;
 
@@ -159,6 +245,16 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
             }));
             setText({value: ""});
             setEditable(true);
+            // TODO timeout might not be required, the stores are synced
+            setTimeout(() => {
+                // @ts-ignore
+                lastNoteRef?.current?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'end',
+                    inline: 'nearest',
+                    marginBottom: 50
+                });
+            }, 200);
         }
     }
 
@@ -184,6 +280,71 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
         setShowChart(true);
     }
 
+    const removeSelectedTag = (id: string) => {
+        let updatedNotes = [...notes];
+        let tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === id);
+        if (tagToRemoveIndex !== -1) {
+            updatedNotes.splice(tagToRemoveIndex, 1);
+            setNotes(updatedNotes);
+        }
+        // TODO must work via store
+        // messages.request(deleteNote(id)).then(/*nada*/);
+    };
+
+    const getStage = (stage: number, id: string) => {
+        return <div className={"stage " + StageLabels[stage].class} style={{width: "27%"}}>
+            <label>{StageLabels[stage].label}</label>
+            <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
+                        <svg width="3" height="3" viewBox="0 0 17 17" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 2L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <path d="M15 2L2 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                    </span>
+        </div>
+    }
+
+    const CreateNewGroup = () => {
+        const [isCreating, setIsCreating] = useState(false)
+        const [customName, setCustomName] = useState('')
+        const [loading, setLoading] = useState(false)
+
+        const handleCustomTagSubmit = async (e: FormEvent) => {
+            e.preventDefault();
+            if (customName === '') return;
+            setLoading(true)
+            // TODO must work via store
+            // messages.request(createCustomStage({text: customName}))
+            //     .then((r) => {
+            //         let temp = [...customStages]
+            //         const {stageId, text, userId, id} = r
+            //         temp.push({stageId, text, userId, id})
+            //         setCustomStages(temp)
+            //     })
+            //     .catch(err => console.error(err))
+            //     .finally(() => setLoading(false))
+        }
+
+        return (
+            <React.Fragment>
+                {loading ? <>loading...</> : <div onClick={!isCreating ? () => setIsCreating(true) : undefined}
+                                                  className={`create-new-group-wrapper ${isCreating ? "is-creating" : ""}`}>
+                    {isCreating ? <form onSubmit={handleCustomTagSubmit}><input value={customName}
+                                                                                onChange={e => setCustomName(e.currentTarget.value)}
+                                                                                placeholder='Enter New Group Here'/>
+                    </form> : '+ Create New Group'}
+                </div>}
+            </React.Fragment>
+        )
+    }
+
+    useEffect(() => console.log(customStages), [customStages])
+
+    const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
+        event.stopPropagation();
+        setEditButton(!editButton);
+    }
+
     return (
         <React.Fragment>
             {canShow() &&
@@ -203,13 +364,33 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
                             <div className="local-loader"><Loader show={!completed()}/></div>
                             {completed() && !minimized && <NotesContainer>
                                 <Collapsible initialOpened={showSalary}>
-                                    <div data-role={CollapsibleRole.Title}>Avg. Base Salary (GBR)</div>
+                                    <div data-role={CollapsibleRole.Title} className="salary-title">
+                                        <span className="salary-title-text">Avg. Base Salary (GBR)</span>
+                                        <svg onClick={(event) => editOnClick(event)} width="18" height="18"
+                                             viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M11.25 17.0625H6.75C2.6775 17.0625 0.9375 15.3225 0.9375 11.25V6.75C0.9375 2.6775 2.6775 0.9375 6.75 0.9375H8.25C8.5575 0.9375 8.8125 1.1925 8.8125 1.5C8.8125 1.8075 8.5575 2.0625 8.25 2.0625H6.75C3.2925 2.0625 2.0625 3.2925 2.0625 6.75V11.25C2.0625 14.7075 3.2925 15.9375 6.75 15.9375H11.25C14.7075 15.9375 15.9375 14.7075 15.9375 11.25V9.75C15.9375 9.4425 16.1925 9.1875 16.5 9.1875C16.8075 9.1875 17.0625 9.4425 17.0625 9.75V11.25C17.0625 15.3225 15.3225 17.0625 11.25 17.0625Z"
+                                                fill="#1569BF"/>
+                                            <path
+                                                d="M6.375 13.2675C5.9175 13.2675 5.4975 13.1025 5.19 12.8025C4.8225 12.435 4.665 11.9025 4.7475 11.34L5.07 9.08248C5.13 8.64748 5.415 8.08498 5.7225 7.77748L11.6325 1.86748C13.125 0.374983 14.64 0.374983 16.1325 1.86748C16.95 2.68498 17.3175 3.51748 17.2425 4.34998C17.175 5.02498 16.815 5.68498 16.1325 6.35998L10.2225 12.27C9.915 12.5775 9.3525 12.8625 8.9175 12.9225L6.66 13.245C6.5625 13.2675 6.465 13.2675 6.375 13.2675ZM12.4275 2.66248L6.5175 8.57248C6.375 8.71498 6.21 9.04498 6.18 9.23998L5.8575 11.4975C5.8275 11.715 5.8725 11.895 5.985 12.0075C6.0975 12.12 6.2775 12.165 6.495 12.135L8.7525 11.8125C8.9475 11.7825 9.285 11.6175 9.42 11.475L15.33 5.56498C15.8175 5.07748 16.0725 4.64248 16.11 4.23748C16.155 3.74998 15.9 3.23248 15.33 2.65498C14.13 1.45498 13.305 1.79248 12.4275 2.66248Z"
+                                                fill="#1569BF"/>
+                                            <path
+                                                d="M14.8875 7.37252C14.835 7.37252 14.7825 7.36502 14.7375 7.35002C12.765 6.79502 11.1975 5.22752 10.6425 3.25502C10.56 2.95502 10.7325 2.64752 11.0325 2.55752C11.3325 2.47502 11.64 2.64752 11.7225 2.94752C12.1725 4.54502 13.44 5.81252 15.0375 6.26252C15.3375 6.34502 15.51 6.66002 15.4275 6.96002C15.36 7.21502 15.135 7.37252 14.8875 7.37252Z"
+                                                fill="#1569BF"/>
+                                        </svg>
+                                    </div>
                                     <div data-role={CollapsibleRole.Static}>
                                         <div className="d-flex">
                                             <section className="label-section">
-                                                <div
-                                                    className="label-salary">{extractFromIdAware(salary) && getSalaryValue(extractFromIdAware(salary) as Salary)} year
-                                                </div>
+                                                {
+                                                    editButton
+                                                        ? (<input className="label-salary-edit"
+                                                                  placeholder={salaryLabel}
+                                                                  onChange={(event) => setSalaryLabel(currencySymbol + event.target.value)}/>)
+                                                        : (<div
+                                                            className="label-salary">{extractFromIdAware(salary) && getSalaryValue(extractFromIdAware(salary) as Salary)} year
+                                                        </div>)
+                                                }
                                                 <div className="label-position">
                                                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
                                                          xmlns="http://www.w3.org/2000/svg">
@@ -225,7 +406,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
                                             </section>
                                             <section className="chart-section">
                                                 {extractFromIdAware(salary) &&
-                                                    <PayDistribution salary={extractFromIdAware(salary) as Salary}/>}
+                                                    <PayDistribution salary={extractFromIdAware(salary) as Salary}
+                                                                     currencySymbol={currencySymbol}
+                                                                     editable={editButton}/>}
                                             </section>
                                         </div>
                                     </div>
@@ -236,21 +419,55 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
                                     </div>
                                 </Collapsible>
                                 {extractFromIdAware(salary) &&
-                                    <div className="stage-container">
-                                        <span>Pick a stage</span>
-                                        <div className="stages">
-                                            <StageSwitch type={StageEnum.Interested} id={idInternal}
-                                                         urn={extractFromIdAware(salary).urn}/>
-                                            <StageSwitch type={StageEnum.NotInterested} id={idInternal}
-                                                         urn={extractFromIdAware(salary).urn}/>
-                                            <StageSwitch type={StageEnum.Interviewing} id={idInternal}
-                                                         urn={extractFromIdAware(salary).urn}/>
-                                            <StageSwitch type={StageEnum.FailedInterview} id={idInternal}
-                                                         urn={extractFromIdAware(salary).urn}/>
-                                            <StageSwitch type={StageEnum.Hired} id={idInternal}
-                                                         urn={extractFromIdAware(salary).urn}/>
+                                    <Collapsible initialOpened={true} typeCollapse={true}>
+                                        <div data-role={CollapsibleRole.Title} className="title-child assigned">
+                                            <label>Track Candidates</label>
+                                            <div className="assigned-job">
+                                                <p>Assigned Job: </p>
+                                                <select onClick={(event) => {
+                                                    event.stopPropagation()
+                                                }} className="assigned-job-dropdown">
+                                                    <option>Enter Job Name</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>}
+                                        <div data-role={CollapsibleRole.Collapsible}>
+                                            <div className="stage-parents-container">
+                                                {stageParents.map(stage => <div
+                                                    onClick={() => setActiveStageParent(prev => prev === stage.name ? null : stage.name)}
+                                                    className={activeStageParent === stage.name ? "active-item" : "item"}>
+                                                    <div
+                                                        className={activeStageParent === stage.name ? "stage-name-title-active" : "stage-name-title"}>{stage.name}</div>
+                                                    {activeStageParent === stage.name ? <UpChevron/> : <DownChevron/>}
+                                                </div>)}
+                                                <div className="nested-children">
+                                                    {stageChildData[activeStageParent]?.map?.((child, index) => activeStageParent !== "Groups" ?
+                                                        <StageSwitch key={extractFromIdAware(salary).urn + index}
+                                                                     type={child.name}
+                                                                     id={idInternal}
+                                                                     urn={extractFromIdAware(salary).urn}
+                                                                     parentStage={Object.values(StageParentData).indexOf(activeStageParent)}>
+                                                        </StageSwitch> :
+                                                        <div className="custom-stages-wrapper">
+                                                            {customStages?.map?.(customStage =>
+                                                                <StageSwitch
+                                                                    key={extractFromIdAware(salary).urn + index}
+                                                                    customText={customStage.text}
+                                                                    urn={extractFromIdAware(salary).urn}
+                                                                    id={customStage?.stageId?.toString()}>
+                                                                </StageSwitch>
+                                                            )}
+                                                            <CreateNewGroup/>
+                                                        </div>)}
+                                                </div>
+                                                <div className="selected-stages">
+                                                    Selected
+                                                    tags: {notes?.length ? notes?.map(note => <>{getStage(note.stageTo, note.id)}</>) : 'no selected tags'}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Collapsible>
+                                }
                                 <Collapsible initialOpened={showNotes}>
                                     <div data-role={CollapsibleRole.Title} className="title-child">
                                         <label>Notes</label>
@@ -259,9 +476,13 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false}) => {
                                     <div data-role={CollapsibleRole.Collapsible}>
                                         <div className="scroll-container h-300">
                                             <div className="scroll-content">
-                                                {completed() && notes?.map((n, i) => (
-                                                    <NoteCard key={i} note={n}/>))}
-                                                {completed() && notes.length == 0 &&
+                                                {completed && notes?.map((n, i) => (
+                                                    <NoteCard key={i} note={n}
+                                                              currentCount={i} totalCount={notes.length}
+                                                              lastNoteRef={lastNoteRef}/>)
+                                                )
+                                                }
+                                                {completed && notes.length == 0 &&
                                                     <div className="no-notes">
                                                         <NoNotes/>
                                                         <div>No notes yet</div>

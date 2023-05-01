@@ -20,7 +20,8 @@ interface Distribution {
     right: Sample;
 }
 
-export const PayDistribution: React.FC<Props> = ({ salary , currencySymbol,editable}) => {
+export const PayDistribution: React.FC<Props> = ({salary, currencySymbol, editable}) => {
+
     const [distribution, setDistribution] = useState<Distribution>({
         left: {percent: 10, value: ""},
         middle: {percent: 80, value: ""},
@@ -60,7 +61,7 @@ export const PayDistribution: React.FC<Props> = ({ salary , currencySymbol,edita
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
         const newDistribution = {...distribution};
         // @ts-ignore
-        newDistribution[key].value = currencySymbol+event.target.value;
+        newDistribution[key].value = currencySymbol + event.target.value;
         setDistribution(newDistribution);
     };
 
@@ -88,7 +89,7 @@ export const PayDistribution: React.FC<Props> = ({ salary , currencySymbol,edita
                             onChange={(e) => handleChange(e, "right")}
                         />
                     </div>
-                ): null
+                ) : null
             }
             <div className="bar-container">
                 <div className="bar-left" style={{width: distribution?.left?.percent + "%"}}>

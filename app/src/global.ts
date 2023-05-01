@@ -72,7 +72,7 @@ export interface NoteExtended extends Note {
     profileName: string
     profilePicture: string
     profileLink: string
-    timestamp: number
+    timestamp: Date
 }
 
 export const extractIdFromUrl = (url: string) => {

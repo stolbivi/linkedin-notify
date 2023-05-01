@@ -62,7 +62,7 @@ export const StageLabels = {
 StageLabels[-1] = {label: "Add Status", class: "inactive"};
 
 type Props = {
-    type: StageEnum
+    type?: StageEnum
     id: string;
     urn: string
     customText?: string;

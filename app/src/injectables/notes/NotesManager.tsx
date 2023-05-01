@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {NoteExtended, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
@@ -24,14 +24,17 @@ import {NotesContainer} from "./NotesContainer";
 import stylesheet from "./NotesManager.scss";
 
 export const NotesManagerFactory = () => {
-    const aside = document.getElementsByClassName("scaffold-layout__aside");
-    if (aside && aside.length > 0) {
-        injectFirstChild(aside[0], "lnm-notes-manager",
-            <Provider store={localStore}>
-                <NotesManager/>
-            </Provider>
-        );
-    }
+    // TODO, as a rule of thumb, "if a timeout has to be used, it will fail one day". Why? What is wrong with DOM Watcher?
+    setTimeout(() => {
+        const aside = document.getElementsByClassName("scaffold-layout__aside");
+        if (aside && aside.length > 0) {
+            injectFirstChild(aside[0], "lnm-notes-manager",
+                <Provider store={localStore}>
+                    <NotesManager/>
+                </Provider>, "NotesManager"
+            );
+        }
+    }, 1000);
 }
 
 type Props = {};
@@ -60,6 +63,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [selection, setSelection] = useState<any>();
     const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
+
+    const lastNoteRef = useRef();
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
@@ -195,7 +200,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
             <div className="scroll-container">
                 <div className="scroll-content">
                     {notes?.map((n, i) =>
-                        (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}/>))}
+                        (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}
+                                   currentCount={i} totalCount={notes.length} lastNoteRef={lastNoteRef}/>))}
                     {notes.length == 0 &&
                         <div className="no-notes">
                             <NoNotes/>
@@ -231,6 +237,15 @@ export const NotesManager: React.FC<Props> = ({}) => {
             localStore.dispatch(postNoteAction({id: selection.profile, stageTo: lastState, text}));
             setText({value: ""});
             setEditable(true);
+            setTimeout(() => {
+                // @ts-ignore
+                lastNoteRef?.current?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'end',
+                    inline: 'nearest',
+                    marginBottom: 50
+                });
+            }, 200);
         }
     }
 
@@ -275,7 +290,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
             <div className="scroll-container">
                 <div className="scroll-content">
                     {notes?.map((n, i) =>
-                        (<NoteCard key={i} note={n}/>))}
+                        (<NoteCard key={i} note={n}
+                                   currentCount={i} totalCount={notes.length} lastNoteRef={lastNoteRef}/>))}
                     {notes.length == 0 &&
                         <div className="no-notes">
                             <NoNotes/>
