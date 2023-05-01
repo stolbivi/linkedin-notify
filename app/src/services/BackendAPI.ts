@@ -205,4 +205,12 @@ export class BackendAPI extends BaseAPI {
             this.getRequest("GET")
         );
     }
+
+    public getAssignedJobsById(jobId: string, as: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}jobs/assigned/${jobId}` + (as ? `?as=${as}` : ""),
+            this.getRequest("GET")
+        );
+    }
+
 }

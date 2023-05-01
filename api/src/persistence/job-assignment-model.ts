@@ -5,8 +5,14 @@ export interface AssignedJob {
     id?: string
     jobId?: string
     author?: string
-    rcpntUserId?: string
     assignedBy?: string
+    name?: string
+    designation?:string
+    profileImg?:string
+    profileId?: string
+    companyName?: string
+    conversationUrn?: string
+    userId?: string
 }
 const jobAssignmentSchema = new dynamoose.Schema(
     {
@@ -24,8 +30,33 @@ const jobAssignmentSchema = new dynamoose.Schema(
                 global: true
             }
         },
-        rcpntUserId: {
+        name: {
             type: String,
+            required: true
+        },
+        designation: {
+            type: String,
+            required: true
+        },
+        profileImg: {
+            type: String,
+            required: false
+        },
+        profileId: {
+            type: String,
+            required: false
+        },
+        companyName: {
+            type: String,
+            required: false
+        },
+        conversationUrn: {
+            type: String,
+            required: false
+        },
+        userId: {
+            type: String,
+            required: false
         },
         assignedBy: {
             type: String,

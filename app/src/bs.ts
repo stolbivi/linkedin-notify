@@ -54,7 +54,8 @@ import {
     getLatestStage,
     assignJob,
     getAssignedJob,
-    getMe
+    getMe,
+    getAssignedJobsById
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -140,6 +141,7 @@ messagesV2.listen(getLatestStage);
 messagesV2.listen(assignJob);
 messagesV2.listen(getAssignedJob);
 messagesV2.listen(getMe);
+messagesV2.listen(getAssignedJobsById);
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
     tabs.withAllTabs().then(tabs => {

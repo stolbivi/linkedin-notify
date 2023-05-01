@@ -140,6 +140,12 @@ export interface AssignedJob {
     id?: string
     jobId?: string
     author?: string
-    rcpntUserId?: string
     assignedBy?: string
+    name?: string
+    designation?:string
+    profileImg?:string
+    profileId?: string
+    companyName?: string
+    conversationUrn?: string
+    userId?: string
 }

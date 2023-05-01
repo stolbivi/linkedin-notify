@@ -1,14 +1,43 @@
 import {DataGrid} from '@material-ui/data-grid';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Status from "../Status";
 // @ts-ignore
 import stylesheet from './styles.scss';
 // @ts-ignore
 import { makeStyles } from '@material-ui/core/styles';
-
+import {showNotesAndCharts} from "../../../../../actions";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {VERBOSE} from "../../../../../global";
+import ICard from '../../interfaces/ICard';
 
 // @ts-ignore
-const ListView = ({cards, messagesClickHandler, onNotesClick}, activeButton) => {
+const ListView = ({cards}) => {
+
+    const [showNotes, setShowNotes] = useState<boolean>(false);
+    const messages = new MessagesV2(VERBOSE);
+
+    function messagesClickHandler(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, conversationUrn: any) {
+        event.stopPropagation();
+        let messageUrl = 'https://www.linkedin.com/messaging/thread/new/';
+        if (conversationUrn) {
+            messageUrl = `https://www.linkedin.com/messaging/thread/${conversationUrn}`
+        }
+        window.open(messageUrl, '_blank')
+    }
+
+    const onNotesClick = (userId: string, profileId: string) => {
+        if (showNotes) {
+            setShowNotes(false);
+        } else {
+            return messages.request(showNotesAndCharts({
+                userId,
+                profileId,
+                showSalary: false,
+                showNotes: true,
+                showStages: true
+            }));
+        }
+    }
 
     const useStyles = makeStyles({
         root: {
@@ -49,25 +78,59 @@ const ListView = ({cards, messagesClickHandler, onNotesClick}, activeButton) => 
     const classes = useStyles();
 
     const columns = [
-        { field: 'name', headerName: 'Full Name', flex: 1, sortable: true, filterable: true, headerClassName: classes.header + ' ' + classes.col1, headerAlign: 'center', align: 'left',
-            renderCell: (params) => (
-                <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
-                     onClick={()=>window.open(`https://www.linkedin.com/in/${params.row.userId}`, '_blank')}>
-                    <img src={params.row.profileImg} alt="img" width={30} height={30} style={{ borderRadius: '100%' }} />
-                    <span style={{ padding: '4%', fontSize: '12px' }}>{params.row.name}</span>
+        {
+            field: 'name',
+            headerName: 'Full Name',
+            flex: 1,
+            sortable: true,
+            filterable: true,
+            headerClassName: classes.header + ' ' + classes.col1,
+            headerAlign: 'center',
+            align: 'left',
+            renderCell: (params: { row: { userId: any; profileImg: string; name: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }; }) => (
+                <div style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}}
+                     onClick={() => window.open(`https://www.linkedin.com/in/${params.row.userId}`, '_blank')}>
+                    <img src={params.row.profileImg} alt="img" width={30} height={30} style={{borderRadius: '100%'}}/>
+                    <span style={{padding: '4%', fontSize: '12px'}}>{params.row.name}</span>
                 </div>
             )
         },
-        { field: 'designation', headerName: 'Position', flex: 1, sortable: true, filterable: true, headerClassName: classes.header + ' ' + classes.col2, headerAlign: 'center', align: 'left' },
-        { field: 'companyName', headerName: 'Company Name', flex: 2, sortable: true, filterable: true, headerClassName: classes.header + ' ' + classes.col3, headerAlign: 'center', align: 'center' },
-        { field: 'status', headerName: 'Status', flex: 2, sortable: true, filterable: false, headerClassName: classes.header + ' ' + classes.col4, headerAlign: 'center', align: 'center',
-            renderCell: (params) => (
-                <Status card={params.row} activeButton={activeButton}/>
+        {
+            field: 'designation',
+            headerName: 'Position',
+            flex: 1,
+            sortable: true,
+            filterable: true,
+            headerClassName: classes.header + ' ' + classes.col2,
+            headerAlign: 'center',
+            align: 'left'
+        },
+        {
+            field: 'companyName',
+            headerName: 'Company Name',
+            flex: 2,
+            sortable: true,
+            filterable: true,
+            headerClassName: classes.header + ' ' + classes.col3,
+            headerAlign: 'center',
+            align: 'center'
+        },
+        {
+            field: 'status',
+            headerName: 'Status',
+            flex: 2,
+            sortable: true,
+            filterable: false,
+            headerClassName: classes.header + ' ' + classes.col4,
+            headerAlign: 'center',
+            align: 'center',
+            renderCell: (params: { row: ICard; }) => (
+                <Status card={params.row}/>
             )
         },
         {
             field: 'action', headerName: 'Action', flex: 2, sortable: false, filterable: false, headerClassName: classes.header + ' ' + classes.col5, headerAlign: 'center', align: 'center',
-            renderCell: (params) => (
+            renderCell: (params: { row: { conversationUrn: any; userId: string; profileId: string; }; }) => (
                 <>
                     <button className="btn action-btn-color" onClick={(event)=>messagesClickHandler(event,params.row.conversationUrn)}>
                         <svg className="icon-color" width="16" height="17" viewBox="0 0 16 17" xmlns="http://www.w3.org/2000/svg">

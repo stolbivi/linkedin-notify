@@ -38,7 +38,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const [completed, setCompleted] = useState(false);
   const [kanbanData, setKanbanData] = useState({});
   const [listView, setListView] = useState(false);
-  const [showNotes, setShowNotes] = useState<boolean>(false);
 
   useEffect(() => {
     messages.request(getAuthorStages())
@@ -266,22 +265,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     }
   },[listView,activeButton])
 
-  function messagesClickHandler(event, conversationUrn) {
-    event.stopPropagation();
-    let messageUrl = 'https://www.linkedin.com/messaging/thread/new/';
-    if(conversationUrn) {
-      messageUrl = `https://www.linkedin.com/messaging/thread/${conversationUrn}`
-    }
-    window.open(messageUrl, '_blank')
-  }
-
-  const onNotesClick = (userId: string, profileId: string) => {
-    if (showNotes) {
-      setShowNotes(false);
-    } else {
-      return messages.request(showNotesAndCharts({userId, profileId, showSalary: false, showNotes: true, showStages: true}));
-    }
-  }
 
   const listViewClickHandler = () => {
     setListView(true);
@@ -345,7 +328,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                   listView?
                       (
                           <>
-                            <ListView cards={cards} messagesClickHandler={messagesClickHandler} onNotesClick={onNotesClick}/>
+                            <ListView cards={cards}/>
                           </>
                       ):(
                           <StatusesColumnsContainer>

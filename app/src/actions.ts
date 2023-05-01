@@ -303,8 +303,8 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
                             profileId: payload.id, userId: profile.publicIdentifier}
             }
             const prflImg = rcpntPrfl.profileImg ? rcpntPrfl.profileImg : 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
-            const stage = await backEndAPI.setStage(note.response.id, payload.stage, author, payload.parentStage, rcpntPrfl.name,
-                rcpntPrfl.designation, prflImg, payload.stageText || "", rcpntPrfl.profileId, experience.company.name, experience.conversationUrn, rcpntPrfl.userId);
+            const stage = await backEndAPI.setStage(note?.response?.id, payload?.stage, author, payload?.parentStage, rcpntPrfl?.name,
+                rcpntPrfl?.designation, prflImg, payload?.stageText || "", rcpntPrfl?.profileId, experience?.company?.name, experience?.conversationUrn, rcpntPrfl?.userId);
             return {note: {response: noteExtended[0]}, stage: stage};
         }));
 
@@ -645,11 +645,24 @@ export const getLatestStage = createAction<string, any>("getLatestStage",
         }));
 
 export const assignJob = createAction("assignJob",
-    (payload: { jobId: string, url: string}) => getCookies(LINKEDIN_DOMAIN)
+    (payload: { jobId: string, urn: string}) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async (token) => {
             const me = await api.getMe(token);
-            const job: AssignedJob = {jobId: payload.jobId, rcpntUserId: payload.url, author: api.extractProfileUrn(me)};
+            const experienceResponse = await api.getExperience(token, payload.urn);
+            const experience = api.extractExperience(experienceResponse);
+            let profile= await api.getProfileDetails(token,payload.urn);
+            let rcpntPrfl = {name: "", designation: "", profileImg: "", profileId: "", userId: ""};
+            if(profile && profile.included[0]) {
+                profile = profile.included[0];
+                rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
+                    designation: profile.occupation,
+                    profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
+                    profileId: payload.urn, userId: profile.publicIdentifier}
+            }
+            const prflImg = rcpntPrfl.profileImg ? rcpntPrfl.profileImg : 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
+            const job: AssignedJob = {jobId: payload?.jobId, author: api.extractProfileUrn(me), userId: rcpntPrfl?.userId, profileId: rcpntPrfl?.profileId,
+            companyName: experience?.company?.name, conversationUrn: experience?.conversationUrn, profileImg: prflImg, designation: rcpntPrfl?.designation, name: rcpntPrfl?.name };
             const { response } = await backEndAPI.assignJob(job)
             return response
         })
@@ -669,5 +682,15 @@ export const getMe = createAction("getMe", () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async (token) => {
             return await api.getMe(token)
+        })
+)
+
+export const getAssignedJobsById = createAction<string, any>("getAssignedJobsById",
+    (jobId) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const { response } = await backEndAPI.getAssignedJobsById(jobId,api.extractProfileUrn(me));
+            return response
         })
 )

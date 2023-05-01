@@ -6,7 +6,7 @@ import {extractIdFromUrl, VERBOSE} from "../global";
 import stylesheet from "./AssignedJobs.scss";
 import {Loader} from "./Loader";
 
-const AssignedJobs = () => {
+const AssignedJobs = (props: { urn: any; }) => {
     const [jobs,setJobs] = useState([]);
     const [selectedJob, setSelectedJob] = useState('');
     const messages = new MessagesV2(VERBOSE);
@@ -30,7 +30,7 @@ const AssignedJobs = () => {
 
     const assignJobHandler = (jobId: string) => {
         setCompleted(false);
-        messages.request(assignJob({jobId: jobId, url: extractIdFromUrl(window.location.href)})).then(resp => {
+        messages.request(assignJob({jobId: jobId, urn: props.urn})).then(resp => {
             setCompleted(true);
             setSelectedJob(resp.jobId);
         })

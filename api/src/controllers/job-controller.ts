@@ -151,8 +151,8 @@ export class JobController extends BaseController {
             const toCreate = { ...body, id: uuid(), assignedBy: `${user?.firstName} ${user?.lastName}` };
             const existingRecord = await JobAssignmentModel.query('author')
                                         .eq(body.author)
-                                        .where('rcpntUserId')
-                                        .eq(body.rcpntUserId)
+                                        .where('userId')
+                                        .eq(body.userId)
                                         .exec();
             if (existingRecord.length > 0) {
                 delete toCreate.id;
@@ -179,7 +179,7 @@ export class JobController extends BaseController {
             return Promise.resolve("Please, sign in to use premium features");
         }
         try {
-            const result = await JobAssignmentModel.query('author').eq(author).where('rcpntUserId').eq(id).exec();
+            const result = await JobAssignmentModel.query('author').eq(author).where('userId').eq(id).exec();
             let message: any = {response: this.getFirst(result)};
             if (request?.user) {
                 message = {...message, user: request.user};
@@ -189,5 +189,31 @@ export class JobController extends BaseController {
             return this.handleError(error, request);
         }
     }
+
+    @Tags("Persistence")
+    @Get("jobs/assigned/{jobId}")
+    public async findAssignedJobsById(jobId: string,
+                          @Query() as?: string,
+                          @Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            let query = as
+                ? JobAssignmentModel.query("jobId").eq(jobId).where("author").eq(as)
+                : JobAssignmentModel.query("jobId").eq(jobId);
+            const result = await query.exec();
+            let message: any = {response: result.toJSON()};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
 
 }

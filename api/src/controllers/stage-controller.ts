@@ -230,4 +230,60 @@ export class StageController extends BaseController {
             return this.handleError(error, request);
         }
     }
+
+    @Tags("Persistence")
+    @Get("stage/author/{author}/{profileId}")
+    public async findStagesByAuthorAndProfile(author: string, profileId: string, @Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+        try {
+            let query = StageModel.query("author").eq(author).where("profileId").eq(profileId);;
+            const result = await query.exec();
+            let message: any = {response: result.map((i: any) => i.toJSON())};
+            const data = {};
+            message.response.forEach((item: { parentStage: string | number; stage: string | number; name: any; designation: any;
+                id: any; profileImg: any; stageText: string; profileId: string; companyName: string; conversationUrn: string; userId: string;}) => {
+                // @ts-ignore
+                let parentStage = ParentStageEnum[item.parentStage];
+                if(!parentStage) {
+                    parentStage = "OTHER";
+                }
+                // @ts-ignore
+                const stage = StageEnum[item.stage] ? StageEnum[item.stage] : item.stageText || "OTHER";
+
+                // @ts-ignore
+                if (!data[parentStage]) {
+                    // @ts-ignore
+                    data[parentStage] = {};
+                }
+
+                // @ts-ignore
+                if (!data[parentStage][stage]) {
+                    // @ts-ignore
+                    data[parentStage][stage] = [];
+                }
+                // @ts-ignore
+                data[parentStage][stage].push({
+                    name: item.name,
+                    designation: item.designation,
+                    id: item.id,
+                    profileId: item.profileId,
+                    profileImg: item.profileImg,
+                    status: parentStage,
+                    category: stage?.replace(/_/g,' '),
+                    companyName: item.companyName,
+                    conversationUrn: item.conversationUrn,
+                    userId: item.userId
+                });
+            });
+            if (request?.user) {
+                message = {data, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
 }
