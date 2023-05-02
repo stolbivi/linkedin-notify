@@ -55,7 +55,9 @@ import {
     assignJob,
     getAssignedJob,
     getMe,
-    getAssignedJobsById
+    getAssignedJobsById,
+    getCustomSalary,
+    setCustomSalary
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
@@ -142,6 +144,8 @@ messagesV2.listen(assignJob);
 messagesV2.listen(getAssignedJob);
 messagesV2.listen(getMe);
 messagesV2.listen(getAssignedJobsById);
+messagesV2.listen(setCustomSalary);
+messagesV2.listen(getCustomSalary);
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
     tabs.withAllTabs().then(tabs => {

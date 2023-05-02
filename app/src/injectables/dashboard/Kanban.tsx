@@ -11,12 +11,12 @@ import darkTheme from './Kanban/styles/themes/dark';
 import lightTheme from './Kanban/styles/themes/light';
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../../global";
-import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
+import {applyThemeProperties as setThemeUtil, COOKIE_THEME, useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 import {getTheme, SwitchThemePayload} from "../../actions";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../themes/dark";
-
+import Cookies from "js-cookie";
 
 const Kanban = () => {
     const [theme, setTheme] = useState(lightTheme);
@@ -24,6 +24,7 @@ const Kanban = () => {
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
     useEffect(() => {
+        setTheme(Cookies.get(COOKIE_THEME) === 'light' ? lightTheme : darkTheme);
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {

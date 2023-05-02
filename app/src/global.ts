@@ -149,3 +149,10 @@ export interface AssignedJob {
     conversationUrn?: string
     userId?: string
 }
+export interface CustomSalary {
+    id?: string
+    author?: string
+    leftPayDistribution?: number,
+    rightPayDistribution?: number,
+    progressivePay?: string
+}

@@ -2,7 +2,7 @@ import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/Messages
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {
     AssignedJob,
-    Badges,
+    Badges, CustomSalary,
     Features,
     Invitation,
     Job,
@@ -22,6 +22,7 @@ import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
 import {store} from "./store/Store";
 import {setLastViewed as setLastViewedAction} from "./store/LastViewedReducers";
 import Cookie = chrome.cookies.Cookie;
+import {Salary} from "./injectables/SalaryPill";
 const messagesV2 = new MessagesV2(VERBOSE);
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
@@ -691,6 +692,28 @@ export const getAssignedJobsById = createAction<string, any>("getAssignedJobsByI
         .then(async (token) => {
             const me = await api.getMe(token);
             const { response } = await backEndAPI.getAssignedJobsById(jobId,api.extractProfileUrn(me));
+            return response
+        })
+)
+
+export const setCustomSalary = createAction<Salary,any>("setCustomSalary",
+    (payload: Salary) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const salary: CustomSalary = {id: payload.urn, author:api.extractProfileUrn(me), leftPayDistribution: payload.payDistributionValues[0],
+                rightPayDistribution: payload.payDistributionValues[payload.payDistributionValues.length - 1], progressivePay: payload.progressivePay}
+            const { response } = await backEndAPI.setCustomSalary(salary)
+            return response
+        })
+)
+
+export const getCustomSalary = createAction<string, any>("getCustomSalary",
+    (urn) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const { response } = await backEndAPI.getCustomSalary(urn,api.extractProfileUrn(me));
             return response
         })
 )

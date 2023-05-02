@@ -15,13 +15,13 @@ import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
     createCustomStage,
-    getConversationProfile,
+    getConversationProfile, getCustomSalary,
     getCustomStages,
     getNotesByProfile,
     getSalary,
     getStages,
     getTheme,
-    postNote as postNoteAction,
+    postNote as postNoteAction, setCustomSalary,
     ShowNotesAndChartsPayload
 } from "../../actions";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
@@ -110,22 +110,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [currencySymbol, setCurrencySymbol] = useState("");
     const [salaryLabel, setSalaryLabel] = useState("");
     const [selectedTab, setSelectedTab] = useState("Track");
-    const [fromListView, setFromListView] = useState(false);
+    const [fromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
+    const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
     const messages = new MessagesV2(VERBOSE);
-
-    useEffect(() => {
-        setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal));
-    },[salaryInternal]);
-
-    useEffect(()=>{
-        if (salaryLabel){
-            setCurrencySymbol(salaryLabel[0]);
-            if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
-                (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryLabel;
-            }
-        }
-    },[salaryLabel])
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
@@ -164,6 +152,13 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                 if (id && payload?.id !== id) {
                     return Promise.resolve();
                 }
+                if(payload.id) {
+                    messages.request(getSalary(payload.id))
+                        .then((r) => {
+                            const salary = {...r.result, title: r.title, urn: r.urn};
+                            setSalaryInternal(salary);
+                        })
+                }
                 if(payload.userId) {
                     profileId = payload?.userId?.trim();
                     populateSalaryStagesAndNotes(profileId);
@@ -171,6 +166,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                 setShowNotes(payload?.showNotes)
                 setShowSalary(payload?.showSalary)
                 setShowStages(payload?.showStages)
+                setFetchCustomSalary(true);
                 setShow(true);
                 return Promise.resolve();
         }));
@@ -188,6 +184,30 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         }
         return () => window.removeEventListener('popstate', listener)
     }, [window.location.href]);
+
+    useEffect(() => {
+        if(showSalary && fetchCustomSalary && !editButton) {
+            messages.request(getCustomSalary(salaryInternal.urn)).then(resp => {
+                console.log(resp);
+                const clonedSalary = {...salaryInternal};
+                clonedSalary.payDistributionValues[0] = resp[0].leftPayDistribution;
+                clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
+                clonedSalary.progressivePay = resp[0].progressivePay;
+                setSalaryInternal(clonedSalary);
+                setFetchCustomSalary(false);
+            })
+        }
+        setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal));
+    },[salaryInternal]);
+
+    useEffect(()=>{
+        if (salaryLabel){
+            setCurrencySymbol(salaryLabel[0]);
+            if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
+                (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryLabel;
+            }
+        }
+    },[salaryLabel])
 
     useEffect(() => {
         if (show) {
@@ -344,6 +364,11 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
 
     const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
         event.stopPropagation();
+        if(editButton) {
+            messages.request(setCustomSalary(salaryInternal)).then(resp => {
+                console.log(resp);
+            })
+        }
         setEditButton(!editButton);
     }
 
@@ -385,11 +410,28 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                     <Collapsible initialOpened={showSalary}>
                                             <div data-role={CollapsibleRole.Title} className="salary-title">
                                                 <span className="salary-title-text">Avg. Base Salary (GBR)</span>
-                                                <svg onClick={(event) => editOnClick(event)} width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M11.25 17.0625H6.75C2.6775 17.0625 0.9375 15.3225 0.9375 11.25V6.75C0.9375 2.6775 2.6775 0.9375 6.75 0.9375H8.25C8.5575 0.9375 8.8125 1.1925 8.8125 1.5C8.8125 1.8075 8.5575 2.0625 8.25 2.0625H6.75C3.2925 2.0625 2.0625 3.2925 2.0625 6.75V11.25C2.0625 14.7075 3.2925 15.9375 6.75 15.9375H11.25C14.7075 15.9375 15.9375 14.7075 15.9375 11.25V9.75C15.9375 9.4425 16.1925 9.1875 16.5 9.1875C16.8075 9.1875 17.0625 9.4425 17.0625 9.75V11.25C17.0625 15.3225 15.3225 17.0625 11.25 17.0625Z" fill="#1569BF"/>
-                                                    <path d="M6.375 13.2675C5.9175 13.2675 5.4975 13.1025 5.19 12.8025C4.8225 12.435 4.665 11.9025 4.7475 11.34L5.07 9.08248C5.13 8.64748 5.415 8.08498 5.7225 7.77748L11.6325 1.86748C13.125 0.374983 14.64 0.374983 16.1325 1.86748C16.95 2.68498 17.3175 3.51748 17.2425 4.34998C17.175 5.02498 16.815 5.68498 16.1325 6.35998L10.2225 12.27C9.915 12.5775 9.3525 12.8625 8.9175 12.9225L6.66 13.245C6.5625 13.2675 6.465 13.2675 6.375 13.2675ZM12.4275 2.66248L6.5175 8.57248C6.375 8.71498 6.21 9.04498 6.18 9.23998L5.8575 11.4975C5.8275 11.715 5.8725 11.895 5.985 12.0075C6.0975 12.12 6.2775 12.165 6.495 12.135L8.7525 11.8125C8.9475 11.7825 9.285 11.6175 9.42 11.475L15.33 5.56498C15.8175 5.07748 16.0725 4.64248 16.11 4.23748C16.155 3.74998 15.9 3.23248 15.33 2.65498C14.13 1.45498 13.305 1.79248 12.4275 2.66248Z" fill="#1569BF"/>
-                                                    <path d="M14.8875 7.37252C14.835 7.37252 14.7825 7.36502 14.7375 7.35002C12.765 6.79502 11.1975 5.22752 10.6425 3.25502C10.56 2.95502 10.7325 2.64752 11.0325 2.55752C11.3325 2.47502 11.64 2.64752 11.7225 2.94752C12.1725 4.54502 13.44 5.81252 15.0375 6.26252C15.3375 6.34502 15.51 6.66002 15.4275 6.96002C15.36 7.21502 15.135 7.37252 14.8875 7.37252Z" fill="#1569BF"/>
-                                                </svg>
+                                                {
+                                                    editButton ? (
+                                                        <svg onClick={(event) => editOnClick(event)}
+                                                             width="18" height="18" viewBox="0 -0.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                                             xmlnsXlink="http://www.w3.org/1999/xlink">
+                                                            <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                                                                <g transform="translate(-419.000000, -640.000000)" fill="#000000">
+                                                                    <g transform="translate(56.000000, 160.000000)">
+                                                                        <path d="M370.21875,484 C370.21875,483.448 370.68915,483 371.26875,483 C371.84835,483 372.31875,483.448 372.31875,484 C372.31875,484.552 371.84835,485 371.26875,485 C370.68915,485 370.21875,484.552 370.21875,484 L370.21875,484 Z M381.9,497 C381.9,497.552 381.4296,498 380.85,498 L379.8,498 L379.8,494 C379.8,492.895 378.86025,492 377.7,492 L369.3,492 C368.13975,492 367.2,492.895 367.2,494 L367.2,498 L366.15,498 C365.5704,498 365.1,497.552 365.1,497 L365.1,487.044 C365.1,486.911 365.15565,486.784 365.2533,486.691 L367.2,484.837 L367.2,486 C367.2,487.105 368.13975,488 369.3,488 L377.7,488 C378.86025,488 379.8,487.105 379.8,486 L379.8,482 L380.85,482 C381.4296,482 381.9,482.448 381.9,483 L381.9,497 Z M377.7,498 L369.3,498 L369.3,495 C369.3,494.448 369.7704,494 370.35,494 L376.65,494 C377.2296,494 377.7,494.448 377.7,495 L377.7,498 Z M369.3,482.837 L370.17885,482 L377.7,482 L377.7,485 C377.7,485.552 377.2296,486 376.65,486 L370.35,486 C369.7704,486 369.3,485.552 369.3,485 L369.3,482.837 Z M381.9,480 L369.7347,480 C369.45645,480 369.18975,480.105 368.99235,480.293 L363.30765,485.707 C363.11025,485.895 363,486.149 363,486.414 L363,498 C363,499.105 363.93975,500 365.1,500 L381.9,500 C383.06025,500 384,499.105 384,498 L384,482 C384,480.895 383.06025,480 381.9,480 L381.9,480 Z" id="save_item-[#1411]">
+                                                                        </path>
+                                                                    </g>
+                                                                </g>
+                                                            </g>
+                                                        </svg>
+                                                    ) : (
+                                                        <svg onClick={(event) => editOnClick(event)} width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M11.25 17.0625H6.75C2.6775 17.0625 0.9375 15.3225 0.9375 11.25V6.75C0.9375 2.6775 2.6775 0.9375 6.75 0.9375H8.25C8.5575 0.9375 8.8125 1.1925 8.8125 1.5C8.8125 1.8075 8.5575 2.0625 8.25 2.0625H6.75C3.2925 2.0625 2.0625 3.2925 2.0625 6.75V11.25C2.0625 14.7075 3.2925 15.9375 6.75 15.9375H11.25C14.7075 15.9375 15.9375 14.7075 15.9375 11.25V9.75C15.9375 9.4425 16.1925 9.1875 16.5 9.1875C16.8075 9.1875 17.0625 9.4425 17.0625 9.75V11.25C17.0625 15.3225 15.3225 17.0625 11.25 17.0625Z" fill="#1569BF"/>
+                                                            <path d="M6.375 13.2675C5.9175 13.2675 5.4975 13.1025 5.19 12.8025C4.8225 12.435 4.665 11.9025 4.7475 11.34L5.07 9.08248C5.13 8.64748 5.415 8.08498 5.7225 7.77748L11.6325 1.86748C13.125 0.374983 14.64 0.374983 16.1325 1.86748C16.95 2.68498 17.3175 3.51748 17.2425 4.34998C17.175 5.02498 16.815 5.68498 16.1325 6.35998L10.2225 12.27C9.915 12.5775 9.3525 12.8625 8.9175 12.9225L6.66 13.245C6.5625 13.2675 6.465 13.2675 6.375 13.2675ZM12.4275 2.66248L6.5175 8.57248C6.375 8.71498 6.21 9.04498 6.18 9.23998L5.8575 11.4975C5.8275 11.715 5.8725 11.895 5.985 12.0075C6.0975 12.12 6.2775 12.165 6.495 12.135L8.7525 11.8125C8.9475 11.7825 9.285 11.6175 9.42 11.475L15.33 5.56498C15.8175 5.07748 16.0725 4.64248 16.11 4.23748C16.155 3.74998 15.9 3.23248 15.33 2.65498C14.13 1.45498 13.305 1.79248 12.4275 2.66248Z" fill="#1569BF"/>
+                                                            <path d="M14.8875 7.37252C14.835 7.37252 14.7825 7.36502 14.7375 7.35002C12.765 6.79502 11.1975 5.22752 10.6425 3.25502C10.56 2.95502 10.7325 2.64752 11.0325 2.55752C11.3325 2.47502 11.64 2.64752 11.7225 2.94752C12.1725 4.54502 13.44 5.81252 15.0375 6.26252C15.3375 6.34502 15.51 6.66002 15.4275 6.96002C15.36 7.21502 15.135 7.37252 14.8875 7.37252Z" fill="#1569BF"/>
+                                                        </svg>
+                                                    )
+                                                }
                                             </div>
                                         <div data-role={CollapsibleRole.Static}>
                                             <div className="d-flex">
@@ -415,7 +457,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                     </div>
                                                 </section>
                                                 <section className="chart-section">
-                                                    {salaryInternal && <PayDistribution salary={salaryInternal} currencySymbol={currencySymbol} editable={editButton}/>}
+                                                    {salaryInternal && <PayDistribution
+                                                        salaryLabel={salaryLabel}
+                                                        setSalaryInternal={setSalaryInternal}
+                                                        salary={salaryInternal} currencySymbol={currencySymbol} editable={editButton}/>}
                                                 </section>
                                             </div>
                                         </div>
