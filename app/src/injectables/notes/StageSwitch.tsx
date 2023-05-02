@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Loader} from "../../components/Loader";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Note, NoteExtended, VERBOSE} from "../../global";
@@ -132,6 +132,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
     const messages = new MessagesV2(VERBOSE);
     const [isSelected, setIsSelected] = useState(false);
     const [hovered, setHovered] = useState(false);
+    const stagePillRef = useRef();
 
     useEffect(() => {
         if (activeStage !== undefined) {
@@ -183,13 +184,29 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
                 }
                 setCompleted(true);
             });
+        if (isSelected) {
+            // @ts-ignore
+            stagePillRef?.current?.classList.remove(StageLabels[type]?.class);
+            // @ts-ignore
+            stagePillRef?.current?.classList.add('inactive');
+        }
     }
+
+
 
     return (
         <React.Fragment>
-            <div className={`pill-parent stage ${((isSelected && StageLabels[type]) || hovered) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''}`}
+            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || hovered) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''}`}
                  onClick={onClick}
-                 onMouseEnter={() => setHovered(true)}
+                 onMouseEnter={() => {
+                     if(!isSelected){
+                         setHovered(true);
+                     }
+                     setTimeout(()=>{
+                        setHovered(false);
+                     },10000)
+
+                 }}
                  onMouseLeave={() => setHovered(false)}>
                 <div className="loader"><Loader show={!completed || activeStage === undefined}/></div>
                 <label style={{opacity: completed ? 1 : 0}}>{customText || StageLabels[type].label}</label>

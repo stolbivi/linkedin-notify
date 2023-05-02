@@ -9,8 +9,9 @@
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  margin-top: 20px;
   max-height: 50px;
+  margin-top: 66px;
+  margin-left: 13px;
 }
 
 .assigned-job p {
@@ -19,7 +20,7 @@
 
 .assigned-job-dropdown {
   box-sizing: border-box;
-  width: 261px;
+  width: 452px;
   height: 41px;
   background: $notes-and-charts-background;
   border: 1px solid $notes-color-3;
