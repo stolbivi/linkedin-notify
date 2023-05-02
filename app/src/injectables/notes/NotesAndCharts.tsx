@@ -494,7 +494,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             <div onClick={()=>setAllGroupsMode(false)} style={{cursor: "pointer", paddingLeft: "2.2%", paddingTop: "3%"}}>
                                                 Go back
                                             </div>
-                                            <div style={{display:"flex", alignItems:"center", paddingLeft: "2.2%", paddingTop: "2%", color: "black"}}>
+                                            <div style={{display:"flex", alignItems:"center", paddingLeft: "2.2%", paddingTop: "2%"}}>
                                                 Groups
                                                 <label className="notes-counter">{customStages ? customStages.length : 0}</label>
                                             </div>
