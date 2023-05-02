@@ -231,6 +231,8 @@
       &:focus {
           outline: none;
       }
+    background-color: $notes-container-background;
+    color: $notes-color-3;
   }
 
 }

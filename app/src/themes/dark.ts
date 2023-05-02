@@ -116,12 +116,11 @@ export const theme: Theme = {
     "--pay-distribution-right": "rgba(83, 83, 83, 1)",
 
     "--stage": "white",
-    "--stage-interested": "rgba(21, 105, 191, 0.74)",
-    "--stage-not-interested": "rgba(202, 26, 36, 0.74)",
-    "--stage-interviewing": "rgba(240, 144, 0, 0.74)",
-    "--stage-failed": "rgba(202, 26, 36, 0.74)",
-    "--stage-hired": "rgba(17, 117, 68, 0.74)",
-    "--stage-inactive": "rgb(88, 88, 88)",
+    "--stage-interested": "#59A5FF",
+    "--stage-interviewing": "#EEA73C",
+    "--stage-failed": "#D4525A",
+    "--stage-hired": "#25BA34",
+    "--stage-passive": "#4E4E4E",
 
     "--theme-switch": "#384151",
     "--theme-switch-border": "#586373",

@@ -117,11 +117,11 @@ export const theme: Theme = {
 
     "--stage": "white",
     "--stage-interested": "rgba(21, 105, 191, 0.74)",
-    "--stage-not-interested": "rgba(202, 26, 36, 0.74)",
     "--stage-interviewing": "rgba(240, 144, 0, 0.74)",
     "--stage-failed": "rgba(202, 26, 36, 0.74)",
     "--stage-hired": "rgba(17, 117, 68, 0.74)",
     "--stage-inactive": "rgb(144, 144, 144)",
+    "--stage-passive": "#ECECEC",
 
     "--theme-switch": "white",
     "--theme-switch-border": "#E4E7EC",
