@@ -109,6 +109,17 @@ const JobList = () => {
         }
     }, [searchText]);
 
+    const resetHandler = () => {
+        setType("Part-Time");
+        setTitle("");
+        setGeography("Commute");
+        setCompany("");
+        setSalary("");
+        setHiringContact("");
+        setStatus("On Hold");
+        setDescription("");
+    }
+
     const handleAddField = () => {
         setIsEditMode(false);
         setListView(false);
@@ -186,21 +197,18 @@ const JobList = () => {
 
     const handleDeleteField = (event, id: string) => {
         event.stopPropagation();
-        setFields((prevFields) => prevFields.filter((field) => field.id !== id));
-        setFilteredFields((prevFields) => prevFields.filter((field) => field.id !== id));
-        messages.request(deleteJob(id))
-            .then((_r) => {});
+        if(confirm("Are you sure you want to delete this?")){
+            setFields((prevFields) => prevFields.filter((field) => field.id !== id));
+            setFilteredFields((prevFields) => prevFields.filter((field) => field.id !== id));
+            messages.request(deleteJob(id))
+                .then((_r) => {});
+        }
     };
 
-    const resetHandler = () => {
-        setType("Part-Time");
-        setTitle("");
-        setGeography("Commute");
-        setCompany("");
-        setSalary("");
-        setHiringContact("");
-        setStatus("On Hold");
-        setDescription("");
+    const returnHandler = () => {
+        setIsAddMode(false);
+        setIsEditMode(false);
+        setDetailsView(false);
     }
 
     useEffect(() => {
@@ -218,6 +226,15 @@ const JobList = () => {
         }
     },[activeButton])
 
+    //To focus on the input field once we're adding a new job
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 500);
+    }, [isAddMode, isEditMode]);
+
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
@@ -234,7 +251,7 @@ const JobList = () => {
                                             <svg style={{marginTop: "3px"}} className="icon-color" width="4" height="7" viewBox="0 0 4 7" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M3.5 1L1 3.5L3.5 6" stroke="#383637" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                                             </svg>
-                                            <h3 className={"job-back-text"} onClick={() => {setIsAddMode(false);setIsEditMode(false);setDetailsView(false);}}>Jobs List</h3>
+                                            <h3 className={"job-back-text"} onClick={returnHandler}>Jobs List</h3>
                                         </div>
                                         {detailsView ? (
                                             <>
@@ -257,11 +274,12 @@ const JobList = () => {
                                                        readOnly={detailsView}
                                                        placeholder={isAddMode ? "Add Job Name" : "Edit Job Name"}
                                                        onChange={(event) => setTitle(event.target.value)}
+                                                       ref={inputRef}
                                                 />
                                                 {
                                                     !detailsView ? (
                                                         <div className="edit-buttons">
-                                                            <button className="reset-button" onClick={resetHandler}>Close</button>
+                                                            <button className="reset-button" onClick={returnHandler}>Close</button>
                                                             <button className="confirm-button" type="submit" >Confirm</button>
                                                         </div>
                                                     ) : null

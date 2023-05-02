@@ -457,7 +457,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             </span>
                                             {
                                                 !allGroupsMode ? (
-                                                    <span style={{marginLeft:"398px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
+                                                    <span style={{marginLeft:"475px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
                                                           onClick={()=>setSelectedTab("Notes")}>
                                                         Notes
                                                         <label className="notes-counter">{notes ? notes.length : 0}</label>

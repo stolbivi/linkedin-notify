@@ -42,37 +42,28 @@
   background-color: $stage-interested;
   border: 1px solid #8b8b8b00;
   border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .not-interested {
   background-color: $stage-not-interested;
   border: 1px solid #8b8b8b00;
   border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .interviewing {
   background-color: $stage-interviewing;
   border: 1px solid #8b8b8b00;
   border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .failed {
   background-color: $stage-failed;
   border: 1px solid #8b8b8b00;
   border-radius: 37px;
-}
-
-.hired {
-  background-color: $stage-hired;
-  border: 1px solid #8b8b8b00;
-  border-radius: 37px;
-}
-
-.passive{
-  background-color: $stage-passive;
-  color: #767676;
-  border: 1px solid #8b8b8b00;
-  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .inactive {
@@ -80,13 +71,30 @@
   color: #8B8B8B;
   border: 1px solid #8B8B8B;
   border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.hired {
+  background-color: $stage-hired;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.passive{
+  background-color: $stage-passive;
+  color: #767676;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .customPill {
-  width: 85%;
+  width: 75%;
   white-space: normal;
   word-wrap: break-word;
   height: auto;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .pill-parent{
