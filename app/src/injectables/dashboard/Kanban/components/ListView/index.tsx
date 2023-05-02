@@ -1,5 +1,5 @@
 import {DataGrid} from '@material-ui/data-grid';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import Status from "../Status";
 // @ts-ignore
 import stylesheet from './styles.scss';

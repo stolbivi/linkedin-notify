@@ -549,7 +549,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        <AssignedJobs/>
+                                                        <AssignedJobs urn={salaryInternal.urn}/>
                                                     </div>
                                                 ) : null
                                             }
