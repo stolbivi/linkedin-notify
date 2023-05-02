@@ -8,7 +8,11 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import {getLatestStage, showNotesAndCharts} from "../../actions";
+import {getLatestStage, getTheme, showNotesAndCharts, SwitchThemePayload} from "../../actions";
+import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
+import {theme as LightTheme} from "../../themes/light";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as DarkTheme} from "../../themes/dark";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -55,8 +59,8 @@ export const StagePill: React.FC<Props> = ({url, convUrl, showStages}) => {
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const [urlInternal, setUrlInternal] = useState<string>(url || convUrl);
     const [stageText, setStageText] = useState(null);
-
     const messages = new MessagesV2(VERBOSE);
+    const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
     useEffect(() => {
         if (accessState !== AccessState.Valid || !urlInternal) {
@@ -88,6 +92,22 @@ export const StagePill: React.FC<Props> = ({url, convUrl, showStages}) => {
         return () => window.removeEventListener('popstate', listener)
     }, [window.location.href])
 
+
+    useEffect(() => {
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            }));
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                return Promise.resolve();
+            }));
+    }, []);
+
     const onClick = () => {
         if (showNotes) {
             setShowNotes(false);
@@ -104,7 +124,7 @@ export const StagePill: React.FC<Props> = ({url, convUrl, showStages}) => {
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName="loader-base loader-px24"/>
             {accessState === AccessState.Valid &&
-                <div className={`stage ${StageLabels[type] ? StageLabels[type].class : 'interested'}`} onClick={onClick} style={{marginLeft: "1em"}}>
+                <div className={`stage ${StageLabels[type] ? StageLabels[type].class : 'interested'}`} onClick={onClick} style={{marginLeft: "1em"}} ref={rootElement}>
                     <div className="loader"><Loader show={!completed}/></div>
                     <label style={{opacity: completed ? 1 : 0}}>{getText()}</label>
                 </div>}

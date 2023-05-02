@@ -129,6 +129,27 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
+    const populateSalaryStagesAndNotes = (urn: string) => {
+        setCompleted(false);
+        messages.request(getSalary(urn))
+            .then((r) => {
+                const salary = {...r.result, title: r.title, urn: r.urn};
+                setSalaryInternal(salary);
+                return salary;
+            }).then(salary => {
+            const stagePromise = messages.request(getStages({id: salary.urn}))
+                .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
+                .catch(e => console.error(e.error));
+            const notesPromise = messages.request(getNotesByProfile(salary.urn))
+                .then((r) => setNotes(r.response))
+                .catch(e => console.error(e.error));
+            const customStagePromise = messages.request(getCustomStages())
+                .then((r) => setCustomStages(r))
+                .catch(e => console.error(e.error));
+            Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
+        }).catch(e => console.error(e.error));
+    }
+
     useEffect(() => {
         const listener = () => {
             setShow(false);
@@ -137,31 +158,15 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         let profileId = extractIdFromUrl(window.location.href);
         messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
             (payload) => {
+                if(payload.id) {
+                    populateSalaryStagesAndNotes(payload.id);
+                }
                 if (id && payload?.id !== id) {
                     return Promise.resolve();
                 }
                 if(payload.userId) {
                     profileId = payload?.userId?.trim();
-                    setCompleted(false);
-                    messages.request(getSalary(profileId))
-                        .then((r) => {
-                            const salary = {...r.result, title: r.title, urn: r.urn};
-                            setSalaryInternal(salary);
-                            return salary;
-                        }).then(salary => {
-                        const stagePromise = messages.request(getStages({id: salary.urn}))
-                            .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                            .catch(e => console.error(e.error));
-                        const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                            .then((r) => setNotes(r.response))
-                            .catch(e => console.error(e.error));
-                        const customStagePromise = messages.request(getCustomStages())
-                            .then((r) => setCustomStages(r))
-                            .catch(e => console.error(e.error));
-                        Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
-                    }).catch(e => console.error(e.error));
-                    setFromListView(false);
-                    setSelectedTab("Track");
+                    populateSalaryStagesAndNotes(profileId);
                 }
                 setShowNotes(payload?.showNotes)
                 setShowSalary(payload?.showSalary)
@@ -169,7 +174,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                 setShow(true);
                 return Promise.resolve();
         }));
-        // getting data
         setCompleted(false);
         if (convId) {
             messages.request(getConversationProfile(profileId))
@@ -177,39 +181,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                     const entityUrns = r.participants.map((participant: any) => {
                         return participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3];
                     });
-                    messages.request(getSalary(entityUrns[0]))
-                        .then((r) => {
-                            const salary = {...r.result, title: r.title, urn: r.urn};
-                            setSalaryInternal(salary);
-                            return salary;
-                        }).then(salary => {
-                        const stagePromise = messages.request(getStages({id: salary.urn}))
-                            .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                            .catch(e => console.error(e.error));
-                        const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                            .then((r) => setNotes(r.response))
-                            .catch(e => console.error(e.error));
-                        Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
-                    }).catch(e => console.error(e.error));
+                    populateSalaryStagesAndNotes(entityUrns[0]);
                 });
         } else {
-            messages.request(getSalary(profileId))
-                .then((r) => {
-                    const salary = {...r.result, title: r.title, urn: r.urn};
-                    setSalaryInternal(salary);
-                    return salary;
-                }).then(salary => {
-                const stagePromise = messages.request(getStages({id: salary.urn}))
-                    .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                    .catch(e => console.error(e.error));
-                const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                    .then((r) => setNotes(r.response))
-                    .catch(e => console.error(e.error));
-                const customStagePromise = messages.request(getCustomStages())
-                    .then((r) => setCustomStages(r))
-                    .catch(e => console.error(e.error));
-                Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
-            }).catch(e => console.error(e.error));
+            populateSalaryStagesAndNotes(profileId);
         }
         return () => window.removeEventListener('popstate', listener)
     }, [window.location.href]);
