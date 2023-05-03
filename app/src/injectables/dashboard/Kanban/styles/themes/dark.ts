@@ -43,7 +43,8 @@ const darkTheme = {
     scrollbar_background: '#2E2E2E',
     scrollbar_thumb: '#505050',
     scrollbar_thumb_hover: '#636363',
-    text_black: '#000000FF'
+    text_black: '#000000FF',
+    text_white: '#FFFFFF'
   },
 
 }

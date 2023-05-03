@@ -110,7 +110,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [currencySymbol, setCurrencySymbol] = useState("");
     const [salaryLabel, setSalaryLabel] = useState("");
     const [selectedTab, setSelectedTab] = useState("Track");
-    const [fromListView] = useState(false);
+    const [fromListView, setFromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
     const messages = new MessagesV2(VERBOSE);
@@ -162,6 +162,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                 if(payload.userId) {
                     profileId = payload?.userId?.trim();
                     populateSalaryStagesAndNotes(profileId);
+                    setFromListView(true);
                 }
                 setShowNotes(payload?.showNotes)
                 setShowSalary(payload?.showSalary)
@@ -382,7 +383,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         }
     },[selectedTab]);
 
-    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary && !fromListView) ? 'custom-width' : ''} ${(fromListView) ? 'list-view-popup' : ''}`;
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview' : ''}`;
 
     // @ts-ignore
     return (
@@ -394,7 +395,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                     <div id="notes-charts-container" onTransitionEnd={() => onExpanded()}
                          className={notesAndChartsClass}
                          ref={rootElement}
-                         style={{...(fromListView && { left: 'auto' }), ...(!showSalary && { width: '1000px !important' })}}>
+                         style={{...(!showSalary && { width: '1000px !important' })}}>
                         <div className="close-button" onClick={() => close()}>
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -412,18 +413,16 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                 <span className="salary-title-text">Avg. Base Salary (GBR)</span>
                                                 {
                                                     editButton ? (
-                                                        <svg onClick={(event) => editOnClick(event)}
-                                                             width="18" height="18" viewBox="0 -0.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                                             xmlnsXlink="http://www.w3.org/1999/xlink">
-                                                            <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                                                                <g transform="translate(-419.000000, -640.000000)" fill="#000000">
-                                                                    <g transform="translate(56.000000, 160.000000)">
-                                                                        <path d="M370.21875,484 C370.21875,483.448 370.68915,483 371.26875,483 C371.84835,483 372.31875,483.448 372.31875,484 C372.31875,484.552 371.84835,485 371.26875,485 C370.68915,485 370.21875,484.552 370.21875,484 L370.21875,484 Z M381.9,497 C381.9,497.552 381.4296,498 380.85,498 L379.8,498 L379.8,494 C379.8,492.895 378.86025,492 377.7,492 L369.3,492 C368.13975,492 367.2,492.895 367.2,494 L367.2,498 L366.15,498 C365.5704,498 365.1,497.552 365.1,497 L365.1,487.044 C365.1,486.911 365.15565,486.784 365.2533,486.691 L367.2,484.837 L367.2,486 C367.2,487.105 368.13975,488 369.3,488 L377.7,488 C378.86025,488 379.8,487.105 379.8,486 L379.8,482 L380.85,482 C381.4296,482 381.9,482.448 381.9,483 L381.9,497 Z M377.7,498 L369.3,498 L369.3,495 C369.3,494.448 369.7704,494 370.35,494 L376.65,494 C377.2296,494 377.7,494.448 377.7,495 L377.7,498 Z M369.3,482.837 L370.17885,482 L377.7,482 L377.7,485 C377.7,485.552 377.2296,486 376.65,486 L370.35,486 C369.7704,486 369.3,485.552 369.3,485 L369.3,482.837 Z M381.9,480 L369.7347,480 C369.45645,480 369.18975,480.105 368.99235,480.293 L363.30765,485.707 C363.11025,485.895 363,486.149 363,486.414 L363,498 C363,499.105 363.93975,500 365.1,500 L381.9,500 C383.06025,500 384,499.105 384,498 L384,482 C384,480.895 383.06025,480 381.9,480 L381.9,480 Z" id="save_item-[#1411]">
-                                                                        </path>
-                                                                    </g>
-                                                                </g>
-                                                            </g>
-                                                        </svg>
+                                                    <svg className="icon-color" onClick={(event) => editOnClick(event)} fill="#585858" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                        <g id="SVGRepo_iconCarrier">
+                                                        <g fill-rule="evenodd">
+                                                        <path d="M65.456 48.385c10.02 0 96.169-.355 96.169-.355 2.209-.009 5.593.749 7.563 1.693 0 0-1.283-1.379.517.485 1.613 1.67 35.572 36.71 36.236 37.416.665.707.241.332.241.332.924 2.007 1.539 5.48 1.539 7.691v95.612c0 7.083-8.478 16.618-16.575 16.618-8.098 0-118.535-.331-126.622-.331-8.087 0-16-6.27-16.356-16.1-.356-9.832.356-118.263.356-126.8 0-8.536 6.912-16.261 16.932-16.261zm-1.838 17.853l.15 121c.003 2.198 1.8 4.003 4.012 4.015l120.562.638a3.971 3.971 0 0 0 4-3.981l-.143-90.364c-.001-1.098-.649-2.616-1.445-3.388L161.52 65.841c-.801-.776-1.443-.503-1.443.601v35.142c0 3.339-4.635 9.14-8.833 9.14H90.846c-4.6 0-9.56-4.714-9.56-9.14s-.014-35.14-.014-35.14c0-1.104-.892-2.01-1.992-2.023l-13.674-.155a1.968 1.968 0 0 0-1.988 1.972zm32.542.44v27.805c0 1.1.896 2.001 2 2.001h44.701c1.113 0 2-.896 2-2.001V66.679a2.004 2.004 0 0 0-2-2.002h-44.7c-1.114 0-2 .896-2 2.002z"></path>
+                                                        <path d="M127.802 119.893c16.176.255 31.833 14.428 31.833 31.728s-14.615 31.782-31.016 31.524c-16.401-.259-32.728-14.764-32.728-31.544s15.735-31.963 31.91-31.708zm-16.158 31.31c0 9.676 7.685 16.882 16.218 16.843 8.534-.039 15.769-7.128 15.812-16.69.043-9.563-7.708-16.351-15.985-16.351-8.276 0-16.045 6.52-16.045 16.197z"></path>
+                                                        </g>
+                                                        </g>
+                                                    </svg>
                                                     ) : (
                                                         <svg onClick={(event) => editOnClick(event)} width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path d="M11.25 17.0625H6.75C2.6775 17.0625 0.9375 15.3225 0.9375 11.25V6.75C0.9375 2.6775 2.6775 0.9375 6.75 0.9375H8.25C8.5575 0.9375 8.8125 1.1925 8.8125 1.5C8.8125 1.8075 8.5575 2.0625 8.25 2.0625H6.75C3.2925 2.0625 2.0625 3.2925 2.0625 6.75V11.25C2.0625 14.7075 3.2925 15.9375 6.75 15.9375H11.25C14.7075 15.9375 15.9375 14.7075 15.9375 11.25V9.75C15.9375 9.4425 16.1925 9.1875 16.5 9.1875C16.8075 9.1875 17.0625 9.4425 17.0625 9.75V11.25C17.0625 15.3225 15.3225 17.0625 11.25 17.0625Z" fill="#1569BF"/>
@@ -470,7 +469,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                         </div>
                                     </Collapsible>
                                 )}
-                                {!fromListView && !showSalary ? (
+                                {!showSalary ? (
                                         <div className="title-child assigned">
                                             <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")}>
                                                 Track Candidates
@@ -521,10 +520,10 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                         </>
                                         )
                                         : (
-                                        <div id="outer-container" style={{...(!fromListView && { display: "flex" })}}>
+                                        <div id="outer-container" style={{ display: "flex" }}>
                                             {
                                                 showStages ? (
-                                                    <div className="stage-parents-container">
+                                                    <div className="stage-parents-container stage-parents-container-border">
                                                         {stageParents.map(stage =>
                                                             <div className="parent-container">
                                                                 <div>{stage.name}</div>
@@ -575,77 +574,37 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                             }
                                             {showNotes && !allGroupsMode && (
                                                 <>
-                                                    {
-                                                        fromListView ? (
-                                                            <>
-                                                                <div className="title-child">
-                                                                    <label>Notes</label>
-                                                                    <label className="notes-counter">{notes ? notes.length : 0}</label>
-                                                                </div>
-                                                                <div style={{width: fromListView ? "103%" : "45%"}}>
-                                                                    <div className="scroll-container h-300" style={{height: "285px", width: "550px", paddingLeft: "26px"}}>
-                                                                        <div style={{marginLeft: "14px"}} className="scroll-content">
-                                                                            {completed && notes?.map((n, i) => (
-                                                                                    <NoteCard key={i} note={n}
-                                                                                              currentCount={i} totalCount={notes.length}
-                                                                                              lastNoteRef={lastNoteRef}/>
-                                                                                )
-                                                                            )}
-                                                                            {completed && notes.length == 0 &&
-                                                                            <div className="no-notes">
-                                                                                <NoNotes/>
-                                                                                <div>No notes yet</div>
-                                                                            </div>}
-                                                                        </div>
+                                                    <div className="scroll-container-parent" style={{width: "45%"}}>
+                                                        <div className="scroll-container h-300" style={{height: "285px", width: "550px", paddingLeft: "26px"}}>
+                                                            <div className="scroll-content">
+                                                                {completed && notes?.map((n, i) => (
+                                                                        <NoteCard key={i} note={n}
+                                                                                  currentCount={i} totalCount={notes.length}
+                                                                                  lastNoteRef={lastNoteRef}/>
+                                                                    )
+                                                                )}
+                                                                {completed && notes.length == 0 &&
+                                                                <div className="no-notes">
+                                                                    <NoNotes/>
+                                                                    <div>No notes yet</div>
+                                                                </div>}
+                                                            </div>
+                                                        </div>
+                                                        <div data-role={CollapsibleRole.Footer} className="footer-child">
+                                                            <div className="text-input-container">
+                                                                <div className="text-input">
+                                                                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
+                                                                           disabled={!editable}
+                                                                           placeholder="Leave a note" value={text?.value}/>
+                                                                    <div onClick={() => postNote(text?.value)}
+                                                                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
+                                                                        <Submit/>
                                                                     </div>
-                                                                    <div data-role={CollapsibleRole.Footer} className="footer-child">
-                                                                        <div className="text-input-container">
-                                                                            <div className="text-input">
-                                                                                <input type="text" onKeyUp={onKeyUp} onChange={onChange}
-                                                                                       disabled={!editable}
-                                                                                       placeholder="Leave a note" value={text?.value}/>
-                                                                                <div onClick={() => postNote(text?.value)}
-                                                                                     className={postAllowed ? "submit-allowed" : "submit-disabled"}>
-                                                                                    <Submit/>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <Credits/>
-                                                                    </div>
-                                                                </div>
-                                                            </>
-                                                        ) : (<div className="scroll-container-parent" style={{width: fromListView ? "103%" : "45%"}}>
-                                                            <div className="scroll-container h-300" style={{height: "285px", width: "550px", paddingLeft: "26px"}}>
-                                                                <div className="scroll-content">
-                                                                    {completed && notes?.map((n, i) => (
-                                                                            <NoteCard key={i} note={n}
-                                                                                      currentCount={i} totalCount={notes.length}
-                                                                                      lastNoteRef={lastNoteRef}/>
-                                                                        )
-                                                                    )}
-                                                                    {completed && notes.length == 0 &&
-                                                                    <div className="no-notes">
-                                                                        <NoNotes/>
-                                                                        <div>No notes yet</div>
-                                                                    </div>}
                                                                 </div>
                                                             </div>
-                                                            <div data-role={CollapsibleRole.Footer} className="footer-child">
-                                                                <div className="text-input-container">
-                                                                    <div className="text-input">
-                                                                        <input type="text" onKeyUp={onKeyUp} onChange={onChange}
-                                                                               disabled={!editable}
-                                                                               placeholder="Leave a note" value={text?.value}/>
-                                                                        <div onClick={() => postNote(text?.value)}
-                                                                             className={postAllowed ? "submit-allowed" : "submit-disabled"}>
-                                                                            <Submit/>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <Credits/>
-                                                            </div>
-                                                        </div>)
-                                                    }
+                                                            <Credits/>
+                                                        </div>
+                                                    </div>
                                                 </>
                                             )}
                                         </div>

@@ -43,7 +43,8 @@ const lightTheme = {
     scrollbar_background: '#E7E7E7',
     scrollbar_thumb: '#D0D0D0',
     scrollbar_thumb_hover: '#BBBBBB',
-    text_black: '#000000FF'
+    text_black: '#000000FF',
+    text_white: '#FFFFFF'
   },
 }
 

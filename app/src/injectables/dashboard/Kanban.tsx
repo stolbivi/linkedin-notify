@@ -40,9 +40,6 @@ const Kanban = () => {
             }));
     }, []);
 
-    const toggleTheme = () => {
-        setTheme(theme.title === 'light' ? darkTheme : lightTheme);
-    }
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
@@ -51,7 +48,7 @@ const Kanban = () => {
                     <ThemeProvider theme={theme}>
                         <ModalProvider>
                             <div className="App">
-                                <KanbanBoard toggleTheme={toggleTheme}/>
+                                <KanbanBoard/>
                             </div>
                         </ModalProvider>
                     </ThemeProvider>

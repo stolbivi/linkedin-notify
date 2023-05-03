@@ -148,9 +148,6 @@
   margin-right: 10px;
 }
 
-.list-view-popup{
-  top: 115px;
-  left: 600px !important;
-  padding-left: 0px !important;
-  padding-right: 94px !important;
+.icon-color path {
+  stroke: $kanban-table-action-btn-color;
 }

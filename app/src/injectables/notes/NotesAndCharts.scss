@@ -36,6 +36,10 @@
   transform: translateX(-50%);
 }
 
+.position-expanded-listview{
+  left: 50% !important;
+}
+
 .notes-and-charts {
   color: $notes-and-charts;
   background: $notes-and-charts-background;
@@ -67,8 +71,8 @@
   }
 
   .footer-child {
-    margin-top: 0.5em;
-    margin-right: -6.5em;
+    margin-top: 12px;
+    margin-right: -88px;
   }
 
 }
@@ -98,7 +102,7 @@
     font-style: normal;
     font-weight: 700;
     font-size: 14px;
-    color: $notes-and-charts-salary;
+    color: $notes-color-3;
     width: 35%;
     border: 1px solid rgba(0, 0, 0, 0.12);
   }
@@ -136,6 +140,10 @@
     justify-content: space-evenly;
     padding: 0.5em 1.5em;
   }
+}
+
+.stage-parents-container-border {
+  margin-bottom: -60px !important;;
 }
 
 .stage-parents-container {
@@ -218,12 +226,12 @@
   color: #1569BF;
   border: 1px solid #1569BF;
   height: 28px;
-  padding-left: 10px;
-  padding-right: 13px;
+  padding-left: 15px;
+  padding-right: 15px;
   font-size: 11px;
 
   input {
-      width: 100%;
+      width: 140%;
       height: 100%;
       border: none;
       outline: none;
@@ -239,6 +247,7 @@
 
 .is-creating {
   border: 1px solid #8B8B8B;
+  padding-right: 35px;
 }
 
 .close-button-salary {
@@ -267,5 +276,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 68px;
+  border-bottom: 1px solid $notes-border;
+  max-width: 110px;
+}
+
+.icon-color path {
+  stroke: $kanban-table-action-btn-color;
 }

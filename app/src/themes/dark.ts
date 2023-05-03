@@ -97,6 +97,7 @@ export const theme: Theme = {
     "--notes-color-3": "#ffffffc2",
     "--notes-color-4": "rgb(139,139,139)",
     "--notes-color-5": "rgb(255,254,254)",
+    "--notes-border": "#ffffff42",
 
     "--notes-container": "#CACACA",
     "--notes-container-background": "rgba(29, 34, 38, 1)",

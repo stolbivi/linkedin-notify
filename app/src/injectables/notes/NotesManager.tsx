@@ -240,7 +240,7 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
     const getAllNotes = () => {
         return <React.Fragment>
             <div className="notes-title">
-                <label>Notes</label>
+                <label>History</label>
                 <label className="notes-counter">{notesFiltered ? notesFiltered.length : 0}</label>
             </div>
             <div className="search-bar">
@@ -368,7 +368,7 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
         return <React.Fragment>
             <div className="notes-header">
                 <div className="back-button" onClick={() => back()}>
-                    <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg className="icon-color" width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path opacity="0.2" d="M7 1L1 7L7 13" stroke="currentColor" strokeWidth="2"
                               strokeLinecap="round"
                               strokeLinejoin="round"/>
@@ -380,7 +380,7 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                 </div>
             </div>
             <div className="notes-title">
-                <label>Notes</label>
+                <label>History</label>
                 <label className="notes-counter">{selectedNotesFiltered ? selectedNotesFiltered.length : 0}</label>
             </div>
             <div className="search-bar">

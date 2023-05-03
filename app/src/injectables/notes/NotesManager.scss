@@ -40,6 +40,10 @@
       margin: 0.5em;
     }
 
+    .icon-color path {
+      stroke: $kanban-table-action-btn-color;
+    }
+
     img {
       width: 44px;
       height: 44px;
