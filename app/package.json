@@ -59,6 +59,7 @@
     "axios": "^1.2.1",
     "bootstrap": "^5.2.3",
     "chart.js": "^4.2.0",
+    "detect-url-change": "^1.0.2",
     "js-cookie": "^3.0.5",
     "jsonpath": "^1.1.1",
     "mathjs": "^10.5.2",
