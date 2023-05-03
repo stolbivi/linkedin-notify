@@ -2,7 +2,7 @@ import {BaseAPI, Response} from "./BaseAPI";
 import {AssignedJob, BACKEND_API, CustomSalary, Features, Job, Note, Shared, Subscriptions, UserStage} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
 import {SetFeaturePayload} from "../actions";
-import {LastViewed} from "../store/LastViewedReducers";
+import {LastViewed} from "../store/LastViewedReducer";
 
 export class BackendAPI extends BaseAPI {
 
@@ -129,7 +129,7 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public getLastViewed(profile: string, as: string): Promise<Response<LastViewed>> {
+    public getLastViewed(profile: string, as: string): Promise<Response<LastViewed[]>> {
         return this.fetchRequest(
             `${BACKEND_API}last-viewed-items/profile/?q=${profile}&as=${as}`,
             this.getRequest("GET")

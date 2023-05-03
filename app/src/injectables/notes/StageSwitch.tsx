@@ -1,8 +1,9 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import {Loader} from "../../components/Loader";
-import {MessagesV2} from "@stolbivi/pirojok";
-import {Note, NoteExtended, VERBOSE} from "../../global";
-import {deleteNote, deleteStage, setStage as setStageAction} from "../../actions";
+import {CompleteEnabled, localStore, selectStage} from "../../store/LocalStore";
+import {Stage, updateStageAction} from "../../store/StageReducer";
+import {shallowEqual, useSelector} from "react-redux";
+import {Note, NoteExtended} from "../../global";
 import "./StageSwitch.scss";
 
 export enum StageEnum {
@@ -122,77 +123,26 @@ type Props = {
     notes?: NoteExtended[];
     parentStage?: number;
     parentStageName?: string;
-    setNotes: any;
+    setNotes?: any;
+    urn: string
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, appendNote, customText,
-                                                 notes, parentStage,parentStageName, setNotes}) => {
+export const StageSwitch: React.FC<Props> = ({type, activeStage,urn, id, customText, parentStage}) => {
 
-    const [completed, setCompleted] = useState<boolean>(false);
-    const messages = new MessagesV2(VERBOSE);
-    const [isSelected, setIsSelected] = useState(false);
     const [hovered, setHovered] = useState(false);
     const stagePillRef = useRef();
-
-    useEffect(() => {
-        if (activeStage !== undefined) {
-            setCompleted(true);
-        }
-        setIsSelected(Boolean(notes.find(note => note.stageTo === type)));
-    }, [activeStage,notes])
-
-    const removeSelectedTag = (id: string, tagToRemoveIndex: number, updatedNotes: any) => {
-        setCompleted(false);
-        const deleteNotePromise = messages.request(deleteNote(id)).then((_r) => {});
-        const deleteStagePromise = messages.request(deleteStage(id)).then((_r) => {});
-        if (tagToRemoveIndex !== -1) {
-            updatedNotes.splice(tagToRemoveIndex, 1);
-            setNotes(updatedNotes);
-        }
-        Promise.all([deleteNotePromise,deleteStagePromise]).then(()=>{
-            setCompleted(true);
-        })
-    };
+    const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
+    const [isSelected, setIsSelected] = useState(false);
 
     const onClick = () => {
-        const selectedNote = notes.find(note => note.stageTo === type);
-        let tagToRemoveIndex: number;
-        if (selectedNote && isSelected) {
-            let updatedNotes = [...notes];
-            tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === selectedNote.id);
-            removeSelectedTag(selectedNote.id, tagToRemoveIndex, updatedNotes);
-            return;
-        }
-        setCompleted(false);
-        messages.request(setStageAction({id, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage }))
-            .then((r) => {
-                if (r.error) {
-                    console.error(r.error);
-                } else {
-                    const existingChildStage = notes.find(note => note.parentStage === parentStage);
-                    if(existingChildStage && parentStageName !== StageParentData.GEOGRAPHY
-                        && parentStageName !== StageParentData.GROUPS && existingChildStage !== r.stage.response.stage) {
-                        let updatedNotes = [...notes];
-                        tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === existingChildStage.id);
-                        if (tagToRemoveIndex !== -1) {
-                            updatedNotes.splice(tagToRemoveIndex, 1);
-                            setNotes(updatedNotes);
-                        }
-                    }
-                    setStage(r.stage.response.stage);
-                    appendNote(r.note.response, tagToRemoveIndex);
-                }
-                setCompleted(true);
-            });
-        if (isSelected) {
-            // @ts-ignore
-            stagePillRef?.current?.classList.remove(StageLabels[type]?.class);
-            // @ts-ignore
-            stagePillRef?.current?.classList.add('inactive');
+        setIsSelected(!isSelected);
+        if (stage?.stage !== type) {
+            localStore.dispatch(updateStageAction({
+                id,
+                state: {id: urn, stage: type, stageFrom: stage?.stage, stageText: customText || undefined, parentStage}
+            }));
         }
     }
-
-
 
     return (
         <React.Fragment>
@@ -208,8 +158,8 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
 
                  }}
                  onMouseLeave={() => setHovered(false)}>
-                <div className="loader"><Loader show={!completed || activeStage === undefined}/></div>
-                <label className={customText && customText.length > 12 ? 'ellipsis' : ''} style={{opacity: completed ? 1 : 0}}>
+                <div className="loader"><Loader show={!stage?.completed || activeStage === undefined}/></div>
+                <label className={customText && customText.length > 12 ? 'ellipsis' : ''} style={{opacity: stage?.completed ? 1 : 0}}>
                     {customText || StageLabels[type].label}
                 </label>
             </div>

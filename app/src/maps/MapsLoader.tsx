@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {BACKEND_STATIC, VERBOSE} from "../global";
-import {MessagesV2} from "@stolbivi/pirojok";
+import {BACKEND_STATIC} from "../global";
 import "./MapLoader.scss";
 import {Clock} from "../icons/Clock";
 import moment from "moment";
-import {getTz} from "../actions";
+import {GeoTz} from "../actions";
+import {CompleteEnabled, localStore, selectGeoTz} from "../store/LocalStore";
+import {shallowEqual, useSelector} from "react-redux";
+import {getGeoTzAction} from "../store/GeoTzReducer";
 
 type Props = {};
 
@@ -15,11 +17,11 @@ interface Tz {
 
 export const MapsLoader: React.FC<Props> = ({}) => {
 
-    const messages = new MessagesV2(VERBOSE);
     const FORMAT = "DD.MM.YYYY HH:mm:ss";
     const FORMAT_TIME = "HH:mm";
     const FORMAT_DDDD = "dddd";
 
+    const geoTz: CompleteEnabled<GeoTz> = useSelector(selectGeoTz, shallowEqual);
     const [src, setSrc] = useState<string>();
     const [tz, setTz] = useState<Tz>();
     const [city, setCity] = useState<string>();
@@ -38,27 +40,33 @@ export const MapsLoader: React.FC<Props> = ({}) => {
     }
 
     useEffect(() => {
+        if (geoTz?.geo && geoTz?.tz) {
+            // setting map
+            const {lat, lng, city} = geoTz.geo;
+            setCity(city);
+            setSrc(`${BACKEND_STATIC}map.html?lat=${lat}&lng=${lng}&zoom=8`);
+            // setting time
+            setInterval(() => updateTime(geoTz.tz), 1000);
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+    }, [geoTz])
+
+    useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
         if (!searchParams.has("id")) {
             console.error("Request parameters must include user id");
             return;
         }
-        messages.request(getTz(searchParams.get("id")))
-            .then((r) => {
-                if (r.geo && r.tz) {
-                    // setting map
-                    const {lat, lng, city} = r.geo;
-                    setCity(city);
-                    setSrc(`${BACKEND_STATIC}map.html?lat=${lat}&lng=${lng}&zoom=8`);
-                    // setting time
-                    setInterval(() => updateTime(r.tz), 1000);
-                } else {
-                    if (r.error) {
-                        setDisabled(true);
-                    }
-                }
-            });
+        localStore.dispatch(getGeoTzAction(searchParams.get("id")));
     }, [])
+
+    useEffect(() => {
+        if (src) {
+            mapContainer.current?.contentWindow.location.replace(src);
+        }
+    }, [src])
 
     return (
         <div className="map-loader">

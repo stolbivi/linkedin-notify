@@ -2,7 +2,8 @@ import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/Messages
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {
     AssignedJob,
-    Badges, CustomSalary,
+    Badges,
+    CustomSalary,
     Features,
     Invitation,
     Job,
@@ -11,23 +12,18 @@ import {
     Note,
     NoteExtended,
     SHARE_URN,
-    VERBOSE
 } from "./global";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
 import {Response} from "./services/BaseAPI";
 import {StageEnum} from "./injectables/notes/StageSwitch";
-import {MessagesV2, Tabs} from "@stolbivi/pirojok";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
-import {store} from "./store/Store";
-import {setLastViewed as setLastViewedAction} from "./store/LastViewedReducers";
-import Cookie = chrome.cookies.Cookie;
+import {LastViewed} from "./store/LastViewedReducer";
 import {Salary} from "./injectables/SalaryPill";
-const messagesV2 = new MessagesV2(VERBOSE);
+import Cookie = chrome.cookies.Cookie;
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
 const mapsAPI = new MapsAPI();
-const tabs = new Tabs();
 
 /**
  * Returns all cookies of the store for particular domain, requires host permissions in manifest
@@ -94,8 +90,7 @@ export const getConversationProfile = createAction<string, Array<any>>("getConve
     (convId) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
-            const detailsResponse = await api.getConversationProfile(token, convId);
-            return detailsResponse;
+            return await api.getConversationProfile(token, convId);
         }));
 
 export const conversationAck = createAction<string, void>("conversationAck",
@@ -176,8 +171,16 @@ export const getSalary = createAction<string, any>("getSalary",
             return {...response, ...request};
         }));
 
-// TODO add to store
-export const getTz = createAction<string, any>("getTz",
+export interface GeoTz {
+    geo: {
+        lat: any
+        lng: any
+        city: any
+    }
+    tz: any
+}
+
+export const getTz = createAction<string, GeoTz>("getTz",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -329,13 +332,6 @@ export interface ShowNotesAndChartsPayload {
 }
 
 // TODO add to store
-const showNotesAndChartsRequest = createRequest<ShowNotesAndChartsPayload, void>("showNotesAndCharts");
-
-export const showNotesAndCharts = createAction<ShowNotesAndChartsPayload, any>("showNotesAndChartsProxy",
-    (payload, sender) => tabs.withCurrentTab()
-        .then(tab => messagesV2.requestTab(tab?.id || sender?.tab?.id, showNotesAndChartsRequest(payload).toAction())));
-
-// TODO add to store
 export const getNotesAll = createAction<{}, any>("getNotesAll",
     () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
@@ -354,6 +350,8 @@ export const getNotesAll = createAction<{}, any>("getNotesAll",
                 return notes;
             }
         }));
+export const sortAsc = (notes: NoteExtended[]) => notes.sort((a, b) => a.timestamp?.getTime() - b.timestamp?.getTime());
+export const sortDesc = (notes: NoteExtended[]) => notes.sort((a, b) => b.timestamp?.getTime() - a.timestamp?.getTime());
 
 // TODO add to store
 export const getNotesByProfile = createAction<string, any>("getNotesByProfile",
@@ -416,7 +414,7 @@ export const createCustomStage = createAction("createCustomStage",
         }));
 
 export const getCustomStages = createAction("getCustomStages",
-        () => getCookies(LINKEDIN_DOMAIN)
+    () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async () => {
             console.log('in action creator get custom stages')
@@ -425,9 +423,8 @@ export const getCustomStages = createAction("getCustomStages",
         })
 )
 
-// TODO add to store
-export const getLastViewed = createAction<string, any>("getLastViewed",
-    (id, sender) => getCookies(LINKEDIN_DOMAIN)
+export const getLastViewed = createAction<string, LastViewed[]>("getLastViewed",
+    (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
             const experienceResponse = await api.getExperience(token, id);
@@ -436,17 +433,13 @@ export const getLastViewed = createAction<string, any>("getLastViewed",
             const me = await api.getMe(token);
             const as = api.extractProfileUrn(me);
             if (profile === as) {
-                return {response: {profile: me, author: as, hide: true}}
+                return {response: [{profile: me, author: as, hide: true} as LastViewed]}
             } else {
                 return backEndAPI.getLastViewed(profile, as);
             }
         })
-        .then(response => {
-            if (sender.tab) {
-                store.dispatch(setLastViewedAction({tabId: sender.tab.id, payload: response.response}));
-            }
-            return response;
-        }));
+        .then(response => response.response));
+
 
 export const setLastViewed = createAction<string, any>("setLastViewed",
     (id) => getCookies(LINKEDIN_DOMAIN)
