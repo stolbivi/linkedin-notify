@@ -413,7 +413,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                 <span className="salary-title-text">Avg. Base Salary (GBR)</span>
                                                 {
                                                     editButton ? (
-                                                    <svg className="icon-color" onClick={(event) => editOnClick(event)} fill="#585858" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                                                    <svg width="20" height="20" className="icon-color" onClick={(event) => editOnClick(event)} fill="#585858" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
                                                         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                                         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                                                         <g id="SVGRepo_iconCarrier">
@@ -437,9 +437,17 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                 <section className="label-section">
                                                     {
                                                         editButton
-                                                            ?(<input className="label-salary-edit"
-                                                                     placeholder={salaryLabel}
-                                                                     onChange={(event) => setSalaryLabel(currencySymbol+event.target.value)}/>)
+                                                            ?(
+                                                                <input
+                                                                    className="label-salary-edit"
+                                                                    placeholder={salaryLabel}
+                                                                    onChange={(event) => {
+                                                                        const value = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+                                                                        const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
+                                                                        setSalaryLabel(currencySymbol + formattedValue);
+                                                                    }}
+                                                                />
+                                                            )
                                                             :(<div className="label-salary">{salaryLabel} year</div>)
                                                     }
                                                     <div className="label-position">
