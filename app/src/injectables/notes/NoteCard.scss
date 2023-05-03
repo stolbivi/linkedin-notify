@@ -145,3 +145,10 @@
     }
   }
 }
+
+.stage label {
+  max-width: 100px; /* Set the maximum width of the label */
+  white-space: nowrap; /* Prevent the label from wrapping to multiple lines */
+  overflow: hidden; /* Hide any text that exceeds the width */
+  text-overflow: ellipsis; /* Add an ellipsis to indicate truncated text */
+}

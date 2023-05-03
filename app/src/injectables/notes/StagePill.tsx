@@ -126,7 +126,7 @@ export const StagePill: React.FC<Props> = ({url, convUrl, showStages}) => {
             {accessState === AccessState.Valid &&
                 <div className={`stage ${StageLabels[type] ? StageLabels[type].class : 'interested'}`} onClick={onClick} style={{marginLeft: "1em"}} ref={rootElement}>
                     <div className="loader"><Loader show={!completed}/></div>
-                    <label style={{opacity: completed ? 1 : 0}}>{getText()}</label>
+                    <label className="ellipsis" style={{opacity: completed ? 1 : 0}}>{getText()}</label>
                 </div>}
         </React.Fragment>
     );

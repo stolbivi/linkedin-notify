@@ -27,12 +27,28 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
 
     const getStage = (stage: number) => {
         if (stage < 0) {
-            return <div className={"stage inactive"}><label>No stage</label></div>
+            return (
+                <div className={"stage inactive"}>
+                    <label>No stage</label>
+                </div>
+            );
         }
-        return <div className={`stage ${StageLabels[stage] ? StageLabels[stage].class : "interested"}`}>
-        <label>{StageLabels[stage]?.label}</label>
-        </div>
-    }
+        const stageLabel = StageLabels[stage]?.label;
+        const truncatedLabel =
+            stageLabel && stageLabel.length > 12
+                ? `${stageLabel.slice(0, 12)}...`
+                : stageLabel;
+        return (
+            <div
+                className={`stage ${
+                    StageLabels[stage] ? StageLabels[stage].class : "interested"
+                }`}
+            >
+                <label title={stageLabel}>{truncatedLabel}</label>
+            </div>
+        );
+    };
+
 
     const setWithNote = () => {
         console.log("Note: ", note);
