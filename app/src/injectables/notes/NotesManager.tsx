@@ -208,21 +208,21 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
         }
     },[notes]);
 
-    useEffect(() => {
-        function handleClickOutside(event: { target: any; }) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                const isDropdownOption = event.target.closest(".dropdown-options");
-                if (!isDropdownOption) {
-                    setShowDropDown(false);
-                }
-            }
-        }
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [dropdownRef]);
+    // useEffect(() => {
+    //     function handleClickOutside(event: { target: any; }) {
+    //         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    //             const isDropdownOption = event.target.closest(".dropdown-options");
+    //             if (!isDropdownOption) {
+    //                 setShowDropDown(false);
+    //             }
+    //         }
+    //     }
+    //
+    //     document.addEventListener('mousedown', handleClickOutside);
+    //     return () => {
+    //         document.removeEventListener('mousedown', handleClickOutside);
+    //     };
+    // }, [dropdownRef]);
 
     const onProfileSelect = (profile: any) => setSelection(profile);
 

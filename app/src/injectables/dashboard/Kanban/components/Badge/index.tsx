@@ -12,7 +12,7 @@ interface BadgeProps {
 }
 
 const Badge: React.FC<BadgeProps> = ({ category }) => {
-  const theme = useContext(ThemeContext); 
+  const theme = useContext(ThemeContext);
 
   const [color, setColor] = useState<string>(theme.colors.placeholder);
   const [textColor, setTextColor] = useState(theme.colors.text_white);
@@ -32,7 +32,7 @@ const Badge: React.FC<BadgeProps> = ({ category }) => {
 
   return (
     <BadgeContainer color={color} textColor={textColor}>
-      <p>{category}</p>
+      <p>{category.length > 23 ? category.slice(0, 20) + '...' : category}</p>
     </BadgeContainer>
   )
 }

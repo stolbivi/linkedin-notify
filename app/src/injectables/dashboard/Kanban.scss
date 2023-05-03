@@ -38,3 +38,7 @@
   color: $navbar-button-text-clicked;
 }
 
+.navbarBtn:hover {
+  background-color: $navbar-button; /* same color as .navbarBtn.clicked */
+  color: $navbar-button-text;
+}

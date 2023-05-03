@@ -50,6 +50,11 @@ ul{
   color: $navbar-button-text-clicked;
 }
 
+.navbarBtn:hover {
+  background-color: $navbar-button; /* same color as .navbarBtn.clicked */
+  color: $navbar-button-text;
+}
+
 #formatted-results {
   border: 1px solid #ccc;
   padding: 15px;

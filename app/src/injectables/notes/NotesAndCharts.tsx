@@ -335,7 +335,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                             <form onSubmit={handleCustomTagSubmit}>
                                 <input value={customName}
                                        onChange={e => setCustomName(e.currentTarget.value)}
-                                       placeholder='Enter Group Name'/>
+                                       placeholder='Enter Name'/>
                             </form>
                             : 'Add Group'
                         }
