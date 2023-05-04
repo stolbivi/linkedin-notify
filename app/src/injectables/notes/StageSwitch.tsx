@@ -113,7 +113,6 @@ export const stageChildData = {
     ]
 }
 
-
 type Props = {
     type?: StageEnum
     activeStage?: StageEnum
@@ -136,13 +135,17 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
     const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
     const [isSelected, setIsSelected] = useState(false);
     const messages = new MessagesV2(VERBOSE);
-
+    const [completed, setCompleted] = useState<boolean>(false);
 
     useEffect(() => {
+        if (activeStage !== undefined) {
+            setCompleted(true);
+        }
         setIsSelected(Boolean(notes.find(note => note.stageTo === type)));
     }, [activeStage,notes]);
 
     const removeSelectedTag = (id: string, tagToRemoveIndex: number, updatedNotes: any) => {
+        setCompleted(false);
         const deleteNotePromise = messages.request(deleteNote(id)).then((_r) => {});
         const deleteStagePromise = messages.request(deleteStage(id)).then((_r) => {});
         if (tagToRemoveIndex !== -1) {
@@ -150,6 +153,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
             setNotes(updatedNotes);
         }
         Promise.all([deleteNotePromise,deleteStagePromise]).then(()=>{
+            setCompleted(true);
         })
     };
 
@@ -163,10 +167,12 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
             return;
         }
         if (stage?.stage !== type) {
+            setCompleted(false);
             localStore.dispatch(updateStageAction({
                 id,
                 state: {id: urn, stage: type, stageFrom: stage?.stage, stageText: customText || undefined, parentStage}
             }));
+            setTimeout(() => setCompleted(true), 2000);
         }
         if (isSelected) {
             // @ts-ignore
@@ -175,8 +181,6 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
             stagePillRef?.current?.classList.add('inactive');
         }
     }
-
-
 
     return (
         <React.Fragment>
@@ -192,8 +196,8 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
 
                  }}
                  onMouseLeave={() => setHovered(false)}>
-                <div className="loader"><Loader show={!stage?.completed}/></div>
-                <label className={customText && customText.length > 12 ? 'ellipsis' : ''} style={{opacity: stage?.completed ? 1 : 0}}>
+                <div className="loader"><Loader show={!completed || activeStage === undefined}/></div>
+                <label className={customText && customText.length > 12 ? 'ellipsis' : ''} style={{opacity: completed ? 1 : 0}}>
                     {customText || StageLabels[type].label}
                 </label>
             </div>

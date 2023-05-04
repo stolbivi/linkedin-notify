@@ -556,32 +556,34 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                             {
                                                 showStages ? (
                                                     <div className="stage-parents-container stage-parents-container-border">
-                                                        {stageParents.map(stage =>
+                                                        {stageParents.map(stageParent =>
                                                             <div className="parent-container">
-                                                                <div>{stage.name}</div>
+                                                                <div>{stageParent.name}</div>
                                                                 <div className="nested-childs">
-                                                                    {stageChildData[stage.name]?.map?.((child,index) => stage.name !== StageParentData.GROUPS ?
+                                                                    {stageChildData[stageParent.name]?.map?.((child,index) => stageParent.name !== StageParentData.GROUPS ?
                                                                         <StageSwitch key={extractFromIdAware(salary).urn + index}
                                                                                      type={child.name}
                                                                                      id={idInternal}
                                                                                      urn={extractFromIdAware(salary).urn}
-                                                                                     parentStage={Object.values(StageParentData).indexOf(stage.name)}
-                                                                                     parentStageName={stage.name}
+                                                                                     parentStage={Object.values(StageParentData).indexOf(stageParent.name)}
+                                                                                     parentStageName={stageParent.name}
+                                                                                     activeStage={extractFromIdAware(stage).stage}
                                                                                      notes={notes}
                                                                                      setNotes={setNotes}/>
                                                                         :
                                                                         <>
                                                                             {customStages?.slice(0, 3).map(customStage => (
                                                                                 <StageSwitch
-                                                                                key={extractFromIdAware(salary).urn + index}
-                                                                                type={StageEnum[customStage.text]}
-                                                                                customText={customStage.text}
-                                                                                urn={extractFromIdAware(salary).urn}
-                                                                                id={customStage?.stageId?.toString()}
-                                                                                parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
-                                                                                parentStageName={StageParentData.GROUPS}
-                                                                                notes={notes}
-                                                                                setNotes={setNotes}/>
+                                                                                    key={extractFromIdAware(salary).urn + index}
+                                                                                    type={StageEnum[customStage.text]}
+                                                                                    customText={customStage.text}
+                                                                                    urn={extractFromIdAware(salary).urn}
+                                                                                    id={customStage?.stageId?.toString()}
+                                                                                    parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                                                    parentStageName={StageParentData.GROUPS}
+                                                                                    activeStage={extractFromIdAware(stage).stage}
+                                                                                    notes={notes}
+                                                                                    setNotes={setNotes}/>
                                                                             ))}
                                                                             {customStages?.length > 3 && (
                                                                                 <div className="create-new-group-wrapper customPill"
