@@ -363,7 +363,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         }
     }, [customStages]);
 
-    const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
+    const editOnClick = (event: any) => {
         event.stopPropagation();
         if(editButton) {
             messages.request(setCustomSalary(salaryInternal)).then(resp => {
@@ -445,6 +445,11 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                         const value = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
                                                                         const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
                                                                         setSalaryLabel(currencySymbol + formattedValue);
+                                                                    }}
+                                                                    onKeyDown={(event) => {
+                                                                        if (event.key === 'Enter') {
+                                                                            editOnClick(event);
+                                                                        }
                                                                     }}
                                                                 />
                                                             )
