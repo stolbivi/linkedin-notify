@@ -20,10 +20,10 @@ const Badge: React.FC<BadgeProps> = ({ category }) => {
   useEffect(() => {
     if (category) {
       const categoryColor = getCategoryBackgroundColor(theme, category);
-      if(ICategory.Not_Open === category || ICategory.Passive === category && theme === lightTheme) {
+      if((ICategory.Not_Open === category || ICategory.Passive === category) && theme === lightTheme) {
         setTextColor(theme.colors.text_black);
       }
-      if(ICategory.Not_Open === category || ICategory.Passive === category && theme === darkTheme){
+      if((ICategory.Not_Open === category || ICategory.Passive === category) && theme === darkTheme){
         setTextColor(theme.colors.text_white);
       }
       setColor(categoryColor);

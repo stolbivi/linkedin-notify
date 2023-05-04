@@ -1,20 +1,85 @@
 import {DataGrid} from '@material-ui/data-grid';
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Status from "../Status";
 // @ts-ignore
 import stylesheet from './styles.scss';
 // @ts-ignore
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {showNotesAndCharts} from "../../../../../actions";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../../../../../global";
 import ICard from '../../interfaces/ICard';
+import {ThemeContext} from "styled-components";
+import lightTheme from "../../styles/themes/light";
 
 // @ts-ignore
 const ListView = ({cards}) => {
 
+    const lightMode = {
+        '& .MuiDataGrid-root': {
+            backgroundColor: '#FFFFFF',
+            color: '#333',
+        },
+        '& .MuiDataGrid-row:nth-child(even)': {
+            backgroundColor: '#F2F2F2',
+        },
+        '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
+            borderRight: '1px solid #ccc',
+            '&:last-child': {
+                borderRight: 'none',
+            },
+            fontWeight: 'bold',
+            fontSize: '1.1rem',
+        },
+        '& .MuiIconButton-label' : {
+            color: 'red'
+        },
+        padding: '16px',
+    }
+
+    const darkMode = {
+        '& .MuiDataGrid-root': {
+            backgroundColor: '#1D2226',
+            color: 'white',
+        },
+        '& .MuiDataGrid-row:nth-child(even)': {
+            backgroundColor: '#515151',
+        },
+        '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
+            borderRight: '1px solid #ccc',
+            '&:last-child': {
+                borderRight: 'none',
+            },
+            fontWeight: 'bold',
+            fontSize: '1.1rem',
+        },
+        '& .MuiTablePagination-toolbar': {
+            backgroundColor: '#1D2226',
+            color: 'white',
+        },
+        '& .MuiIconButton-label' : {
+            color: 'white'
+        },
+        padding: '16px',
+    }
+
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const messages = new MessagesV2(VERBOSE);
+    const theme = useContext(ThemeContext);
+    const [gridTheme, setGridTheme] = useState(lightMode);
+
+
+    useEffect(() => {
+        if(theme === lightTheme) {
+            setGridTheme(lightMode);
+        }
+        else{
+            setGridTheme(darkMode);
+        }
+
+    }, [theme]);
+
+    const useStyles = makeStyles({root:gridTheme});
 
     function messagesClickHandler(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, conversationUrn: any) {
         event.stopPropagation();
@@ -39,41 +104,6 @@ const ListView = ({cards}) => {
         }
     }
 
-    const useStyles = makeStyles({
-        root: {
-            '& .MuiDataGrid-row': {
-                backgroundColor: '#F2F2F2',
-            },
-            '& .MuiDataGrid-row:nth-child(even)': {
-                backgroundColor: 'white',
-            },
-            '& .MuiDataGrid-cell': {
-                borderBottom: 'none',
-            },
-        },
-        header: {
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            fontSize: '12px',
-            height: '50px',
-        },
-        col1: {
-            width: '30%',
-        },
-        col2: {
-            width: '20%',
-        },
-        col3: {
-            width: '20%',
-        },
-        col4: {
-            width: '10%',
-        },
-        col5: {
-            width: '20%',
-        },
-    });
 
     const classes = useStyles();
 
@@ -81,12 +111,12 @@ const ListView = ({cards}) => {
         {
             field: 'name',
             headerName: 'Full Name',
-            flex: 1,
+            flex: 2,
             sortable: true,
             filterable: true,
-            headerClassName: classes.header + ' ' + classes.col1,
             headerAlign: 'center',
             align: 'left',
+            width: 250,
             renderCell: (params: { row: { userId: any; profileImg: string; name: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }; }) => (
                 <div style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}}
                      onClick={() => window.open(`https://www.linkedin.com/in/${params.row.userId}`, '_blank')}>
@@ -101,19 +131,19 @@ const ListView = ({cards}) => {
             flex: 1,
             sortable: true,
             filterable: true,
-            headerClassName: classes.header + ' ' + classes.col2,
             headerAlign: 'center',
-            align: 'left'
+            align: 'left',
+            width: 250,
         },
         {
             field: 'companyName',
             headerName: 'Company Name',
-            flex: 2,
+            flex: 1,
             sortable: true,
             filterable: true,
-            headerClassName: classes.header + ' ' + classes.col3,
             headerAlign: 'center',
-            align: 'center'
+            align: 'center',
+            width: 250,
         },
         {
             field: 'status',
@@ -121,15 +151,15 @@ const ListView = ({cards}) => {
             flex: 2,
             sortable: true,
             filterable: false,
-            headerClassName: classes.header + ' ' + classes.col4,
             headerAlign: 'center',
             align: 'center',
+            width: 300,
             renderCell: (params: { row: ICard; }) => (
                 <Status card={params.row}/>
             )
         },
         {
-            field: 'action', headerName: 'Action', flex: 2, sortable: false, filterable: false, headerClassName: classes.header + ' ' + classes.col5, headerAlign: 'center', align: 'center',
+            field: 'action', headerName: 'Action', flex: 1, width: 200, sortable: false, filterable: false, headerAlign: 'center', align: 'center',
             renderCell: (params: { row: { conversationUrn: any; userId: string; profileId: string; }; }) => (
                 <>
                     <button className="btn action-btn-color" onClick={(event)=>messagesClickHandler(event,params.row.conversationUrn)}>
@@ -153,21 +183,14 @@ const ListView = ({cards}) => {
         }
     ];
 
-    // @ts-ignore
-    const getRowClassName = (params) => {
-        return params.index % 2 === 0 ? 'stripe-row' : '';
-    };
-
 
     return (
         <>
-            <div className="table list-table table-custom" style={{ height: '500px', width: '100%' }}>
+            <div className={classes.root} style={{ height: '500px', width: '1151px' }}>
                 <DataGrid
-                    columns={columns}
                     rows={cards}
+                    columns={columns}
                     rowHeight={90}
-                    getRowClassName={getRowClassName}
-                    className={classes.root}
                 />
             </div>
 

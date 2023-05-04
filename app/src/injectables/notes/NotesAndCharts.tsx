@@ -113,6 +113,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [fromListView, setFromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
+    const listviewNotesRef = useRef();
     const messages = new MessagesV2(VERBOSE);
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
@@ -222,6 +223,14 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
     }, [text]);
+
+    // useEffect(()=>{
+    //     console.log("listviewNotesRef?.current: ", listviewNotesRef?.current)
+    //     // @ts-ignore
+    //     listviewNotesRef?.current?.scrollIntoView({ behavior: 'smooth' });
+    //     // @ts-ignore
+    //     listviewNotesRef?.current?.focus();
+    // },[listviewNotesRef.current, fromListView, completed]);
 
     const appendNote = (note: NoteExtended, tagToRemoveIndex?: number) => {
         if (typeof tagToRemoveIndex === "number" && tagToRemoveIndex !== -1) {
@@ -484,7 +493,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                 )}
                                 {!showSalary ? (
                                         <div className="title-child assigned">
-                                            <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")}>
+                                            <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")} ref={listviewNotesRef}>
                                                 Track Candidates
                                             </span>
                                             {
