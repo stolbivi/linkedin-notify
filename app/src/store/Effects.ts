@@ -90,8 +90,8 @@ export default () => {
         effect: async (action: PayloadAction<IdAwareRequest<SetStagePayload>>, listenerApi) => {
             listenerApi.dispatch(setStageAction({id: action.payload.id, state: {completed: false}}));
             let r = await messages.request(setStage(action.payload.state));
-            const stage = r?.stage?.stage >= 0 ? r?.stage?.stage : -1;
-            const stageText = r?.stageText ? r?.stageText : null;
+            const stage = r?.stage?.response?.stage >= 0 ? r?.stage?.response?.stage : -1;
+            const stageText = r?.stage?.response?.stageText ? r?.stage?.response?.stageText : null;
             listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, stageText, completed: true}}));
             if (!r.error && r.note) {
                 listenerApi.dispatch(appendNoteAction(r.note));

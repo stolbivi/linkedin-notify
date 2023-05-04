@@ -1,10 +1,12 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Loader} from "../../components/Loader";
 import {CompleteEnabled, localStore, selectStage} from "../../store/LocalStore";
 import {Stage, updateStageAction} from "../../store/StageReducer";
 import {shallowEqual, useSelector} from "react-redux";
-import {Note, NoteExtended} from "../../global";
+import {Note, NoteExtended, VERBOSE} from "../../global";
 import "./StageSwitch.scss";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {deleteNote, deleteStage} from "../../actions";
 
 export enum StageEnum {
     Interested,
@@ -127,22 +129,54 @@ type Props = {
     urn: string
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage,urn, id, customText, parentStage}) => {
+export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, customText, parentStage, notes, setNotes}) => {
 
     const [hovered, setHovered] = useState(false);
     const stagePillRef = useRef();
     const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
     const [isSelected, setIsSelected] = useState(false);
+    const messages = new MessagesV2(VERBOSE);
+
+
+    useEffect(() => {
+        setIsSelected(Boolean(notes.find(note => note.stageTo === type)));
+    }, [activeStage,notes]);
+
+    const removeSelectedTag = (id: string, tagToRemoveIndex: number, updatedNotes: any) => {
+        const deleteNotePromise = messages.request(deleteNote(id)).then((_r) => {});
+        const deleteStagePromise = messages.request(deleteStage(id)).then((_r) => {});
+        if (tagToRemoveIndex !== -1) {
+            updatedNotes.splice(tagToRemoveIndex, 1);
+            setNotes(updatedNotes);
+        }
+        Promise.all([deleteNotePromise,deleteStagePromise]).then(()=>{
+        })
+    };
 
     const onClick = () => {
-        setIsSelected(!isSelected);
+        const selectedNote = notes.find(note => note.stageTo === type);
+        let tagToRemoveIndex: number;
+        if (selectedNote && isSelected) {
+            let updatedNotes = [...notes];
+            tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === selectedNote.id);
+            removeSelectedTag(selectedNote.id, tagToRemoveIndex, updatedNotes);
+            return;
+        }
         if (stage?.stage !== type) {
             localStore.dispatch(updateStageAction({
                 id,
                 state: {id: urn, stage: type, stageFrom: stage?.stage, stageText: customText || undefined, parentStage}
             }));
         }
+        if (isSelected) {
+            // @ts-ignore
+            stagePillRef?.current?.classList.remove(StageLabels[type]?.class);
+            // @ts-ignore
+            stagePillRef?.current?.classList.add('inactive');
+        }
     }
+
+
 
     return (
         <React.Fragment>

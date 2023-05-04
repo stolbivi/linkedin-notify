@@ -543,7 +543,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                             id={customStage?.stageId?.toString()}
                                                             activeStage={extractFromIdAware(stage).stage}
                                                             parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
-                                                            parentStageName={StageParentData.GROUPS}/>
+                                                            parentStageName={StageParentData.GROUPS}
+                                                            notes={notes}
+                                                            setNotes={setNotes}/>
                                                     </div>
                                                 ))}
                                             </div>
@@ -564,7 +566,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                                      id={idInternal}
                                                                                      urn={extractFromIdAware(salary).urn}
                                                                                      parentStage={Object.values(StageParentData).indexOf(stage.name)}
-                                                                                     parentStageName={stage.name}/>
+                                                                                     parentStageName={stage.name}
+                                                                                     notes={notes}
+                                                                                     setNotes={setNotes}/>
                                                                         :
                                                                         <>
                                                                             {customStages?.slice(0, 3).map(customStage => (
@@ -575,7 +579,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                                 urn={extractFromIdAware(salary).urn}
                                                                                 id={customStage?.stageId?.toString()}
                                                                                 parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
-                                                                                parentStageName={StageParentData.GROUPS}/>
+                                                                                parentStageName={StageParentData.GROUPS}
+                                                                                notes={notes}
+                                                                                setNotes={setNotes}/>
                                                                             ))}
                                                                             {customStages?.length > 3 && (
                                                                                 <div className="create-new-group-wrapper customPill"
