@@ -264,3 +264,7 @@ td {
 .icon-color path {
   fill: $kanban-table-action-btn-color;
 }
+
+.MuiGridFilterForm-root {
+  display: block !important;
+}

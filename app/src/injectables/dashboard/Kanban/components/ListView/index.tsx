@@ -186,6 +186,7 @@ const ListView = ({cards}) => {
 
     return (
         <>
+            <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className={classes.root} style={{ height: '500px', width: '1151px' }}>
                 <DataGrid
                     rows={cards}
