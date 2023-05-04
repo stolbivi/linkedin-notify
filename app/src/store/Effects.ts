@@ -2,7 +2,7 @@ import {getLastViewedAction, setLastViewedAction} from "./LastViewedReducer";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {
     getConversationProfile,
-    getLastViewed,
+    getLastViewed, getLatestStage,
     getNotesAll,
     getSalary,
     getStages,
@@ -18,7 +18,7 @@ import {IdAwareRequest, listenerMiddleware} from "./LocalStore";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
 import {getSalaryAction, GetSalaryRequest, setSalaryAction} from "./SalaryReducer";
-import {getStageAction, setStageAction, updateStageAction} from "./StageReducer";
+import {getLatestStageAction, getStageAction, setStageAction, updateStageAction} from "./StageReducer";
 import {getGeoTzAction, setGeoTzAction} from "./GeoTzReducer";
 import {appendNoteAction, getNotesAction, postNoteAction, setNotesAction} from "./NotesAllReducer";
 
@@ -53,6 +53,7 @@ export default () => {
             listenerApi.dispatch(setSalaryAction({id: action.payload.id, state: {completed: false}}));
             let requestId = action.payload.state.id;
             if (action.payload.state.conversation) {
+                // @ts-ignore
                 requestId = await messages.request(getConversationProfile(action.payload.state.id));
             }
             let r = await messages.request(getSalary(requestId));
@@ -74,12 +75,24 @@ export default () => {
     });
 
     listenerMiddleware.startListening({
+        predicate: (action) => action.type === getLatestStageAction.type,
+        effect: async (action: PayloadAction<IdAwareRequest<GetStagesPayload>>, listenerApi) => {
+            listenerApi.dispatch(setStageAction({id: action.payload.id, state: {completed: false}}));
+            let r = await messages.request(getLatestStage(action.payload.state.url));
+            const stage = r?.stage >= 0 ? r?.stage : -1;
+            const stageText = r?.stageText ? r?.stageText : null;
+            listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, stageText, completed: true}}));
+        },
+    });
+
+    listenerMiddleware.startListening({
         predicate: (action) => action.type === updateStageAction.type,
         effect: async (action: PayloadAction<IdAwareRequest<SetStagePayload>>, listenerApi) => {
             listenerApi.dispatch(setStageAction({id: action.payload.id, state: {completed: false}}));
             let r = await messages.request(setStage(action.payload.state));
             const stage = r?.stage?.stage >= 0 ? r?.stage?.stage : -1;
-            listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, completed: true}}));
+            const stageText = r?.stageText ? r?.stageText : null;
+            listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, stageText, completed: true}}));
             if (!r.error && r.note) {
                 listenerApi.dispatch(appendNoteAction(r.note));
             }

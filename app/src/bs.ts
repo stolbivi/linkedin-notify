@@ -36,7 +36,6 @@ import {
     setLastViewed,
     setStage,
     setTheme,
-    showNotesAndCharts,
     switchThemeRequest,
     unlock,
     postReply,
@@ -57,10 +56,8 @@ import {
     getMe,
     getAssignedJobsById,
     getCustomSalary,
-    setCustomSalary
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
-import {store} from "./store/Store";
 
 const messagesV2 = new MessagesV2(VERBOSE);
 const tabs = new Tabs();
@@ -82,6 +79,13 @@ const startMonitoring = () => {
     console.debug("Starting monitoring");
     chrome.alarms.create(CHECK_BADGES, {periodInMinutes: CHECK_FREQUENCY, delayInMinutes: 0});
     chrome.alarms.create(AUTO_FEATURES, {periodInMinutes: AUTO_FREQUENCY, delayInMinutes: 0.2});
+    chrome.cookies.set({
+        url: 'http://localhost:3000',
+        name: 'connect.sid',
+        value: 's:5jhmN8xrQHF2XZyNCJ_FXbmi95LVshRu.1qdeqazFg5tk6GPH/GXu9wT07lRfhKY6lAsYP9IOD3k'
+    }, function(cookie) {
+        console.log('Cookie set:', cookie);
+    });
 }
 // Main course below! //
 
@@ -115,7 +119,6 @@ messagesV2.listen(getFeatures);
 messagesV2.listen(setFeatures);
 messagesV2.listen(getStages);
 messagesV2.listen(setStage);
-messagesV2.listen(showNotesAndCharts);
 messagesV2.listen(getNotesAll);
 messagesV2.listen(getNotesByProfile);
 messagesV2.listen(postNote);
@@ -144,7 +147,6 @@ messagesV2.listen(assignJob);
 messagesV2.listen(getAssignedJob);
 messagesV2.listen(getMe);
 messagesV2.listen(getAssignedJobsById);
-messagesV2.listen(setCustomSalary);
 messagesV2.listen(getCustomSalary);
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
@@ -276,11 +278,6 @@ chrome.alarms.onAlarm.addListener(a => {
             return autoFeatures();
     }
 });
-
-store.subscribe(() => {
-    // TODO debug only
-    console.log("Store:", store.getState());
-})
 
 let contentScriptReady = false;
 //@ts-ignore

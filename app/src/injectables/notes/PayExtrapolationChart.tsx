@@ -1,8 +1,8 @@
 import Chart from 'chart.js/auto';
 import React, {useEffect, useRef, useState} from "react";
-import {Salary} from "../SalaryPill";
 import "./PayExtrapolationChart.scss";
 import {Theme} from "../../global";
+import {Salary} from "../../store/SalaryReducer";
 
 type Props = {
     salary: Salary
@@ -122,7 +122,7 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary, theme}) => {
     return (
         <React.Fragment>
             <div className="pay-ex-chart">
-                <canvas id="chart-canvas" ref={canvasRef}/>
+                <canvas id="chart-canvas" ref={canvasRef}></canvas>
             </div>
         </React.Fragment>
     );

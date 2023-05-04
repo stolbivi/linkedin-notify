@@ -3,7 +3,8 @@ import {CompleteEnabled, IdAwareRequest, IdAwareState} from "./LocalStore";
 import {GetStagesPayload, SetStagePayload} from "../actions";
 
 export interface Stage {
-    stage: number
+    stage?: number,
+    stageText?: string
 }
 
 const initialState: IdAwareState<CompleteEnabled<Stage>> = {};
@@ -13,6 +14,8 @@ const slice = createSlice({
     initialState,
     reducers: {
         getStageAction: (_1, _2: PayloadAction<IdAwareRequest<GetStagesPayload>>) => {
+        },
+        getLatestStageAction: (_1, _2: PayloadAction<IdAwareRequest<GetStagesPayload>>) => {
         },
         setStageAction: (state, action: PayloadAction<IdAwareRequest<CompleteEnabled<Stage>>>) => {
             if (!state[action.payload.id]) {
@@ -26,5 +29,5 @@ const slice = createSlice({
     }
 });
 
-export const {getStageAction, setStageAction, updateStageAction} = slice.actions
+export const {getStageAction, getLatestStageAction, setStageAction, updateStageAction} = slice.actions
 export default slice.reducer

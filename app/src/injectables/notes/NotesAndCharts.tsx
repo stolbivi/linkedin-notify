@@ -2,6 +2,7 @@ import React, {FormEvent, useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
 import {PayDistribution} from "./PayDistribution";
+import {getSalaryValue} from "../SalaryPill";
 import {stageChildData, StageEnum, StageLabels, StageParentData, stageParentsData, StageSwitch} from "./StageSwitch";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, NoteExtended, UserStage, VERBOSE} from "../../global";
@@ -12,7 +13,7 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {createCustomStage, getTheme, postNote as postNoteAction, setCustomSalary, sortAsc} from "../../actions";
+import {createCustomStage, getTheme, postNote as postNoteAction } from "../../actions";
 import {
     CompleteEnabled,
     DataWrapper,
@@ -102,7 +103,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [idInternal, setIdInternal] = useState<string>(id);
     const [showSalary, setShowSalary] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
-    const [showStages, setShowStages] = useState<boolean>(true);
+    const [showStages] = useState<boolean>(true);
     const [show] = useState<boolean>(false);
     const [showChart, setShowChart] = useState<boolean>(false);
     const [minimized, setMinimized] = useState<boolean>(true);
@@ -114,7 +115,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [editButton, setEditButton] = useState(false);
     const [currencySymbol, setCurrencySymbol] = useState("");
     const [salaryLabel, setSalaryLabel] = useState("");
-    const [selectedTab, setSelectedTab] = useState("Track");
     const [fromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const messages = new MessagesV2(VERBOSE);
@@ -149,7 +149,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         if (extractFromIdAware(salary)) {
             if (notesAll?.data?.length > 0) {
                 let filtered = notesAll?.data?.filter(n => n.profile === extractFromIdAware(salary).urn);
-                sortAsc(filtered);
                 setNotes(filtered);
             }
         }
@@ -279,25 +278,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         setPostAllowed(text && text.value.length > 0);
     }, [text]);
 
-/*    const appendNote = (note: NoteExtended, tagToRemoveIndex?: number) => {
-        if (typeof tagToRemoveIndex === "number" && tagToRemoveIndex !== -1) {
-            let updatedNotes = [...notes,note];
-            updatedNotes.splice(tagToRemoveIndex, 1);
-            setNotes(updatedNotes);
-        } else {
-            setNotes([...notes, note]);
-        }
-        setTimeout(() => {
-            // @ts-ignore
-            lastNoteRef?.current?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'end',
-                inline: 'nearest',
-                marginBottom: 50
-            });
-        }, 200);
-    }*/
-
     const postNote = (text: string) => {
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
@@ -422,22 +402,13 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
         event.stopPropagation();
         if(editButton) {
-            messages.request(setCustomSalary(salary)).then(resp => {
+/*            messages.request(setCustomSalary(salary)).then(resp => {
                 console.log(resp);
-            })
+            })*/
         }
         setEditButton(!editButton);
     }
 
-    useEffect(() => {
-        if("Track" === selectedTab) {
-            setShowStages(true);
-            setShowNotes(true);
-        } else {
-            setShowStages(true);
-            setShowNotes(true);
-        }
-    },[selectedTab]);
 
     const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview' : ''}`;
 
@@ -460,8 +431,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                             </svg>
                         </div>
                         <React.Fragment>
-                            <div className="local-loader"><Loader show={!completed}/></div>
-                            {completed && !minimized &&
+                            <div className="local-loader"><Loader show={!completed()}/></div>
+                            {completed() && !minimized &&
                             <NotesContainer>
                                 {showSalary && (
                                     <Collapsible initialOpened={showSalary}>
@@ -504,7 +475,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                     }}
                                                                 />
                                                             )
-                                                            :(<div className="label-salary">{salaryLabel} year</div>)
+                                                            :(<div className="label-salary">{extractFromIdAware(salary) && getSalaryValue(extractFromIdAware(salary) as Salary)} year</div>)
                                                     }
                                                     <div className="label-position">
                                                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
@@ -529,19 +500,19 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                         </div>
                                         <div data-role={CollapsibleRole.Collapsible}>
                                             {showChart &&
-                                                <PayExtrapolationChart salary={salary} theme={theme}/>}
+                                                <PayExtrapolationChart salary={extractFromIdAware(salary) as Salary}
+                                                                       theme={theme}/>}
                                         </div>
                                     </Collapsible>
                                 )}
                                 {!showSalary ? (
                                         <div className="title-child assigned">
-                                            <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")}>
+                                            <span style={{paddingRight: "5%", cursor: "pointer"}}>
                                                 Track Candidates
                                             </span>
                                             {
                                                 !allGroupsMode ? (
-                                                    <span style={{marginLeft:"475px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}
-                                                          onClick={()=>setSelectedTab("Notes")}>
+                                                    <span style={{marginLeft:"475px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}>
                                                         Notes
                                                         <label className="notes-counter">{notes ? notes.length : 0}</label>
                                                     </span>
@@ -566,9 +537,13 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                     <div className="nested-childs">
                                                         <StageSwitch
                                                             key={extractFromIdAware(salary).urn}
+                                                            type={StageEnum[customStage.text]}
                                                             customText={customStage.text}
                                                             urn={extractFromIdAware(salary).urn}
-                                                            id={customStage?.stageId?.toString()}/>
+                                                            id={customStage?.stageId?.toString()}
+                                                            activeStage={extractFromIdAware(stage).stage}
+                                                            parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                            parentStageName={StageParentData.GROUPS}/>
                                                     </div>
                                                 ))}
                                             </div>
@@ -587,15 +562,20 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                         <StageSwitch key={extractFromIdAware(salary).urn + index}
                                                                                      type={child.name}
                                                                                      id={idInternal}
-                                                                                     urn={extractFromIdAware(salary).urn}/>
+                                                                                     urn={extractFromIdAware(salary).urn}
+                                                                                     parentStage={Object.values(StageParentData).indexOf(stage.name)}
+                                                                                     parentStageName={stage.name}/>
                                                                         :
                                                                         <>
                                                                             {customStages?.slice(0, 3).map(customStage => (
                                                                                 <StageSwitch
                                                                                 key={extractFromIdAware(salary).urn + index}
+                                                                                type={StageEnum[customStage.text]}
                                                                                 customText={customStage.text}
                                                                                 urn={extractFromIdAware(salary).urn}
-                                                                                id={customStage?.stageId?.toString()}/>
+                                                                                id={customStage?.stageId?.toString()}
+                                                                                parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                                                parentStageName={StageParentData.GROUPS}/>
                                                                             ))}
                                                                             {customStages?.length > 3 && (
                                                                                 <div className="create-new-group-wrapper customPill"

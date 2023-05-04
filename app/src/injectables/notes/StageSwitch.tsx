@@ -158,7 +158,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage,urn, id, customT
 
                  }}
                  onMouseLeave={() => setHovered(false)}>
-                <div className="loader"><Loader show={!stage?.completed || activeStage === undefined}/></div>
+                <div className="loader"><Loader show={!stage?.completed}/></div>
                 <label className={customText && customText.length > 12 ? 'ellipsis' : ''} style={{opacity: stage?.completed ? 1 : 0}}>
                     {customText || StageLabels[type].label}
                 </label>

@@ -3,7 +3,6 @@ import {LinkedInAPI} from "./services/LinkedInAPI";
 import {
     AssignedJob,
     Badges,
-    CustomSalary,
     Features,
     Invitation,
     Job,
@@ -19,8 +18,8 @@ import {Response} from "./services/BaseAPI";
 import {StageEnum} from "./injectables/notes/StageSwitch";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
 import {LastViewed} from "./store/LastViewedReducer";
-import {Salary} from "./injectables/SalaryPill";
 import Cookie = chrome.cookies.Cookie;
+
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
 const mapsAPI = new MapsAPI();
@@ -211,8 +210,14 @@ export interface GetStagesPayload {
     url?: string
 }
 
-// TODO add to store
-export const getStages = createAction<GetStagesPayload, Response<any>>("getStages",
+export interface StageResponse {
+    id: string
+    author: string
+    stage: number
+    updatedAt: string
+}
+
+export const getStages = createAction<GetStagesPayload, Response<StageResponse>>("getStages",
     (payload) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -321,18 +326,7 @@ export const setStageFromKanban = createAction<SetStagePayload, any>("setStageFr
             return  await backEndAPI.setStageFromKanban(payload.id, payload.stage, payload.stageText, author);
         }));
 
-export interface ShowNotesAndChartsPayload {
-    id?: string
-    showSalary: boolean
-    showNotes: boolean
-    showStages?: boolean
-    setSalary?:any
-    userId?: string
-    profileId?: string
-}
-
-// TODO add to store
-export const getNotesAll = createAction<{}, any>("getNotesAll",
+export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesAll",
     () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -341,20 +335,17 @@ export const getNotesAll = createAction<{}, any>("getNotesAll",
             const notes = await backEndAPI.getNotes(as);
             if (notes.response) {
                 return extendNote(token, notes.response, as)
-                    .then(response => {
-                        // @ts-ignore
-                        response.sort((a, b) => b.timestamp - a.timestamp);
-                        return {response};
-                    })
+                    .then(response => ({response} as Response<NoteExtended[]>));
             } else {
-                return notes;
+                return notes as Response<NoteExtended[]>;
             }
         }));
+
 export const sortAsc = (notes: NoteExtended[]) => notes.sort((a, b) => a.timestamp?.getTime() - b.timestamp?.getTime());
 export const sortDesc = (notes: NoteExtended[]) => notes.sort((a, b) => b.timestamp?.getTime() - a.timestamp?.getTime());
 
-// TODO add to store
-export const getNotesByProfile = createAction<string, any>("getNotesByProfile",
+// @Deprecated: this API is deprecated and is not used since all notes are now shared via store
+export const getNotesByProfile = createAction<string, Response<NoteExtended[]>>("getNotesByProfile",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -363,13 +354,9 @@ export const getNotesByProfile = createAction<string, any>("getNotesByProfile",
             const notes = await backEndAPI.getNotesByProfile(id, as);
             if (notes.response) {
                 return extendNote(token, notes.response, as)
-                    .then(response => {
-                        // @ts-ignore
-                        response.sort((a, b) => a.timestamp - b.timestamp);
-                        return {response};
-                    })
+                    .then(response => ({response} as Response<NoteExtended[]>));
             } else {
-                return notes;
+                return notes as Response<NoteExtended[]>;
             }
         }));
 
@@ -381,7 +368,11 @@ export interface PostNotePayload {
     stateText?: string
 }
 
-export const postNote = createAction<PostNotePayload, any>("postNote",
+export interface PostNoteResponse {
+    note: Response<NoteExtended>
+}
+
+export const postNote = createAction<PostNotePayload, PostNoteResponse>("postNote",
     (payload) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -689,7 +680,7 @@ export const getAssignedJobsById = createAction<string, any>("getAssignedJobsByI
         })
 )
 
-export const setCustomSalary = createAction<Salary,any>("setCustomSalary",
+/*export const setCustomSalary = createAction<Salary,any>("setCustomSalary",
     (payload: Salary) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async (token) => {
@@ -699,7 +690,7 @@ export const setCustomSalary = createAction<Salary,any>("setCustomSalary",
             const { response } = await backEndAPI.setCustomSalary(salary)
             return response
         })
-)
+)*/
 
 export const getCustomSalary = createAction<string, any>("getCustomSalary",
     (urn) => getCookies(LINKEDIN_DOMAIN)

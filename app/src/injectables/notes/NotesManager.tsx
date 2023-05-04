@@ -10,7 +10,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getTheme, openUrl, sortAsc, sortDesc, SwitchThemePayload} from "../../actions";
+import {getTheme, openUrl, SwitchThemePayload} from "../../actions";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as LightTheme} from "../../themes/light";
@@ -118,14 +118,12 @@ export const NotesManager: React.FC<Props> = ({}) => {
             // search by text
             filteredNotes = notesAll?.data?.filter(n => n.profile === selection.profile
                 && checkByText(n, searchText?.toLowerCase()));
-            sortAsc(filteredNotes);
         } else {
             // search by value
             filteredNotes = notesAll?.data?.filter(
                 n => checkByText(n, searchValue.text?.toLowerCase()) &&
                     (stagesCount > 0 ? (searchValue.stages[n.stageFrom] || searchValue.stages[n.stageTo]) : true)
             );
-            sortDesc(filteredNotes);
         }
         setNotes(filteredNotes);
     }, [selection, searchValue, searchText, notesAll]);

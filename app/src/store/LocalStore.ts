@@ -50,6 +50,7 @@ export const localStore = configureStore({
         geoTz: geoTzReducer,
         notesAll: notesAllReducer
     },
+    devTools: true,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().prepend(listenerMiddleware.middleware),
 });
