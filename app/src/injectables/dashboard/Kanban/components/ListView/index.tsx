@@ -32,7 +32,7 @@ const ListView = ({cards}) => {
             fontSize: '1.1rem',
         },
         '& .MuiIconButton-label' : {
-            color: 'red'
+            color: 'black'
         },
         padding: '16px',
     }
@@ -58,6 +58,15 @@ const ListView = ({cards}) => {
             color: 'white',
         },
         '& .MuiIconButton-label' : {
+            color: 'white'
+        },
+        '& .MuiGridFilterForm' : {
+            color: '#000000c4'
+        },
+        '& .MuiInputLabel-formControl' : {
+            color: 'white'
+        },
+        '& .MuiSelect-select' : {
             color: 'white'
         },
         padding: '16px',

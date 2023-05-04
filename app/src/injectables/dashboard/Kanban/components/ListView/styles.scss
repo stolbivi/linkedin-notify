@@ -265,6 +265,23 @@ td {
   fill: $kanban-table-action-btn-color;
 }
 
-.MuiGridFilterForm-root {
-  display: block !important;
+.MuiGridFilterForm-closeIcon{
+  margin-bottom: 12px !important;
+}
+
+.MuiInputLabel-formControl{
+  top: -14px !important;
+  font-size: 14px !important;
+}
+
+.MuiGridFilterForm-columnSelect{
+  margin-right: 10px !important;
+}
+
+.MuiGridFilterForm-operatorSelect{
+  margin-right: 10px !important;
+}
+
+.MuiInputBase-input{
+  padding: 12px 7px 8px !important;
 }
