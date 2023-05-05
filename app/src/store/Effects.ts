@@ -1,6 +1,7 @@
 import {getLastViewedAction, setLastViewedAction} from "./LastViewedReducer";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {
+    deleteNote, deleteStage,
     getConversationProfile,
     getLastViewed, getLatestStage,
     getNotesAll,
@@ -20,7 +21,8 @@ import {extractIdFromUrl, VERBOSE} from "../global";
 import {getSalaryAction, GetSalaryRequest, setSalaryAction} from "./SalaryReducer";
 import {getLatestStageAction, getStageAction, setStageAction, updateStageAction} from "./StageReducer";
 import {getGeoTzAction, setGeoTzAction} from "./GeoTzReducer";
-import {appendNoteAction, getNotesAction, postNoteAction, setNotesAction} from "./NotesAllReducer";
+import {appendNoteAction, deleteNoteAction, getNotesAction, postNoteAction, setNotesAction} from "./NotesAllReducer";
+import {StageParentData} from "../injectables/notes/StageSwitch";
 
 export default () => {
     console.log("Initializing effects");
@@ -94,7 +96,13 @@ export default () => {
             const stageText = r?.stage?.response?.stageText ? r?.stage?.response?.stageText : null;
             listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, stageText, completed: true}}));
             if (!r.error && r.note) {
-                listenerApi.dispatch(appendNoteAction(r.note));
+                listenerApi.dispatch(appendNoteAction(r.note.response));
+            }
+            if(action.payload.state.existingChildStageId
+                && action.payload.state.parentStage !== Object.values(StageParentData).indexOf(StageParentData.GEOGRAPHY)
+                && action.payload.state.parentStage !== Object.values(StageParentData).indexOf(StageParentData.GROUPS)
+                && action.payload.state.existingChildStageId  !== r.stage.response.id) {
+                listenerApi.dispatch(deleteNoteAction({id: action.payload.state.existingChildStageId}));
             }
         },
     });
@@ -115,6 +123,17 @@ export default () => {
             let r = await messages.request(getNotesAll());
             let data = r.error ? [] : r.response;
             listenerApi.dispatch(setNotesAction({data, completed: true}));
+        },
+    });
+
+    listenerMiddleware.startListening({
+        predicate: (action) => action.type === deleteNoteAction.type,
+        effect: async (action: any, listenerApi) => {
+            listenerApi.dispatch(setNotesAction({completed: false}));
+            await messages.request(deleteNote(action.payload.id));
+            await messages.request(deleteStage(action.payload.id));
+            listenerApi.dispatch(deleteNoteAction(action.payload));
+            listenerApi.dispatch(setNotesAction({completed: true}));
         },
     });
 

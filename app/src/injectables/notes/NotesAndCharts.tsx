@@ -13,7 +13,7 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {createCustomStage, getTheme, postNote as postNoteAction } from "../../actions";
+import {createCustomStage, getCustomStages, getTheme} from "../../actions";
 import {
     CompleteEnabled,
     DataWrapper,
@@ -34,7 +34,7 @@ import {theme as LightTheme} from "../../themes/light";
 import AssignedJobs from "../../components/AssignedJobs";
 import {ShowNotesAndCharts, showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
 import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
-import {getNotesAction} from "../../store/NotesAllReducer";
+import {getNotesAction,postNoteAction} from "../../store/NotesAllReducer";
 
 export const NotesAndChartsFactory = () => {
     setTimeout(() => {
@@ -119,15 +119,12 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const messages = new MessagesV2(VERBOSE);
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
-
     const showNotesAndCharts: IdAwareState<ShowNotesAndCharts> = useSelector(selectShowNotesAndCharts, shallowEqual);
     const salary: IdAwareState<CompleteEnabled<Salary>> = useSelector(selectSalary, shallowEqual);
     const stage: IdAwareState<CompleteEnabled<Stage>> = useSelector(selectStage, shallowEqual);
     const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
-
     const [url] = useUrlChangeSupport(window.location.href);
-
     const lastNoteRef = useRef();
 
     useEffect(() => {
@@ -173,6 +170,12 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
 
     const canShow = () => extractFromIdAware(showNotesAndCharts)?.show;
     const completed = () => extractFromIdAware(salary).completed;
+
+    useEffect(() => {
+        messages.request(getCustomStages())
+            .then((r) => setCustomStages(r))
+    },[]);
+
 /*
     const populateSalaryStagesAndNotes = (urn: string) => {
         messages.request(getSalary(urn))
@@ -315,6 +318,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }
 
     const close = () => {
+        setShowChart(false);
         localStore.dispatch(showNotesAndChartsAction({
             id: idInternal,
             state: {showSalary: false, showNotes: false, show: false}
@@ -440,11 +444,12 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                 <span className="salary-title-text">Avg. Base Salary (GBR)</span>
                                                 {
                                                     editButton ? (
-                                                    <svg width="20" height="20" className="icon-color" onClick={(event) => editOnClick(event)} fill="#585858" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-                                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                    <svg width="20" height="20" className="icon-color"
+                                                         onClick={(event) => editOnClick(event)} fill="#585858" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
                                                         <g id="SVGRepo_iconCarrier">
-                                                        <g fill-rule="evenodd">
+                                                        <g fillRule="evenodd">
                                                         <path d="M65.456 48.385c10.02 0 96.169-.355 96.169-.355 2.209-.009 5.593.749 7.563 1.693 0 0-1.283-1.379.517.485 1.613 1.67 35.572 36.71 36.236 37.416.665.707.241.332.241.332.924 2.007 1.539 5.48 1.539 7.691v95.612c0 7.083-8.478 16.618-16.575 16.618-8.098 0-118.535-.331-126.622-.331-8.087 0-16-6.27-16.356-16.1-.356-9.832.356-118.263.356-126.8 0-8.536 6.912-16.261 16.932-16.261zm-1.838 17.853l.15 121c.003 2.198 1.8 4.003 4.012 4.015l120.562.638a3.971 3.971 0 0 0 4-3.981l-.143-90.364c-.001-1.098-.649-2.616-1.445-3.388L161.52 65.841c-.801-.776-1.443-.503-1.443.601v35.142c0 3.339-4.635 9.14-8.833 9.14H90.846c-4.6 0-9.56-4.714-9.56-9.14s-.014-35.14-.014-35.14c0-1.104-.892-2.01-1.992-2.023l-13.674-.155a1.968 1.968 0 0 0-1.988 1.972zm32.542.44v27.805c0 1.1.896 2.001 2 2.001h44.701c1.113 0 2-.896 2-2.001V66.679a2.004 2.004 0 0 0-2-2.002h-44.7c-1.114 0-2 .896-2 2.002z"></path>
                                                         <path d="M127.802 119.893c16.176.255 31.833 14.428 31.833 31.728s-14.615 31.782-31.016 31.524c-16.401-.259-32.728-14.764-32.728-31.544s15.735-31.963 31.91-31.708zm-16.158 31.31c0 9.676 7.685 16.882 16.218 16.843 8.534-.039 15.769-7.128 15.812-16.69.043-9.563-7.708-16.351-15.985-16.351-8.276 0-16.045 6.52-16.045 16.197z"></path>
                                                         </g>
@@ -500,8 +505,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                         </div>
                                         <div data-role={CollapsibleRole.Collapsible}>
                                             {showChart &&
-                                                <PayExtrapolationChart salary={extractFromIdAware(salary) as Salary}
-                                                                       theme={theme}/>}
+                                                <PayExtrapolationChart salary={extractFromIdAware(salary) as Salary} theme={theme}/>}
                                         </div>
                                     </Collapsible>
                                 )}
@@ -554,7 +558,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                         : (
                                         <div id="outer-container" style={{ display: "flex" }}>
                                             {
-                                                showStages ? (
+                                                showStages && !showSalary ? (
                                                     <div className="stage-parents-container stage-parents-container-border">
                                                         {stageParents.map(stageParent =>
                                                             <div className="parent-container">
@@ -598,7 +602,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        <AssignedJobs urn={salary.urn}/>
+                                                        <AssignedJobs urn={extractFromIdAware(salary).urn}/>
                                                     </div>
                                                 ) : null
                                             }

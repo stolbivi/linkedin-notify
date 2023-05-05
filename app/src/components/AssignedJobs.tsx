@@ -15,7 +15,7 @@ const AssignedJobs = (props: { urn: any; }) => {
     useEffect(() => {
         messages.request(getAssignedJob({url: extractIdFromUrl(window.location.href)}))
             .then((r) => {
-                setSelectedJob(r.jobId);
+                setSelectedJob(r?.jobId);
             });
         messages.request(getJobs())
             .then((r) => {

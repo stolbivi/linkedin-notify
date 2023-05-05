@@ -1,12 +1,11 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Loader} from "../../components/Loader";
-import {CompleteEnabled, localStore, selectStage} from "../../store/LocalStore";
+import {CompleteEnabled, DataWrapper, localStore, selectNotesAll, selectStage} from "../../store/LocalStore";
 import {Stage, updateStageAction} from "../../store/StageReducer";
 import {shallowEqual, useSelector} from "react-redux";
-import {Note, NoteExtended, VERBOSE} from "../../global";
+import {Note, NoteExtended} from "../../global";
 import "./StageSwitch.scss";
-import {MessagesV2} from "@stolbivi/pirojok";
-import {deleteNote, deleteStage} from "../../actions";
+import {deleteNoteAction} from "../../store/NotesAllReducer";
 
 export enum StageEnum {
     Interested,
@@ -128,13 +127,13 @@ type Props = {
     urn: string
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, customText, parentStage, notes, setNotes}) => {
+export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, customText, parentStage, notes}) => {
 
     const [hovered, setHovered] = useState(false);
     const stagePillRef = useRef();
     const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
+    const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [isSelected, setIsSelected] = useState(false);
-    const messages = new MessagesV2(VERBOSE);
     const [completed, setCompleted] = useState<boolean>(false);
 
     useEffect(() => {
@@ -144,35 +143,29 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
         setIsSelected(Boolean(notes.find(note => note.stageTo === type)));
     }, [activeStage,notes]);
 
-    const removeSelectedTag = (id: string, tagToRemoveIndex: number, updatedNotes: any) => {
+    const removeSelectedTag = (id: string) => {
         setCompleted(false);
-        const deleteNotePromise = messages.request(deleteNote(id)).then((_r) => {});
-        const deleteStagePromise = messages.request(deleteStage(id)).then((_r) => {});
-        if (tagToRemoveIndex !== -1) {
-            updatedNotes.splice(tagToRemoveIndex, 1);
-            setNotes(updatedNotes);
-        }
-        Promise.all([deleteNotePromise,deleteStagePromise]).then(()=>{
-            setCompleted(true);
-        })
+        localStore.dispatch(deleteNoteAction({id}));
+        setTimeout(() => setCompleted(true), 3000);
     };
 
     const onClick = () => {
+        if(!stage?.completed) {
+            return;
+        }
         const selectedNote = notes.find(note => note.stageTo === type);
-        let tagToRemoveIndex: number;
         if (selectedNote && isSelected) {
-            let updatedNotes = [...notes];
-            tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === selectedNote.id);
-            removeSelectedTag(selectedNote.id, tagToRemoveIndex, updatedNotes);
+            removeSelectedTag(selectedNote.id);
             return;
         }
         if (stage?.stage !== type) {
             setCompleted(false);
+            const existingChildStage = notes.find(note => note.parentStage === parentStage);
             localStore.dispatch(updateStageAction({
                 id,
-                state: {id: urn, stage: type, stageFrom: stage?.stage, stageText: customText || undefined, parentStage}
+                state: {id: urn, stage: type, stageFrom: stage?.stage, stageText: customText || undefined, parentStage, existingChildStageId: existingChildStage?.id}
             }));
-            setTimeout(() => setCompleted(true), 2000);
+            setTimeout(() => setCompleted(true), 6000);
         }
         if (isSelected) {
             // @ts-ignore
@@ -184,7 +177,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
 
     return (
         <React.Fragment>
-            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || hovered) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''}`}
+            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || (hovered && stage?.completed)) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''}`}
                  onClick={onClick}
                  onMouseEnter={() => {
                      if(!isSelected){

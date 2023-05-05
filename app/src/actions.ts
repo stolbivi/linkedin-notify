@@ -283,6 +283,7 @@ export interface SetStagePayload {
     stageFrom: StageEnum
     stageText?: string;
     parentStage?: number
+    existingChildStageId?: string
 }
 
 export const setStage = createAction<SetStagePayload, any>("setStage",

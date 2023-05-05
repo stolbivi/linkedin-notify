@@ -20,8 +20,11 @@ const slice = createSlice({
         appendNoteAction: (state, action: PayloadAction<NoteExtended>) => {
             state.data = [...state.data, action.payload];
         },
+        deleteNoteAction: (state, action: PayloadAction<{id: string}>) => {
+            state.data = state.data.filter(note => note.id !== action.payload.id);
+        }
     }
 });
 
-export const {getNotesAction, setNotesAction, postNoteAction, appendNoteAction} = slice.actions
+export const {getNotesAction, setNotesAction, postNoteAction, appendNoteAction, deleteNoteAction} = slice.actions
 export default slice.reducer
