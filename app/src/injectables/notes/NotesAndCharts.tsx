@@ -117,6 +117,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [salaryLabel, setSalaryLabel] = useState("");
     const [fromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
+    const listviewNotesRef = useRef();
     const messages = new MessagesV2(VERBOSE);
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
     const showNotesAndCharts: IdAwareState<ShowNotesAndCharts> = useSelector(selectShowNotesAndCharts, shallowEqual);
@@ -126,12 +127,23 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [url] = useUrlChangeSupport(window.location.href);
     const lastNoteRef = useRef();
+    const localLoaderRef = useRef();
 
     useEffect(() => {
         if (url?.length > 0 && trackUrl) {
             setIdInternal(extractIdFromUrl(url))
         }
     }, [url]);
+
+    useEffect(() => {
+        // @ts-ignore
+        lastNoteRef?.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'nearest',
+            marginBottom: 50
+        });
+    },[notesAll,lastNoteRef.current]);
 
     const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
@@ -258,6 +270,17 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         }
         setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal));
     },[salaryInternal]);*/
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            // @ts-ignore
+            localLoaderRef?.current?.scrollIntoView({ behavior: 'smooth' });
+            // @ts-ignore
+            localLoaderRef?.current?.focus();
+        }, 500); // set delay time in milliseconds
+
+        return () => clearTimeout(timeoutId);
+    }, [localLoaderRef, fromListView, completed]);
 
     useEffect(()=>{
         if (salaryLabel){
@@ -435,8 +458,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                             </svg>
                         </div>
                         <React.Fragment>
-                            <div className="local-loader"><Loader show={!completed()}/></div>
-                            {completed() && !minimized &&
+                            <div className="local-loader" ref={localLoaderRef}><Loader show={!completed()}/></div>
+                            {completed && !minimized &&
                             <NotesContainer>
                                 {showSalary && (
                                     <Collapsible initialOpened={showSalary}>
@@ -516,7 +539,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                 )}
                                 {!showSalary ? (
                                         <div className="title-child assigned">
-                                            <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")} ref={listviewNotesRef}>
+                                            <span style={{paddingRight: "5%", cursor: "pointer"}} ref={listviewNotesRef}>
                                                 Track Candidates
                                             </span>
                                             {
