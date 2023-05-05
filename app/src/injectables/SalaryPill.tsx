@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from "react";
-import {extractIdFromUrl} from "../global";
+import {extractIdFromUrl, VERBOSE} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
 import {CompleteEnabled, localStore, selectSalary} from "../store/LocalStore";
 import {Provider, shallowEqual, useSelector} from "react-redux";
 import {showNotesAndChartsAction} from "../store/ShowNotesAndCharts";
-import {getMe,getSalaryAction, Salary} from "../store/SalaryReducer";
+import {getSalaryAction, Salary} from "../store/SalaryReducer";
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
 import {useUrlChangeSupport} from "../utils/URLChangeSupport";
+import {getMe} from "../actions";
+import {MessagesV2} from "@stolbivi/pirojok";
 
 export const SalaryPillFactory = () => {
     // individual profile
@@ -72,14 +74,22 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
     const salary: CompleteEnabled<Salary> = useSelector(selectSalary, shallowEqual)[id];
     const [urlInternal] = useUrlChangeSupport(window.location.href);
     const [show, setShow] = useState(true);
+    const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
-        if (!salary?.completed) {
-            localStore.dispatch(getSalaryAction({id: id, state: extractIdFromUrl(trackUrl ? urlInternal : url)}));
-        }
+        const userId = extractIdFromUrl(window.location.href);
+        messages.request(getMe()).then(res => {
+            if(userId === res.miniProfile.publicIdentifier) {
+                setShow(false);
+            } else {
+                if (!salary?.completed) {
+                    localStore.dispatch(getSalaryAction({id: id, state: {id: extractIdFromUrl(trackUrl ? urlInternal : url)}}));
+                }
+            }
+        });
     }, [accessState, urlInternal]);
 
     const onClick = () => {
@@ -94,7 +104,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName={"loader-base loader-px24"}/>
             {accessState === AccessState.Valid && show &&
-                <div className={"salary-pill" + (completed ? " clickable" : "")}
+                <div className={"salary-pill" + (salary?.completed ? " clickable" : "")}
                      onClick={onClick}>
                     <Loader show={!salary?.completed}/>
                     {salary?.completed && salary && <span>{getSalaryValue(salary)}</span>}
