@@ -123,10 +123,11 @@ type Props = {
     parentStage?: number;
     parentStageName?: string;
     setNotes: any;
+    allGroupsMode: any;
 };
 
 export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, appendNote, customText,
-                                                 notes, parentStage,parentStageName, setNotes}) => {
+                                                 notes, parentStage,parentStageName, setNotes, allGroupsMode}) => {
 
     const [completed, setCompleted] = useState<boolean>(false);
     const messages = new MessagesV2(VERBOSE);
@@ -196,7 +197,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
 
     return (
         <React.Fragment>
-            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || hovered) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''}`}
+            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || hovered) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''} ${allGroupsMode ? 'note-card-fit' : ''}`}
                  onClick={onClick}
                  onMouseEnter={() => {
                      if(!isSelected){
@@ -209,8 +210,8 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, setStage, id, a
                  }}
                  onMouseLeave={() => setHovered(false)}>
                 <div className="loader"><Loader show={!completed || activeStage === undefined}/></div>
-                <label className={customText && customText.length > 12 ? 'ellipsis' : ''} style={{opacity: completed ? 1 : 0}}>
-                    {customText || StageLabels[type].label}
+                <label className={`${customText && customText.length > 12 ? 'ellipsis' : ''}`} style={{opacity: completed ? 1 : 0}}>
+                {customText || StageLabels[type].label}
                 </label>
             </div>
         </React.Fragment>

@@ -267,11 +267,13 @@ td {
 
 .MuiGridFilterForm-closeIcon{
   margin-bottom: 12px !important;
+  display: none !important;
 }
 
 .MuiInputLabel-formControl{
   top: -14px !important;
   font-size: 14px !important;
+  color: $base-card-title;
 }
 
 .MuiGridFilterForm-columnSelect{
@@ -283,5 +285,19 @@ td {
 }
 
 .MuiInputBase-input{
-  padding: 12px 7px 8px !important;
+  padding: 12px 7px 10px !important;
+  background: none !important;
+}
+
+.MuiGridFilterForm-root{
+  background-color: $joblist-table-color !important;
+}
+
+.MuiSelect-select.MuiSelect-select{
+  padding-right:  24px !important;
+  padding-top: 11px !important;
+}
+
+.MuiSelect-icon {
+  top: calc(50% - 8px);
 }

@@ -533,6 +533,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                             setStage={setStageInternal}
                                                             id={salaryInternal.urn}
                                                             appendNote={appendNote}
+                                                            allGroupsMode={allGroupsMode}
                                                             notes={notes}
                                                             setNotes={setNotes}
                                                         />

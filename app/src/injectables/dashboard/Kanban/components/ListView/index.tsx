@@ -5,12 +5,16 @@ import Status from "../Status";
 import stylesheet from './styles.scss';
 // @ts-ignore
 import {makeStyles} from '@material-ui/core/styles';
-import {showNotesAndCharts} from "../../../../../actions";
+import {getTheme, showNotesAndCharts, SwitchThemePayload} from "../../../../../actions";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../../../../../global";
 import ICard from '../../interfaces/ICard';
 import {ThemeContext} from "styled-components";
 import lightTheme from "../../styles/themes/light";
+import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../../../../themes/ThemeUtils";
+import {theme as LightTheme} from "../../../../../themes/light";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as DarkTheme} from "../../../../../themes/dark";
 
 // @ts-ignore
 const ListView = ({cards}) => {
@@ -76,7 +80,22 @@ const ListView = ({cards}) => {
     const messages = new MessagesV2(VERBOSE);
     const theme = useContext(ThemeContext);
     const [gridTheme, setGridTheme] = useState(lightMode);
+    const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
+    useEffect(() => {
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            }));
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                return Promise.resolve();
+            }));
+    }, []);
 
     useEffect(() => {
         if(theme === lightTheme) {
@@ -196,7 +215,7 @@ const ListView = ({cards}) => {
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className={classes.root} style={{ height: '500px', width: '1151px' }}>
+            <div className={classes.root} style={{ height: '500px', width: '1151px' }} ref={rootElement}>
                 <DataGrid
                     rows={cards}
                     columns={columns}
