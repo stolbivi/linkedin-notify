@@ -113,7 +113,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [fromListView, setFromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
-    const listviewNotesRef = useRef();
+    const localLoaderRef = useRef();
     const messages = new MessagesV2(VERBOSE);
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
@@ -138,6 +138,17 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
             Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
         }).catch(e => console.error(e.error));
     }
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            // @ts-ignore
+            localLoaderRef?.current?.scrollIntoView({ behavior: 'smooth' });
+            // @ts-ignore
+            localLoaderRef?.current?.focus();
+        }, 500); // set delay time in milliseconds
+
+        return () => clearTimeout(timeoutId);
+    }, [localLoaderRef, fromListView, completed]);
 
     useEffect(() => {
         const listener = () => {
@@ -223,14 +234,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
     }, [text]);
-
-    // useEffect(()=>{
-    //     console.log("listviewNotesRef?.current: ", listviewNotesRef?.current)
-    //     // @ts-ignore
-    //     listviewNotesRef?.current?.scrollIntoView({ behavior: 'smooth' });
-    //     // @ts-ignore
-    //     listviewNotesRef?.current?.focus();
-    // },[listviewNotesRef.current, fromListView, completed]);
 
     const appendNote = (note: NoteExtended, tagToRemoveIndex?: number) => {
         if (typeof tagToRemoveIndex === "number" && tagToRemoveIndex !== -1) {
@@ -413,7 +416,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                             </svg>
                         </div>
                         <React.Fragment>
-                            <div className="local-loader"><Loader show={!completed}/></div>
+                            <div className="local-loader" ref={localLoaderRef}><Loader show={!completed}/></div>
                             {completed && !minimized &&
                             <NotesContainer>
                                 {showSalary && (
@@ -493,7 +496,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                 )}
                                 {!showSalary ? (
                                         <div className="title-child assigned">
-                                            <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")} ref={listviewNotesRef}>
+                                            <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")}>
                                                 Track Candidates
                                             </span>
                                             {

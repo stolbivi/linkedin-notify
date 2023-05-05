@@ -24,7 +24,7 @@ const Column: React.FC<ColumnProps> = ({ status, cards, index }) => {
     <Container isFirstColumn={index === 0}>
       <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
         <div className="status-container">
-            <h2 className="status-title">{status}</h2>
+            <h2 className="status-title">{status.length > 21 ? status.substring(0, 19) + "..." : status}</h2>
             <h2 className="status-title-number">{cards.filter(card => card.status === status).length}</h2>
         </div>
       <Droppable droppableId={status}>

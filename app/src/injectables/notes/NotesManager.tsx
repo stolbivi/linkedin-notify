@@ -57,10 +57,8 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
 
     const MAX_LENGTH = 200;
     const DEFAULT_SEARCH = {text: "", stages: {}};
-
     const messages = new MessagesV2(VERBOSE);
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
-
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [completed, setCompleted] = useState<boolean>(false);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
@@ -77,6 +75,21 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
     const lastNoteRef = useRef();
     const [customStages, setCustomStages] = useState<UserStage[]>([]);
     const dropdownRef = useRef(null);
+
+    const handleDocumentClick = (event: any) => {
+        const dropdownOptions = document.getElementById("dropdown-options");
+        if (dropdownOptions && !dropdownOptions.contains(event.target)) {
+            setShowDropDown(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("click", handleDocumentClick);
+        return () => {
+            document.removeEventListener("click", handleDocumentClick);
+        };
+    }, [showDropDown]);
+
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
@@ -134,16 +147,6 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
             })
             .finally(() => setCompleted(true));
     }, [accessState]);
-
-    const checkByText = (n: NoteExtended, text: string) => {
-        if (text && text.length > 1) {
-            return n.profileName.toLowerCase().indexOf(text) >= 0
-                || n.authorName.toLowerCase().indexOf(text) >= 0
-                || n.text?.toLowerCase().indexOf(text) >= 0
-        } else {
-            return true;
-        }
-    }
 
     useEffect(() => {
         const stagesCount = Object.values(searchValue.stages).filter(v => v).length;
@@ -208,21 +211,20 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
         }
     },[notes]);
 
-    // useEffect(() => {
-    //     function handleClickOutside(event: { target: any; }) {
-    //         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-    //             const isDropdownOption = event.target.closest(".dropdown-options");
-    //             if (!isDropdownOption) {
-    //                 setShowDropDown(false);
-    //             }
-    //         }
-    //     }
-    //
-    //     document.addEventListener('mousedown', handleClickOutside);
-    //     return () => {
-    //         document.removeEventListener('mousedown', handleClickOutside);
-    //     };
-    // }, [dropdownRef]);
+    useEffect(() => {
+        let filteredNotes = selectedNotes.filter(n => checkByText(n, searchText?.toLowerCase()));
+        setSelectedNotesFiltered(filteredNotes);
+    }, [searchText, selectedNotes]);
+
+    const checkByText = (n: NoteExtended, text: string) => {
+        if (text && text.length > 1) {
+            return n.profileName.toLowerCase().indexOf(text) >= 0
+                || n.authorName.toLowerCase().indexOf(text) >= 0
+                || n.text?.toLowerCase().indexOf(text) >= 0
+        } else {
+            return true;
+        }
+    }
 
     const onProfileSelect = (profile: any) => setSelection(profile);
 
@@ -272,22 +274,28 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                     <svg width="8" height="5" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1 1L4 4L7 1" stroke="#909090" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    {showDropDown && (<div ref={dropdownRef} className="dropdown-options">
+                    {showDropDown && (<div id="dropdown-options" ref={dropdownRef} className="dropdown-options">
                         <StageButton type={StageEnum.Interested}
                                      selected={searchValue.stages[StageEnum.Interested]}
-                                     onSelect={onStageSelected}/>
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}
+                        />
                         <StageButton type={StageEnum.NotInterested}
                                      selected={searchValue.stages[StageEnum.NotInterested]}
-                                     onSelect={onStageSelected}/>
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}/>
                         <StageButton type={StageEnum.Interviewing}
                                      selected={searchValue.stages[StageEnum.Interviewing]}
-                                     onSelect={onStageSelected}/>
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}/>
                         <StageButton type={StageEnum.FailedInterview}
                                      selected={searchValue.stages[StageEnum.FailedInterview]}
-                                     onSelect={onStageSelected}/>
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}/>
                         <StageButton type={StageEnum.Hired}
                                      selected={searchValue.stages[StageEnum.Hired]}
-                                     onSelect={onStageSelected}/>
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}/>
                     </div>
                     )}
                 </div>
@@ -350,11 +358,6 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                 }).then(/* nada */);
         }
     }
-
-    useEffect(() => {
-        let filteredNotes = selectedNotes.filter(n => checkByText(n, searchText?.toLowerCase()));
-        setSelectedNotesFiltered(filteredNotes);
-    }, [searchText, selectedNotes]);
 
     const updateSearchText = (e: any) => setSearchText(e.target.value?.trim());
 

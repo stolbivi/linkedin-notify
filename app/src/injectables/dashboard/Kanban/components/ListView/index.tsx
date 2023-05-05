@@ -38,6 +38,14 @@ const ListView = ({cards}) => {
         '& .MuiIconButton-label' : {
             color: 'black'
         },
+        filterInput: {
+            '& .MuiInput-underline:before': {
+                borderBottom: 'none',
+            },
+            '& .MuiInput-underline:after': {
+                borderBottom: 'none',
+            },
+        },
         padding: '16px',
     }
 
@@ -220,6 +228,7 @@ const ListView = ({cards}) => {
                     rows={cards}
                     columns={columns}
                     rowHeight={90}
+                    disableColumnSelector
                 />
             </div>
 
