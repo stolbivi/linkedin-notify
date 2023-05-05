@@ -6,7 +6,7 @@ import {AccessGuard, AccessState} from "./AccessGuard";
 import {CompleteEnabled, localStore, selectSalary} from "../store/LocalStore";
 import {Provider, shallowEqual, useSelector} from "react-redux";
 import {showNotesAndChartsAction} from "../store/ShowNotesAndCharts";
-import {getSalaryAction, Salary} from "../store/SalaryReducer";
+import {getMe,getSalaryAction, Salary} from "../store/SalaryReducer";
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
 import {useUrlChangeSupport} from "../utils/URLChangeSupport";
@@ -71,6 +71,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const salary: CompleteEnabled<Salary> = useSelector(selectSalary, shallowEqual)[id];
     const [urlInternal] = useUrlChangeSupport(window.location.href);
+    const [show, setShow] = useState(true);
 
     useEffect(() => {
         if (accessState !== AccessState.Valid || !urlInternal) {
@@ -92,8 +93,8 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName={"loader-base loader-px24"}/>
-            {accessState === AccessState.Valid &&
-                <div className={"salary-pill" + (salary?.completed ? " clickable" : "")}
+            {accessState === AccessState.Valid && show &&
+                <div className={"salary-pill" + (completed ? " clickable" : "")}
                      onClick={onClick}>
                     <Loader show={!salary?.completed}/>
                     {salary?.completed && salary && <span>{getSalaryValue(salary)}</span>}
