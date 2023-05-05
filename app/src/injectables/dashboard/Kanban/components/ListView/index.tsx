@@ -135,6 +135,9 @@ const ListView = ({cards, notesRef}) => {
     }
 
     const onNotesClick = (userId: string, profileId: string) => {
+        notesRef.current.focus();
+        notesRef.current.scrollIntoView();
+        window.parent.scrollTo(0, 0);
         if (showNotes) {
             setShowNotes(false);
         } else {
@@ -216,8 +219,6 @@ const ListView = ({cards, notesRef}) => {
                     <button className="btn action-btn-color"
                             onClick={()=>{
                                 onNotesClick(params.row.userId, params.row.profileId);
-                                notesRef.current.focus();
-                                notesRef.current.scrollIntoView();
                             }}>
                         <svg className="icon-color" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10.6665 15.1667H5.33317C3.31984 15.1667 2.1665 14.0134 2.1665 12V5.50004C2.1665 3.40004 3.23317 2.33337 5.33317 2.33337C5.6065 2.33337 5.83317 2.56004 5.83317 2.83337C5.83317 3.10004 5.93984 3.35337 6.12651 3.54004C6.31317 3.72671 6.5665 3.83337 6.83317 3.83337H9.1665C9.71984 3.83337 10.1665 3.38671 10.1665 2.83337C10.1665 2.56004 10.3932 2.33337 10.6665 2.33337C12.7665 2.33337 13.8332 3.40004 13.8332 5.50004V12C13.8332 14.0134 12.6798 15.1667 10.6665 15.1667ZM4.89982 3.34671C3.84649 3.43338 3.1665 3.90671 3.1665 5.50004V12C3.1665 13.48 3.85317 14.1667 5.33317 14.1667H10.6665C12.1465 14.1667 12.8332 13.48 12.8332 12V5.50004C12.8332 3.90671 12.1532 3.44004 11.0999 3.34671C10.8732 4.20004 10.0932 4.83337 9.1665 4.83337H6.83317C6.29984 4.83337 5.79984 4.6267 5.41984 4.2467C5.16651 3.99337 4.99315 3.68671 4.89982 3.34671Z" fill="#585858"/>
