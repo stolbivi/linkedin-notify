@@ -135,15 +135,10 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         }
     }, [url]);
 
-    useEffect(() => {
+/*    useEffect(() => {
         // @ts-ignore
-        lastNoteRef?.current?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end',
-            inline: 'nearest',
-            marginBottom: 50
-        });
-    },[notesAll,lastNoteRef.current]);
+        lastNoteRef?.current?.scrollIntoView({behavior: 'smooth'});
+    },[notesAll,lastNoteRef.current]);*/
 
     const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
@@ -272,14 +267,16 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     },[salaryInternal]);*/
 
     useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            // @ts-ignore
-            localLoaderRef?.current?.scrollIntoView({ behavior: 'smooth' });
-            // @ts-ignore
-            localLoaderRef?.current?.focus();
-        }, 500); // set delay time in milliseconds
+        if(fromListView) {
+            const timeoutId = setTimeout(() => {
+                // @ts-ignore
+                localLoaderRef?.current?.scrollIntoView({ behavior: 'smooth' });
+                // @ts-ignore
+                localLoaderRef?.current?.focus();
+            }, 500); // set delay time in milliseconds
 
-        return () => clearTimeout(timeoutId);
+            return () => clearTimeout(timeoutId);
+        }
     }, [localLoaderRef, fromListView, completed]);
 
     useEffect(()=>{
@@ -316,16 +313,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
             }));
             setText({value: ""});
             setEditable(true);
-            // TODO timeout might not be required, the stores are synced
-            setTimeout(() => {
-                // @ts-ignore
-                lastNoteRef?.current?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'end',
-                    inline: 'nearest',
-                    marginBottom: 50
-                });
-            }, 200);
         }
     }
 

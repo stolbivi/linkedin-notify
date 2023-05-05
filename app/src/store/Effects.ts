@@ -21,7 +21,14 @@ import {extractIdFromUrl, VERBOSE} from "../global";
 import {getSalaryAction, GetSalaryRequest, setSalaryAction} from "./SalaryReducer";
 import {getLatestStageAction, getStageAction, setStageAction, updateStageAction} from "./StageReducer";
 import {getGeoTzAction, setGeoTzAction} from "./GeoTzReducer";
-import {appendNoteAction, deleteNoteAction, getNotesAction, postNoteAction, setNotesAction} from "./NotesAllReducer";
+import {
+    appendNoteAction,
+    deleteNoteAction,
+    getNotesAction,
+    postNoteAction,
+    setNotesAction,
+    triggerDeleteNoteAction
+} from "./NotesAllReducer";
 import {StageParentData} from "../injectables/notes/StageSwitch";
 
 export default () => {
@@ -102,7 +109,7 @@ export default () => {
                 && action.payload.state.parentStage !== Object.values(StageParentData).indexOf(StageParentData.GEOGRAPHY)
                 && action.payload.state.parentStage !== Object.values(StageParentData).indexOf(StageParentData.GROUPS)
                 && action.payload.state.existingChildStageId  !== r.stage.response.id) {
-                listenerApi.dispatch(deleteNoteAction({id: action.payload.state.existingChildStageId}));
+                listenerApi.dispatch(triggerDeleteNoteAction({id: action.payload.state.existingChildStageId}));
             }
         },
     });
@@ -132,7 +139,7 @@ export default () => {
             listenerApi.dispatch(setNotesAction({completed: false}));
             await messages.request(deleteNote(action.payload.id));
             await messages.request(deleteStage(action.payload.id));
-            listenerApi.dispatch(deleteNoteAction(action.payload));
+            listenerApi.dispatch(triggerDeleteNoteAction(action.payload));
             listenerApi.dispatch(setNotesAction({completed: true}));
         },
     });

@@ -128,7 +128,8 @@ type Props = {
     allGroupsMode?: any;
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, customText, parentStage, notes,allGroupsMode}) => {
+export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
+                                                 customText, parentStage, notes,allGroupsMode}) => {
 
     const [hovered, setHovered] = useState(false);
     const stagePillRef = useRef();
@@ -150,7 +151,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
     };
 
     const onClick = () => {
-        if(!stage?.completed) {
+        if(!stage?.completed && !customText) {
             return;
         }
         const selectedNote = notes.find(note => note.stageTo === type);
@@ -158,15 +159,13 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
             removeSelectedTag(selectedNote.id);
             return;
         }
-        if (stage?.stage !== type) {
-            setCompleted(false);
-            const existingChildStage = notes.find(note => note.parentStage === parentStage);
-            localStore.dispatch(updateStageAction({
-                id,
-                state: {id: urn, stage: type, stageFrom: stage?.stage, stageText: customText || undefined, parentStage, existingChildStageId: existingChildStage?.id}
-            }));
-            setTimeout(() => setCompleted(true), 6000);
-        }
+        setCompleted(false);
+        const existingChildStage = notes.find(note => note.parentStage === parentStage);
+        localStore.dispatch(updateStageAction({
+            id,
+            state: {id: urn, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage, existingChildStageId: existingChildStage?.id}
+        }));
+        setTimeout(() => setCompleted(true), 6000);
         if (isSelected) {
             // @ts-ignore
             stagePillRef?.current?.classList.remove(StageLabels[type]?.class);
@@ -177,16 +176,15 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
 
     return (
         <React.Fragment>
-            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || (hovered && stage?.completed)) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''} ${allGroupsMode ? 'note-card-fit' : ''}`}
+            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || (hovered && (stage?.completed || customText))) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''} ${allGroupsMode ? 'note-card-fit' : ''}`}
                  onClick={onClick}
                  onMouseEnter={() => {
-                     if(!isSelected){
+                     if(!isSelected) {
                          setHovered(true);
                      }
-                     setTimeout(()=>{
+                     setTimeout(() => {
                         setHovered(false);
-                     },10000)
-
+                     },10000);
                  }}
                  onMouseLeave={() => setHovered(false)}>
                 <div className="loader"><Loader show={!completed || activeStage === undefined}/></div>
