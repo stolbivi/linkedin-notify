@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Loader} from "../../components/Loader";
-import {CompleteEnabled, DataWrapper, localStore, selectNotesAll, selectStage} from "../../store/LocalStore";
+import {CompleteEnabled, localStore, selectStage} from "../../store/LocalStore";
 import {Stage, updateStageAction} from "../../store/StageReducer";
 import {shallowEqual, useSelector} from "react-redux";
 import {Note, NoteExtended} from "../../global";
@@ -128,12 +128,11 @@ type Props = {
     allGroupsMode?: any;
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, customText, parentStage, notes}) => {
+export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, customText, parentStage, notes,allGroupsMode}) => {
 
     const [hovered, setHovered] = useState(false);
     const stagePillRef = useRef();
     const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
-    const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [isSelected, setIsSelected] = useState(false);
     const [completed, setCompleted] = useState<boolean>(false);
 

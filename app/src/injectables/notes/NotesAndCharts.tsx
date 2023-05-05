@@ -426,7 +426,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         }
     }, [customStages]);
 
-    const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
+    const editOnClick = (event: any) => {
         event.stopPropagation();
         if(editButton) {
 /*            messages.request(setCustomSalary(salary)).then(resp => {
@@ -577,7 +577,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                             parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
                                                             parentStageName={StageParentData.GROUPS}
                                                             notes={notes}
-                                                            setNotes={setNotes}/>
+                                                            setNotes={setNotes}
+                                                            allGroupsMode={allGroupsMode}/>
                                                     </div>
                                                 ))}
                                             </div>
@@ -601,7 +602,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                                      parentStageName={stageParent.name}
                                                                                      activeStage={extractFromIdAware(stage).stage}
                                                                                      notes={notes}
-                                                                                     setNotes={setNotes}/>
+                                                                                     setNotes={setNotes}
+                                                                                     allGroupsMode={allGroupsMode}/>
                                                                         :
                                                                         <>
                                                                             {customStages?.slice(0, 3).map(customStage => (
@@ -615,7 +617,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                                     parentStageName={StageParentData.GROUPS}
                                                                                     activeStage={extractFromIdAware(stage).stage}
                                                                                     notes={notes}
-                                                                                    setNotes={setNotes}/>
+                                                                                    setNotes={setNotes}
+                                                                                    allGroupsMode={allGroupsMode}/>
                                                                             ))}
                                                                             {customStages?.length > 3 && (
                                                                                 <div className="create-new-group-wrapper customPill"
