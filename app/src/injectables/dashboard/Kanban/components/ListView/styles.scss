@@ -284,10 +284,15 @@ td {
   margin-right: 10px !important;
 }
 
-.MuiInputBase-input{
+.MuiInputBase-input::placeholder {
+  color: rgba(0,0,0,0.6) !important;
+}
+
+.MuiInputBase-input {
   padding: 12px 7px 10px !important;
   background: none !important;
 }
+
 
 .MuiGridFilterForm-root{
   background-color: $joblist-table-color !important;
@@ -300,4 +305,8 @@ td {
 
 .MuiSelect-icon {
   top: calc(50% - 8px);
+}
+
+.MuiDataGrid-iconSeparator{
+  display: none;
 }

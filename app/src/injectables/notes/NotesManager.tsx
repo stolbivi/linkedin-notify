@@ -66,6 +66,21 @@ export const NotesManager: React.FC<Props> = ({}) => {
 
     const lastNoteRef = useRef();
 
+    const handleDocumentClick = (event: any) => {
+        const dropdownOptions = document.getElementById("dropdown-options");
+        if (dropdownOptions && !dropdownOptions.contains(event.target)) {
+            setShowDropDown(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener("click", handleDocumentClick);
+        return () => {
+            document.removeEventListener("click", handleDocumentClick);
+        };
+    }, [showDropDown]);
+
+
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
         // TODO check theme logic below, why 2 similar listeners
@@ -144,8 +159,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const getAllNotes = () => {
         return <React.Fragment>
             <div className="notes-title">
-                <label>Notes</label>
-                <label className="notes-counter">{notes ? notes.length : 0}</label>
+                <label>History</label>
+                <label className="notes-counter">{notesFiltered ? notesFiltered.length : 0}</label>
             </div>
             <div className="search-bar">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -176,23 +191,30 @@ export const NotesManager: React.FC<Props> = ({}) => {
                     <svg width="8" height="5" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1 1L4 4L7 1" stroke="#909090" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    {showDropDown && <div className="dropdown-options">
+                    {showDropDown && (<div id="dropdown-options" ref={dropdownRef} className="dropdown-options">
                         <StageButton type={StageEnum.Interested}
                                      selected={searchValue.stages[StageEnum.Interested]}
-                                     onSelect={onStageSelected}/>
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}
+                        />
                         <StageButton type={StageEnum.NotInterested}
                                      selected={searchValue.stages[StageEnum.NotInterested]}
-                                     onSelect={onStageSelected}/>
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}/>
                         <StageButton type={StageEnum.Interviewing}
                                      selected={searchValue.stages[StageEnum.Interviewing]}
-                                     onSelect={onStageSelected}/>
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}/>
                         <StageButton type={StageEnum.FailedInterview}
                                      selected={searchValue.stages[StageEnum.FailedInterview]}
-                                     onSelect={onStageSelected}/>
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}/>
                         <StageButton type={StageEnum.Hired}
                                      selected={searchValue.stages[StageEnum.Hired]}
-                                     onSelect={onStageSelected}/>
-                    </div>}
+                                     onSelect={onStageSelected}
+                                     notesDropDown={true}/>
+                    </div>
+                    )}
                 </div>
             </div>
             <div className="scroll-container">

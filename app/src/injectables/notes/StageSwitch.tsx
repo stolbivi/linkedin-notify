@@ -125,6 +125,7 @@ type Props = {
     parentStageName?: string;
     setNotes?: any;
     urn: string
+    allGroupsMode?: any;
 };
 
 export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, customText, parentStage, notes}) => {
