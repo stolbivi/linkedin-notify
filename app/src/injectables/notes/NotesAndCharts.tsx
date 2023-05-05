@@ -113,7 +113,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [fromListView, setFromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
-    const localLoaderRef = useRef();
     const messages = new MessagesV2(VERBOSE);
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
@@ -138,17 +137,6 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
             Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
         }).catch(e => console.error(e.error));
     }
-
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            // @ts-ignore
-            localLoaderRef?.current?.scrollIntoView({ behavior: 'smooth' });
-            // @ts-ignore
-            localLoaderRef?.current?.focus();
-        }, 500); // set delay time in milliseconds
-
-        return () => clearTimeout(timeoutId);
-    }, [localLoaderRef, fromListView, completed]);
 
     useEffect(() => {
         const listener = () => {
@@ -416,7 +404,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                             </svg>
                         </div>
                         <React.Fragment>
-                            <div className="local-loader" ref={localLoaderRef}><Loader show={!completed}/></div>
+                            <div className="local-loader"><Loader show={!completed}/></div>
                             {completed && !minimized &&
                             <NotesContainer>
                                 {showSalary && (

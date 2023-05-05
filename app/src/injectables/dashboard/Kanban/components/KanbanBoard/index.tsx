@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {DragDropContext, DropResult} from 'react-beautiful-dnd';
 import ICard from '../../interfaces/ICard';
 import IStatus from '../../interfaces/IStatus';
@@ -38,6 +38,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const [completed, setCompleted] = useState(false);
   const [kanbanData, setKanbanData] = useState({});
   const [listView, setListView] = useState(false);
+  const notesRef = useRef();
 
   useEffect(() => {
     messages.request(getAuthorStages())
@@ -279,7 +280,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
       <Container>
         <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
         <Header>
-          <h1 className="kanban-title">Candidates</h1>
+          <h1 ref={notesRef} className="kanban-title">Candidates</h1>
         </Header>
         <Loader show={!completed} className="p-5 kanban-loader" heightValue="600px"/>
         {
@@ -328,7 +329,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                   listView?
                       (
                           <>
-                            <ListView cards={cards}/>
+                            <ListView cards={cards} notesRef={notesRef}/>
                           </>
                       ):(
                           <StatusesColumnsContainer>

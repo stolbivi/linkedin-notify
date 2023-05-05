@@ -17,7 +17,7 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../../../../themes/dark";
 
 // @ts-ignore
-const ListView = ({cards}) => {
+const ListView = ({cards, notesRef}) => {
 
     const lightMode = {
         '& .MuiDataGrid-root': {
@@ -80,6 +80,14 @@ const ListView = ({cards}) => {
         },
         '& .MuiSelect-select' : {
             color: 'white'
+        },
+        filterInput: {
+            '& .MuiInput-underline:before': {
+                borderBottom: 'none',
+            },
+            '& .MuiInput-underline:after': {
+                borderBottom: 'none',
+            },
         },
         padding: '16px',
     }
@@ -205,7 +213,12 @@ const ListView = ({cards}) => {
                         </svg>
                         <span style={{paddingLeft: "3px"}}>Message</span>
                     </button>
-                    <button className="btn action-btn-color" onClick={()=>onNotesClick(params.row.userId, params.row.profileId)}>
+                    <button className="btn action-btn-color"
+                            onClick={()=>{
+                                onNotesClick(params.row.userId, params.row.profileId);
+                                notesRef.current.focus();
+                                notesRef.current.scrollIntoView();
+                            }}>
                         <svg className="icon-color" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                             <path d="M10.6665 15.1667H5.33317C3.31984 15.1667 2.1665 14.0134 2.1665 12V5.50004C2.1665 3.40004 3.23317 2.33337 5.33317 2.33337C5.6065 2.33337 5.83317 2.56004 5.83317 2.83337C5.83317 3.10004 5.93984 3.35337 6.12651 3.54004C6.31317 3.72671 6.5665 3.83337 6.83317 3.83337H9.1665C9.71984 3.83337 10.1665 3.38671 10.1665 2.83337C10.1665 2.56004 10.3932 2.33337 10.6665 2.33337C12.7665 2.33337 13.8332 3.40004 13.8332 5.50004V12C13.8332 14.0134 12.6798 15.1667 10.6665 15.1667ZM4.89982 3.34671C3.84649 3.43338 3.1665 3.90671 3.1665 5.50004V12C3.1665 13.48 3.85317 14.1667 5.33317 14.1667H10.6665C12.1465 14.1667 12.8332 13.48 12.8332 12V5.50004C12.8332 3.90671 12.1532 3.44004 11.0999 3.34671C10.8732 4.20004 10.0932 4.83337 9.1665 4.83337H6.83317C6.29984 4.83337 5.79984 4.6267 5.41984 4.2467C5.16651 3.99337 4.99315 3.68671 4.89982 3.34671Z" fill="#585858"/>
                             <path d="M9.16683 4.83337H6.8335C6.30016 4.83337 5.80017 4.6267 5.42017 4.2467C5.04017 3.8667 4.8335 3.36671 4.8335 2.83337C4.8335 1.73337 5.7335 0.833374 6.8335 0.833374H9.16683C9.70016 0.833374 10.2002 1.04004 10.5802 1.42004C10.9602 1.80004 11.1668 2.30004 11.1668 2.83337C11.1668 3.93337 10.2668 4.83337 9.16683 4.83337ZM6.8335 1.83337C6.28016 1.83337 5.8335 2.28004 5.8335 2.83337C5.8335 3.10004 5.94016 3.35337 6.12683 3.54004C6.3135 3.72671 6.56683 3.83337 6.8335 3.83337H9.16683C9.72016 3.83337 10.1668 3.38671 10.1668 2.83337C10.1668 2.56671 10.0602 2.31338 9.87349 2.12671C9.68683 1.94004 9.4335 1.83337 9.16683 1.83337H6.8335Z" fill="#585858"/>
