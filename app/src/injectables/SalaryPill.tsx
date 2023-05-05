@@ -4,7 +4,7 @@ import {extractIdFromUrl, VERBOSE} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
-import {getSalary, showNotesAndCharts} from "../actions";
+import {getMe, getSalary, showNotesAndCharts} from "../actions";
 
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
@@ -82,21 +82,29 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
     const [salary, setSalary] = useState<Salary>({formattedPay: "", note: ""});
     const [completed, setCompleted] = useState<boolean>(false);
     const [urlInternal, setUrlInternal] = useState<string>(url);
+    const [show, setShow] = useState(true);
 
     useEffect(() => {
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
         setCompleted(false);
-        messages.request(getSalary(extractIdFromUrl(urlInternal)))
-            .then((r) => {
-                if (r.error) {
-                    setSalary({formattedPay: "N/A", note: r.error});
-                } else {
-                    setSalary({...r.result, title: r.title, urn: r.urn});
-                }
-                setCompleted(true);
-            });
+        const userId = extractIdFromUrl(window.location.href);
+        messages.request(getMe()).then(resp => {
+            if(userId === resp.miniProfile.publicIdentifier) {
+                setShow(false);
+            } else {
+                messages.request(getSalary(extractIdFromUrl(urlInternal)))
+                    .then((r) => {
+                        if (r.error) {
+                            setSalary({formattedPay: "N/A", note: r.error});
+                        } else {
+                            setSalary({...r.result, title: r.title, urn: r.urn});
+                        }
+                        setCompleted(true);
+                    });
+            }
+        });
     }, [accessState, urlInternal]);
 
     useEffect(() => {
@@ -119,7 +127,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName={"loader-base loader-px24"}/>
-            {accessState === AccessState.Valid &&
+            {accessState === AccessState.Valid && show &&
                 <div className={"salary-pill" + (completed ? " clickable" : "")}
                      onClick={onClick}>
                     <Loader show={!completed}/>
