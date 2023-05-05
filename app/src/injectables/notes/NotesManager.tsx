@@ -271,7 +271,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 </div>
             </div>
             <div className="notes-title">
-                <label>Notes</label>
+                <label>History</label>
                 <label className="notes-counter">{notes ? notes.length : 0}</label>
             </div>
             <div className="search-bar">

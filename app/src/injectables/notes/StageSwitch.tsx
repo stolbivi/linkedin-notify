@@ -177,7 +177,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id, custom
 
     return (
         <React.Fragment>
-            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || (hovered && stage?.completed)) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''}`}
+            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || (hovered && stage?.completed)) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''} ${allGroupsMode ? 'note-card-fit' : ''}`}
                  onClick={onClick}
                  onMouseEnter={() => {
                      if(!isSelected){

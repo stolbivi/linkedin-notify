@@ -375,7 +375,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                             <form onSubmit={handleCustomTagSubmit}>
                                 <input value={customName}
                                        onChange={e => setCustomName(e.currentTarget.value)}
-                                       placeholder='Enter Group Name'/>
+                                       placeholder='Enter Name'/>
                             </form>
                             : 'Add Group'
                         }
@@ -478,6 +478,11 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                         const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
                                                                         setSalaryLabel(currencySymbol + formattedValue);
                                                                     }}
+                                                                    onKeyDown={(event) => {
+                                                                        if (event.key === 'Enter') {
+                                                                            editOnClick(event);
+                                                                        }
+                                                                    }}
                                                                 />
                                                             )
                                                             :(<div className="label-salary">{extractFromIdAware(salary) && getSalaryValue(extractFromIdAware(salary) as Salary)} year</div>)
@@ -511,7 +516,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                 )}
                                 {!showSalary ? (
                                         <div className="title-child assigned">
-                                            <span style={{paddingRight: "5%", cursor: "pointer"}}>
+                                            <span style={{paddingRight: "5%", cursor: "pointer"}} onClick={()=>setSelectedTab("Track")} ref={listviewNotesRef}>
                                                 Track Candidates
                                             </span>
                                             {

@@ -22,5 +22,6 @@ export const BadgeContainer = styled.div<BadgeContainerProps>`
     font-style: normal;
     font-weight: 400;
     font-size: 12px;
+    margin-bottom: 0px;
   }
 `;

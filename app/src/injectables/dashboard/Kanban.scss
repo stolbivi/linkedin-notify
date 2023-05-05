@@ -2,7 +2,6 @@
 @import "../../themes/primary";
 
 .body {
-  //background-color: $boolean-base-card;
   font-family: Arial, sans-serif;
   max-width: 1200px;
   width: 100%;
@@ -38,3 +37,7 @@
   color: $navbar-button-text-clicked;
 }
 
+.navbarBtn:hover {
+  background-color: $navbar-button; /* same color as .navbarBtn.clicked */
+  color: $navbar-button-text;
+}

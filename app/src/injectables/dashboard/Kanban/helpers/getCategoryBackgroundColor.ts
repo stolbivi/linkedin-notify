@@ -20,7 +20,7 @@ const getCategoryBackgroundColor = (theme: DefaultTheme, value: ICategory) => {
       return theme.colors.hired;
 
     case ICategory.Not_Open:
-      return theme.colors.notLookingCurrently;
+      return theme.colors.passiveCandidate;
 
     case ICategory.Open:
       return theme.colors.openToNewOffers;

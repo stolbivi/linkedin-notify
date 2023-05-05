@@ -365,10 +365,19 @@ const JobList = () => {
                                                                             <span className="details-span-salary-col">{salary}</span>
                                                                         </div>
                                                                     ) : (
-                                                                        <input required={true} className="edit-input" type="text"
-                                                                               value={salary} readOnly={detailsView}
-                                                                               placeholder="Salary"
-                                                                               onChange={(event) => setSalary(event.target.value)}/>
+                                                                        <input
+                                                                            required={true}
+                                                                            className="edit-input"
+                                                                            type="text"
+                                                                            value={salary}
+                                                                            readOnly={detailsView}
+                                                                            placeholder="Salary"
+                                                                            onChange={(event) => {
+                                                                                const value = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+                                                                                const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
+                                                                                setSalary(formattedValue);
+                                                                            }}
+                                                                        />
                                                                     )
                                                                     }
                                                                 </div>
