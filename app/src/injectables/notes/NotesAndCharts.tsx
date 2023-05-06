@@ -382,7 +382,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }
 
 
-    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview notes-and-charts-listview' : ''}`;
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview' : ''}`;
 
     // @ts-ignore
     return (
@@ -600,7 +600,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                 </div>}
                                                             </div>
                                                         </div>
-                                                        <div data-role={CollapsibleRole.Footer} className={`footer-child ${fromListView ? "footer-child-listview" : ""}`}>
+                                                        <div data-role={CollapsibleRole.Footer} className="footer-child">
                                                             <div className="text-input-container">
                                                                 <div className="text-input">
                                                                     <input type="text" onKeyUp={onKeyUp} onChange={onChange}
