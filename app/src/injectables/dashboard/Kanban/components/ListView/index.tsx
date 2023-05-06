@@ -15,11 +15,8 @@ import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../../..
 import {theme as LightTheme} from "../../../../../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../../../../themes/dark";
-import {localStore} from "../../../../../../src/store/LocalStore";
-import {showNotesAndChartsAction} from "../../../../../../src/store/ShowNotesAndCharts";
-
 // @ts-ignore
-const ListView = ({cards, notesRef}) => {
+const ListView = ({cards}) => {
 
     const lightMode = {
         '& .MuiDataGrid-root': {
@@ -135,16 +132,22 @@ const ListView = ({cards, notesRef}) => {
         }
         window.open(messageUrl, '_blank')
     }
-    const onNotesClick = (userId: string, _profileId: string) => {
-        notesRef.current.focus();
-        notesRef.current.scrollIntoView();
+
+    const onNotesClick = (userId: string, profileId: string) => {
         window.parent.scrollTo(0, 0);
         if (showNotes) {
             setShowNotes(false);
         } else {
-            localStore.dispatch(showNotesAndChartsAction({id: userId, state: {showSalary: false, showNotes: true, show: true, id: userId}}));
+            return messages.request(showNotesAndCharts({
+                userId,
+                profileId,
+                showSalary: false,
+                showNotes: true,
+                showStages: true
+            }));
         }
     }
+
 
     const classes = useStyles();
 

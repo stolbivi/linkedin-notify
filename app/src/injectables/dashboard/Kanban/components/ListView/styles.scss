@@ -295,7 +295,7 @@ td {
 
 
 .MuiGridFilterForm-root{
-  background-color: $joblist-table-color !important;
+  background-color: #4d4d4d57 !important;
 }
 
 .MuiSelect-select.MuiSelect-select{
@@ -305,6 +305,7 @@ td {
 
 .MuiSelect-icon {
   top: calc(50% - 8px);
+  color: $kanban-table-action-btn-color;
 }
 
 .MuiDataGrid-iconSeparator{
