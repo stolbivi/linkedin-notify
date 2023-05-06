@@ -24,7 +24,6 @@ import {NotesContainer} from "./NotesContainer";
 import stylesheet from "./NotesManager.scss";
 
 export const NotesManagerFactory = () => {
-    // TODO, as a rule of thumb, "if a timeout has to be used, it will fail one day". Why? What is wrong with DOM Watcher?
     setTimeout(() => {
         const aside = document.getElementsByClassName("scaffold-layout__aside");
         if (aside && aside.length > 0) {
@@ -63,9 +62,10 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [selection, setSelection] = useState<any>();
     const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
-    const dropdownRef = useRef();
     const lastNoteRef = useRef();
-
+    const [customStages, setCustomStages] = useState<UserStage[]>([]);
+    const dropdownRef = useRef(null);
+    const [backdrop, setBackDrop] = useState(false);
     const handleDocumentClick = (event: any) => {
         const dropdownOptions = document.getElementById("dropdown-options");
         if (dropdownOptions && !dropdownOptions.contains(event.target)) {
@@ -83,7 +83,6 @@ export const NotesManager: React.FC<Props> = ({}) => {
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
-        // TODO check theme logic below, why 2 similar listeners
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {
                 updateTheme(payload.theme);
@@ -159,6 +158,9 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const getAllNotes = () => {
         return <React.Fragment>
             <div className="notes-title">
+                {
+                    backdrop?(<div className="popup-backdrop" onClick={() => {setBackDrop(false);closeDropDown()}}></div>):null
+                }
                 <label>History</label>
                 <label className="notes-counter">{notes ? notes.length : 0}</label>
             </div>
@@ -172,7 +174,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
                         fill="#909090"/>
                 </svg>
                 <input type="text" onKeyUp={updateSearchValueWithText} placeholder="Filter"/>
-                <div className="search-dropdown" onClick={() => setShowDropDown(!showDropDown)}>
+                <div className="search-dropdown" onClick={() => {setShowDropDown(!showDropDown);setBackDrop(true)}}>
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M8.43994 10.125C7.47994 10.125 6.57494 9.61501 6.08494 8.79001C5.82494 8.37001 5.68994 7.88 5.68994 7.375C5.68994 5.86 6.92494 4.625 8.43994 4.625C9.95494 4.625 11.1899 5.86 11.1899 7.375C11.1899 7.88 11.0499 8.37001 10.7899 8.79501C10.3049 9.61501 9.40494 10.125 8.43994 10.125ZM8.43994 5.375C7.33494 5.375 6.43994 6.27 6.43994 7.375C6.43994 7.74 6.53994 8.09499 6.72994 8.39999C7.08994 9.00499 7.74494 9.375 8.43994 9.375C9.14994 9.375 9.78994 9.015 10.1499 8.405C10.3399 8.095 10.4399 7.74 10.4399 7.375C10.4399 6.27 9.54494 5.375 8.43994 5.375Z"
@@ -334,6 +336,10 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 <Credits/>
             </div>
         </React.Fragment>
+    }
+
+    const closeDropDown=()=>{
+        setShowDropDown(false);
     }
 
     return (
