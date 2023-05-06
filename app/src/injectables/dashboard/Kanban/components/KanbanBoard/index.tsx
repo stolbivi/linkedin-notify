@@ -46,6 +46,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
             setCompleted(true);
           }
         });
+    if(sessionStorage.getItem("isListView")) {
+      setListView(JSON.parse(sessionStorage.getItem("isListView")));
+    }
   },[]);
 
   useEffect(() => {
@@ -171,7 +174,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     } else if (parentCategory === IStatus.GROUPS) {
       subCategories = Object.keys(kanbanData[IStatus.GROUPS]);
     }
-    subCategories.forEach(value => {
+    subCategories?.forEach(value => {
       cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
     });
     if(parentCategory === IStatus.ALL) {
@@ -268,11 +271,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const listViewClickHandler = (event) => {
     event.stopPropagation();
     setListView(true);
+    sessionStorage.setItem("isListView", true);
   }
 
   const cardViewClickHandler = (event) => {
     event.stopPropagation();
     setListView(false);
+    sessionStorage.setItem("isListView", false);
   }
 
   return (

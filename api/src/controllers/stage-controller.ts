@@ -125,6 +125,20 @@ export class StageController extends BaseController {
                 });
             });
             if (request?.user) {
+                const user =  request.user as User;
+                const userStages = await UserStages.scan({ userId: user.id }).exec();
+                userStages.forEach(userStage => {
+                    // @ts-ignore
+                    if (!data["GROUPS"]) {
+                        // @ts-ignore
+                        data["GROUPS"] = {};
+                    }
+                    // @ts-ignore
+                    if (!data["GROUPS"][userStage.text]) {
+                        // @ts-ignore
+                        data["GROUPS"][userStage.text] = [];
+                    }
+                })
                 message = {data, user: request.user};
             }
             return Promise.resolve(message);
