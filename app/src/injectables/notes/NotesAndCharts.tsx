@@ -51,7 +51,7 @@ export const NotesAndChartsFactory = () => {
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts", "after",
                     <Provider store={localStore}>
-                        <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={true}/>
+                        <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={true} profileMode/>
                     </Provider>, "NotesAndCharts"
                 );
             }
@@ -104,9 +104,11 @@ type Props = {
     trackUrl?: boolean
     conversation?: boolean
     salaryMode?: boolean
+
+    profileMode?: boolean
 };
 
-export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false, salaryMode}) => {
+export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false, salaryMode,profileMode}) => {
 
     const MAX_LENGTH = 200;
 
@@ -184,6 +186,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
 
     useEffect(() => {
         if (extractFromIdAware(showNotesAndCharts)) {
+            setFromListView(false);
             const profileId = showNotesAndCharts?.profileId;
             if(salaryMode) {
                 setShowChart(true);
@@ -195,7 +198,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                 setIdInternal(showNotesAndCharts[profileId]?.id)
                 setShowNotes(showNotesAndCharts[profileId]?.showNotes)
                 setShowSalary(showNotesAndCharts[profileId]?.showSalary)
-                setFromListView(true);
+                if(!profileMode) {
+                    setFromListView(true);
+                }
             } else {
                 setShowNotes(extractFromIdAware(showNotesAndCharts).showNotes)
                 setShowSalary(extractFromIdAware(showNotesAndCharts).showSalary)
