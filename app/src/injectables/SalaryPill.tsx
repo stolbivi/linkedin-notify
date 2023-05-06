@@ -42,7 +42,7 @@ export const SalaryPillFactory = () => {
                         const id = extractIdFromUrl(link);
                         inject(lastChild, `lnm-salary-${index}`, "before",
                             <Provider store={localStore}>
-                                <SalaryPill url={link} id={id}/>
+                                <SalaryPill url={link} id={id} showSalary={true}/>
                             </Provider>, "Salary"
                         );
                     }

@@ -13,7 +13,7 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {createCustomStage, getCustomStages, getTheme} from "../../actions";
+import {createCustomStage, getCustomSalary, getCustomStages, getTheme, setCustomSalary} from "../../actions";
 import {
     CompleteEnabled,
     DataWrapper,
@@ -118,6 +118,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [fromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const listviewNotesRef = useRef();
+    const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
+    const [salaryInternal, setSalaryInternal] = useState({});
     const messages = new MessagesV2(VERBOSE);
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
     const showNotesAndCharts: IdAwareState<ShowNotesAndCharts> = useSelector(selectShowNotesAndCharts, shallowEqual);
@@ -144,6 +146,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
 
     useEffect(() => {
+        debugger
         localStore.dispatch(getNotesAction());
         localStore.dispatch(getSalaryAction({id: idInternal, state: {id: idInternal, conversation: conversation}}));
         localStore.dispatch(getStageAction({id: idInternal, state: {url: idInternal}}));
@@ -163,7 +166,11 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }, [text]);
 
     useEffect(() => {
+        debugger
         if (extractFromIdAware(showNotesAndCharts)) {
+            if(showNotesAndCharts?.id) {
+               // setIdInternal(showNotesAndCharts?.id)
+            }
             setShowNotes(extractFromIdAware(showNotesAndCharts).showNotes)
             setShowSalary(extractFromIdAware(showNotesAndCharts).showSalary)
             if (extractFromIdAware(showNotesAndCharts).show) {
@@ -251,11 +258,10 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         return () => window.removeEventListener('popstate', listener)
     }, [window.location.href]);*/
 
-/*    useEffect(() => {
+    useEffect(() => {
         if(showSalary && fetchCustomSalary && !editButton) {
-            messages.request(getCustomSalary(salaryInternal.urn)).then(resp => {
-                console.log(resp);
-                const clonedSalary = {...salaryInternal};
+            messages.request(getCustomSalary(extractFromIdAware(salary).urn)).then(resp => {
+                const clonedSalary = {...extractFromIdAware(salary)};
                 clonedSalary.payDistributionValues[0] = resp[0].leftPayDistribution;
                 clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
                 clonedSalary.progressivePay = resp[0].progressivePay;
@@ -263,8 +269,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                 setFetchCustomSalary(false);
             })
         }
-        setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal));
-    },[salaryInternal]);*/
+        setSalaryLabel(extractFromIdAware(salary) && getSalaryValue(extractFromIdAware(salary) as Salary));
+    },[salary]);
 
     useEffect(() => {
         if(fromListView) {
@@ -343,7 +349,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         body.classList.add('popup-open');
     }
 
-
     const CreateNewGroup = () => {
         const [isCreating, setIsCreating] = useState(false)
         const [customName, setCustomName] = useState('')
@@ -416,9 +421,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const editOnClick = (event: any) => {
         event.stopPropagation();
         if(editButton) {
-/*            messages.request(setCustomSalary(salary)).then(resp => {
+            messages.request(setCustomSalary(salary)).then(resp => {
                 console.log(resp);
-            })*/
+            })
         }
         setEditButton(!editButton);
     }

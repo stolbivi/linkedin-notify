@@ -63,7 +63,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [selection, setSelection] = useState<any>();
     const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
-
+    const dropdownRef = useRef();
     const lastNoteRef = useRef();
 
     const handleDocumentClick = (event: any) => {
@@ -160,7 +160,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
         return <React.Fragment>
             <div className="notes-title">
                 <label>History</label>
-                <label className="notes-counter">{notesFiltered ? notesFiltered.length : 0}</label>
+                <label className="notes-counter">{notes ? notes.length : 0}</label>
             </div>
             <div className="search-bar">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

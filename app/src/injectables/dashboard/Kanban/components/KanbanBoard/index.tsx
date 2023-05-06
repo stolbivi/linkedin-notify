@@ -22,7 +22,6 @@ import {
   getAuthorStages,
   getCustomStages,
   setStage,
-  showNotesAndCharts
 } from "../../../../../actions";
 import {Loader} from "../../../../../components/Loader";
 import ListView from "../ListView";

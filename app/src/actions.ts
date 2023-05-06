@@ -2,7 +2,7 @@ import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/Messages
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {
     AssignedJob,
-    Badges,
+    Badges, CustomSalary,
     Features,
     Invitation,
     Job,
@@ -19,6 +19,7 @@ import {StageEnum} from "./injectables/notes/StageSwitch";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
 import {LastViewed} from "./store/LastViewedReducer";
 import Cookie = chrome.cookies.Cookie;
+import {Salary} from "./store/SalaryReducer";
 
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
@@ -681,7 +682,7 @@ export const getAssignedJobsById = createAction<string, any>("getAssignedJobsByI
         })
 )
 
-/*export const setCustomSalary = createAction<Salary,any>("setCustomSalary",
+export const setCustomSalary = createAction<Salary,any>("setCustomSalary",
     (payload: Salary) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async (token) => {
@@ -691,7 +692,7 @@ export const getAssignedJobsById = createAction<string, any>("getAssignedJobsByI
             const { response } = await backEndAPI.setCustomSalary(salary)
             return response
         })
-)*/
+)
 
 export const getCustomSalary = createAction<string, any>("getCustomSalary",
     (urn) => getCookies(LINKEDIN_DOMAIN)
