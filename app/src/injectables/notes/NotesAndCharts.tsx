@@ -390,7 +390,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
         }
     },[selectedTab]);
 
-    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview' : ''}`;
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview notes-and-charts-listview' : ''}`;
 
     // @ts-ignore
     return (
@@ -611,7 +611,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                 </div>}
                                                             </div>
                                                         </div>
-                                                        <div data-role={CollapsibleRole.Footer} className="footer-child">
+                                                        <div data-role={CollapsibleRole.Footer} className={`footer-child ${fromListView ? "footer-child-listview" : ""}`}>
                                                             <div className="text-input-container">
                                                                 <div className="text-input">
                                                                     <input type="text" onKeyUp={onKeyUp} onChange={onChange}
