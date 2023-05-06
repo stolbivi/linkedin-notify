@@ -11,19 +11,23 @@ import {
     Note,
     NoteExtended,
     SHARE_URN,
+    VERBOSE
 } from "./global";
 import {BackendAPI} from "./services/BackendAPI";
 import {MapsAPI} from "./services/MapsAPI";
 import {Response} from "./services/BaseAPI";
 import {StageEnum} from "./injectables/notes/StageSwitch";
+import {MessagesV2, Tabs} from "@stolbivi/pirojok";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
 import {LastViewed} from "./store/LastViewedReducer";
 import Cookie = chrome.cookies.Cookie;
 import {Salary} from "./store/SalaryReducer";
 
+const messagesV2 = new MessagesV2(VERBOSE);
 const api = new LinkedInAPI();
 const backEndAPI = new BackendAPI();
 const mapsAPI = new MapsAPI();
+const tabs = new Tabs();
 
 /**
  * Returns all cookies of the store for particular domain, requires host permissions in manifest
@@ -327,6 +331,22 @@ export const setStageFromKanban = createAction<SetStagePayload, any>("setStageFr
             const author = api.extractProfileUrn(me);
             return  await backEndAPI.setStageFromKanban(payload.id, payload.stage, payload.stageText, author);
         }));
+
+export interface ShowNotesAndChartsPayload {
+    id?: string
+    showSalary: boolean
+    showNotes: boolean
+    showStages?: boolean
+    setSalary?:any
+    userId?: string
+    profileId?: string
+}
+
+const showNotesAndChartsRequest = createRequest<ShowNotesAndChartsPayload, void>("showNotesAndCharts");
+
+export const showNotesAndCharts = createAction<ShowNotesAndChartsPayload, any>("showNotesAndChartsProxy",
+    (payload, sender) => tabs.withCurrentTab()
+        .then(tab => messagesV2.requestTab(tab?.id || sender?.tab?.id, showNotesAndChartsRequest(payload).toAction())));
 
 export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesAll",
     () => getCookies(LINKEDIN_DOMAIN)

@@ -9,6 +9,9 @@ import {AccessGuard, AccessState} from "./AccessGuard";
 import stylesheet from "./AutoFeature.scss";
 import {getCompanyByUrn, getFeatures, getMe, getUserIdByUrn, setFeatures as setFeaturesAction} from "../actions";
 import {Tooltip} from "react-bootstrap";
+import {useUrlChangeSupport} from "../../src/utils/URLChangeSupport";
+import {localStore} from "../store/LocalStore";
+import {Provider} from "react-redux";
 
 const LikeSVG = <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false">
     <path
@@ -43,8 +46,10 @@ export const AutoFeatureFactory = () => {
                             lastItem.style.display = "flex";
                             inject(lastItem.lastChild, `lnm-auto-${activityId}`, "after",
                                 <div style={{paddingLeft: "0.25em", display: "flex"}}>
-                                    <AutoFeature fromProfile={false} url={url} type={"like"}/>
-                                    <AutoFeature fromProfile={false} url={url} type={"repost"}/>
+                                    <Provider store={localStore}>
+                                        <AutoFeature fromProfile={false} url={url} type={"like"}/>
+                                        <AutoFeature fromProfile={false} url={url} type={"repost"}/>
+                                    </Provider>
                                 </div>, "AutoFeature"
                             );
                         }
@@ -57,8 +62,10 @@ export const AutoFeatureFactory = () => {
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
                     <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-20.5rem"}}>
-                        <AutoFeature fromProfile={true} url={`https://www.linkedin.com/in/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"like"}/>
-                        <AutoFeature fromProfile={true} url={`https://www.linkedin.com/in/${extractIdFromUrl(window.location.href)}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`} type={"repost"}/>
+                        <Provider store={localStore}>
+                            <AutoFeature fromProfile={true} type={"like"}/>
+                            <AutoFeature fromProfile={true} type={"repost"}/>
+                        </Provider>
                     </div>, "AutoFeature"
                 );
             }
@@ -68,8 +75,10 @@ export const AutoFeatureFactory = () => {
             if (aside && aside.length > 0) {
                 inject(aside[0], `auto-features-profile`, "before",
                     <div style={{marginLeft: "-8rem", marginTop: "-0.5rem", position: "absolute"}}>
-                        <AutoFeature fromCompany={true} url={`https://www.linkedin.com/company/${extractIdFromUrl(window.location.href)}?miniCompanyUrn=urn%3Ali%3Afs_miniCompany%3A`} type={"like"}/>
-                        <AutoFeature fromCompany={true} url={`https://www.linkedin.com/company/${extractIdFromUrl(window.location.href)}?miniCompanyUrn=urn%3Ali%3Afs_miniCompany%3A`} type={"repost"}/>
+                        <Provider store={localStore}>
+                            <AutoFeature fromCompany={true} type={"like"}/>
+                            <AutoFeature fromCompany={true} type={"repost"}/>
+                        </Provider>
                     </div>, "AutoFeature"
                 );
             }
@@ -81,14 +90,14 @@ type Props = {
     fromProfile?: boolean
     fromCompany?: boolean
     type: string
-    url: string
+    url?: string
 };
 
 // @ts-ignore
 export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url}) => {
 
     const messages = new MessagesV2(VERBOSE);
-
+    const [urlInternal] = useUrlChangeSupport(window.location.href);
 // @ts-ignore
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [completed, setCompleted] = useState(false);
@@ -100,26 +109,30 @@ export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url
 
     useEffect(() => {
        if(fromProfile) {
-           const userId = extractIdFromUrl(window.location.href);
-           messages.request(getUserIdByUrn(userId))
-               .then((profileId) => {
-                   setCustomUrl(customUrl + profileId);
-               });
+           setCompleted(false);
+           const orgUrl = `${urlInternal}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`;
+           const userId = extractIdFromUrl(urlInternal);
            messages.request(getMe()).then(resp => {
                if(userId === resp.miniProfile.publicIdentifier) {
                    setShow(false);
                }
            });
+           messages.request(getUserIdByUrn(userId)).then((profileId) => {
+               setCustomUrl(orgUrl + profileId);
+               setCompleted(true);
+           });
        }
        if(fromCompany) {
-            messages.request(getCompanyByUrn(extractIdFromUrl(window.location.href)))
-                .then((resp) => {
-                    const parts = resp.entityUrn.split(":");
-                    const companyId = parts[parts.length - 1];
-                    setCustomUrl(customUrl + companyId);
-                });
+           setCompleted(false);
+           const orgUrl = `${urlInternal}?miniCompanyUrn=urn%3Ali%3Afs_miniCompany%3A`;
+           messages.request(getCompanyByUrn(extractIdFromUrl(urlInternal))).then((resp) => {
+                const parts = resp.entityUrn.split(":");
+                const companyId = parts[parts.length - 1];
+                setCustomUrl(orgUrl + companyId);
+                setCompleted(true);
+            });
        }
-    },[]);
+    },[urlInternal]);
 
 
     const extractAuthor = (query: URLSearchParams, name: string) => {
@@ -144,10 +157,12 @@ export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url
     }, [accessState, customUrl]);
 
     useEffect(() => {
-        const typedFeature = features.find(f => f.type === type);
-        const index = typedFeature?.authors?.findIndex((f: string) => f === author);
-        setActive(index >= 0);
-    }, [author, features]);
+        if(features.length > 0) {
+            const typedFeature = features.find(f => f.type === type);
+            const index = typedFeature?.authors?.findIndex((f: string) => f === author);
+            setActive(index >= 0);
+        }
+    }, [author, features, customUrl]);
 
     useEffect(() => {
         if (active !== undefined) {

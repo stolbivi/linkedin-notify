@@ -7,9 +7,8 @@ import Badge from '../Badge';
 import { CardBorder, CardBottom, CardContainer } from './styles';
 // @ts-ignore
 import stylesheet from './styles.scss';
-import {showNotesAndCharts} from "../../../../../actions";
-import {MessagesV2} from "@stolbivi/pirojok";
-import {VERBOSE} from "../../../../../global";
+import {localStore} from "../../../../../../src/store/LocalStore";
+import {showNotesAndChartsAction} from "../../../../../../src/store/ShowNotesAndCharts";
 
 interface CardProps {
   card: ICard;
@@ -20,17 +19,10 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
 
   const theme = useContext(ThemeContext);
   const [backgroundColor, setBackgroundColor] = useState<string>(theme.colors.primary);
-  const messages = new MessagesV2(VERBOSE);
-
   const onMoreClick =(event: React.MouseEvent<HTMLParagraphElement, MouseEvent>)=> {
     event.stopPropagation();
-    messages.request(showNotesAndCharts({
-      userId: card.userId,
-      profileId: card.profileId,
-      showSalary: false,
-      showNotes: true,
-      showStages: true
-    }));
+    window.parent.scrollTo(0, 0);
+    localStore.dispatch(showNotesAndChartsAction({id: card.userId, state: {showSalary: false, showNotes: true, show: true, id: card.userId}}));
   }
 
   useEffect(() => {

@@ -13,7 +13,14 @@ import {PayExtrapolationChart} from "./PayExtrapolationChart";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {createCustomStage, getCustomSalary, getCustomStages, getTheme, setCustomSalary} from "../../actions";
+import {
+    createCustomStage,
+    getConversationProfile,
+    getCustomSalary,
+    getCustomStages,
+    getTheme,
+    setCustomSalary
+} from "../../actions";
 import {
     CompleteEnabled,
     DataWrapper,
@@ -62,7 +69,7 @@ export const NotesAndChartsFactory = () => {
         if (section && section.length > 0) {
             inject(section[0].lastChild, "lnm-notes-and-charts", "after",
                 <Provider store={localStore}>
-                <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={true}/>
+                    <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={false}/>
                 </Provider>, "NotesAndCharts"
             );
         }
@@ -80,7 +87,9 @@ export const NotesAndChartsFactory = () => {
                             const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                             const id = extractIdFromUrl(link);
                             inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
-                                <NotesAndCharts id={id}/>, "NotesAndCharts"
+                                <Provider store={localStore}>
+                                    <NotesAndCharts id={id} salaryMode/>
+                                </Provider>, "NotesAndCharts"
                             );
                         }
                     }
@@ -91,12 +100,13 @@ export const NotesAndChartsFactory = () => {
 }
 
 type Props = {
-    id: string
+    id?: string
     trackUrl?: boolean
     conversation?: boolean
+    salaryMode?: boolean
 };
 
-export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false}) => {
+export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false, salaryMode}) => {
 
     const MAX_LENGTH = 200;
 
@@ -115,7 +125,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [editButton, setEditButton] = useState(false);
     const [currencySymbol, setCurrencySymbol] = useState("");
     const [salaryLabel, setSalaryLabel] = useState("");
-    const [fromListView] = useState(false);
+    const [fromListView, setFromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const listviewNotesRef = useRef();
     const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
@@ -131,7 +141,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [url] = useUrlChangeSupport(window.location.href);
     const lastNoteRef = useRef();
-    const localLoaderRef = useRef();
 
     useEffect(() => {
         if (url?.length > 0 && trackUrl) {
@@ -139,16 +148,21 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         }
     }, [url]);
 
-/*    useEffect(() => {
-        // @ts-ignore
-        lastNoteRef?.current?.scrollIntoView({behavior: 'smooth'});
-    },[notesAll,lastNoteRef.current]);*/
-
     const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
 
     useEffect(() => {
-        if("lndashboard" !== idInternal) {
+        if (conversation) {
+            messages.request(getConversationProfile(idInternal))
+                .then((r: any) => {
+                    const entityUrns = r.participants.map((participant: any) => {
+                        return participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3];
+                    });
+                    localStore.dispatch(getNotesAction());
+                    localStore.dispatch(getSalaryAction({id: entityUrns[0], state: {id: entityUrns[0], conversation: conversation}}));
+                    localStore.dispatch(getStageAction({id: entityUrns[0], state: {url: entityUrns[0]}}));
+                });
+        } else if(idInternal) {
             localStore.dispatch(getNotesAction());
             localStore.dispatch(getSalaryAction({id: idInternal, state: {id: idInternal, conversation: conversation}}));
             localStore.dispatch(getStageAction({id: idInternal, state: {url: idInternal}}));
@@ -156,7 +170,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }, [idInternal]);
 
     useEffect(() => {
-        if (extractFromIdAware(salary)) {
+        if (extractFromIdAware(salary) && idInternal) {
             if (notesAll?.data?.length > 0) {
                 let filtered = notesAll?.data?.filter(n => n.profile === extractFromIdAware(salary).urn);
                 setNotes(filtered);
@@ -172,10 +186,17 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         debugger
         if (extractFromIdAware(showNotesAndCharts)) {
             const profileId = showNotesAndCharts?.profileId;
-            if(profileId && showNotesAndCharts[profileId]?.id && !showNotes) {
+            if(salaryMode) {
+                setShowChart(true);
+                if (id && showNotesAndCharts[profileId]?.id !== id) {
+                    return;
+                }
+            }
+            if((profileId && showNotesAndCharts[profileId]?.id && !showNotes)) {
                 setIdInternal(showNotesAndCharts[profileId]?.id)
                 setShowNotes(showNotesAndCharts[profileId]?.showNotes)
                 setShowSalary(showNotesAndCharts[profileId]?.showSalary)
+                setFromListView(true);
             } else {
                 setShowNotes(extractFromIdAware(showNotesAndCharts).showNotes)
                 setShowSalary(extractFromIdAware(showNotesAndCharts).showSalary)
@@ -197,74 +218,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
             .then((r) => setCustomStages(r))
     },[]);
 
-/*
-    const populateSalaryStagesAndNotes = (urn: string) => {
-        messages.request(getSalary(urn))
-            .then((r) => {
-                const salary = {...r.result, title: r.title, urn: r.urn};
-                setSalaryInternal(salary);
-                return salary;
-            }).then(salary => {
-            const stagePromise = messages.request(getStages({id: salary.urn}))
-                .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                .catch(e => console.error(e.error));
-            const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                .then((r) => setNotes(r.response))
-                .catch(e => console.error(e.error));
-            const customStagePromise = messages.request(getCustomStages())
-                .then((r) => setCustomStages(r))
-                .catch(e => console.error(e.error));
-            Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
-        }).catch(e => console.error(e.error));
-    }*/
-
-/*    useEffect(() => {
-        const listener = () => {
-            setShow(false);
-        }
-        window.addEventListener('popstate', listener);
-        let profileId = extractIdFromUrl(window.location.href);
-        messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
-            (payload) => {
-                if(payload.id) {
-                    populateSalaryStagesAndNotes(payload.id);
-                }
-                if (id && payload?.id !== id) {
-                    return Promise.resolve();
-                }
-                if(payload.id) {
-                    messages.request(getSalary(payload.id))
-                        .then((r) => {
-                            const salary = {...r.result, title: r.title, urn: r.urn};
-                            setSalaryInternal(salary);
-                        })
-                }
-                if(payload.userId) {
-                    profileId = payload?.userId?.trim();
-                    populateSalaryStagesAndNotes(profileId);
-                    setFromListView(true);
-                }
-                setShowNotes(payload?.showNotes)
-                setShowSalary(payload?.showSalary)
-                setShowStages(payload?.showStages)
-                setFetchCustomSalary(true);
-                setShow(true);
-                return Promise.resolve();
-        }));
-        if (conversation) {
-            messages.request(getConversationProfile(profileId))
-                .then((r: any) => {
-                    const entityUrns = r.participants.map((participant: any) => {
-                        return participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3];
-                    });
-                    populateSalaryStagesAndNotes(entityUrns[0]);
-                });
-        } else {
-            populateSalaryStagesAndNotes(profileId);
-        }
-        return () => window.removeEventListener('popstate', listener)
-    }, [window.location.href]);*/
-
     useEffect(() => {
         if(showSalary && fetchCustomSalary && !editButton) {
             messages.request(getCustomSalary(extractFromIdAware(salary).urn)).then(resp => {
@@ -278,19 +231,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         }
         setSalaryLabel(extractFromIdAware(salary) && getSalaryValue(extractFromIdAware(salary) as Salary));
     },[salary]);
-
-    useEffect(() => {
-        if(fromListView) {
-            const timeoutId = setTimeout(() => {
-                // @ts-ignore
-                localLoaderRef?.current?.scrollIntoView({ behavior: 'smooth' });
-                // @ts-ignore
-                localLoaderRef?.current?.focus();
-            }, 500); // set delay time in milliseconds
-
-            return () => clearTimeout(timeoutId);
-        }
-    }, [localLoaderRef, fromListView, completed]);
 
     useEffect(()=>{
         if (salaryLabel){
@@ -463,8 +403,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                             </svg>
                         </div>
                         <React.Fragment>
-                            <div className="local-loader" ref={localLoaderRef}><Loader show={!completed()}/></div>
-                            {completed && !minimized &&
+                            <div className="local-loader"><Loader show={!completed()}/></div>
+                            {completed() && !minimized &&
                             <NotesContainer>
                                 {showSalary && (
                                     <Collapsible initialOpened={showSalary}>

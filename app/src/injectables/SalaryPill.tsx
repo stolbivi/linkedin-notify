@@ -94,7 +94,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
 
     const onClick = () => {
         if (salary) {
-            localStore.dispatch(showNotesAndChartsAction({id: id, state: {showSalary, showNotes, show: true}}));
+            localStore.dispatch(showNotesAndChartsAction({id: id, state: {showSalary, showNotes, show: true, id: id}}));
         }
     }
 

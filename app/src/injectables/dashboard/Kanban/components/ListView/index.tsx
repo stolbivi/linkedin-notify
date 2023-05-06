@@ -15,6 +15,8 @@ import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../../..
 import {theme as LightTheme} from "../../../../../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../../../../themes/dark";
+import {showNotesAndChartsAction} from "../../../../../store/ShowNotesAndCharts";
+import {localStore} from "../../../../../../src/store/LocalStore";
 // @ts-ignore
 const ListView = ({cards}) => {
 
@@ -132,22 +134,14 @@ const ListView = ({cards}) => {
         }
         window.open(messageUrl, '_blank')
     }
-
-    const onNotesClick = (userId: string, profileId: string) => {
+    const onNotesClick = (userId: string, _profileId: string) => {
         window.parent.scrollTo(0, 0);
         if (showNotes) {
             setShowNotes(false);
         } else {
-            return messages.request(showNotesAndCharts({
-                userId,
-                profileId,
-                showSalary: false,
-                showNotes: true,
-                showStages: true
-            }));
+            localStore.dispatch(showNotesAndChartsAction({id: userId, state: {showSalary: false, showNotes: true, show: true, id: userId}}));
         }
     }
-
 
     const classes = useStyles();
 
