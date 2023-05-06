@@ -51,7 +51,6 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
 
 
     const setWithNote = () => {
-        console.log("Note: ", note);
         onProfileSelect({
             profile: note.profile,
             profileName: note.profileName,

@@ -183,7 +183,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }, [text]);
 
     useEffect(() => {
-        debugger
         if (extractFromIdAware(showNotesAndCharts)) {
             const profileId = showNotesAndCharts?.profileId;
             if(salaryMode) {
