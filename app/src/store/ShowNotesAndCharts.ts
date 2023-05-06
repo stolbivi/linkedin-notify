@@ -8,7 +8,7 @@ export interface ShowNotesAndCharts {
     show: boolean
 }
 
-const initialState: IdAwareState<ShowNotesAndCharts> = {};
+const initialState: IdAwareState<any> = {};
 
 const slice = createSlice({
     name: "lastViewedState",
@@ -16,6 +16,7 @@ const slice = createSlice({
     reducers: {
         showNotesAndChartsAction: (state, action: PayloadAction<IdAwareRequest<ShowNotesAndCharts>>) => {
             state[action.payload.id] = action.payload.state;
+            state["profileId"] = action.payload.state.id;
         }
     }
 });

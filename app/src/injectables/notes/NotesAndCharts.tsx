@@ -146,10 +146,11 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
 
     useEffect(() => {
-        debugger
-        localStore.dispatch(getNotesAction());
-        localStore.dispatch(getSalaryAction({id: idInternal, state: {id: idInternal, conversation: conversation}}));
-        localStore.dispatch(getStageAction({id: idInternal, state: {url: idInternal}}));
+        if("lndashboard" !== idInternal) {
+            localStore.dispatch(getNotesAction());
+            localStore.dispatch(getSalaryAction({id: idInternal, state: {id: idInternal, conversation: conversation}}));
+            localStore.dispatch(getStageAction({id: idInternal, state: {url: idInternal}}));
+        }
     }, [idInternal]);
 
     useEffect(() => {
@@ -168,12 +169,16 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     useEffect(() => {
         debugger
         if (extractFromIdAware(showNotesAndCharts)) {
-            if(showNotesAndCharts?.id) {
-               // setIdInternal(showNotesAndCharts?.id)
+            const profileId = showNotesAndCharts?.profileId;
+            if(profileId && showNotesAndCharts[profileId]?.id && !showNotes) {
+                setIdInternal(showNotesAndCharts[profileId]?.id)
+                setShowNotes(showNotesAndCharts[profileId]?.showNotes)
+                setShowSalary(showNotesAndCharts[profileId]?.showSalary)
+            } else {
+                setShowNotes(extractFromIdAware(showNotesAndCharts).showNotes)
+                setShowSalary(extractFromIdAware(showNotesAndCharts).showSalary)
             }
-            setShowNotes(extractFromIdAware(showNotesAndCharts).showNotes)
-            setShowSalary(extractFromIdAware(showNotesAndCharts).showSalary)
-            if (extractFromIdAware(showNotesAndCharts).show) {
+            if (extractFromIdAware(showNotesAndCharts).show || (profileId && showNotesAndCharts[profileId]?.show && !showNotes)) {
                 messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
                 setTimeout(() => setMinimized(false), 100);
             } else {
