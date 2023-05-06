@@ -7,6 +7,9 @@ import Badge from '../Badge';
 import { CardBorder, CardBottom, CardContainer } from './styles';
 // @ts-ignore
 import stylesheet from './styles.scss';
+import {showNotesAndCharts} from "../../../../../actions";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {VERBOSE} from "../../../../../global";
 
 interface CardProps {
   card: ICard;
@@ -14,10 +17,21 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ card, index }) => {
+
   const theme = useContext(ThemeContext);
-
   const [backgroundColor, setBackgroundColor] = useState<string>(theme.colors.primary);
+  const messages = new MessagesV2(VERBOSE);
 
+  const onMoreClick =(event: React.MouseEvent<HTMLParagraphElement, MouseEvent>)=> {
+    event.stopPropagation();
+    messages.request(showNotesAndCharts({
+      userId: card.userId,
+      profileId: card.profileId,
+      showSalary: false,
+      showNotes: true,
+      showStages: true
+    }));
+  }
 
   useEffect(() => {
     if (card) {
@@ -48,7 +62,7 @@ const Card: React.FC<CardProps> = ({ card, index }) => {
           </div>
           <CardBottom>
             <Badge category={card.category}/>
-            <p className="more-text">+More</p>
+            <p onClick={onMoreClick} className="more-text">+More</p>
           </CardBottom>
         </CardContainer>
       )}

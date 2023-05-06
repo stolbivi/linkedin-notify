@@ -114,6 +114,7 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
     const messages = new MessagesV2(VERBOSE);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
@@ -218,6 +219,12 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
             setMinimized(true);
         }
     }, [show]);
+
+    useEffect(() => {
+        if (inputRef?.current) {
+            inputRef?.current?.focus();
+        }
+    }, []);
 
     useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
@@ -609,7 +616,8 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                                 <div className="text-input">
                                                                     <input type="text" onKeyUp={onKeyUp} onChange={onChange}
                                                                            disabled={!editable}
-                                                                           placeholder="Leave a note" value={text?.value}/>
+                                                                           placeholder="Leave a note" value={text?.value}
+                                                                           ref={inputRef}/>
                                                                     <div onClick={() => postNote(text?.value)}
                                                                          className={postAllowed ? "submit-allowed" : "submit-disabled"}>
                                                                         <Submit/>

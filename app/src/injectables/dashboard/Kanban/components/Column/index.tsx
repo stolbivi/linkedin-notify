@@ -15,11 +15,6 @@ interface ColumnProps {
 
 const Column: React.FC<ColumnProps> = ({ status, cards, index }) => {
 
-    useEffect(()=>{
-        console.log("Cards: ", cards);
-        console.log("status: ", status);
-    },[]);
-
   return (
     <Container isFirstColumn={index === 0}>
       <style dangerouslySetInnerHTML={{__html: stylesheet}}/>

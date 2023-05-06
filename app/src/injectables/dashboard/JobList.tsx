@@ -217,7 +217,7 @@ const JobList = () => {
             messages.request(getAssignedJobsById(id))
                 .then((resp) => {
                     setCompleted(true);
-                    console.log(resp);
+                    console.log("inside weird if");
                     setCards(resp);
                     setListView(true);
                 });

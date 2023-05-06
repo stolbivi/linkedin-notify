@@ -268,6 +268,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
 
 
   const listViewClickHandler = () => {
+    console.log("In listViewClickHandler");
     setListView(true);
   }
 
@@ -329,6 +330,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                   listView?
                       (
                           <>
+                            {
+                              console.log("Listview: ", listView)
+                            }
                             <ListView cards={cards} notesRef={notesRef}/>
                           </>
                       ):(
