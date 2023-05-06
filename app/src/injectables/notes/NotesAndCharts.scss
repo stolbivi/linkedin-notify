@@ -38,6 +38,7 @@
 
 .position-expanded-listview{
   left: 50% !important;
+  top: -10% !important;
 }
 
 .notes-and-charts {
@@ -75,6 +76,23 @@
     margin-right: -88px;
   }
 
+  .footer-child-listview {
+    .text-input-container {
+      margin-bottom: 0 !important;
+      .text-input {
+        height: 18px;
+        display: flex;
+        input {
+          outline: none;
+        }
+      }
+    }
+  }
+
+}
+
+.notes-and-charts-listview{
+  padding-top: 0 !important;
 }
 
 .label-section {
