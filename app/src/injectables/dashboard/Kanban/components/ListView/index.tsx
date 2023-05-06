@@ -17,7 +17,7 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../../../../themes/dark";
 
 // @ts-ignore
-const ListView = ({cards, notesRef}) => {
+const ListView = ({cards}) => {
 
     const lightMode = {
         '& .MuiDataGrid-root': {
@@ -135,8 +135,6 @@ const ListView = ({cards, notesRef}) => {
     }
 
     const onNotesClick = (userId: string, profileId: string) => {
-        notesRef.current.focus();
-        notesRef.current.scrollIntoView();
         window.parent.scrollTo(0, 0);
         if (showNotes) {
             setShowNotes(false);

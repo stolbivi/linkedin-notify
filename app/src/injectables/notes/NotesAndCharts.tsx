@@ -49,7 +49,7 @@ export const NotesAndChartsFactory = () => {
                 );
             }
         }
-        const section = document.querySelectorAll("#kanban-list-view-btn");
+        const section = document.querySelectorAll(".kanban-title");
         if (section && section.length > 0) {
             inject(section[0].lastChild, "lnm-notes-and-charts", "after",
                 <NotesAndCharts/>, "NotesAndCharts"

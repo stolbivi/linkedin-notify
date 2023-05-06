@@ -46,11 +46,9 @@ const Kanban = () => {
             <div className="body" ref={rootElement}>
                 <Provider store={store}>
                     <ThemeProvider theme={theme}>
-                        <ModalProvider>
                             <div className="App">
                                 <KanbanBoard/>
                             </div>
-                        </ModalProvider>
                     </ThemeProvider>
                 </Provider>
             </div>
