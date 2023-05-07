@@ -131,7 +131,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const listviewNotesRef = useRef();
     const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
-    const [salaryInternal, setSalaryInternal] = useState({});
+    const [salaryInternal, setSalaryInternal] = useState<Salary>({});
     const messages = new MessagesV2(VERBOSE);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -150,10 +150,15 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         }
     }, [url]);
 
+    useEffect(() => {
+       setSalaryInternal(salary);
+    },[salary]);
+
     const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
 
     useEffect(() => {
+        setAllGroupsMode(false);
         if (conversation) {
             messages.request(getConversationProfile(idInternal))
                 .then((r: any) => {
@@ -224,8 +229,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
 
     useEffect(() => {
         if(showSalary && fetchCustomSalary && !editButton) {
-            messages.request(getCustomSalary(extractFromIdAware(salary).urn)).then(resp => {
-                const clonedSalary = {...extractFromIdAware(salary)};
+            messages.request(getCustomSalary(salaryInternal.urn)).then(resp => {
+                const clonedSalary = {...salaryInternal};
                 clonedSalary.payDistributionValues[0] = resp[0].leftPayDistribution;
                 clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
                 clonedSalary.progressivePay = resp[0].progressivePay;
@@ -233,8 +238,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                 setFetchCustomSalary(false);
             })
         }
-        setSalaryLabel(extractFromIdAware(salary) && getSalaryValue(extractFromIdAware(salary) as Salary));
-    },[salary]);
+        setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal));
+    },[salaryInternal]);
 
     useEffect(()=>{
         if (salaryLabel){
@@ -378,7 +383,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const editOnClick = (event: any) => {
         event.stopPropagation();
         if(editButton) {
-            messages.request(setCustomSalary(salary)).then(resp => {
+            messages.request(setCustomSalary(salaryInternal)).then(resp => {
                 console.log(resp);
             })
         }
@@ -457,7 +462,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                     }}
                                                                 />
                                                             )
-                                                            :(<div className="label-salary">{extractFromIdAware(salary) && getSalaryValue(extractFromIdAware(salary) as Salary)} year</div>)
+                                                            :(<div className="label-salary">{salaryLabel} year</div>)
                                                     }
                                                     <div className="label-position">
                                                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
@@ -469,20 +474,20 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                 d="M11.838 8.17058C12.1932 8.00568 12.601 8.28659 12.5656 8.67657L12.39 10.6108C12.2675 11.7775 11.7892 12.9675 9.22249 12.9675H4.77749C2.21082 12.9675 1.73249 11.7775 1.60999 10.6167L1.44428 8.79384C1.40924 8.40838 1.80749 8.12779 2.16155 8.28416C2.81221 8.57154 3.72607 8.9543 4.36843 9.138C4.53174 9.1847 4.66361 9.30351 4.74436 9.45294C5.11817 10.1447 5.8659 10.5117 6.92416 10.5117C7.97209 10.5117 8.72823 10.1304 9.10379 9.43564C9.18463 9.2861 9.31674 9.16736 9.48007 9.12021C10.1665 8.92203 11.1498 8.4901 11.838 8.17058Z"
                                                                 fill="#909090"/>
                                                         </svg>
-                                                        <span>Position: {extractFromIdAware(salary).title}</span>
+                                                        <span>Position: {salaryInternal?.title}</span>
                                                     </div>
                                                 </section>
                                                 <section className="chart-section">
-                                                    {extractFromIdAware(salary) &&
-                                                        <PayDistribution salary={extractFromIdAware(salary) as Salary}
-                                                                         currencySymbol={currencySymbol}
-                                                                         editable={editButton}/>}
+                                                    {salaryInternal && <PayDistribution
+                                                        salaryLabel={salaryLabel}
+                                                        setSalaryInternal={setSalaryInternal}
+                                                        salary={salaryInternal} currencySymbol={currencySymbol} editable={editButton}/>}
                                                 </section>
                                             </div>
                                         </div>
                                         <div data-role={CollapsibleRole.Collapsible}>
                                             {showChart &&
-                                                <PayExtrapolationChart salary={extractFromIdAware(salary) as Salary} theme={theme}/>}
+                                                <PayExtrapolationChart salary={salaryInternal} theme={theme}/>}
                                         </div>
                                     </Collapsible>
                                 )}

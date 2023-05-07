@@ -7,6 +7,8 @@ type Props = {
     salary: Salary;
     editable: boolean;
     currencySymbol: String;
+    salaryLabel?: string;
+    setSalaryInternal?: any
 };
 
 interface Sample {
@@ -20,8 +22,7 @@ interface Distribution {
     right: Sample;
 }
 
-export const PayDistribution: React.FC<Props> = ({salary, currencySymbol, editable}) => {
-
+export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalaryInternal , currencySymbol,editable}) => {
     const [distribution, setDistribution] = useState<Distribution>({
         left: {percent: 10, value: ""},
         middle: {percent: 80, value: ""},
@@ -46,8 +47,7 @@ export const PayDistribution: React.FC<Props> = ({salary, currencySymbol, editab
                     percent: 80,
                     value: formatValue(
                         (salary.payDistributionValues[0] +
-                            salary.payDistributionValues[3]) /
-                        2
+                            salary.payDistributionValues[3]) / 2
                     ),
                 },
                 right: {
@@ -61,9 +61,59 @@ export const PayDistribution: React.FC<Props> = ({salary, currencySymbol, editab
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
         const newDistribution = {...distribution};
         // @ts-ignore
-        newDistribution[key].value = currencySymbol + event.target.value;
+        newDistribution[key].value = currencySymbol+event.target.value;
         setDistribution(newDistribution);
     };
+
+    function convertToValue(amount: string): number {
+        const currencyMap: {[currency: string]: number} = {
+            "$": 1,
+            "£": 1.39,
+            "€": 1.21,
+        };
+
+        if (!amount || typeof amount !== "string") {
+            throw new Error("Invalid amount: " + amount);
+        }
+
+        const match = amount.match(/^([^\d]*)([\d,]+(\.\d+)?)([KM]?)$/);
+
+        if (!match) {
+            throw new Error("Invalid format: " + amount);
+        }
+
+        const currency = match[1];
+        const value = match[2];
+        const unit = match[4];
+
+        if (!currencyMap[currency]) {
+            throw new Error("Unknown currency: " + currency);
+        }
+
+        const number = parseFloat(value.replace(/,/g, ""));
+        const currencyValue = currencyMap[currency];
+
+        if (unit === "K") {
+            return number * currencyValue * 1000;
+        } else if (unit === "M") {
+            return number * currencyValue * 1000000;
+        } else {
+            return number * currencyValue;
+        }
+    }
+
+    useEffect(() => {
+        const clonedSalary = {...salary};
+        if(distribution.left.value !== "" && distribution.left.value !== "$") {
+            clonedSalary.payDistributionValues[0] = Number(convertToValue(distribution.left.value));
+        }
+        if(distribution.right.value !== "" && distribution.right.value !== "$") {
+            clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = Number(convertToValue(distribution.right.value));
+        }
+        clonedSalary.progressivePay = salaryLabel;
+        clonedSalary.progressivePayValue =  parseInt(salaryLabel.replace("$", "").replace(",", ""));
+        setSalaryInternal(clonedSalary);
+    },[distribution,salaryLabel]);
 
     return (
         <React.Fragment>
@@ -89,7 +139,7 @@ export const PayDistribution: React.FC<Props> = ({salary, currencySymbol, editab
                             onChange={(e) => handleChange(e, "right")}
                         />
                     </div>
-                ) : null
+                ): null
             }
             <div className="bar-container">
                 <div className="bar-left" style={{width: distribution?.left?.percent + "%"}}>
@@ -125,6 +175,7 @@ export const PayDistribution: React.FC<Props> = ({salary, currencySymbol, editab
                         <div className="bar-line"/>
                     </React.Fragment>
                 </div>
+
             </div>
         </React.Fragment>
     );

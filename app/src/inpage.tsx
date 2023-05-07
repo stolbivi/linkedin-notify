@@ -40,22 +40,16 @@ const injectUI = () => {
         subtree: true,
         childList: true,
         onAdd: (_node: Node) => {
-            if(initialLoad) {
-                CompletionFactory();
-                SalaryPillFactory();
-                MapsFactory();
-                AutoFeatureFactory();
-                StagePillFactory();
-                NotesAndChartsFactory();
-                NotesManagerFactory();
-                LastViewedFactory();
-                TimeZoneFactory();
-                LnDashboardFactory();
-            } else {
-                AutoFeatureFactory();
-                NotesAndChartsFactory();
-                LnDashboardFactory();
-            }
+            CompletionFactory();
+            SalaryPillFactory();
+            MapsFactory();
+            AutoFeatureFactory();
+            StagePillFactory();
+            NotesAndChartsFactory();
+            NotesManagerFactory();
+            LastViewedFactory();
+            TimeZoneFactory();
+            LnDashboardFactory();
         }
     });
 }

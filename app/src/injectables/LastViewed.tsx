@@ -83,7 +83,7 @@ export const LastViewed: React.FC<Props> = ({}) => {
                          className={"access-guard-px16 top-right-corner"}
                          loaderClassName="loader-base top-right-corner loader-px24"/>
             {accessState === AccessState.Valid && canShow() &&
-                <div className="last-viewed top-right-corner">
+                <div className="last-viewed top-right-corner" ref={rootElement}>
                     <Loader show={!lastViewed.completed}/>
                     {lastViewed.completed &&
                         <React.Fragment>

@@ -63,7 +63,6 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const lastNoteRef = useRef();
-    const [customStages, setCustomStages] = useState<UserStage[]>([]);
     const dropdownRef = useRef(null);
     const [backdrop, setBackDrop] = useState(false);
     const handleDocumentClick = (event: any) => {
