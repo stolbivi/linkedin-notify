@@ -8,6 +8,8 @@ import {GeoTz, StageResponse} from "../actions";
 import geoTzReducer from "./GeoTzReducer";
 import notesAllReducer from "./NotesAllReducer";
 import {NoteExtended} from "../global";
+import columnsReducer from "./columns.slice";
+import cardsReducer from "./cards.slice";
 
 export const listenerMiddleware = createListenerMiddleware();
 initListeners();
@@ -48,7 +50,9 @@ export const localStore = configureStore({
         salary: salaryReducer,
         stage: stageReducer,
         geoTz: geoTzReducer,
-        notesAll: notesAllReducer
+        notesAll: notesAllReducer,
+        columns: columnsReducer,
+        cards: cardsReducer
     },
     devTools: true,
     middleware: (getDefaultMiddleware) =>
@@ -66,3 +70,9 @@ export const selectSalary = (state: RootState) => state.salary;
 export const selectStage = (state: RootState) => state.stage;
 export const selectGeoTz = (state: RootState) => state.geoTz;
 export const selectNotesAll = (state: RootState) => state.notesAll;
+
+export type AppState = ReturnType<typeof localStore.getState>
+
+export type AppDispatch = typeof localStore.dispatch
+
+export default localStore

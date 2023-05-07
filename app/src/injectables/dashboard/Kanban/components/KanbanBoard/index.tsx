@@ -9,15 +9,14 @@ import IStatus from '../../interfaces/IStatus';
 import IColumn from '../../interfaces/IColumn';
 import ICategory from '../../interfaces/ICategory';
 import Column from '../Column';
-import {useModal} from '../../hooks/useModal';
 import {useAppDispatch, useAppSelector} from '../../hooks/useRedux';
 import {Container, Header, StatusesColumnsContainer} from './styles';
-import {setColumns} from '../../store/slices/columns.slice';
-import {filterCards, setCards} from '../../store/slices/cards.slice';
+import {setColumns} from '../../../../../store/columns.slice';
+import {filterCards, setCards} from '../../../../../store/cards.slice';
 // @ts-ignore
 import stylesheet from './styles.scss';
 import {MessagesV2} from "@stolbivi/pirojok";
-import {VERBOSE} from "../../../../../global";
+import {NoteExtended, VERBOSE} from "../../../../../global";
 import {
   getAuthorStages,
   getCustomStages,
@@ -25,10 +24,11 @@ import {
 } from "../../../../../actions";
 import {Loader} from "../../../../../components/Loader";
 import ListView from "../ListView";
-const KanbanBoard: React.FC<KanbanBoardProps> = () => {
+import {CompleteEnabled, DataWrapper, selectNotesAll} from "../../../../../store/LocalStore";
+import {shallowEqual, useSelector} from "react-redux";
+const KanbanBoard: React.FC<any> = () => {
   const { cards } = useAppSelector((state => state.cards));
   const { columns } = useAppSelector((state => state.columns));
-  const { visible } = useModal();
   const [activeButton, setActiveButton] = useState(IStatus.AVAILABILITY);
   const [selectedCategories] = useState<ICategory[]>(Object.values(ICategory));
   const messages = new MessagesV2(VERBOSE);
@@ -36,10 +36,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const [completed, setCompleted] = useState(false);
   const [kanbanData, setKanbanData] = useState({});
   const [listView, setListView] = useState(false);
-  const [triggerRender,setTriggerRender] = useState(false);
   const theme = useContext(ThemeContext);
+  const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
 
   useEffect(() => {
+    console.log("re-rending notesAll: ",notesAll)
     messages.request(getAuthorStages())
         .then((resp) => {
           if (resp.data) {
@@ -50,7 +51,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     if(sessionStorage.getItem("isListView")) {
       setListView(JSON.parse(sessionStorage.getItem("isListView")));
     }
-  },[triggerRender]);
+  },[notesAll]);
 
   useEffect(() => {
     messages.request(getCustomStages())
@@ -161,7 +162,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const populateKanbanData = (parentCategory: string) => {
     let updatedCards: ICard[] = [];
     let cardsIdsByStatus = {};
-    let subCategories = [];
+    let subCategories: any[] = [];
     if(parentCategory === IStatus.AVAILABILITY) {
       subCategories = [ICategory.Passive,ICategory.Active,ICategory.Open,ICategory.Not_Open,ICategory.Future];
     } else if (parentCategory === IStatus.STATUS) {
@@ -269,13 +270,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   },[listView,activeButton])
 
 
-  const listViewClickHandler = (event) => {
+  const listViewClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation();
     setListView(true);
     sessionStorage.setItem("isListView", true);
   }
 
-  const cardViewClickHandler = (event) => {
+  const cardViewClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation();
     setListView(false);
     sessionStorage.setItem("isListView", false);
@@ -352,8 +353,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                                         index={index}
                                         status={column.id}
                                         cards={cardsArray}
-                                        triggerRender={triggerRender}
-                                        setTriggerRender={setTriggerRender}
                                     />
                                 )})}
                             </DragDropContext>

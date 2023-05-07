@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-import mockCards from "../../data/cards";
-import ICard from "../../interfaces/ICard";
-import ICategory from "../../interfaces/ICategory";
+import mockCards from "../../src/injectables/dashboard/Kanban/data/cards";
+import ICard from "../../src/injectables/dashboard/Kanban/interfaces/ICard";
+import ICategory from "../../src/injectables/dashboard/Kanban/interfaces/ICategory";
 
 interface CardsSliceState {
   cards: ICard[],

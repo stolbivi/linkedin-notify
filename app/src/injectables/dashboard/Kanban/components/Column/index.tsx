@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import ICard from '../../interfaces/ICard';
 import IStatus from '../../interfaces/IStatus';
