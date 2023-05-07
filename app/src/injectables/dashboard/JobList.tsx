@@ -53,7 +53,7 @@ const JobList = () => {
         "1" : "On Hold",
         "2" : "Actively Hiring",
         "3" : "Interviewing",
-        "4" : "Filed",
+        "4" : "Filled",
         "5" : "Closed without Hire",
     }
 
@@ -451,7 +451,7 @@ const JobList = () => {
                                         <th scope="col" className="job-column job-table-heading">Type</th>
                                         <th scope="col" className="job-column job-table-heading">Geography</th>
                                         <th scope="col" className="job-column job-table-heading">Status</th>
-                                        <th scope="col" className="job-column job-table-heading">Assigned</th>
+                                        {/*<th scope="col" className="job-column job-table-heading">Assigned</th>*/}
                                         <th scope="col" className="job-column job-table-heading">Action</th>
                                     </tr>
                                     </thead>
@@ -489,9 +489,9 @@ const JobList = () => {
                                                     <td>
                                                         {field.status}
                                                     </td>
-                                                    <td>
-                                                        {field.assigned}
-                                                    </td>
+                                                    {/*<td>*/}
+                                                    {/*    {field.assigned}*/}
+                                                    {/*</td>*/}
                                                     <td>
                                                         <button onClick={(event) => handleEditField(event,field)}>
                                                             <svg width="20" height="20" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">

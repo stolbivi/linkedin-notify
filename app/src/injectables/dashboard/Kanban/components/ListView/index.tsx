@@ -228,12 +228,19 @@ const ListView = ({cards}) => {
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className={classes.root} style={{ height: '500px', width: '1151px' }} ref={rootElement}>
+            <div className={classes.root} style={{ height: '840px', width: '1151px', padding: '1px'}} ref={rootElement}>
                 <DataGrid
                     rows={cards}
                     columns={columns}
-                    rowHeight={90}
+                    pagination
+                    pageSize={10}
+                    rowHeight={70}
                     disableColumnSelector
+                    disableDensitySelector
+                    disableSelectionOnClick
+                    autoHeight={false}
+                    style={{ border: 'none', outline: 'none' }}
+                    disableVirtualization
                 />
             </div>
 

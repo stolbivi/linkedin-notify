@@ -19,7 +19,7 @@ const lightTheme = {
     remote: '#377DC5',
     contacted: '#EEA73C',
     pendingResponse: '#377DC5',
-    interviewScheduled: '#afafaf',
+    interviewScheduled: '#EEA73C',
     offerExtended: '#49936E',
     rejected: '#D4525A',
     partTime: '#377DC5',

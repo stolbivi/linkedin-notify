@@ -609,7 +609,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                 </div>}
                                                             </div>
                                                         </div>
-                                                        <div data-role={CollapsibleRole.Footer} className="footer-child">
+                                                        <div data-role={CollapsibleRole.Footer} className={`footer-child ${fromListView ? "footer-child-listview" : ""}`}>
                                                             <div className="text-input-container">
                                                                 <div className="text-input">
                                                                     <input type="text" onKeyUp={onKeyUp} onChange={onChange}

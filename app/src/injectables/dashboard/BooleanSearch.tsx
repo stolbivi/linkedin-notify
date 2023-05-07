@@ -233,7 +233,7 @@ const BooleanSearch = () => {
                     </div>
                     <div className="queryContainers">
                         <label htmlFor="general-keyword-include-input">
-                            General Keywords to Include:
+                            Skills to Include:
                         </label>
                         <input
                             style={{marginRight: "30px"}}
@@ -244,7 +244,7 @@ const BooleanSearch = () => {
                     </div>
                     <div className="queryContainers">
                         <label htmlFor="general-keyword-exclude-input">
-                            General Keywords to Exclude:
+                            Skills to Exclude:
                         </label>
                         <input
                             style={{marginRight: "30px"}}
