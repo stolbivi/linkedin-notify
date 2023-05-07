@@ -155,6 +155,17 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         }
     },[salary]);
 
+    useEffect(() => {
+        setTimeout(() => {
+            // @ts-ignore
+            lastNoteRef?.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+                inline: 'nearest',
+                marginBottom: 50
+            });
+        }, 300);
+    },[notesAll]);
     const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
 
@@ -235,11 +246,11 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
             messages.request(getCustomSalary(salaryInternal.urn)).then(resp => {
                 if(resp) {
                     const clonedSalary = JSON.parse(JSON.stringify(salaryInternal));
-                    clonedSalary.payDistributionValues[0] = resp[0].leftPayDistribution;
-                    clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
-                    clonedSalary.payDistribution[0] = resp[0].leftPayDistribution;
-                    clonedSalary.payDistribution[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
-                    clonedSalary.progressivePay = resp[0].progressivePay;
+                    clonedSalary.payDistributionValues[0] = resp[0]?.leftPayDistribution;
+                    clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0]?.rightPayDistribution;
+                    clonedSalary.payDistribution[0] = resp[0]?.leftPayDistribution;
+                    clonedSalary.payDistribution[clonedSalary.payDistributionValues.length - 1] = resp[0]?.rightPayDistribution;
+                    clonedSalary.progressivePay = resp[0]?.progressivePay;
                     setSalaryInternal(clonedSalary);
                     setFetchCustomSalary(false);
                 }
@@ -286,15 +297,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                 stageTo: -1,
                 text
             }));
-            setTimeout(() => {
-                // @ts-ignore
-                lastNoteRef?.current?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'end',
-                    inline: 'nearest',
-                    marginBottom: 50
-                });
-            }, 400);
             setText({value: ""});
             setEditable(true);
         }

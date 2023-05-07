@@ -102,8 +102,8 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             messages.request(getCustomSalary(salary.urn)).then(resp => {
                 if(resp) {
                     const clonedSalary = JSON.parse(JSON.stringify(salary));
-                    clonedSalary.payDistributionValues[0] = resp[0].leftPayDistribution;
-                    clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
+                    clonedSalary.payDistributionValues[0] = resp[0]?.leftPayDistribution;
+                    clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0]?.rightPayDistribution;
                     clonedSalary.progressivePay = resp[0].progressivePay;
                     setSalaryInternal(clonedSalary);
                 }

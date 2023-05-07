@@ -74,7 +74,7 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
         };
 
         if (!amount || typeof amount !== "string") {
-            throw new Error("Invalid amount: " + amount);
+            return;
         }
 
         const match = amount.match(/^([^\d]*)([\d,]+(\.\d+)?)([KM]?)$/);
@@ -106,10 +106,10 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
     useEffect(() => {
         const clonedSalary = JSON.parse(JSON.stringify(salary));
         if(Object.keys(clonedSalary).length > 0 && clonedSalary.payDistributionValues.length > 0) {
-            if(distribution.left.value !== "" && distribution.left.value !== "$") {
+            if(distribution.left.value !== "" && distribution.left.value !== "$" && typeof distribution.left.value === "string") {
                 clonedSalary.payDistributionValues[0] = Number(convertToValue(distribution.left.value));
             }
-            if(distribution.right.value !== "" && distribution.right.value !== "$") {
+            if(distribution.right.value !== "" && distribution.right.value !== "$"  && typeof distribution.right.value === "string") {
                 clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = Number(convertToValue(distribution.right.value));
             }
             clonedSalary.progressivePay = salaryLabel;
