@@ -15,7 +15,7 @@ import {
     setStage,
     SetStagePayload
 } from "../actions";
-import {IdAwareRequest, listenerMiddleware} from "./LocalStore";
+import {IdAwareRequest, listenerMiddleware, localStore} from "./LocalStore";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
 import {getSalaryAction, GetSalaryRequest, setSalaryAction} from "./SalaryReducer";
@@ -140,6 +140,7 @@ export default () => {
             await messages.request(deleteNote(action.payload.id));
             await messages.request(deleteStage(action.payload.id));
             listenerApi.dispatch(triggerDeleteNoteAction(action.payload));
+            localStore.dispatch(getLatestStageAction({id: action.payload.url, state: {url: action.payload.url}}));
             listenerApi.dispatch(setNotesAction({completed: true}));
         },
     });

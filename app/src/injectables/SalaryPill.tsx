@@ -10,7 +10,7 @@ import {getSalaryAction, Salary} from "../store/SalaryReducer";
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
 import {useUrlChangeSupport} from "../utils/URLChangeSupport";
-import {getMe} from "../actions";
+import {getCustomSalary, getMe} from "../actions";
 import {MessagesV2} from "@stolbivi/pirojok";
 
 export const SalaryPillFactory = () => {
@@ -61,10 +61,10 @@ type Props = {
 };
 
 export const getSalaryValue = (salary: Salary) => {
-    if (salary.progressivePay) {
-        return salary.progressivePay;
+    if (salary?.progressivePay) {
+        return salary?.progressivePay;
     } else {
-        return salary.formattedPay;
+        return salary?.formattedPay;
     }
 }
 
@@ -72,6 +72,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const salary: CompleteEnabled<Salary> = useSelector(selectSalary, shallowEqual)[id];
+    const [salaryInternal, setSalaryInternal] = useState(salary);
     const [urlInternal] = useUrlChangeSupport(window.location.href);
     const [show, setShow] = useState(true);
     const messages = new MessagesV2(VERBOSE);
@@ -92,6 +93,24 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
         });
     }, [accessState, urlInternal]);
 
+    useEffect(() => {
+        setSalaryInternal(salary);
+    },[salary]);
+
+    useEffect(() => {
+        if(salary.completed) {
+            messages.request(getCustomSalary(salary.urn)).then(resp => {
+                if(resp) {
+                    const clonedSalary = JSON.parse(JSON.stringify(salary));
+                    clonedSalary.payDistributionValues[0] = resp[0].leftPayDistribution;
+                    clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
+                    clonedSalary.progressivePay = resp[0].progressivePay;
+                    setSalaryInternal(clonedSalary);
+                }
+            })
+        }
+    },[salaryInternal]);
+
     const onClick = () => {
         if (salary) {
             localStore.dispatch(showNotesAndChartsAction({id: id, state: {showSalary, showNotes, show: true, id: id}}));
@@ -107,7 +126,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
                 <div className={"salary-pill" + (salary?.completed ? " clickable" : "")}
                      onClick={onClick}>
                     <Loader show={!salary?.completed}/>
-                    {salary?.completed && salary && <span>{getSalaryValue(salary)}</span>}
+                    {salary?.completed && salary && <span>{getSalaryValue(salaryInternal)}</span>}
                 </div>}
         </React.Fragment>
     );

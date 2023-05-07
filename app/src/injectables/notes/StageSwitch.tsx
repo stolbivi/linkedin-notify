@@ -3,7 +3,7 @@ import {Loader} from "../../components/Loader";
 import {CompleteEnabled, localStore, selectStage} from "../../store/LocalStore";
 import {Stage, updateStageAction} from "../../store/StageReducer";
 import {shallowEqual, useSelector} from "react-redux";
-import {Note, NoteExtended} from "../../global";
+import {extractIdFromUrl, Note, NoteExtended} from "../../global";
 import "./StageSwitch.scss";
 import {deleteNoteAction} from "../../store/NotesAllReducer";
 
@@ -59,7 +59,6 @@ export const StageLabels = {
     21: { label: "Permanent", class: "interested" },
     22: { label: "Contract", class: "interested" },
     23: { label: "Freelance", class: "interested" }
-
 } as { [key: number]: any }
 StageLabels[-1] = {label: "Add Status", class: "inactive"};
 
@@ -146,7 +145,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
 
     const removeSelectedTag = (id: string) => {
         setCompleted(false);
-        localStore.dispatch(deleteNoteAction({id}));
+        localStore.dispatch(deleteNoteAction({id, url: extractIdFromUrl(window.location.href)}));
         setTimeout(() => setCompleted(true), 3000);
     };
 

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
+import {ThemeContext} from "styled-components";
 import {DragDropContext, DropResult} from 'react-beautiful-dnd';
 import ICard from '../../interfaces/ICard';
 import IStatus from '../../interfaces/IStatus';
 import IColumn from '../../interfaces/IColumn';
 import ICategory from '../../interfaces/ICategory';
 import Column from '../Column';
-import Modal from '../Modal';
 import {useModal} from '../../hooks/useModal';
 import {useAppDispatch, useAppSelector} from '../../hooks/useRedux';
 import {Container, Header, StatusesColumnsContainer} from './styles';
@@ -25,7 +25,6 @@ import {
 } from "../../../../../actions";
 import {Loader} from "../../../../../components/Loader";
 import ListView from "../ListView";
-
 const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const { cards } = useAppSelector((state => state.cards));
   const { columns } = useAppSelector((state => state.columns));
@@ -37,6 +36,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
   const [completed, setCompleted] = useState(false);
   const [kanbanData, setKanbanData] = useState({});
   const [listView, setListView] = useState(false);
+  const [triggerRender,setTriggerRender] = useState(false);
+  const theme = useContext(ThemeContext);
 
   useEffect(() => {
     messages.request(getAuthorStages())
@@ -49,7 +50,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
     if(sessionStorage.getItem("isListView")) {
       setListView(JSON.parse(sessionStorage.getItem("isListView")));
     }
-  },[]);
+  },[triggerRender]);
 
   useEffect(() => {
     messages.request(getCustomStages())
@@ -334,7 +335,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                   listView?
                       (
                           <>
-                            <ListView cards={cards}/>
+                            <ListView cards={cards} parentTheme={theme}/>
                           </>
                       ):(
                           <StatusesColumnsContainer>
@@ -351,6 +352,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = () => {
                                         index={index}
                                         status={column.id}
                                         cards={cardsArray}
+                                        triggerRender={triggerRender}
+                                        setTriggerRender={setTriggerRender}
                                     />
                                 )})}
                             </DragDropContext>

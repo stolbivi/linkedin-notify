@@ -33,26 +33,27 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
         percent && percent.toFixed(0) + "%";
 
     useEffect(() => {
+
         function formatValue(value: number) {
-            return `${salary.symbol}${Number(value / 1000).toFixed(0)}K`;
+            return `${salary?.symbol}${Number(value / 1000).toFixed(0)}K`;
         }
 
-        if (salary.payDistribution && salary.payDistributionValues) {
+        if (salary?.payDistribution && salary?.payDistributionValues) {
             setDistribution({
                 left: {
                     percent: 10,
-                    value: salary.payDistribution[0],
+                    value: salary?.payDistribution[0],
                 },
                 middle: {
                     percent: 80,
                     value: formatValue(
-                        (salary.payDistributionValues[0] +
-                            salary.payDistributionValues[3]) / 2
+                        (salary?.payDistributionValues[0] +
+                              salary?.payDistributionValues[3]) / 2
                     ),
                 },
                 right: {
                     percent: 10,
-                    value: salary.payDistribution[3],
+                    value: salary?.payDistribution[3],
                 },
             });
         }
@@ -103,16 +104,18 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
     }
 
     useEffect(() => {
-        const clonedSalary = {...salary};
-        if(distribution.left.value !== "" && distribution.left.value !== "$") {
-            clonedSalary.payDistributionValues[0] = Number(convertToValue(distribution.left.value));
+        const clonedSalary = JSON.parse(JSON.stringify(salary));
+        if(Object.keys(clonedSalary).length > 0 && clonedSalary.payDistributionValues.length > 0) {
+            if(distribution.left.value !== "" && distribution.left.value !== "$") {
+                clonedSalary.payDistributionValues[0] = Number(convertToValue(distribution.left.value));
+            }
+            if(distribution.right.value !== "" && distribution.right.value !== "$") {
+                clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = Number(convertToValue(distribution.right.value));
+            }
+            clonedSalary.progressivePay = salaryLabel;
+            clonedSalary.progressivePayValue =  parseInt(salaryLabel?.replace("$", "").replace(",", ""));
+            setSalaryInternal(clonedSalary);
         }
-        if(distribution.right.value !== "" && distribution.right.value !== "$") {
-            clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = Number(convertToValue(distribution.right.value));
-        }
-        clonedSalary.progressivePay = salaryLabel;
-        clonedSalary.progressivePayValue =  parseInt(salaryLabel.replace("$", "").replace(",", ""));
-        setSalaryInternal(clonedSalary);
     },[distribution,salaryLabel]);
 
     return (

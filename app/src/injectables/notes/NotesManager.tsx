@@ -5,12 +5,12 @@ import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
 import {injectFirstChild} from "../../utils/InjectHelper";
 import {StageButton} from "./StageButton";
-import {StageEnum} from "./StageSwitch";
+import {StageEnum, StageLabels} from "./StageSwitch";
 import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getTheme, openUrl, SwitchThemePayload} from "../../actions";
+import {getCustomStages, getTheme, openUrl, sortAsc, sortDesc, SwitchThemePayload} from "../../actions";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as LightTheme} from "../../themes/light";
@@ -82,6 +82,27 @@ export const NotesManager: React.FC<Props> = ({}) => {
     }, []);
 
     useEffect(() => {
+        messages.request(getCustomStages())
+            .then((customStages) => {
+                if(customStages.length > 0) {
+                    const stageEnumLength = Object.keys(StageEnum).filter(k => isNaN(Number(k))).length;
+                    let count = stageEnumLength + 1;
+                    customStages.map(stage => {
+                        // @ts-ignore
+                        if(!StageEnum[stage.text]) {
+                            // @ts-ignore
+                            StageEnum[stage.text] = count;
+                        }
+                        if(!StageLabels[count] && !Object.values(StageLabels).some(({ label }) => label === stage.text)) {
+                            StageLabels[count] = {label: stage.text, class: "interested"};
+                        }
+                        count++;
+                    });
+                }
+            })
+    }, []);
+
+    useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
     }, [text]);
 
@@ -117,12 +138,14 @@ export const NotesManager: React.FC<Props> = ({}) => {
             // search by text
             filteredNotes = notesAll?.data?.filter(n => n.profile === selection.profile
                 && checkByText(n, searchText?.toLowerCase()));
+            sortAsc(filteredNotes);
         } else {
             // search by value
             filteredNotes = notesAll?.data?.filter(
                 n => checkByText(n, searchValue.text?.toLowerCase()) &&
                     (stagesCount > 0 ? (searchValue.stages[n.stageFrom] || searchValue.stages[n.stageTo]) : true)
             );
+            sortDesc(filteredNotes);
         }
         setNotes(filteredNotes);
     }, [selection, searchValue, searchText, notesAll]);
@@ -240,8 +263,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
-            const lastState = notes[notes.length - 1].stageTo;
-            localStore.dispatch(postNoteAction({id: selection.profile, stageTo: lastState, text}));
+            localStore.dispatch(postNoteAction({id: selection.profile, stageTo: -1, text}));
             setText({value: ""});
             setEditable(true);
             setTimeout(() => {
@@ -252,7 +274,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
                     inline: 'nearest',
                     marginBottom: 50
                 });
-            }, 200);
+            }, 400);
         }
     }
 

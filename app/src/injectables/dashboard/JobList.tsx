@@ -8,18 +8,23 @@ import {MessagesV2} from "@stolbivi/pirojok";
 import {Job, VERBOSE} from "../../global";
 import {deleteJob, getJobs, getAssignedJobsById, getTheme, postJob, SwitchThemePayload, updateJob} from "../../actions";
 import {Loader} from "../../components/Loader";
-import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
+import {applyThemeProperties as setThemeUtil, COOKIE_THEME, useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../themes/dark";
 import ListView from "./Kanban/components/ListView";
+import lightTheme from "../../../src/injectables/dashboard/Kanban/styles/themes/light";
+import darkTheme from "../../../src/injectables/dashboard/Kanban/styles/themes/dark";
+import Cookies from "js-cookie";
 
 const JobList = () => {
 
     const messages = new MessagesV2(VERBOSE);
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
+    const [theme, setTheme] = useState(LightTheme);
 
     useEffect(() => {
+        setTheme(Cookies.get(COOKIE_THEME) === 'light' ? lightTheme : darkTheme);
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {
@@ -30,10 +35,10 @@ const JobList = () => {
             (payload) => {
                 let theme = payload.theme === "light" ? LightTheme : DarkTheme;
                 setThemeUtil(theme, rootElement);
+                setTheme(payload.theme === 'light' ? lightTheme : darkTheme);
                 return Promise.resolve();
             }));
     }, []);
-
 
 
     const typesDropdown = {
@@ -289,7 +294,7 @@ const JobList = () => {
                                         <div className="details-view">
                                             {
                                                 listView ? (
-                                                    <ListView cards={cards}/>
+                                                    <ListView cards={cards} parentTheme={theme}/>
                                                 ) : (
                                                         <>
                                                             <div className="edit-container">

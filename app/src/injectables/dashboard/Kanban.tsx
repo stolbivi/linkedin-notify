@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import KanbanBoard from './Kanban/components/KanbanBoard';
-import { ModalProvider } from './Kanban/hooks/useModal';
 import store from './Kanban/store';
 import darkTheme from './Kanban/styles/themes/dark';
 import lightTheme from './Kanban/styles/themes/light';

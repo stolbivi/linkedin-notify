@@ -19,7 +19,7 @@ import {
     getCustomSalary,
     getCustomStages,
     getTheme,
-    setCustomSalary
+    setCustomSalary, sortAsc
 } from "../../actions";
 import {
     CompleteEnabled,
@@ -131,10 +131,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const listviewNotesRef = useRef();
     const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
-    const [salaryInternal, setSalaryInternal] = useState<Salary>({});
     const messages = new MessagesV2(VERBOSE);
     const inputRef = useRef<HTMLInputElement>(null);
-
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
     const showNotesAndCharts: IdAwareState<ShowNotesAndCharts> = useSelector(selectShowNotesAndCharts, shallowEqual);
     const salary: IdAwareState<CompleteEnabled<Salary>> = useSelector(selectSalary, shallowEqual);
@@ -143,6 +141,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [url] = useUrlChangeSupport(window.location.href);
     const lastNoteRef = useRef();
+    const [salaryInternal, setSalaryInternal] = useState<Salary>({});
 
     useEffect(() => {
         if (url?.length > 0 && trackUrl) {
@@ -151,7 +150,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }, [url]);
 
     useEffect(() => {
-       setSalaryInternal(salary);
+        if(extractFromIdAware(salary).completed) {
+            setSalaryInternal(extractFromIdAware(salary) as Salary);
+        }
     },[salary]);
 
     const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
@@ -179,6 +180,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         if (extractFromIdAware(salary) && idInternal) {
             if (notesAll?.data?.length > 0) {
                 let filtered = notesAll?.data?.filter(n => n.profile === extractFromIdAware(salary).urn);
+                sortAsc(filtered);
                 setNotes(filtered);
             }
         }
@@ -209,6 +211,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
             } else {
                 setShowNotes(extractFromIdAware(showNotesAndCharts).showNotes)
                 setShowSalary(extractFromIdAware(showNotesAndCharts).showSalary)
+                setFetchCustomSalary(true);
             }
             if (extractFromIdAware(showNotesAndCharts).show || (profileId && showNotesAndCharts[profileId]?.show && !showNotes)) {
                 messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
@@ -230,12 +233,16 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     useEffect(() => {
         if(showSalary && fetchCustomSalary && !editButton) {
             messages.request(getCustomSalary(salaryInternal.urn)).then(resp => {
-                const clonedSalary = {...salaryInternal};
-                clonedSalary.payDistributionValues[0] = resp[0].leftPayDistribution;
-                clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
-                clonedSalary.progressivePay = resp[0].progressivePay;
-                setSalaryInternal(clonedSalary);
-                setFetchCustomSalary(false);
+                if(resp) {
+                    const clonedSalary = JSON.parse(JSON.stringify(salaryInternal));
+                    clonedSalary.payDistributionValues[0] = resp[0].leftPayDistribution;
+                    clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
+                    clonedSalary.payDistribution[0] = resp[0].leftPayDistribution;
+                    clonedSalary.payDistribution[clonedSalary.payDistributionValues.length - 1] = resp[0].rightPayDistribution;
+                    clonedSalary.progressivePay = resp[0].progressivePay;
+                    setSalaryInternal(clonedSalary);
+                    setFetchCustomSalary(false);
+                }
             })
         }
         setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal));
@@ -276,9 +283,18 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
             setPostAllowed(false);
             localStore.dispatch(postNoteAction({
                 id: extractFromIdAware(salary).urn,
-                stageTo: extractFromIdAware(stage).stage,
+                stageTo: -1,
                 text
             }));
+            setTimeout(() => {
+                // @ts-ignore
+                lastNoteRef?.current?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'end',
+                    inline: 'nearest',
+                    marginBottom: 50
+                });
+            }, 400);
             setText({value: ""});
             setEditable(true);
         }

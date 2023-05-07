@@ -1,5 +1,5 @@
 import {DataGrid} from '@material-ui/data-grid';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Status from "../Status";
 // @ts-ignore
 import stylesheet from './styles.scss';
@@ -9,7 +9,6 @@ import {getTheme, SwitchThemePayload} from "../../../../../actions";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../../../../../global";
 import ICard from '../../interfaces/ICard';
-import {ThemeContext} from "styled-components";
 import lightTheme from "../../styles/themes/light";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../../../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../../../../themes/light";
@@ -18,7 +17,7 @@ import {theme as DarkTheme} from "../../../../../themes/dark";
 import {showNotesAndChartsAction} from "../../../../../store/ShowNotesAndCharts";
 import {localStore} from "../../../../../../src/store/LocalStore";
 // @ts-ignore
-const ListView = ({cards}) => {
+const ListView = ({cards, parentTheme}) => {
 
     const lightMode = {
         '& .MuiDataGrid-root': {
@@ -95,7 +94,6 @@ const ListView = ({cards}) => {
 
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const messages = new MessagesV2(VERBOSE);
-    const theme = useContext(ThemeContext);
     const [gridTheme, setGridTheme] = useState(lightMode);
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
 
@@ -115,14 +113,14 @@ const ListView = ({cards}) => {
     }, []);
 
     useEffect(() => {
-        if(theme === lightTheme) {
+        if(parentTheme === lightTheme) {
             setGridTheme(lightMode);
         }
         else{
             setGridTheme(darkMode);
         }
 
-    }, [theme]);
+    }, [parentTheme]);
 
     const useStyles = makeStyles({root:gridTheme});
 
@@ -228,19 +226,12 @@ const ListView = ({cards}) => {
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className={classes.root} style={{ height: '840px', width: '1151px', padding: '1px'}} ref={rootElement}>
+            <div className={classes.root} style={{ height: '500px', width: '1151px' }} ref={rootElement}>
                 <DataGrid
                     rows={cards}
                     columns={columns}
-                    pagination
-                    pageSize={10}
-                    rowHeight={70}
+                    rowHeight={90}
                     disableColumnSelector
-                    disableDensitySelector
-                    disableSelectionOnClick
-                    autoHeight={false}
-                    style={{ border: 'none', outline: 'none' }}
-                    disableVirtualization
                 />
             </div>
 
