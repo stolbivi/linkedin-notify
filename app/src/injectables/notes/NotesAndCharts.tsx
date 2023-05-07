@@ -158,7 +158,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
 
     useEffect(() => {
-        setAllGroupsMode(false);
         if (conversation) {
             messages.request(getConversationProfile(idInternal))
                 .then((r: any) => {
@@ -192,6 +191,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     useEffect(() => {
         if (extractFromIdAware(showNotesAndCharts)) {
             setFromListView(false);
+            setAllGroupsMode(false);
             const profileId = showNotesAndCharts?.profileId;
             if(salaryMode) {
                 setShowChart(true);
