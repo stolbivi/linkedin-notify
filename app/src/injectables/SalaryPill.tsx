@@ -10,7 +10,7 @@ import {getSalaryAction, Salary} from "../store/SalaryReducer";
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
 import {useUrlChangeSupport} from "../utils/URLChangeSupport";
-import {getCustomSalary, getMe} from "../actions";
+import {getMe} from "../actions";
 import {MessagesV2} from "@stolbivi/pirojok";
 
 export const SalaryPillFactory = () => {
@@ -97,19 +97,19 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
         setSalaryInternal(salary);
     },[salary]);
 
-    useEffect(() => {
+/*    useEffect(() => {
         if(salary.completed) {
             messages.request(getCustomSalary(salary.urn)).then(resp => {
                 if(resp) {
                     const clonedSalary = JSON.parse(JSON.stringify(salary));
                     clonedSalary.payDistributionValues[0] = resp[0]?.leftPayDistribution;
                     clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0]?.rightPayDistribution;
-                    clonedSalary.progressivePay = resp[0].progressivePay;
+                    clonedSalary.progressivePay = resp[0]?.progressivePay;
                     setSalaryInternal(clonedSalary);
                 }
             })
         }
-    },[salaryInternal]);
+    },[salaryInternal]);*/
 
     const onClick = () => {
         if (salary) {

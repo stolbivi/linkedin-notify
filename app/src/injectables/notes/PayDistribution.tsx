@@ -66,7 +66,7 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
         setDistribution(newDistribution);
     };
 
-    function convertToValue(amount: string): number {
+  /*  function convertToValue(amount: string): number {
         const currencyMap: {[currency: string]: number} = {
             "$": 1,
             "£": 1.39,
@@ -101,22 +101,22 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
         } else {
             return number * currencyValue;
         }
-    }
+    }*/
 
-    useEffect(() => {
+/*    useEffect(() => {
         const clonedSalary = JSON.parse(JSON.stringify(salary));
         if(Object.keys(clonedSalary).length > 0 && clonedSalary.payDistributionValues.length > 0) {
             if(distribution.left.value !== "" && distribution.left.value !== "$" && typeof distribution.left.value === "string") {
-                clonedSalary.payDistributionValues[0] = Number(convertToValue(distribution.left.value));
+                clonedSalary.payDistributionValues[0] = Number(distribution.left.value);
             }
             if(distribution.right.value !== "" && distribution.right.value !== "$"  && typeof distribution.right.value === "string") {
-                clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = Number(convertToValue(distribution.right.value));
+                clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = Number(distribution.right.value);
             }
             clonedSalary.progressivePay = salaryLabel;
             clonedSalary.progressivePayValue =  parseInt(salaryLabel?.replace("$", "").replace(",", ""));
             setSalaryInternal(clonedSalary);
         }
-    },[distribution,salaryLabel]);
+    },[distribution,salaryLabel]);*/
 
     return (
         <React.Fragment>
