@@ -54,6 +54,7 @@ const injectUI = () => {
             } else {
                 AutoFeatureFactory();
                 NotesAndChartsFactory();
+                LnDashboardFactory();
             }
         }
     });

@@ -35,14 +35,14 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
         }
         const stageLabel = StageLabels[stage]?.label;
         const truncatedLabel =
-            stageLabel && stageLabel.length > 30
-                ? `${stageLabel.slice(0, 27)}...`
+            stageLabel && stageLabel?.length > 30
+                ? `${stageLabel?.slice(0, 27)}...`
                 : stageLabel;
         return (
             <div
                 className={`stage ${
-                    StageLabels[stage] ? StageLabels[stage].class : "interested"
-                } ${stageLabel.length < 11 ? "stage-notecard" : ""}`}
+                    StageLabels[stage] ? StageLabels[stage]?.class : "interested"
+                } ${stageLabel?.length < 11 ? "stage-notecard" : ""}`}
             >
             <label title={stageLabel}>{truncatedLabel}</label>
             </div>

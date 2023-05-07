@@ -15,6 +15,7 @@ import {theme as LightTheme} from "../../themes/light";
 import {getTheme, SwitchThemePayload} from "../../actions";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../themes/dark";
+import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
 
 const Navbar = () => {
 
@@ -23,6 +24,13 @@ const Navbar = () => {
     const [isJobListClicked, setIsJobListClicked] = useState(false);
     const [isCandidatesClicked, setIsCandidatesClicked] = useState(true);
     const [isBooleanSearchClicked, setIsBooleanSearchClicked] = useState(false);
+    const [urlInternal] = useUrlChangeSupport(window.location.href);
+
+    useEffect(() => {
+        if (window.location.href.indexOf("/lndashboard/") < 0) {
+            window.location.reload();
+        }
+    }, [urlInternal]);
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
