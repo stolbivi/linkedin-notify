@@ -586,7 +586,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                                     type={StageEnum[customStage.text]}
                                                                                     customText={customStage.text}
                                                                                     urn={extractFromIdAware(salary).urn}
-                                                                                    id={customStage?.stageId?.toString()}
+                                                                                    id={idInternal}
                                                                                     parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
                                                                                     parentStageName={StageParentData.GROUPS}
                                                                                     activeStage={extractFromIdAware(stage).stage}
