@@ -274,13 +274,13 @@ const KanbanBoard: React.FC<any> = () => {
   const listViewClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation();
     setListView(true);
-    sessionStorage.setItem("isListView", true);
+   // sessionStorage.setItem("isListView", true);
   }
 
   const cardViewClickHandler = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation();
     setListView(false);
-    sessionStorage.setItem("isListView", false);
+ //   sessionStorage.setItem("isListView", false);
   }
 
   return (
