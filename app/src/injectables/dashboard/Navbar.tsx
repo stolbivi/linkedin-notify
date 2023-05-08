@@ -55,6 +55,7 @@ const Navbar = () => {
             setIsJobListClicked(true);
             setIsCandidatesClicked(false);
             setIsBooleanSearchClicked(false);
+            sessionStorage.removeItem("isListView")
         } else {
             console.warn('Target element not found.');
         }

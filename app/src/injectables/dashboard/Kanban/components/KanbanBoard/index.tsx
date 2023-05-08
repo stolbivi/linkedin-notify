@@ -40,7 +40,6 @@ const KanbanBoard: React.FC<any> = () => {
   const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
 
   useEffect(() => {
-    console.log("re-rending notesAll: ",notesAll)
     if(notesAll.completed) {
       messages.request(getAuthorStages())
           .then((resp) => {
