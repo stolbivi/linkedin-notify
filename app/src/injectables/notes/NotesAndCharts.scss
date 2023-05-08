@@ -38,7 +38,9 @@
 
 .position-expanded-listview{
   left: 50% !important;
-  top: -10% !important;
+  top: -7% !important;
+  padding-top: 0px !important;
+  height: 507px;
 }
 
 .notes-and-charts {
@@ -77,6 +79,7 @@
   }
 
   .footer-child-listview {
+    margin-top: 3px !important;
     .text-input-container {
       margin-bottom: 0 !important;
       .text-input {
@@ -301,4 +304,9 @@
 
 .icon-color path {
   stroke: $kanban-table-action-btn-color;
+}
+
+.notes-listview-heading{
+  margin-top: -33px;
+  margin-bottom: -14px;
 }

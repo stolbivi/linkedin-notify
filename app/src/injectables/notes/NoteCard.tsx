@@ -11,9 +11,10 @@ type Props = {
     lastNoteRef?: any
     currentCount?:number
     totalCount?:number
+    fromListView?:boolean
 };
 
-export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, currentCount, totalCount, lastNoteRef}) => {
+export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, currentCount, totalCount, lastNoteRef, fromListView}) => {
 
     const getAuthor = () => note.authorName;
 
@@ -71,7 +72,7 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
                         : <img src={note.authorPicture}/>}
                 </div>
                 <div className="details">
-                    <div className="header">
+                    <div className={`header ${fromListView ? 'note-card-listview' : ''}`}>
                         {extended ?
                             <div className="header-regular">
                                 <div className="author">{getAuthor()}</div>

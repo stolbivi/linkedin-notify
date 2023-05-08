@@ -510,7 +510,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                     </Collapsible>
                                 )}
                                 {!showSalary ? (
-                                        <div className="title-child assigned">
+                                    <div className={`title-child ${!fromListView ? 'assigned' : ''}`}>
                                             <span style={{paddingRight: "5%", cursor: "pointer"}} ref={listviewNotesRef}>
                                                 Track Candidates
                                             </span>
@@ -563,7 +563,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                     <div className="stage-parents-container stage-parents-container-border">
                                                         {stageParents.map(stageParent =>
                                                             <div className="parent-container">
-                                                                <div>{stageParent.name}</div>
+                                                                <div className={fromListView ? 'notes-listview-heading' : ''}>{stageParent.name}</div>
                                                                 <div className="nested-childs">
                                                                     {stageChildData[stageParent.name]?.map?.((child,index) => stageParent.name !== StageParentData.GROUPS ?
                                                                         <StageSwitch key={extractFromIdAware(salary).urn + index}
@@ -617,7 +617,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                 {completed && notes?.map((n, i) => (
                                                                         <NoteCard key={i} note={n}
                                                                                   currentCount={i} totalCount={notes.length}
-                                                                                  lastNoteRef={lastNoteRef}/>
+                                                                                  lastNoteRef={lastNoteRef}
+                                                                                  fromListView={fromListView}/>
                                                                     )
                                                                 )}
                                                                 {completed && notes.length == 0 &&
