@@ -90,7 +90,7 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
                     <div className="transition">
                         {getStage(note.stageTo)}
                     </div>}
-                    {note.text && <div className="text">{note.text}</div>}
+                    {note.text && <div className={`text ${fromListView ? 'text-listview' : ''}`}>{note.text}</div>}
                 </div>
             </div>
         </div>

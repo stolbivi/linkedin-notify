@@ -510,7 +510,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                     </Collapsible>
                                 )}
                                 {!showSalary ? (
-                                    <div className={`title-child ${!fromListView ? 'assigned' : ''}`}>
+                                    <div className={`title-child ${!fromListView ? 'assigned' : 'title-child-listview'}`}>
                                             <span style={{paddingRight: "5%", cursor: "pointer"}} ref={listviewNotesRef}>
                                                 Track Candidates
                                             </span>
@@ -529,10 +529,10 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                 {
                                     allGroupsMode ? (
                                         <>
-                                            <div onClick={()=>setAllGroupsMode(false)} style={{cursor: "pointer", paddingLeft: "2.2%", paddingTop: "3%"}}>
-                                                Go back
+                                            <div onClick={() => setAllGroupsMode(false)} className={`go-back-heading ${fromListView ? "go-back-heading-listview" : ""}`}>
+                                            Go back
                                             </div>
-                                            <div style={{display:"flex", alignItems:"center", paddingLeft: "2.2%", paddingTop: "2%"}}>
+                                            <div className={`groups-heading ${fromListView ? "groups-heading-listview" : ""}`}>
                                                 Groups
                                                 <label className="notes-counter">{customStages ? customStages.length : 0}</label>
                                             </div>
@@ -641,7 +641,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <Credits/>
+                                                            <Credits fromListView={fromListView}/>
                                                         </div>
                                                     </div>
                                                 </>
