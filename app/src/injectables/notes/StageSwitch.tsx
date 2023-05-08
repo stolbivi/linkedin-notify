@@ -144,7 +144,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
     }, [activeStage,notes]);
 
     const removeSelectedTag = (id: string) => {
-        setCompleted(false);
+        setCompleted(false)
         localStore.dispatch(deleteNoteAction({id, url: extractIdFromUrl(window.location.href)}));
         setTimeout(() => setCompleted(true), 3000);
     };

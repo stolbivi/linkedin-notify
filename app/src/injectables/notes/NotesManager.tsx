@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {NoteExtended, VERBOSE} from "../../global";
+import {extractIdFromUrl, NoteExtended, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
@@ -10,7 +10,7 @@ import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getCustomStages, getTheme, openUrl, sortAsc, sortDesc, SwitchThemePayload} from "../../actions";
+import {getCustomStages, getTheme, getUserIdByUrn, openUrl, sortAsc, sortDesc, SwitchThemePayload} from "../../actions";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as LightTheme} from "../../themes/light";
@@ -22,28 +22,39 @@ import {NotesContainer} from "./NotesContainer";
 
 // @ts-ignore
 import stylesheet from "./NotesManager.scss";
+import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
 
 export const NotesManagerFactory = () => {
     setTimeout(() => {
         const aside = document.getElementsByClassName("scaffold-layout__aside");
         if (aside && aside.length > 0) {
-            injectFirstChild(aside[0], "lnm-notes-manager",
-                <Provider store={localStore}>
-                    <NotesManager/>
-                </Provider>, "NotesManager"
-            );
+            if (window.location.href.indexOf("/in/") > 0 || window.location.href.indexOf("/messaging/") > 0) {
+                injectFirstChild(aside[0], "lnm-notes-manager",
+                    <Provider store={localStore}>
+                        <NotesManager showProfileNotes={true}/>
+                    </Provider>, "NotesManager"
+                );
+            } else {
+                injectFirstChild(aside[0], "lnm-notes-manager",
+                    <Provider store={localStore}>
+                        <NotesManager/>
+                    </Provider>, "NotesManager"
+                );
+            }
         }
-    }, 1000);
+    },1000);
 }
 
-type Props = {};
+type Props = {
+    showProfileNotes?: any
+};
 
 interface SearchValue {
     text: string
     stages: { [key: number]: boolean }
 }
 
-export const NotesManager: React.FC<Props> = ({}) => {
+export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
 
     const MAX_LENGTH = 200;
     const DEFAULT_SEARCH = {text: "", stages: {}};
@@ -64,6 +75,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [notes, setNotes] = useState<NoteExtended[]>([]);
     const lastNoteRef = useRef();
     const [backdrop, setBackDrop] = useState(false);
+    const [url] = useUrlChangeSupport(window.location.href);
 
 
     useEffect(() => {
@@ -131,6 +143,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
         }
     }, [selection])
 
+
     useEffect(() => {
         const stagesCount = Object.values(searchValue.stages).filter(v => v).length;
         let filteredNotes;
@@ -149,6 +162,43 @@ export const NotesManager: React.FC<Props> = ({}) => {
         }
         setNotes(filteredNotes);
     }, [selection, searchValue, searchText, notesAll]);
+
+    useEffect(() => {
+        if(showProfileNotes && notesAll.data.length > 0) {
+            let urn = document.querySelector(".app-aware-link.msg-thread__link-to-profile")?.href;
+            let profileID: string;
+            if(urn) {
+                let regex = /\/in\/(.+)/;
+                const match = regex.exec(urn);
+                profileID = match[1];
+            }
+            if(!profileID) {
+                messages.request(getUserIdByUrn(extractIdFromUrl(window.location.href)))
+                    .then((profileId) => {
+                        profileID = profileId;
+                        const note = notesAll?.data?.find(noteObj => noteObj.profile === profileID);
+                        if(note) {
+                            setSelection({
+                                profile: note.profile,
+                                profileName: note.profileName,
+                                profilePicture: note.profilePicture,
+                                profileLink: note.profileLink
+                            });
+                        }
+                    });
+            } else {
+                const note = notesAll?.data?.find(noteObj => noteObj.profile === profileID);
+                if(note) {
+                    setSelection({
+                        profile: note.profile,
+                        profileName: note.profileName,
+                        profilePicture: note.profilePicture,
+                        profileLink: note.profileLink
+                    });
+                }
+            }
+        }
+    },[notesAll,url]);
 
     const onProfileSelect = (profile: any) => setSelection(profile);
 
@@ -259,6 +309,18 @@ export const NotesManager: React.FC<Props> = ({}) => {
         }
     }
 
+    useEffect(() => {
+        setTimeout(() => {
+            // @ts-ignore
+            lastNoteRef?.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+                inline: 'nearest',
+                marginBottom: 50
+            });
+        }, 300);
+    },[notesAll, lastNoteRef.current]);
+
     const postNote = (text: string) => {
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
@@ -266,15 +328,6 @@ export const NotesManager: React.FC<Props> = ({}) => {
             localStore.dispatch(postNoteAction({id: selection.profile, stageTo: -1, text}));
             setText({value: ""});
             setEditable(true);
-            setTimeout(() => {
-                // @ts-ignore
-                lastNoteRef?.current?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'end',
-                    inline: 'nearest',
-                    marginBottom: 50
-                });
-            }, 400);
         }
     }
 

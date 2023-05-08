@@ -357,7 +357,11 @@ export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesA
             const notes = await backEndAPI.getNotes(as);
             if (notes.response) {
                 return extendNote(token, notes.response, as)
-                    .then(response => ({response} as Response<NoteExtended[]>));
+                    .then(response => {
+                        // @ts-ignore
+                        response.sort((a, b) => a.timestamp - b.timestamp);
+                        return {response};
+                    })
             } else {
                 return notes as Response<NoteExtended[]>;
             }
@@ -385,7 +389,11 @@ export const getNotesByProfile = createAction<string, Response<NoteExtended[]>>(
             const notes = await backEndAPI.getNotesByProfile(id, as);
             if (notes.response) {
                 return extendNote(token, notes.response, as)
-                    .then(response => ({response} as Response<NoteExtended[]>));
+                    .then(response => {
+                        // @ts-ignore
+                        response.sort((a, b) => a.timestamp - b.timestamp);
+                        return {response};
+                    })
             } else {
                 return notes as Response<NoteExtended[]>;
             }

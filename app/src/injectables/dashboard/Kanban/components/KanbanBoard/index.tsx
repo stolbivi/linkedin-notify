@@ -41,15 +41,17 @@ const KanbanBoard: React.FC<any> = () => {
 
   useEffect(() => {
     console.log("re-rending notesAll: ",notesAll)
-    messages.request(getAuthorStages())
-        .then((resp) => {
-          if (resp.data) {
-            setKanbanData(resp.data);
-            setCompleted(true);
-          }
-        });
-    if(sessionStorage.getItem("isListView")) {
-      setListView(JSON.parse(sessionStorage.getItem("isListView")));
+    if(notesAll.completed) {
+      messages.request(getAuthorStages())
+          .then((resp) => {
+            if (resp.data) {
+              setKanbanData(resp.data);
+              setCompleted(true);
+            }
+          });
+      if(sessionStorage.getItem("isListView")) {
+        setListView(JSON.parse(sessionStorage.getItem("isListView")));
+      }
     }
   },[notesAll]);
 
@@ -67,7 +69,7 @@ const KanbanBoard: React.FC<any> = () => {
           }
         })
         .catch(e => console.error(e.error));
-    populateKanbanData(IStatus.AVAILABILITY);
+    populateKanbanData(activeButton);
   },[kanbanData])
 
   const onDragEnd = (result: DropResult) => {

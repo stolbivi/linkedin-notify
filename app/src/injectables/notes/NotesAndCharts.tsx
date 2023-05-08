@@ -165,7 +165,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                 marginBottom: 50
             });
         }, 300);
-    },[notesAll]);
+    },[notesAll, lastNoteRef.current]);
     const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
 
