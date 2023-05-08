@@ -359,7 +359,7 @@ export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesA
                 return extendNote(token, notes.response, as)
                     .then(response => {
                         // @ts-ignore
-                        response.sort((a, b) => a.timestamp - b.timestamp);
+                        response.sort((a, b) => b.timestamp - a.timestamp);
                         return {response};
                     })
             } else {
