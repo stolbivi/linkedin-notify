@@ -150,10 +150,14 @@ export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url
         if (accessState !== AccessState.Valid) {
             return;
         }
-        getData();
-        const query = new URL(customUrl);
-        extractAuthor(query.searchParams, "miniProfileUrn");
-        extractAuthor(query.searchParams, "miniCompanyUrn");
+        if(customUrl) {
+            setTimeout(() => {
+                getData();
+                const query = new URL(customUrl);
+                extractAuthor(query.searchParams, "miniProfileUrn");
+                extractAuthor(query.searchParams, "miniCompanyUrn");
+            },500)
+        }
     }, [accessState, customUrl]);
 
     useEffect(() => {
