@@ -226,7 +226,7 @@ const ListView = ({cards, parentTheme}) => {
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className={classes.root} style={{ height: '840px', width: '1151px', padding: '1px'}} ref={rootElement}>
+            <div className={classes.root} style={{ height: '840px', width: '1151px', minWidth: '1151px',maxWidth: '1151px', padding: '1px'}} ref={rootElement}>
                 <DataGrid
                     rows={cards}
                     columns={columns}

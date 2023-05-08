@@ -122,7 +122,7 @@ export const StagePill: React.FC<Props> = ({id, usePrf}) => {
             {accessState === AccessState.Valid &&
                 <div className={`stage ${StageLabels[getStage()] ? StageLabels[getStage()].class : 'interested'}`} onClick={onClick} style={{marginLeft: "1em"}} ref={rootElement}>
                     <div className="loader"><Loader show={!extractFromIdAware().completed}/></div>
-                    <label className="ellipsis" style={{opacity: extractFromIdAware().completed ? 1 : 0}}>{getText()}</label>
+                    <label className="ellipsis ellipsis-stage-pill" style={{opacity: extractFromIdAware().completed ? 1 : 0, }}>{getText()}</label>
                 </div>}
         </React.Fragment>
     );

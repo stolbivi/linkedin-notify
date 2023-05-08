@@ -232,50 +232,50 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                         fill="#909090"/>
                 </svg>
                 <input type="text" onKeyUp={updateSearchValueWithText} placeholder="Filter"/>
-                <div className="search-dropdown" onClick={() => {setShowDropDown(!showDropDown);setBackDrop(true)}}>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M8.43994 10.125C7.47994 10.125 6.57494 9.61501 6.08494 8.79001C5.82494 8.37001 5.68994 7.88 5.68994 7.375C5.68994 5.86 6.92494 4.625 8.43994 4.625C9.95494 4.625 11.1899 5.86 11.1899 7.375C11.1899 7.88 11.0499 8.37001 10.7899 8.79501C10.3049 9.61501 9.40494 10.125 8.43994 10.125ZM8.43994 5.375C7.33494 5.375 6.43994 6.27 6.43994 7.375C6.43994 7.74 6.53994 8.09499 6.72994 8.39999C7.08994 9.00499 7.74494 9.375 8.43994 9.375C9.14994 9.375 9.78994 9.015 10.1499 8.405C10.3399 8.095 10.4399 7.74 10.4399 7.375C10.4399 6.27 9.54494 5.375 8.43994 5.375Z"
-                            fill="#909090"/>
-                        <path
-                            d="M9.32993 7.73999H7.55493C7.34993 7.73999 7.17993 7.56999 7.17993 7.36499C7.17993 7.15999 7.34993 6.98999 7.55493 6.98999H9.32993C9.53493 6.98999 9.70493 7.15999 9.70493 7.36499C9.70493 7.56999 9.53493 7.73999 9.32993 7.73999Z"
-                            fill="#909090"/>
-                        <path
-                            d="M8.43994 8.64499C8.23494 8.64499 8.06494 8.47499 8.06494 8.26999V6.5C8.06494 6.295 8.23494 6.125 8.43994 6.125C8.64494 6.125 8.81494 6.295 8.81494 6.5V8.27499C8.81494 8.47999 8.64994 8.64499 8.43994 8.64499Z"
-                            fill="#909090"/>
-                        <path
-                            d="M5.4649 11.375C5.2249 11.375 4.9849 11.315 4.7699 11.195C4.3249 10.945 4.0599 10.495 4.0599 9.98999V7.315C4.0599 7.065 3.8949 6.68499 3.7349 6.48999L1.8349 4.495C1.5199 4.17 1.2749 3.62501 1.2749 3.22501V2.06C1.2749 1.255 1.8849 0.625 2.6599 0.625H9.3299C10.0949 0.625 10.7149 1.24501 10.7149 2.01001V3.12C10.7149 3.645 10.4049 4.23501 10.1049 4.54501L9.2049 5.34C9.1149 5.42 8.9899 5.44999 8.8699 5.42499C8.7349 5.38999 8.5899 5.375 8.4399 5.375C7.3349 5.375 6.4399 6.27 6.4399 7.375C6.4399 7.74 6.5399 8.095 6.7299 8.405C6.8899 8.67 7.1049 8.89001 7.3549 9.04501C7.4649 9.11501 7.5349 9.23499 7.5349 9.36499V9.535C7.5349 9.93 7.2949 10.485 6.8949 10.72L6.2049 11.165C5.9799 11.305 5.7199 11.375 5.4649 11.375ZM2.6649 1.375C2.3099 1.375 2.0299 1.675 2.0299 2.06V3.22501C2.0299 3.40501 2.1799 3.77501 2.3799 3.97501L4.3049 6C4.5599 6.315 4.8149 6.85001 4.8149 7.32001V9.995C4.8149 10.325 5.0449 10.49 5.1399 10.545C5.3549 10.665 5.6099 10.66 5.8049 10.54L6.5049 10.09C6.6399 10.01 6.7749 9.75501 6.7849 9.57501C6.5099 9.37001 6.2699 9.10499 6.0899 8.80499C5.8299 8.37999 5.6899 7.89002 5.6899 7.39002C5.6899 5.87502 6.9249 4.64002 8.4399 4.64002C8.5799 4.64002 8.7199 4.65001 8.8499 4.67001L9.5899 4.01501C9.7599 3.84001 9.9699 3.42501 9.9699 3.13001V2.01999C9.9699 1.66999 9.6849 1.38501 9.3349 1.38501H2.6649V1.375Z"
-                            fill="#909090"/>
-                    </svg>
-                    <div>{getFilterCount()}</div>
-                    <svg width="8" height="5" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 1L4 4L7 1" stroke="#909090" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    {showDropDown && (<div id="dropdown-options" ref={dropdownRef} className="dropdown-options">
-                        <StageButton type={StageEnum.Interested}
-                                     selected={searchValue.stages[StageEnum.Interested]}
-                                     onSelect={onStageSelected}
-                                     notesDropDown={true}
-                        />
-                        <StageButton type={StageEnum.NotInterested}
-                                     selected={searchValue.stages[StageEnum.NotInterested]}
-                                     onSelect={onStageSelected}
-                                     notesDropDown={true}/>
-                        <StageButton type={StageEnum.Interviewing}
-                                     selected={searchValue.stages[StageEnum.Interviewing]}
-                                     onSelect={onStageSelected}
-                                     notesDropDown={true}/>
-                        <StageButton type={StageEnum.FailedInterview}
-                                     selected={searchValue.stages[StageEnum.FailedInterview]}
-                                     onSelect={onStageSelected}
-                                     notesDropDown={true}/>
-                        <StageButton type={StageEnum.Hired}
-                                     selected={searchValue.stages[StageEnum.Hired]}
-                                     onSelect={onStageSelected}
-                                     notesDropDown={true}/>
-                    </div>
-                    )}
-                </div>
+                {/*<div className="search-dropdown" onClick={() => {setShowDropDown(!showDropDown);setBackDrop(true)}}>*/}
+                {/*    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">*/}
+                {/*        <path*/}
+                {/*            d="M8.43994 10.125C7.47994 10.125 6.57494 9.61501 6.08494 8.79001C5.82494 8.37001 5.68994 7.88 5.68994 7.375C5.68994 5.86 6.92494 4.625 8.43994 4.625C9.95494 4.625 11.1899 5.86 11.1899 7.375C11.1899 7.88 11.0499 8.37001 10.7899 8.79501C10.3049 9.61501 9.40494 10.125 8.43994 10.125ZM8.43994 5.375C7.33494 5.375 6.43994 6.27 6.43994 7.375C6.43994 7.74 6.53994 8.09499 6.72994 8.39999C7.08994 9.00499 7.74494 9.375 8.43994 9.375C9.14994 9.375 9.78994 9.015 10.1499 8.405C10.3399 8.095 10.4399 7.74 10.4399 7.375C10.4399 6.27 9.54494 5.375 8.43994 5.375Z"*/}
+                {/*            fill="#909090"/>*/}
+                {/*        <path*/}
+                {/*            d="M9.32993 7.73999H7.55493C7.34993 7.73999 7.17993 7.56999 7.17993 7.36499C7.17993 7.15999 7.34993 6.98999 7.55493 6.98999H9.32993C9.53493 6.98999 9.70493 7.15999 9.70493 7.36499C9.70493 7.56999 9.53493 7.73999 9.32993 7.73999Z"*/}
+                {/*            fill="#909090"/>*/}
+                {/*        <path*/}
+                {/*            d="M8.43994 8.64499C8.23494 8.64499 8.06494 8.47499 8.06494 8.26999V6.5C8.06494 6.295 8.23494 6.125 8.43994 6.125C8.64494 6.125 8.81494 6.295 8.81494 6.5V8.27499C8.81494 8.47999 8.64994 8.64499 8.43994 8.64499Z"*/}
+                {/*            fill="#909090"/>*/}
+                {/*        <path*/}
+                {/*            d="M5.4649 11.375C5.2249 11.375 4.9849 11.315 4.7699 11.195C4.3249 10.945 4.0599 10.495 4.0599 9.98999V7.315C4.0599 7.065 3.8949 6.68499 3.7349 6.48999L1.8349 4.495C1.5199 4.17 1.2749 3.62501 1.2749 3.22501V2.06C1.2749 1.255 1.8849 0.625 2.6599 0.625H9.3299C10.0949 0.625 10.7149 1.24501 10.7149 2.01001V3.12C10.7149 3.645 10.4049 4.23501 10.1049 4.54501L9.2049 5.34C9.1149 5.42 8.9899 5.44999 8.8699 5.42499C8.7349 5.38999 8.5899 5.375 8.4399 5.375C7.3349 5.375 6.4399 6.27 6.4399 7.375C6.4399 7.74 6.5399 8.095 6.7299 8.405C6.8899 8.67 7.1049 8.89001 7.3549 9.04501C7.4649 9.11501 7.5349 9.23499 7.5349 9.36499V9.535C7.5349 9.93 7.2949 10.485 6.8949 10.72L6.2049 11.165C5.9799 11.305 5.7199 11.375 5.4649 11.375ZM2.6649 1.375C2.3099 1.375 2.0299 1.675 2.0299 2.06V3.22501C2.0299 3.40501 2.1799 3.77501 2.3799 3.97501L4.3049 6C4.5599 6.315 4.8149 6.85001 4.8149 7.32001V9.995C4.8149 10.325 5.0449 10.49 5.1399 10.545C5.3549 10.665 5.6099 10.66 5.8049 10.54L6.5049 10.09C6.6399 10.01 6.7749 9.75501 6.7849 9.57501C6.5099 9.37001 6.2699 9.10499 6.0899 8.80499C5.8299 8.37999 5.6899 7.89002 5.6899 7.39002C5.6899 5.87502 6.9249 4.64002 8.4399 4.64002C8.5799 4.64002 8.7199 4.65001 8.8499 4.67001L9.5899 4.01501C9.7599 3.84001 9.9699 3.42501 9.9699 3.13001V2.01999C9.9699 1.66999 9.6849 1.38501 9.3349 1.38501H2.6649V1.375Z"*/}
+                {/*            fill="#909090"/>*/}
+                {/*    </svg>*/}
+                {/*    <div>{getFilterCount()}</div>*/}
+                {/*    <svg width="8" height="5" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">*/}
+                {/*        <path d="M1 1L4 4L7 1" stroke="#909090" strokeLinecap="round" strokeLinejoin="round"/>*/}
+                {/*    </svg>*/}
+                {/*    {showDropDown && (<div id="dropdown-options" ref={dropdownRef} className="dropdown-options">*/}
+                {/*        <StageButton type={StageEnum.Interested}*/}
+                {/*                     selected={searchValue.stages[StageEnum.Interested]}*/}
+                {/*                     onSelect={onStageSelected}*/}
+                {/*                     notesDropDown={true}*/}
+                {/*        />*/}
+                {/*        <StageButton type={StageEnum.NotInterested}*/}
+                {/*                     selected={searchValue.stages[StageEnum.NotInterested]}*/}
+                {/*                     onSelect={onStageSelected}*/}
+                {/*                     notesDropDown={true}/>*/}
+                {/*        <StageButton type={StageEnum.Interviewing}*/}
+                {/*                     selected={searchValue.stages[StageEnum.Interviewing]}*/}
+                {/*                     onSelect={onStageSelected}*/}
+                {/*                     notesDropDown={true}/>*/}
+                {/*        <StageButton type={StageEnum.FailedInterview}*/}
+                {/*                     selected={searchValue.stages[StageEnum.FailedInterview]}*/}
+                {/*                     onSelect={onStageSelected}*/}
+                {/*                     notesDropDown={true}/>*/}
+                {/*        <StageButton type={StageEnum.Hired}*/}
+                {/*                     selected={searchValue.stages[StageEnum.Hired]}*/}
+                {/*                     onSelect={onStageSelected}*/}
+                {/*                     notesDropDown={true}/>*/}
+                {/*    </div>*/}
+                {/*    )}*/}
+                {/*</div>*/}
             </div>
             <div className="scroll-container">
                 <div className="scroll-content">
