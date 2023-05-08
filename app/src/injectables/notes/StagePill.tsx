@@ -114,7 +114,13 @@ export const StagePill: React.FC<Props> = ({id, usePrf}) => {
 
     const getStage = () => extractFromIdAware().stage >= 0 ? extractFromIdAware().stage : -1;
 
-    const getText = () => extractFromIdAware().completed ? (StageLabels[getStage()] ? StageLabels[getStage()].label : getStage().stageText) : "Loading"
+    const getText = () => {
+        let text = extractFromIdAware().completed ? (StageLabels[getStage()] ? StageLabels[getStage()].label : getStage().stageText) : "Loading";
+        if (text.length > 10 && text !== "Add Status") {
+            text = text.substr(0, 10) + "...";
+        }
+        return text;
+    }
 
     return (
         <React.Fragment>
@@ -124,7 +130,7 @@ export const StagePill: React.FC<Props> = ({id, usePrf}) => {
             {accessState === AccessState.Valid &&
                 <div className={`stage ${StageLabels[getStage()] ? StageLabels[getStage()].class : 'interested'}`} onClick={onClick} style={{marginLeft: "1em"}} ref={rootElement}>
                     <div className="loader"><Loader show={!extractFromIdAware().completed}/></div>
-                    <label className="ellipsis ellipsis-stage-pill" style={{opacity: extractFromIdAware().completed ? 1 : 0, }}>{getText()}</label>
+                    <label style={{opacity: extractFromIdAware().completed ? 1 : 0, }}>{getText()}</label>
                 </div>}
         </React.Fragment>
     );
