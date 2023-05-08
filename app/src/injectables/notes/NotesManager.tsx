@@ -4,7 +4,6 @@ import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
 import {injectFirstChild} from "../../utils/InjectHelper";
-import {StageButton} from "./StageButton";
 import {StageEnum, StageLabels} from "./StageSwitch";
 import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
@@ -184,6 +183,8 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                                 profilePicture: note.profilePicture,
                                 profileLink: note.profileLink
                             });
+                        } else {
+                            setSelection(undefined);
                         }
                     });
             } else {
@@ -286,7 +287,8 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                         <div className="no-notes">
                             <NoNotes/>
                             <div>No notes yet</div>
-                        </div>}
+                        </div>
+                    }
                 </div>
             </div>
             <Credits short={true}/>
