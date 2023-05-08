@@ -103,7 +103,7 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
         }
     }*/
 
-/*    useEffect(() => {
+    useEffect(() => {
         const clonedSalary = JSON.parse(JSON.stringify(salary));
         if(Object.keys(clonedSalary).length > 0 && clonedSalary.payDistributionValues.length > 0) {
             if(distribution.left.value !== "" && distribution.left.value !== "$" && typeof distribution.left.value === "string") {
@@ -116,7 +116,7 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
             clonedSalary.progressivePayValue =  parseInt(salaryLabel?.replace("$", "").replace(",", ""));
             setSalaryInternal(clonedSalary);
         }
-    },[distribution,salaryLabel]);*/
+    },[salaryLabel]);
 
     return (
         <React.Fragment>

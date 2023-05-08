@@ -1,6 +1,6 @@
 import Chart from 'chart.js/auto';
 import React, {useEffect, useRef, useState} from "react";
-import {Salary} from "../SalaryPill";
+import {Salary} from "../../../src/store/SalaryReducer";
 import "./PayExtrapolationChart.scss";
 import {Theme} from "../../global";
 

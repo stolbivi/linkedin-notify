@@ -10,7 +10,7 @@ import {getSalaryAction, Salary} from "../store/SalaryReducer";
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
 import {useUrlChangeSupport} from "../utils/URLChangeSupport";
-import {getMe} from "../actions";
+import {getCustomSalary, getMe} from "../actions";
 import {MessagesV2} from "@stolbivi/pirojok";
 
 export const SalaryPillFactory = () => {
@@ -97,7 +97,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
         setSalaryInternal(salary);
     },[salary]);
 
-/*    useEffect(() => {
+    useEffect(() => {
         if(salary.completed) {
             messages.request(getCustomSalary(salary.urn)).then(resp => {
                 if(resp) {
@@ -109,7 +109,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
                 }
             })
         }
-    },[salaryInternal]);*/
+    },[]);
 
     const onClick = () => {
         if (salary) {
