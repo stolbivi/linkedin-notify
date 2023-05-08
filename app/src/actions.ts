@@ -368,15 +368,13 @@ export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesA
         }));
 
 export const sortAsc = (notes: NoteExtended[]) => notes.sort((a, b) => {
-    const aTime = a?.timestamp instanceof Date ? a.timestamp.getTime() : 0;
-    const bTime = b?.timestamp instanceof Date ? b.timestamp.getTime() : 0;
-    return aTime - bTime;
+    //@ts-ignore
+    return a?.timestamp - b?.timestamp;
 });
 
 export const sortDesc = (notes: NoteExtended[]) => notes.sort((a, b) => {
-    const aTime = a?.timestamp instanceof Date ? a.timestamp.getTime() : 0;
-    const bTime = b?.timestamp instanceof Date ? b.timestamp.getTime() : 0;
-    return bTime - aTime;
+    //@ts-ignore
+    return b?.timestamp - a?.timestamp;
 });
 
 // @Deprecated: this API is deprecated and is not used since all notes are now shared via store

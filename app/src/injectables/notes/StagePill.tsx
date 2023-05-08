@@ -96,7 +96,7 @@ export const StagePill: React.FC<Props> = ({id, usePrf}) => {
         let urlRequest = usePrf ? sessionStorage.getItem("prf") : idInternal;
         setTimeout(() => {
             localStore.dispatch(getLatestStageAction({id: idInternal, state: {url: urlRequest}}));
-        },400)
+        },500)
     }, [idInternal, accessState]);
 
     const onClick = () => {

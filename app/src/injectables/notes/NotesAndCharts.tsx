@@ -194,6 +194,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
             if (notesAll?.data?.length > 0) {
                 let filtered = notesAll?.data?.filter(n => n.profile === extractFromIdAware(salary).urn);
                 sortAsc(filtered);
+                console.log("filtered: ", filtered)
                 setNotes(filtered);
             }
         }
