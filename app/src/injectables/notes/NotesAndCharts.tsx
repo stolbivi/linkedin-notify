@@ -19,7 +19,7 @@ import {
     getCustomSalary,
     getCustomStages,
     getTheme,
-    setCustomSalary, sortAsc
+    setCustomSalary
 } from "../../actions";
 import {
     CompleteEnabled,
@@ -192,9 +192,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     useEffect(() => {
         if (extractFromIdAware(salary) && idInternal) {
             if (notesAll?.data?.length > 0) {
-                let filtered = notesAll?.data?.filter(n => n.profile === extractFromIdAware(salary).urn);
-                sortAsc(filtered);
-                console.log("filtered: ", filtered)
+                let response = notesAll?.data?.filter(n => n.profile === extractFromIdAware(salary).urn);
+                // @ts-ignore
+                let filtered = response.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
                 setNotes(filtered);
             }
         }
