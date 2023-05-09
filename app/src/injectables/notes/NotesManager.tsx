@@ -311,17 +311,17 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
         }
     }
 
-    useEffect(() => {
-        setTimeout(() => {
-            // @ts-ignore
-            lastNoteRef?.current?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'end',
-                inline: 'nearest',
-                marginBottom: 50
-            });
-        }, 300);
-    },[notesAll, lastNoteRef.current]);
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         // @ts-ignore
+    //         lastNoteRef?.current?.scrollIntoView({
+    //             behavior: 'smooth',
+    //             block: 'end',
+    //             inline: 'nearest',
+    //             marginBottom: 50
+    //         });
+    //     }, 300);
+    // },[notesAll, lastNoteRef.current]);
 
     const postNote = (text: string) => {
         if (text && text !== "") {
