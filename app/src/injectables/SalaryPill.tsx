@@ -98,7 +98,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
     },[salary]);
 
     useEffect(() => {
-        if(salary.completed) {
+        if(salary?.completed) {
             messages.request(getCustomSalary(salary.urn)).then(resp => {
                 if(resp) {
                     const clonedSalary = JSON.parse(JSON.stringify(salary));
