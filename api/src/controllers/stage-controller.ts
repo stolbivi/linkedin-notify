@@ -167,8 +167,8 @@ export class StageController extends BaseController {
                             item.delete();
                         });
                     })
-                    .catch((error: any) => {
-                        console.log(error);
+                    .catch((err: any) => {
+                        console.log(err);
                     });
             }
             const saved = await StageModel.create(body);
