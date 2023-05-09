@@ -44,13 +44,13 @@ export class LinkedInAPI {
     }
 
     public extractExperience(response: any): Experience {
-        const urn = response.elements[0].entityUrn?.split(":").pop();
-        const element = response.elements[0]?.profileTopPosition?.elements[0];
-        const {month: startMonth, year: startYear} = element.dateRange?.start ?? {};
-        const {month: endMonth, year: endYear} = element.dateRange?.end ?? {};
+        const urn = response?.elements[0].entityUrn?.split(":").pop();
+        const element = response?.elements[0]?.profileTopPosition?.elements[0];
+        const {month: startMonth, year: startYear} = element?.dateRange?.start ?? {};
+        const {month: endMonth, year: endYear} = element?.dateRange?.end ?? {};
         let result = {urn, startMonth, startYear, endMonth, endYear} as Experience;
-        if (element.company) {
-            const {entityUrn, name, universalName, url} = element.company;
+        if (element?.company) {
+            const {entityUrn, name, universalName, url} = element?.company;
             result = {
                 ...result,
                 company: {name, universalName, entityUrn, url}
@@ -106,7 +106,7 @@ export class LinkedInAPI {
             defaultLocalizedNameWithoutCountryName: locationName
         } = JSONPath.query(response, "$..geoLocation.geo").shift() as any;
         if (countryName) {
-            const country = countryName.defaultLocalizedName;
+            const country = countryName?.defaultLocalizedName;
             let location = locationName;
             if (location.indexOf(",") > 0) {
                 location = locationName.split(",")
