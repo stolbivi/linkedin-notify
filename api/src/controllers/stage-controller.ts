@@ -157,6 +157,20 @@ export class StageController extends BaseController {
             return Promise.resolve("Please, sign in to use premium features");
         }
         try {
+            if(ParentStageEnum.GEOGRAPHY !== body.parentStage && ParentStageEnum.GROUPS !== body.parentStage) {
+                await StageModel.scan("author").eq(body.author)
+                    .where("profileId").eq(body.profileId)
+                    .where("parentStage").eq(body.parentStage)
+                    .exec()
+                    .then((items: any[]) => {
+                        items.forEach((item) => {
+                            item.delete();
+                        });
+                    })
+                    .catch((error: any) => {
+                        console.log(error);
+                    });
+            }
             const saved = await StageModel.create(body);
             let message: any = {response: saved.toJSON()};
             if (request?.user) {
@@ -253,7 +267,7 @@ export class StageController extends BaseController {
             return Promise.resolve("Please, sign in to use premium features");
         }
         try {
-            let query = StageModel.query("author").eq(author).where("profileId").eq(profileId);;
+            let query = StageModel.query("author").eq(author).where("profileId").eq(profileId);
             const result = await query.exec();
             let message: any = {response: result.map((i: any) => i.toJSON())};
             const data = {};
