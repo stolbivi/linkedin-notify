@@ -18,7 +18,7 @@ const slice = createSlice({
         postNoteAction: (_1, _2: PayloadAction<PostNotePayload>) => {
         },
         appendNoteAction: (state, action: PayloadAction<NoteExtended>) => {
-            state.data = [...state.data, action.payload];
+            state.data.unshift(action.payload);
         },
         deleteNoteAction: (_1, _2: PayloadAction<{id: string, url?: string}>) => {
         },
