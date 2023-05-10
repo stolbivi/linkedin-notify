@@ -63,8 +63,8 @@ export const AutoFeatureFactory = () => {
                 inject(aside[0], `auto-features-profile`, "before",
                     <div style={{paddingLeft: "0.25em", marginLeft: "-11rem", marginTop: "-20.5rem"}}>
                         <Provider store={localStore}>
-                            <AutoFeature fromProfile={true} type={"like"}/>
-                            <AutoFeature fromProfile={true} type={"repost"}/>
+                            <AutoFeature fromProfile={true} type={"like"} url={window.location.href}/>
+                            <AutoFeature fromProfile={true} type={"repost"} url={window.location.href}/>
                         </Provider>
                     </div>, "AutoFeature"
                 );
@@ -76,8 +76,8 @@ export const AutoFeatureFactory = () => {
                 inject(aside[0], `auto-features-profile`, "before",
                     <div style={{marginLeft: "-8rem", marginTop: "-0.5rem", position: "absolute"}}>
                         <Provider store={localStore}>
-                            <AutoFeature fromCompany={true} type={"like"}/>
-                            <AutoFeature fromCompany={true} type={"repost"}/>
+                            <AutoFeature fromCompany={true} type={"like"} url={window.location.href}/>
+                            <AutoFeature fromCompany={true} type={"repost"} url={window.location.href}/>
                         </Provider>
                     </div>, "AutoFeature"
                 );
@@ -97,7 +97,7 @@ type Props = {
 export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url}) => {
 
     const messages = new MessagesV2(VERBOSE);
-    const [urlInternal] = useUrlChangeSupport(window.location.href);
+    const [urlInternal] = useUrlChangeSupport(url);
 // @ts-ignore
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
     const [completed, setCompleted] = useState(false);
@@ -108,15 +108,17 @@ export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url
     const [show, setShow] = useState(true);
 
     useEffect(() => {
+        const userId = extractIdFromUrl(urlInternal);
+        messages.request(getMe()).then(resp => {
+            if(userId === resp.miniProfile.publicIdentifier) {
+                setShow(false);
+            } else {
+                setShow(true);
+            }
+        });
        if(fromProfile) {
            setCompleted(false);
            const orgUrl = `${urlInternal}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`;
-           const userId = extractIdFromUrl(urlInternal);
-           messages.request(getMe()).then(resp => {
-               if(userId === resp.miniProfile.publicIdentifier) {
-                   setShow(false);
-               }
-           });
            messages.request(getUserIdByUrn(userId)).then((profileId) => {
                setCustomUrl(orgUrl + profileId);
                setCompleted(true);
