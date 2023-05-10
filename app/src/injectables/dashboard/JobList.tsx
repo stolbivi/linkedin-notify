@@ -294,7 +294,7 @@ const JobList = () => {
                                         <div className="details-view">
                                             {
                                                 listView ? (
-                                                    <ListView cards={cards} parentTheme={theme}/>
+                                                    <ListView cards={cards} parentTheme={theme} jobsList={true}/>
                                                 ) : (
                                                         <>
                                                             <div className="edit-container">
@@ -477,7 +477,7 @@ const JobList = () => {
                                                         {field.title}
                                                     </td>
                                                     <td>
-                                                        {field.salary}
+                                                        ${field.salary}
                                                     </td>
                                                     <td>
                                                         {field.company}

@@ -17,7 +17,7 @@ import {theme as DarkTheme} from "../../../../../themes/dark";
 import {showNotesAndChartsAction} from "../../../../../store/ShowNotesAndCharts";
 import {localStore} from "../../../../../../src/store/LocalStore";
 // @ts-ignore
-const ListView = ({cards, parentTheme}) => {
+const ListView = ({cards, parentTheme, jobsList}) => {
 
     const lightMode = {
         '& .MuiDataGrid-root': {
@@ -222,14 +222,15 @@ const ListView = ({cards, parentTheme}) => {
         }
     ];
 
-
+    const visibleColumns = jobsList ? columns.filter(column => column.field !== 'status')  : columns;
+    console.log("visibleColumns: ", visibleColumns);
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className={classes.root} style={{ height: '840px', width: '1151px', minWidth: '1151px',maxWidth: '1151px', padding: '1px'}} ref={rootElement}>
                 <DataGrid
                     rows={cards}
-                    columns={columns}
+                    columns={visibleColumns}
                     pagination
                     pageSize={10}
                     rowHeight={70}
