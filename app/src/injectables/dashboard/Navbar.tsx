@@ -15,22 +15,43 @@ import {theme as LightTheme} from "../../themes/light";
 import {getTheme, SwitchThemePayload} from "../../actions";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../themes/dark";
-import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
+import { useUrlChangeSupport } from "../../utils/URLChangeSupport";
+import {getQuery} from "../../utils/LnDashboardHelper";
 
-const Navbar = () => {
+type View = "candidates" | "jobList" | "search"
 
+const Navbar = ({handleInit, customView} : {handleInit: Function, customView?: View}) => {
+    const [view, setView] =  useState<View>('candidates');
     const messages = new MessagesV2(VERBOSE);
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
     const [isJobListClicked, setIsJobListClicked] = useState(false);
     const [isCandidatesClicked, setIsCandidatesClicked] = useState(true);
     const [isBooleanSearchClicked, setIsBooleanSearchClicked] = useState(false);
-    const [urlInternal] = useUrlChangeSupport(window.location.href);
+    const [currentUrl] = useUrlChangeSupport(window.location.href);
 
     useEffect(() => {
-        if (window.location.href.indexOf("/lndashboard/") < 0) {
-            window.location.reload();
+        if(!customView) return;
+        setView(customView);
+    }, [customView])
+
+    useEffect(() => {
+        setView(getQuery('view') as View);
+    }, [currentUrl])
+
+    useEffect(() => {
+        updateView(view)
+    }, [view])
+
+
+    const updateView = (view: View) => {
+        if(view === 'jobList') {
+            jobListClickHandler();
+        } else if(view === 'candidates') {
+            candidatesClickHandler();
+        } else if(view === 'search') {
+            booleanSearchClickHandler();
         }
-    }, [urlInternal]);
+    }
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
@@ -45,61 +66,54 @@ const Navbar = () => {
                 setThemeUtil(theme, rootElement);
                 return Promise.resolve();
             }));
+        updateView(getQuery('view') as View)
     }, []);
 
-    const jobListClickHandler = () => {
+    const renderComponent = (component: JSX.Element, jobListClicked:boolean, candidatesClicked: boolean, booleanSearchClicked: boolean) => {
         const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
         if (targetElement) {
-            targetElement.style.width = 'auto';
-            ReactDOM.render(<JobList />, targetElement);
-            setIsJobListClicked(true);
-            setIsCandidatesClicked(false);
-            setIsBooleanSearchClicked(false);
-            sessionStorage.removeItem("isListView")
+          targetElement.style.width = 'auto';
+          ReactDOM.render(component, targetElement);
+          setIsJobListClicked(jobListClicked);
+          setIsCandidatesClicked(candidatesClicked);
+          setIsBooleanSearchClicked(booleanSearchClicked);
         } else {
-            console.warn('Target element not found.');
+          console.warn('Target element not found.');
+          handleInit();
         }
-    }
+      };
 
-    const candidatesClickHandler = () => {
-        const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
-        if (targetElement) {
-            targetElement.style.width = 'auto';
-            ReactDOM.render(<Kanban />, targetElement);
-            setIsJobListClicked(false);
-            setIsCandidatesClicked(true);
-            setIsBooleanSearchClicked(false);
-        } else {
-            console.warn('Target element not found.');
-        }
-    }
+      const jobListClickHandler = () => {
+        renderComponent(<JobList />, true, false, false);
+      };
 
-    const booleanSearchClickHandler = () => {
-        const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
-        if (targetElement) {
-            targetElement.style.width = 'auto';
-            ReactDOM.render(<BooleanSearch />, targetElement);
-            setIsJobListClicked(false);
-            setIsCandidatesClicked(false);
-            setIsBooleanSearchClicked(true);
-        } else {
-            console.warn('Target element not found.');
-        }
+      const candidatesClickHandler = () => {
+        renderComponent(<Kanban />, false, true, false);
+      };
+
+      const booleanSearchClickHandler = () => {
+        renderComponent(<BooleanSearch />, false, false, true);
+      };
+
+
+    const goToView = (view: View) => {
+        setView(view);
+        window.history.pushState({ component: view }, '', `#lndashboard?view=${view}`);
     }
 
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="lnm-dashboard-navbar" ref={rootElement}>
-                <button className={`navbarBtn ${isCandidatesClicked ? 'clicked' : ''}`} onClick={candidatesClickHandler}>
+                <button className={`navbarBtn ${isCandidatesClicked ? 'clicked' : ''}`} onClick={()=>goToView('candidates')}>
                     <img src={peopleIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}} />
                     Candidates
                 </button>
-                <button className={`navbarBtn ${isJobListClicked ? 'clicked' : ''} job-list-navbar`} onClick={jobListClickHandler}>
+                <button className={`navbarBtn ${isJobListClicked ? 'clicked' : ''} job-list-navbar`} onClick={()=>goToView('jobList')}>
                     <img src={bagIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}}/>
                     Jobs List
                 </button>
-                <button className={`navbarBtn ${isBooleanSearchClicked ? 'clicked' : ''}`} onClick={booleanSearchClickHandler}>
+                <button className={`navbarBtn ${isBooleanSearchClicked ? 'clicked' : ''}`} onClick={()=>goToView('search')}>
                     <img src={searchIcon} alt="Icon" width="20" height="20" style={{marginRight:"10px"}}/>
                     Boolean Search Tool
                 </button>

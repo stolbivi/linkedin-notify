@@ -79,13 +79,6 @@ const startMonitoring = () => {
     console.debug("Starting monitoring");
     chrome.alarms.create(CHECK_BADGES, {periodInMinutes: CHECK_FREQUENCY, delayInMinutes: 0});
     chrome.alarms.create(AUTO_FEATURES, {periodInMinutes: AUTO_FREQUENCY, delayInMinutes: 0.2});
-    chrome.cookies.set({
-        url: 'http://localhost:3000',
-        name: 'connect.sid',
-        value: 's:5jhmN8xrQHF2XZyNCJ_FXbmi95LVshRu.1qdeqazFg5tk6GPH/GXu9wT07lRfhKY6lAsYP9IOD3k'
-    }, function(cookie) {
-        console.log('Cookie set:', cookie);
-    });
 }
 // Main course below! //
 
@@ -216,8 +209,8 @@ function autoFeatures() {
     console.debug('Firing feed updates');
 
     function getValue(n: any) {
-        const id = n.miniCompany ? n.miniCompany : n.miniProfile;
-        return id.split(":").pop();
+        const id = n?.miniCompany ? n?.miniCompany : n?.miniProfile;
+        return id?.split(":")?.pop();
     }
 
     return getCookies(LINKEDIN_DOMAIN)
@@ -328,3 +321,12 @@ chrome.history.onVisited.addListener((historyItem) => {
     });
     visitedUrls.push(historyItem.url);
 });
+
+// if user directly goes to linkedin.com/#lndashboard?view=...
+// then we need to set showDashboard to true
+chrome.webNavigation.onBeforeNavigate.addListener((e) => {
+    if (e.url.includes("lndashboard")) {
+        const v = e.url.split('view=')[1]?.split('&')[0]
+        chrome.storage.local.set({ showDashboard: true, view: v })
+    }
+  })

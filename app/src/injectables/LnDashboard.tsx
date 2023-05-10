@@ -1,5 +1,6 @@
-import React, {useEffect} from "react";
-import {injectFirstChild} from "../utils/InjectHelper";
+import React, {useEffect, useState} from "react";
+import {
+injectFirstChild, mountComponent, unmountComponent} from "../utils/InjectHelper"
 // @ts-ignore
 import stylesheet from "./LnDashboard.scss";
 import {getTheme, SwitchThemePayload} from "../actions";
@@ -11,7 +12,8 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../themes/dark";
 import ReactDOM from "react-dom";
 import Navbar from "./dashboard/Navbar";
-import Kanban from "./dashboard/Kanban";
+import { useUrlChangeSupport } from "../utils/URLChangeSupport";
+import {getQuery} from "../utils/LnDashboardHelper";
 
 export const LnDashboardFactory = () => {
     const header = document.getElementsByClassName("global-nav__primary-items");
@@ -19,13 +21,16 @@ export const LnDashboardFactory = () => {
         injectFirstChild(header[0], "lnm-dashboard",
             <LnDashboard/>, "LnDashboard"
         );
-    }
+    (document.querySelector("lnm-dashboard div") as HTMLElement).style.height = "100%"
+  }
 }
-type Props = {};
-
+type Props = {}
+type View = "candidates" | "jobList" | "search"
 export const LnDashboard: React.FC<Props> = ({}) => {
     const messages = new MessagesV2(VERBOSE);
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
+    const [view, setView] = useState<View>("candidates")
+    const [currentUrl] = useUrlChangeSupport(window.location.href)
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
@@ -39,25 +44,102 @@ export const LnDashboard: React.FC<Props> = ({}) => {
                 setThemeUtil(theme, rootElement);
                 return Promise.resolve();
             }));
+
+        chrome.storage.local.get(["showDashboard", "view"], function (result) {
+          if (result.showDashboard && result.view) {
+            setView(result.view)
+            window.history.pushState({ component: result.view },"","https://www.linkedin.com/#lndashboard?view=" + result.view)
+            initDashboard(result.view)
+            chrome.storage.local.set({ showDashboard: false }, function () {})
+          }
+        })
     }, []);
-    const dashboardClickHandler = () => {
-        const navBarElement = document.querySelector('.scaffold-layout.scaffold-layout--breakpoint-xl');
-        if (navBarElement) {
-            const newUrl = 'https://www.linkedin.com/lndashboard/';
-            window.history.replaceState({ path: newUrl }, '', newUrl);
-            document.getElementsByClassName("global-nav__primary-link--active")[0]?.classList?.remove("global-nav__primary-link--active");
-            ReactDOM.render(<Navbar/>, navBarElement);
-            const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
-            if (targetElement) {
-                targetElement.style.width = 'auto';
-                ReactDOM.render(<Kanban />, targetElement);
-            } else {
-                console.warn('Target element not found.');
-            }
-        } else {
-            console.warn('Navbar element not found.');
+
+    useEffect(() => {
+        if(!currentUrl.includes('lndashboard')) {
+          document
+          .querySelectorAll(".scaffold-layout .scaffold-layout-container")
+          .forEach((el: HTMLElement) => {
+            el.style.display = "inherit"
+          })
+
+        rootElement.current.classList.remove("dashboard-active")
+        unmountComponent("Navbar")
+        } else if (currentUrl.includes("lndashboard")) {
+          const el = document.getElementById('lnm-dashboard-wrapper')
+          const url = window.location.href
+          setView(url.split("view=")[1]?.split("&")[0] as View)
+          if(!el) {
+            initDashboard(view)
+          }
         }
+    }, [currentUrl]);
+
+
+
+  const getDashboardWrapper = (target: HTMLElement) => {
+    if (document.getElementById("lnm-dashboard-wrapper")) {
+      return document.getElementById("lnm-dashboard-wrappper") as HTMLElement
     }
+
+    document
+      .querySelectorAll(".scaffold-layout-container")
+      .forEach((el: HTMLElement) => {
+        el.style.display = "none"
+      })
+
+    const dashboardWrapper = document.createElement("div")
+    dashboardWrapper.id = "lnm-dashboard-wrapper"
+    target.appendChild(dashboardWrapper)
+    return dashboardWrapper
+  }
+
+  const initDashboard = (view?: View) => {
+    setTimeout(() => {
+      let navBarElement =
+        document.querySelector(".scaffold-layout") ||
+        document.querySelector(".authentication-outlet")
+      if (!navBarElement) {
+        return
+      }
+
+      rootElement.current.classList.add("dashboard-active")
+
+      const dashboardWrapper = getDashboardWrapper(navBarElement as HTMLElement)
+      if (!dashboardWrapper) {
+        return
+      }
+
+      document
+        .getElementsByClassName("global-nav__primary-link--active")[0]
+        ?.classList?.remove("global-nav__primary-link--active")
+
+      mountComponent("Navbar", dashboardWrapper)
+      ReactDOM.render(
+        <Navbar handleInit={initDashboard} customView={view} />,
+        dashboardWrapper
+      )
+    }, 100)
+  }
+
+  useEffect(() => {
+    window.addEventListener("popstate", (event) => {
+      if (event.state && event.state.component !== undefined) {
+        initDashboard(getQuery('view') as View)
+      } else if (event.state && event.state.path) {
+        window.history.replaceState({ path: event.state.path },"", event.state.path)
+      }
+    })
+  }, [])
+
+  const dashboardClickHandler = () => {
+    if (document.querySelector(".scaffold-layout")) {
+      window.history.pushState({ component: view },"","https://www.linkedin.com/#lndashboard?view=" + view)
+      initDashboard()
+    } else {
+      console.warn('Navbar element not found.');
+    }
+  }
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
