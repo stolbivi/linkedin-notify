@@ -41,6 +41,7 @@ const KanbanBoard: React.FC<any> = () => {
 
   useEffect(() => {
     if(notesAll.completed) {
+      setCompleted(false);
       messages.request(getAuthorStages())
           .then((resp) => {
             if (resp.data) {
@@ -141,11 +142,27 @@ const KanbanBoard: React.FC<any> = () => {
       messages.request(setStage({id: selectedCard.profileId, stage: Object.values(ICategory).indexOf(destination.droppableId),
         stageFrom: Object.values(ICategory).indexOf(source.droppableId), stageText: destination.droppableId || undefined,
         parentStage: Object.values(IStatus).indexOf(activeButton)}))
-          .then((_r) => {console.log(_r)});
+          .then((_r) => {
+            messages.request(getAuthorStages())
+                .then((resp) => {
+                  if (resp.data) {
+                    setKanbanData(resp.data);
+                    setCompleted(true);
+                  }
+                });
+          });
     } else {
       messages.request(setStage({id: selectedCard.profileId, stage: Object.values(ICategory).indexOf(destination.droppableId),
         stageFrom: Object.values(ICategory).indexOf(source.droppableId), parentStage: Object.values(IStatus).indexOf(activeButton)}))
-          .then((_r) => {console.log(_r)});
+          .then((_r) => {
+            messages.request(getAuthorStages())
+                .then((resp) => {
+                  if (resp.data) {
+                    setKanbanData(resp.data);
+                    setCompleted(true);
+                  }
+                });
+          });
     }
   }
 
