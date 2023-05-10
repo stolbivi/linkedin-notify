@@ -108,6 +108,7 @@ export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url
     const [show, setShow] = useState(true);
 
     useEffect(() => {
+        setShow(true);
        if(fromProfile) {
            setCompleted(false);
            const orgUrl = `${urlInternal}?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3A`;
