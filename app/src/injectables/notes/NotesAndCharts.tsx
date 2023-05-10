@@ -150,10 +150,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }, [url]);
 
     useEffect(() => {
-        if(extractFromIdAware(salary).completed) {
-            setSalaryInternal(extractFromIdAware(salary) as Salary);
-        }
-    },[salary]);
+        setSalaryInternal(sessionStorage.getItem("customSalary") ? JSON.parse(sessionStorage.getItem("customSalary")) : salary);
+        setSalaryLabel(sessionStorage.getItem("customSalary") ? getSalaryValue(JSON.parse(sessionStorage.getItem("customSalary"))) : getSalaryValue(salary));
+    },[salary,showSalary]);
 
     useEffect(() => {
         if(notesAll.completed) {
@@ -168,6 +167,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
             }, 100);
         }
     },[notesAll, lastNoteRef.current]);
+
     const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
         CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
 
@@ -243,24 +243,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         messages.request(getCustomStages())
             .then((r) => setCustomStages(r))
     },[]);
-
-    useEffect(() => {
-        if(showSalary && fetchCustomSalary && !editButton) {
-            messages.request(getCustomSalary(salaryInternal.urn)).then(resp => {
-                if(resp) {
-                    const clonedSalary = JSON.parse(JSON.stringify(salaryInternal));
-                    clonedSalary.payDistributionValues[0] = resp[0]?.leftPayDistribution;
-                    clonedSalary.payDistributionValues[clonedSalary.payDistribution.length - 1] = resp[0]?.rightPayDistribution;
-                    clonedSalary.payDistribution[0] = resp[0]?.leftPayDistribution;
-                    clonedSalary.payDistribution[clonedSalary.payDistribution.length - 1] = resp[0]?.rightPayDistribution;
-                    clonedSalary.progressivePay = resp[0]?.progressivePay;
-                    setSalaryInternal(clonedSalary);
-                    setFetchCustomSalary(false);
-                }
-            })
-        }
-        setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal));
-    },[salaryInternal]);
 
     useEffect(()=>{
         if (salaryLabel){
@@ -404,6 +386,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const editOnClick = (event: any) => {
         event.stopPropagation();
         if(editButton) {
+            sessionStorage.setItem("customSalary", JSON.stringify(salaryInternal));
             messages.request(setCustomSalary(salaryInternal)).then(resp => {
                 console.log(resp);
             })
@@ -472,9 +455,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                     className="label-salary-edit"
                                                                     placeholder={salaryLabel}
                                                                     onChange={(event) => {
-                                                                        const value = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-                                                                        const formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
-                                                                        setSalaryLabel(currencySymbol + formattedValue);
+                                                                        //const value = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+                                                                        const formattedValue = event.target.value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
+                                                                        setSalaryLabel(formattedValue);
                                                                     }}
                                                                     onKeyDown={(event) => {
                                                                         if (event.key === 'Enter') {

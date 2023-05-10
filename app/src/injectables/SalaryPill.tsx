@@ -100,17 +100,24 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
 
     useEffect(() => {
         if(salary?.completed) {
+            sessionStorage.setItem("customSalary", JSON.stringify(salary));
             messages.request(getCustomSalary(salary.urn)).then(resp => {
-                if(resp) {
+                if(resp && resp.length > 0) {
                     const clonedSalary = JSON.parse(JSON.stringify(salary));
                     clonedSalary.payDistributionValues[0] = resp[0]?.leftPayDistribution;
                     clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0]?.rightPayDistribution;
+                    clonedSalary.payDistribution[0] = resp[0]?.leftPayDistribution;
+                    clonedSalary.payDistribution[clonedSalary.payDistribution.length - 1] = resp[0]?.rightPayDistribution;
                     clonedSalary.progressivePay = resp[0]?.progressivePay;
+                    clonedSalary.progressivePayValue = resp[0]?.progressivePay;
+                    clonedSalary.formattedPay = resp[0]?.progressivePay?.replace(/[^0-9]/g, '');
+                    clonedSalary.formattedPayValue = resp[0]?.progressivePay?.replace(/[^0-9]/g, '');
                     setSalaryInternal(clonedSalary);
+                    sessionStorage.setItem("customSalary", JSON.stringify(clonedSalary));
                 }
             })
         }
-    },[]);
+    },[salary]);
 
     const onClick = () => {
         if (salary) {

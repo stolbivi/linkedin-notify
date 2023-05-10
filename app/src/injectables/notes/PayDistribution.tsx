@@ -22,7 +22,7 @@ interface Distribution {
     right: Sample;
 }
 
-export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalaryInternal , currencySymbol,editable}) => {
+export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalaryInternal ,editable}) => {
     const [distribution, setDistribution] = useState<Distribution>({
         left: {percent: 10, value: ""},
         middle: {percent: 80, value: ""},
@@ -62,7 +62,7 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
         const newDistribution = {...distribution};
         // @ts-ignore
-        newDistribution[key].value = currencySymbol+event.target.value;
+        newDistribution[key].value = event.target.value;
         setDistribution(newDistribution);
     };
 
@@ -105,18 +105,18 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
 
     useEffect(() => {
         const clonedSalary = JSON.parse(JSON.stringify(salary));
-        if(Object.keys(clonedSalary).length > 0 && clonedSalary.payDistributionValues.length > 0) {
+        if(Object.keys(clonedSalary).length > 0 && clonedSalary?.payDistributionValues?.length > 0) {
             if(distribution.left.value !== "" && distribution.left.value !== "$" && typeof distribution.left.value === "string") {
-                clonedSalary.payDistributionValues[0] = Number(distribution.left.value);
+                clonedSalary.payDistributionValues[0] = distribution.left.value;
             }
             if(distribution.right.value !== "" && distribution.right.value !== "$"  && typeof distribution.right.value === "string") {
-                clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = Number(distribution.right.value);
+                clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = distribution.right.value;
             }
             clonedSalary.progressivePay = salaryLabel;
             clonedSalary.progressivePayValue =  parseInt(salaryLabel?.replace("$", "").replace(",", ""));
             setSalaryInternal(clonedSalary);
         }
-    },[salaryLabel]);
+    },[salaryLabel,distribution]);
 
     return (
         <React.Fragment>

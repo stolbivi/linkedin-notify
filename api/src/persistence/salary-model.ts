@@ -6,8 +6,8 @@ dotenv.config()
 export interface Salary {
     id?: string
     author?: string
-    leftPayDistribution?: number,
-    rightPayDistribution?: number,
+    leftPayDistribution?: string,
+    rightPayDistribution?: string,
     progressivePay?: string
 }
 
@@ -26,16 +26,16 @@ const salarySchema = new dynamoose.Schema({
         }
     },
     leftPayDistribution: {
-        type: Number,
-        required: true
+        type: String,
+        required: false
     },
     rightPayDistribution: {
-        type: Number,
-        required: true
+        type: String,
+        required: false
     },
     progressivePay: {
         type: String,
-        required: true
+        required: false
     }
 }, {
     "saveUnknown": true,
