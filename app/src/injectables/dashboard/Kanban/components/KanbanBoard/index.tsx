@@ -176,7 +176,6 @@ const KanbanBoard: React.FC<any> = () => {
       setActiveButton(button);
     }
   }
-
   const populateKanbanData = (parentCategory: string) => {
     let updatedCards: ICard[] = [];
     let cardsIdsByStatus = {};
