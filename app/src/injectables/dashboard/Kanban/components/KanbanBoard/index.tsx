@@ -38,15 +38,17 @@ const KanbanBoard: React.FC<any> = () => {
   const [listView, setListView] = useState(false);
   const theme = useContext(ThemeContext);
   const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
+ const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    if(notesAll.completed) {
+    if(notesAll.completed && !isLoaded) {
       setCompleted(false);
       messages.request(getAuthorStages())
           .then((resp) => {
             if (resp.data) {
               setKanbanData(resp.data);
               setCompleted(true);
+              setIsLoaded(true);
             }
           });
       if(sessionStorage.getItem("isListView")) {

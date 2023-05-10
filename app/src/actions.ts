@@ -463,7 +463,11 @@ export const getLastViewed = createAction<string, LastViewed[]>("getLastViewed",
             if (profile === as) {
                 return {response: [{profile: me, author: as, hide: true} as LastViewed]}
             } else {
-                return backEndAPI.getLastViewed(profile, as);
+                return backEndAPI.getLastViewed(profile, as)
+                    .then(response => ({
+                        ...response,
+                        response: response.response.map(item => ({ ...item, hide: false })),
+                    }));
             }
         })
         .then(response => response.response));
