@@ -169,9 +169,9 @@ export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url
     }, [author, features, customUrl]);
 
     useEffect(() => {
-        if (active !== undefined) {
+       // if (active !== undefined) {
             setCompleted(true);
-        }
+       // }
     }, [active]);
 
     const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
