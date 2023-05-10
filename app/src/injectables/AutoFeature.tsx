@@ -136,7 +136,6 @@ export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url
        }
     },[urlInternal]);
 
-
     const extractAuthor = (query: URLSearchParams, name: string) => {
         if (query.has(name)) {
             setAuthor(query.get(name));
