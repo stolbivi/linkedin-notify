@@ -165,13 +165,15 @@ export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url
             const typedFeature = features.find(f => f.type === type);
             const index = typedFeature?.authors?.findIndex((f: string) => f === author);
             setActive(index >= 0);
+        } else {
+            setActive(false);
         }
     }, [author, features, customUrl]);
 
     useEffect(() => {
-       // if (active !== undefined) {
+        if (active !== undefined) {
             setCompleted(true);
-       // }
+        }
     }, [active]);
 
     const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
