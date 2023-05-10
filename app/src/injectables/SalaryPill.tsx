@@ -78,6 +78,7 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
     const messages = new MessagesV2(VERBOSE);
 
     useEffect(() => {
+        setShow(true);
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
