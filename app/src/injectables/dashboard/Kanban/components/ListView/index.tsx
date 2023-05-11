@@ -142,7 +142,7 @@ const ListView = ({cards, parentTheme, jobsList}) => {
         } else {
             localStore.dispatch(showNotesAndChartsAction({id: userId, state: {showSalary: false, showNotes: true, show: true, id: userId}}));
          // render componetn
-         const section = document.querySelectorAll(".lnm-dashboard-content .job-back-text");
+         const section = document.querySelectorAll(".lnm-dashboard-content .details-view");
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts", "after",
                     <Provider store={localStore}>
