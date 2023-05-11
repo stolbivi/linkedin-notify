@@ -122,7 +122,7 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary, theme}) => {
     return (
         <React.Fragment>
             <div className="pay-ex-chart">
-                <canvas id="chart-canvas" ref={canvasRef}/>
+                <canvas id="chart-canvas" ref={canvasRef}></canvas>
             </div>
         </React.Fragment>
     );

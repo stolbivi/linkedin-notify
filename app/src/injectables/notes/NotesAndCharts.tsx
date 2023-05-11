@@ -150,8 +150,10 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }, [url]);
 
     useEffect(() => {
-        setSalaryInternal(sessionStorage.getItem("customSalary") ? JSON.parse(sessionStorage.getItem("customSalary")) : salary);
-        setSalaryLabel(sessionStorage.getItem("customSalary") ? getSalaryValue(JSON.parse(sessionStorage.getItem("customSalary"))) : getSalaryValue(salary));
+        const customSalary = sessionStorage.getItem("customSalary") ? JSON.parse(sessionStorage.getItem("customSalary")) : salary;
+        setCurrencySymbol(customSalary?.symbol);
+        setSalaryInternal(customSalary);
+        setSalaryLabel(getSalaryValue(customSalary));
     },[salary,showSalary]);
 
     useEffect(() => {
@@ -246,7 +248,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
 
     useEffect(()=>{
         if (salaryLabel){
-            setCurrencySymbol(salaryLabel[0]);
             if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
                 (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryLabel;
             }
@@ -457,7 +458,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                     onChange={(event) => {
                                                                         //const value = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
                                                                         const formattedValue = event.target.value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
-                                                                        setSalaryLabel(formattedValue);
+                                                                        setSalaryLabel(currencySymbol + formattedValue);
                                                                     }}
                                                                     onKeyDown={(event) => {
                                                                         if (event.key === 'Enter') {
@@ -491,7 +492,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                         </div>
                                         <div data-role={CollapsibleRole.Collapsible}>
                                             {showChart &&
-                                                <PayExtrapolationChart salary={salaryInternal} theme={theme}/>}
+                                            <PayExtrapolationChart salary={extractFromIdAware(salary) as Salary}
+                                                                   theme={theme}/>}
                                         </div>
                                     </Collapsible>
                                 )}

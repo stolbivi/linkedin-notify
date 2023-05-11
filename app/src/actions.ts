@@ -738,7 +738,9 @@ export const getCustomSalary = createAction<string, any>("getCustomSalary",
         .then(cookies => api.getCsrfToken(cookies))
         .then(async (token) => {
             const me = await api.getMe(token);
-            const { response } = await backEndAPI.getCustomSalary(urn,api.extractProfileUrn(me));
+            const experienceResponse = await api.getExperience(token, urn);
+            const experience = api.extractExperience(experienceResponse);
+            const { response } = await backEndAPI.getCustomSalary(experience.urn,api.extractProfileUrn(me));
             return response
         })
 )
