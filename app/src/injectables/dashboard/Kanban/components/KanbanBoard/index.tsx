@@ -145,11 +145,25 @@ const KanbanBoard: React.FC<any> = () => {
         stageFrom: Object.values(ICategory).indexOf(source.droppableId), stageText: destination.droppableId || undefined,
         parentStage: Object.values(IStatus).indexOf(activeButton)}))
           .then((_r) => {
+            messages.request(getAuthorStages())
+                .then((resp) => {
+                  if (resp.data) {
+                    setKanbanData(resp.data);
+                    setCompleted(true);
+                  }
+                });
           });
     } else {
       messages.request(setStage({id: selectedCard.profileId, stage: Object.values(ICategory).indexOf(destination.droppableId),
         stageFrom: Object.values(ICategory).indexOf(source.droppableId), parentStage: Object.values(IStatus).indexOf(activeButton)}))
           .then((_r) => {
+            messages.request(getAuthorStages())
+                .then((resp) => {
+                  if (resp.data) {
+                    setKanbanData(resp.data);
+                    setCompleted(true);
+                  }
+                });
           });
     }
   }
