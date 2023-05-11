@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../../global";
-import {StageLabels} from "./StageSwitch";
 import {injectLastChild} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {AccessGuard, AccessState} from "../AccessGuard";
 import {CompleteEnabled, IdAwareState, localStore, selectStage} from "../../store/LocalStore";
 import {Provider, shallowEqual, useSelector} from "react-redux";
 import {showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
-import {getLatestStageAction, Stage} from "../../store/StageReducer";
+import {Stage} from "../../store/StageReducer";
 import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
@@ -58,7 +57,7 @@ type Props = {
     usePrf?: boolean
 };
 
-export const StagePill: React.FC<Props> = ({id, usePrf}) => {
+export const StagePill: React.FC<Props> = ({id}) => {
 
     const [idInternal, setIdInternal] = useState<string>(id);
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
@@ -93,10 +92,10 @@ export const StagePill: React.FC<Props> = ({id, usePrf}) => {
         if (accessState !== AccessState.Valid || !idInternal) {
             return;
         }
-        let urlRequest = usePrf ? sessionStorage.getItem("prf") : idInternal;
+/*        let urlRequest = usePrf ? sessionStorage.getItem("prf") : idInternal;
         setTimeout(() => {
             localStore.dispatch(getLatestStageAction({id: idInternal, state: {url: urlRequest}}));
-        },600)
+        },600)*/
     }, [idInternal, accessState]);
 
     const onClick = () => {
@@ -112,25 +111,26 @@ export const StagePill: React.FC<Props> = ({id, usePrf}) => {
 
     const extractFromIdAware = (): CompleteEnabled<any> => stages && stages[idInternal] ? stages[idInternal] : {};
 
+/*
     const getStage = () => extractFromIdAware().stage >= 0 ? extractFromIdAware().stage : -1;
+*/
 
-    const getText = () => {
+    /* const getText = () => {
         let text = extractFromIdAware().completed ? (StageLabels[getStage()] ? StageLabels[getStage()].label : getStage().stageText) : "Loading";
-        if (text.length > 10 && text !== "Add Status") {
+        if (text.length > 10 && text !== "Add Notes") {
             text = text.substr(0, 10) + "...";
         }
         return text;
-    }
+    }*/
 
     return (
         <React.Fragment>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
-                         loaderClassName="loader-base loader-px24"/>
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"} loaderClassName="loader-base loader-px24"/>
             {accessState === AccessState.Valid &&
-                <div className={`stage ${StageLabels[getStage()] ? StageLabels[getStage()].class : 'interested'}`} onClick={onClick} style={{marginLeft: "1em"}} ref={rootElement}>
+                <div className={`stage inactive`} onClick={onClick} style={{marginLeft: "1em"}} ref={rootElement}>
                     <div className="loader"><Loader show={!extractFromIdAware().completed}/></div>
-                    <label style={{opacity: extractFromIdAware().completed ? 1 : 0, }}>{getText()}</label>
+                    <label style={{opacity: extractFromIdAware().completed ? 1 : 0, }}>Add Notes</label>
                 </div>}
         </React.Fragment>
     );
