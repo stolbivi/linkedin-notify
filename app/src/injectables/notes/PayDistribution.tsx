@@ -29,13 +29,10 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
         right: {percent: 10, value: ""},
     });
 
-    const formatPercent = (percent: number) =>
-        percent && percent.toFixed(0) + "%";
-
     useEffect(() => {
 
         function formatValue(value: number) {
-            return `${salary?.symbol}${Number(value / 1000).toFixed(0)}K`;
+            return !isNaN(value) ? `${salary?.symbol}${Number(value / 1000).toFixed(0)}K` : '';
         }
 
         if (salary?.payDistribution && salary?.payDistributionValues) {
@@ -66,53 +63,17 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
         setDistribution(newDistribution);
     };
 
-  /*  function convertToValue(amount: string): number {
-        const currencyMap: {[currency: string]: number} = {
-            "$": 1,
-            "£": 1.39,
-            "€": 1.21,
-        };
-
-        if (!amount || typeof amount !== "string") {
-            return;
-        }
-
-        const match = amount.match(/^([^\d]*)([\d,]+(\.\d+)?)([KM]?)$/);
-
-        if (!match) {
-            throw new Error("Invalid format: " + amount);
-        }
-
-        const currency = match[1];
-        const value = match[2];
-        const unit = match[4];
-
-        if (!currencyMap[currency]) {
-            throw new Error("Unknown currency: " + currency);
-        }
-
-        const number = parseFloat(value.replace(/,/g, ""));
-        const currencyValue = currencyMap[currency];
-
-        if (unit === "K") {
-            return number * currencyValue * 1000;
-        } else if (unit === "M") {
-            return number * currencyValue * 1000000;
-        } else {
-            return number * currencyValue;
-        }
-    }*/
-
     useEffect(() => {
         const clonedSalary = JSON.parse(JSON.stringify(salary));
-        if(Object.keys(clonedSalary).length > 0 && clonedSalary?.payDistributionValues?.length > 0) {
+        if(editable && Object.keys(clonedSalary).length > 0 && clonedSalary?.payDistributionValues?.length > 0) {
             if(distribution.left.value !== "" && distribution.left.value !== "$" && typeof distribution.left.value === "string") {
-                clonedSalary.payDistributionValues[0] = distribution.left.value;
+                clonedSalary.payDistributionValues[0] = distribution.left.value?.replace("$", "");
             }
             if(distribution.right.value !== "" && distribution.right.value !== "$"  && typeof distribution.right.value === "string") {
-                clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = distribution.right.value;
+                clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = distribution.right.value?.replace("$", "");
             }
             clonedSalary.progressivePay = salaryLabel;
+            clonedSalary.formattedPayValue = parseInt(salaryLabel?.replace("$", "").replace(",", ""));
             clonedSalary.progressivePayValue =  parseInt(salaryLabel?.replace("$", "").replace(",", ""));
             setSalaryInternal(clonedSalary);
         }
@@ -152,7 +113,7 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
                                 <span>{distribution?.left?.value}</span>
                             ) : null
                         }
-                        <span>{formatPercent(10)}</span>
+                        <span>10%</span>
                         <div className="bar-line"/>
                     </React.Fragment>
                 </div>
@@ -163,7 +124,7 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
                                 <span>{distribution?.middle?.value}</span>
                             ) : null
                         }
-                        <span>{formatPercent(10)}</span>
+                        <span>median</span>
                         <div className="bar-line"/>
                     </React.Fragment>
                 </div>
@@ -174,7 +135,7 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
                                 <span>{distribution?.right?.value}</span>
                             ) : null
                         }
-                        <span>{formatPercent(10)}</span>
+                        <span>90%</span>
                         <div className="bar-line"/>
                     </React.Fragment>
                 </div>
