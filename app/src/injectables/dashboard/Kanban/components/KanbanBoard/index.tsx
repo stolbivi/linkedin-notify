@@ -144,6 +144,19 @@ const KanbanBoard: React.FC<any> = () => {
     const selectedCard = cards.find(card => card.id === draggableId);
     dispatch(setColumns(updatedColumns))
     dispatch(setCards(updatedCards))
+    setKanbanData(prevState => {
+      return {
+        ...prevState,
+        [activeButton]: updatedCards.reduce((obj, card) => {
+          if (obj[card.status]) {
+            obj[card.status].push(card);
+          } else {
+            obj[card.status] = [card];
+          }
+          return obj;
+        }, {})
+      }
+    })
     if(activeButton === IStatus.GROUPS) {
       messages.request(setStage({id: selectedCard.profileId, stage: Object.values(ICategory).indexOf(destination.droppableId),
         stageFrom: Object.values(ICategory).indexOf(source.droppableId), stageText: destination.droppableId || undefined,
@@ -168,6 +181,19 @@ const KanbanBoard: React.FC<any> = () => {
                   } else { // if request fails - revert changes
                     dispatch(setColumns(sourceColumns))
                     dispatch(setCards(sourceCards))
+                    setKanbanData(prevState => {
+                      return {
+                        ...prevState,
+                        [activeButton]: sourceCards.reduce((obj, card) => {
+                          if (obj[card.status]) {
+                            obj[card.status].push(card);
+                          } else {
+                            obj[card.status] = [card];
+                          }
+                          return obj;
+                        }, {})
+                      }
+                    })
                   }
                 });
           });
