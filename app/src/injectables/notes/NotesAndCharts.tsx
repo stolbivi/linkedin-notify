@@ -106,9 +106,10 @@ type Props = {
     salaryMode?: boolean
 
     profileMode?: boolean
+    fromJobList?: boolean
 };
 
-export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false, salaryMode,profileMode}) => {
+export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false, salaryMode,profileMode, fromJobList }) => {
 
     const MAX_LENGTH = 200;
 
@@ -142,6 +143,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [url] = useUrlChangeSupport(window.location.href);
     const lastNoteRef = useRef();
     const [salaryInternal, setSalaryInternal] = useState<Salary>({});
+        
 
     useEffect(() => {
         if (url?.length > 0 && trackUrl) {
@@ -396,7 +398,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }
 
 
-    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview' : ''}`;
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview' : ''} ${(fromJobList ? 'position-expanded-joblist' : '')}`;
 
     // @ts-ignore
     return (

@@ -87,6 +87,14 @@ export const LnDashboard: React.FC<Props> = ({}) => {
       .forEach((el: HTMLElement) => {
         el.style.display = "none"
       })
+    
+    // get tag lnm-notes-and-charts and unmount and remove it from the dom, fixes bug where the notes and charts wouldn't load after clicking on the dashboard from a profile
+    const lnmNotesAndCharts = document.querySelector('lnm-notes-and-charts')
+    if (lnmNotesAndCharts) {
+      unmountComponent("NotesAndCharts")
+      lnmNotesAndCharts.remove()
+    }
+
 
     const dashboardWrapper = document.createElement("div")
     dashboardWrapper.id = "lnm-dashboard-wrapper"
