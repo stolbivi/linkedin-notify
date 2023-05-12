@@ -94,6 +94,10 @@ const KanbanBoard: React.FC<any> = () => {
       } else return card;
     })
 
+    // store current columns and cards to revert changes if request fails
+    const sourceColumns = [...columns];
+    const sourceCards = [...cards];
+
     const sourceColumn: IColumn = columns.find(column => column.id === source.droppableId) as IColumn;
     const destinationColumn: IColumn = columns.find(column => column.id === destination.droppableId) as IColumn;
 
@@ -160,8 +164,10 @@ const KanbanBoard: React.FC<any> = () => {
             messages.request(getAuthorStages())
                 .then((resp) => {
                   if (resp.data) {
-                    setKanbanData(resp.data);
                     setCompleted(true);
+                  } else { // if request fails - revert changes
+                    dispatch(setColumns(sourceColumns))
+                    dispatch(setCards(sourceCards))
                   }
                 });
           });
