@@ -313,3 +313,18 @@ td {
 .MuiDataGrid-iconSeparator{
   display: none;
 }
+
+.MuiDataGrid-columnHeader,
+.MuiDataGrid-cell {
+  border-right: none !important;
+  border-bottom: none !important;
+}
+
+.MuiDataGrid-root .MuiDataGrid-cell{
+  border-bottom: none !important;
+  border-right: none !important;
+}
+
+.MuiDataGrid-footer .MuiDataGrid-paginationContainer {
+  justify-content: center !important;
+}
