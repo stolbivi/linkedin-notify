@@ -16,6 +16,9 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../../../../themes/dark";
 import {showNotesAndChartsAction} from "../../../../../store/ShowNotesAndCharts";
 import {localStore} from "../../../../../../src/store/LocalStore";
+import { inject } from '../../../../../utils/InjectHelper';
+import { Provider } from 'react-redux';
+import { NotesAndCharts } from '../../../../notes/NotesAndCharts';
 // @ts-ignore
 const ListView = ({cards, parentTheme, jobsList}) => {
 
@@ -138,6 +141,15 @@ const ListView = ({cards, parentTheme, jobsList}) => {
             setShowNotes(false);
         } else {
             localStore.dispatch(showNotesAndChartsAction({id: userId, state: {showSalary: false, showNotes: true, show: true, id: userId}}));
+         // render componetn
+         const section = document.querySelectorAll(".lnm-dashboard-content .details-view");
+            if (section && section.length > 0) {
+                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                    <Provider store={localStore}>
+                        <NotesAndCharts id={userId} trackUrl={true} profileMode={true} fromJobList={true}/>
+                    </Provider>, "NotesAndCharts"
+                );
+            }
         }
     }
 

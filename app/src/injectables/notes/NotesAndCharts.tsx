@@ -106,9 +106,10 @@ type Props = {
     salaryMode?: boolean
 
     profileMode?: boolean
+    fromJobList?: boolean
 };
 
-export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false, salaryMode,profileMode}) => {
+export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false, salaryMode,profileMode, fromJobList }) => {
 
     const MAX_LENGTH = 200;
 
@@ -142,6 +143,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [url] = useUrlChangeSupport(window.location.href);
     const lastNoteRef = useRef();
     const [salaryInternal, setSalaryInternal] = useState<Salary>({});
+        
 
     useEffect(() => {
         if (url?.length > 0 && trackUrl) {
@@ -150,8 +152,10 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }, [url]);
 
     useEffect(() => {
-        setSalaryInternal(sessionStorage.getItem("customSalary") ? JSON.parse(sessionStorage.getItem("customSalary")) : salary);
-        setSalaryLabel(sessionStorage.getItem("customSalary") ? getSalaryValue(JSON.parse(sessionStorage.getItem("customSalary"))) : getSalaryValue(salary));
+        const customSalary = sessionStorage.getItem("customSalary") ? JSON.parse(sessionStorage.getItem("customSalary")) : salary;
+        setCurrencySymbol(customSalary?.symbol);
+        setSalaryInternal(customSalary);
+        setSalaryLabel(getSalaryValue(customSalary));
     },[salary,showSalary]);
 
     useEffect(() => {
@@ -243,15 +247,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         messages.request(getCustomStages())
             .then((r) => setCustomStages(r))
     },[]);
-
-    useEffect(()=>{
-        if (salaryLabel){
-            setCurrencySymbol(salaryLabel[0]);
-            if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
-                (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryLabel;
-            }
-        }
-    },[salaryLabel])
 
     useEffect(() => {
         if (show) {
@@ -386,16 +381,21 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const editOnClick = (event: any) => {
         event.stopPropagation();
         if(editButton) {
-            sessionStorage.setItem("customSalary", JSON.stringify(salaryInternal));
-            messages.request(setCustomSalary(salaryInternal)).then(resp => {
-                console.log(resp);
-            })
+            const salaryWithSymbol = currencySymbol+salaryLabel.replace(currencySymbol, "");
+            setSalaryLabel(salaryWithSymbol);
+            if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
+                (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryWithSymbol;
+            }
+            const clonedSalary = JSON.parse(JSON.stringify(salaryInternal));
+            clonedSalary.progressivePay = salaryWithSymbol;
+            sessionStorage.setItem("customSalary", JSON.stringify(clonedSalary));
+            messages.request(setCustomSalary(clonedSalary)).then(resp => {console.log(resp)})
         }
         setEditButton(!editButton);
     }
 
 
-    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview' : ''}`;
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview' : ''} ${(fromJobList ? 'position-expanded-joblist' : '')}`;
 
     // @ts-ignore
     return (
@@ -454,10 +454,11 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                 <input
                                                                     className="label-salary-edit"
                                                                     placeholder={salaryLabel}
+                                                                    value={salaryLabel}
                                                                     onChange={(event) => {
-                                                                        //const value = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-                                                                        const formattedValue = event.target.value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
-                                                                        setSalaryLabel(formattedValue);
+                                                                        const input = event.target.value.replace(/,/g, ''); // Remove existing commas from the input
+                                                                        const formattedValue = input.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
+                                                                        setSalaryLabel(formattedValue); // Update the salaryLabel state without currency symbol
                                                                     }}
                                                                     onKeyDown={(event) => {
                                                                         if (event.key === 'Enter') {
@@ -491,7 +492,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                         </div>
                                         <div data-role={CollapsibleRole.Collapsible}>
                                             {showChart &&
-                                                <PayExtrapolationChart salary={salaryInternal} theme={theme}/>}
+                                            <PayExtrapolationChart salary={salaryInternal} theme={theme}/>}
                                         </div>
                                     </Collapsible>
                                 )}
