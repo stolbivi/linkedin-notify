@@ -155,6 +155,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         setSalaryLabel(getSalaryValue(customSalary));
     },[salary,showSalary]);
 
+
     useEffect(() => {
         if(notesAll.completed) {
             setTimeout(() => {
