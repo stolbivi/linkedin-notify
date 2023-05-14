@@ -120,6 +120,8 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
                             "progressivePayValue": 693000
                         }
                         const clonedSalary = JSON.parse(JSON.stringify(tempSalary));
+                        clonedSalary.urn = resp[0]?.id;
+                        clonedSalary.id = resp[0]?.id;
                         clonedSalary.payDistributionValues[0] = resp[0]?.leftPayDistribution?.replace(/\D/g, '');
                         clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0]?.rightPayDistribution?.replace(/\D/g, '');
                         clonedSalary.payDistribution[0] = resp[0]?.leftPayDistribution?.replace(/\D/g, '');

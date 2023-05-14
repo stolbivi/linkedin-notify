@@ -32,7 +32,7 @@ export const PayDistribution: React.FC<Props> = ({ salary,salaryLabel, setSalary
     useEffect(() => {
 
         function formatValue(value: number) {
-            return !isNaN(value) ? `${salary?.symbol}${Number(value / 1000).toFixed(0)}K` : '';
+            return !isNaN(value) ? `${salary?.symbol}${Number(value / 1000).toFixed(0)}K` : '$39K';
         }
 
         if (salary?.payDistribution && salary?.payDistributionValues) {

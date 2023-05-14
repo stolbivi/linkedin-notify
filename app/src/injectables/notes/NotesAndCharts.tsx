@@ -16,7 +16,6 @@ import {NoNotes} from "../../icons/NoNotes";
 import {
     createCustomStage,
     getConversationProfile,
-    getCustomSalary,
     getCustomStages,
     getTheme,
     setCustomSalary
@@ -104,7 +103,6 @@ type Props = {
     trackUrl?: boolean
     conversation?: boolean
     salaryMode?: boolean
-
     profileMode?: boolean
     fromJobList?: boolean
 };
@@ -131,7 +129,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [fromListView, setFromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const listviewNotesRef = useRef();
-    const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
     const messages = new MessagesV2(VERBOSE);
     const inputRef = useRef<HTMLInputElement>(null);
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
