@@ -33,28 +33,33 @@ const Status: React.FC<BadgeProps> = ({card}) => {
 
     return (
         <>
-            <div className="d-flex align-items-center">
-                {firstTwoStatuses.map((category: ICategory, index: any) => (
-                    <Badge category={category} key={category + index} />
+            <div className="align-items-center" style={
+            showTooltip ? {display: 'grid', gridTemplateColumns: remainingStatuses.length + 2 >= 4 ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr', gridGap: '3px'} : {display: 'flex'}
+            }
+            >
+                {firstTwoStatuses.map((category: ICategory) => (
+                    <Badge category={category} key={category + Math.random()} />
                 ))}
-            </div>
-            {remainingStatuses.length > 0 && (
-                <div className="d-flex align-items-center position-relative" onClick={handleRemainingClick}>
-                <span ref={badgeRef} className="badge text-primary rounded-pill pt-2 pl-4 pr-4 pb-2"
-                      style={{backgroundColor: "#e6e6e6", cursor: "pointer"}}>
-                    +{remainingStatuses.length}
-                </span>
-                    {showTooltip && (
-                        <div className="position-relative" ref={tooltipRef} style={{ top: '1px', left: '91px', transform: 'translateX(-50%)', zIndex: 9999}}>
-                            <div className="bg-white text-white py-2 px-3 rounded d-flex align-items-center" style={{width: "max-content", fontWeight:"300"}}>
-                                {remainingStatuses.map((category: ICategory, index: any) => (
-                                    <Badge category={category} key={category + index} />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
+                          {remainingStatuses.length > 0 && !showTooltip && (
+                        <span onClick={handleRemainingClick} ref={badgeRef} className="badge text-primary rounded-pill pt-2 pl-4 pr-4 pb-2"
+                            style={{backgroundColor: "#e6e6e6", cursor: "pointer"}}>
+                            +{remainingStatuses.length}
+                        </span>
             )}
+                {
+                    remainingStatuses.length > 0 && showTooltip && (
+                        <>
+                            {remainingStatuses.map((category: ICategory) => (
+                                <span ref={tooltipRef}>
+                                <Badge  category={category} key={category + Math.random()} />
+                                </span>
+                            ))}
+                        </>
+                    )
+                }
+   
+            </div>
+  
         </>
     );
 }

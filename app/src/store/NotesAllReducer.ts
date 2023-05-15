@@ -24,9 +24,12 @@ const slice = createSlice({
         },
         triggerDeleteNoteAction: (state, action: PayloadAction<{id: string}>) => {
             state.data = state.data.filter(note => note.id !== action.payload.id);
+        },
+        removeNoteByStageTo: (state, action: PayloadAction<{stageTo: number}>) => {
+            state.data = state.data.filter(note => note.stageTo !== action.payload.stageTo);
         }
     }
 });
 
-export const {getNotesAction, setNotesAction, postNoteAction, appendNoteAction, deleteNoteAction, triggerDeleteNoteAction} = slice.actions
+export const {getNotesAction, setNotesAction, postNoteAction, appendNoteAction, deleteNoteAction, triggerDeleteNoteAction, removeNoteByStageTo} = slice.actions
 export default slice.reducer

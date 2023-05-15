@@ -5,11 +5,13 @@ import ICategory from "../../src/injectables/dashboard/Kanban/interfaces/ICatego
 
 interface CardsSliceState {
   cards: ICard[],
+  activeCard: ICard | undefined,
   searchText: string
 }
 
 const initialState: CardsSliceState = {
   cards: mockCards,
+  activeCard: undefined,
   searchText: ''
 }
 
@@ -17,6 +19,9 @@ export const cardsSlice = createSlice({
   name: 'cards',
   initialState,
   reducers: {
+    setActiveCard: (state, action) => {
+      state.activeCard = action.payload
+    },
     setCards: (state, action) => {
       state.cards = action.payload
     },
@@ -69,6 +74,6 @@ export const cardsSlice = createSlice({
   }
 })
 
-export const { setCards, updateOneCard, filterCards, clearFilters, addCard, setSearchText } = cardsSlice.actions;
+export const { setCards, updateOneCard, filterCards, clearFilters, addCard, setSearchText, setActiveCard } = cardsSlice.actions;
 
 export default cardsSlice.reducer;

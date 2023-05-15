@@ -34,7 +34,7 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, curr
                 </div>
             );
         }
-        const stageLabel = StageLabels[stage]?.label;
+        const stageLabel = stage > 23 ? note.stageText : StageLabels[stage]?.label;
         const truncatedLabel =
             stageLabel && stageLabel?.length > 30
                 ? `${stageLabel?.slice(0, 27)}...`

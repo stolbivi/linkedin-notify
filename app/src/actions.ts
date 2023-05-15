@@ -22,6 +22,7 @@ import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
 import {LastViewed} from "./store/LastViewedReducer";
 import Cookie = chrome.cookies.Cookie;
 import {Salary} from "./store/SalaryReducer";
+import ICard from "./injectables/dashboard/Kanban/interfaces/ICard";
 
 const messagesV2 = new MessagesV2(VERBOSE);
 const api = new LinkedInAPI();
@@ -289,6 +290,11 @@ export interface SetStagePayload {
     stageText?: string;
     parentStage?: number
     existingChildStageId?: string
+    action?: string
+    parent?: string
+    label?: string
+    card: ICard
+    userId?: string
 }
 
 export const setStage = createAction<SetStagePayload, any>("setStage",
@@ -445,7 +451,6 @@ export const getCustomStages = createAction("getCustomStages",
     () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async () => {
-            console.log('in action creator get custom stages')
             const { response } = await backEndAPI.getCustomStages()
             return response
         })

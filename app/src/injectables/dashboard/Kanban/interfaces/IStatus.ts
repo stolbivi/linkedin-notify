@@ -7,4 +7,14 @@ enum IStatus {
   ALL='ALL'
 }
 
+
+export type TStatus =
+  | "AVAILABILITY"
+  | "STATUS"
+  | "TYPE"
+  | "GEOGRAPHY"
+  | "GROUPS"
+  | "ALL";
+
+
 export default IStatus;
