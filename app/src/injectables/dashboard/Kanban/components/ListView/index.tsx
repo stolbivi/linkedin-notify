@@ -33,12 +33,14 @@ const ListView = ({cards, parentTheme, jobsList}) => {
             backgroundColor: '#F2F2F2',
         },
         '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
-            borderRight: '1px solid #ccc',
             '&:last-child': {
                 borderRight: 'none',
             },
             fontWeight: 'bold',
             fontSize: '1.1rem',
+        },
+        '& .MuiDataGrid-cell': {
+            borderRight: 'none',
         },
         '& .MuiIconButton-label' : {
             color: 'black'
@@ -85,6 +87,9 @@ const ListView = ({cards, parentTheme, jobsList}) => {
         },
         '& .MuiSelect-select' : {
             color: 'white'
+        },
+        '& .MuiDataGrid-cell': {
+            borderRight: 'none',
         },
         filterInput: {
             '& .MuiInput-underline:before': {
@@ -180,12 +185,11 @@ const ListView = ({cards, parentTheme, jobsList}) => {
         {
             field: 'name',
             headerName: 'Full Name',
-            flex: 2,
+            flex: 1,
             sortable: true,
             filterable: true,
             headerAlign: 'center',
             align: 'left',
-            width: 250,
             renderCell: (params: { row: { userId: any; profileImg: string; name: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal; }; }) => (
                 <div style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}}
                      onClick={() => window.open(`https://www.linkedin.com/in/${params.row.userId}`, '_blank')}>
@@ -201,8 +205,7 @@ const ListView = ({cards, parentTheme, jobsList}) => {
             sortable: true,
             filterable: true,
             headerAlign: 'center',
-            align: 'left',
-            width: 250,
+            align: 'center',
         },
         {
             field: 'companyName',
@@ -212,23 +215,27 @@ const ListView = ({cards, parentTheme, jobsList}) => {
             filterable: true,
             headerAlign: 'center',
             align: 'center',
-            width: 250,
         },
         {
             field: 'status',
             headerName: 'Status',
-            flex: 2,
+            flex: 1,
             sortable: true,
             filterable: false,
             headerAlign: 'center',
             align: 'center',
-            width: 300,
             renderCell: (params: { row: ICard; }) => (
                 <Status card={params.row}/>
             )
         },
         {
-            field: 'action', headerName: 'Action', flex: 1, width: 200, sortable: false, filterable: false, headerAlign: 'center', align: 'center',
+            field: 'action',
+            headerName: 'Action',
+            flex: 1,
+            sortable: false,
+            filterable: false,
+            headerAlign: 'center',
+            align: 'center',
             renderCell: (params: { row: { conversationUrn: any; userId: string; profileId: string; }; }) => (
                 <>
                     <button className="btn action-btn-color" onClick={(event)=>messagesClickHandler(event,params.row.conversationUrn)}>
@@ -256,7 +263,6 @@ const ListView = ({cards, parentTheme, jobsList}) => {
     ];
 
     const visibleColumns = jobsList ? columns.filter(column => column.field !== 'status')  : columns;
-    console.log("visibleColumns: ", visibleColumns);
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>

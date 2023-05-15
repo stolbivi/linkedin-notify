@@ -104,7 +104,6 @@ type Props = {
     trackUrl?: boolean
     conversation?: boolean
     salaryMode?: boolean
-
     profileMode?: boolean
     fromJobList?: boolean
 };
@@ -125,13 +124,13 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [text, setText] = useState<{ value: string }>({value: ""});
     const [stageParents] = useState([...stageParentsData]);
     const [customStages, setCustomStages] = useState<UserStage[]>([]);
+    const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
     const [editButton, setEditButton] = useState(false);
     const [currencySymbol, setCurrencySymbol] = useState("");
     const [salaryLabel, setSalaryLabel] = useState("");
     const [fromListView, setFromListView] = useState(false);
     const [allGroupsMode, setAllGroupsMode] = useState(false);
     const listviewNotesRef = useRef();
-    const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
     const messages = new MessagesV2(VERBOSE);
     const inputRef = useRef<HTMLInputElement>(null);
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
@@ -157,6 +156,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         setSalaryInternal(customSalary);
         setSalaryLabel(getSalaryValue(customSalary));
     },[salary,showSalary]);
+
 
     useEffect(() => {
         if(notesAll.completed) {
@@ -247,14 +247,6 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
         messages.request(getCustomStages())
             .then((r) => setCustomStages(r))
     },[]);
-
-    useEffect(()=>{
-        if (salaryLabel){
-            if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
-                (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryLabel;
-            }
-        }
-    },[salaryLabel])
 
     useEffect(() => {
         if (show) {
@@ -389,10 +381,15 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const editOnClick = (event: any) => {
         event.stopPropagation();
         if(editButton) {
-            sessionStorage.setItem("customSalary", JSON.stringify(salaryInternal));
-            messages.request(setCustomSalary(salaryInternal)).then(resp => {
-                console.log(resp);
-            })
+            const salaryWithSymbol = currencySymbol+salaryLabel.replace(currencySymbol, "");
+            setSalaryLabel(salaryWithSymbol);
+            if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
+                (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryWithSymbol;
+            }
+            const clonedSalary = JSON.parse(JSON.stringify(salaryInternal));
+            clonedSalary.progressivePay = salaryWithSymbol;
+            sessionStorage.setItem("customSalary", JSON.stringify(clonedSalary));
+            messages.request(setCustomSalary(clonedSalary)).then(resp => {console.log(resp)})
         }
         setEditButton(!editButton);
     }
@@ -457,10 +454,11 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                 <input
                                                                     className="label-salary-edit"
                                                                     placeholder={salaryLabel}
+                                                                    value={salaryLabel}
                                                                     onChange={(event) => {
-                                                                        //const value = event.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-                                                                        const formattedValue = event.target.value.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
-                                                                        setSalaryLabel(currencySymbol + formattedValue);
+                                                                        const input = event.target.value.replace(/,/g, ''); // Remove existing commas from the input
+                                                                        const formattedValue = input.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
+                                                                        setSalaryLabel(formattedValue); // Update the salaryLabel state without currency symbol
                                                                     }}
                                                                     onKeyDown={(event) => {
                                                                         if (event.key === 'Enter') {
@@ -494,8 +492,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                         </div>
                                         <div data-role={CollapsibleRole.Collapsible}>
                                             {showChart &&
-                                            <PayExtrapolationChart salary={extractFromIdAware(salary) as Salary}
-                                                                   theme={theme}/>}
+                                            <PayExtrapolationChart salary={salaryInternal} theme={theme}/>}
                                         </div>
                                     </Collapsible>
                                 )}

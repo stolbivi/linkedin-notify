@@ -93,7 +93,6 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             } else {
                 setCompleted(false);
                 messages.request(getCustomSalary(extractIdFromUrl(trackUrl ? urlInternal : url))).then(resp => {
-                    debugger
                     if(resp && resp.length > 0) {
                         const tempSalary = {
                             "formattedPay": "$378,429",
@@ -121,10 +120,12 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
                             "progressivePayValue": 693000
                         }
                         const clonedSalary = JSON.parse(JSON.stringify(tempSalary));
-                        clonedSalary.payDistributionValues[0] = resp[0]?.leftPayDistribution;
-                        clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0]?.rightPayDistribution;
-                        clonedSalary.payDistribution[0] = resp[0]?.leftPayDistribution;
-                        clonedSalary.payDistribution[clonedSalary.payDistribution.length - 1] = resp[0]?.rightPayDistribution;
+                        clonedSalary.urn = resp[0]?.id;
+                        clonedSalary.id = resp[0]?.id;
+                        clonedSalary.payDistributionValues[0] = resp[0]?.leftPayDistribution?.replace(/\D/g, '');
+                        clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0]?.rightPayDistribution?.replace(/\D/g, '');
+                        clonedSalary.payDistribution[0] = resp[0]?.leftPayDistribution?.replace(/\D/g, '');
+                        clonedSalary.payDistribution[clonedSalary.payDistribution.length - 1] = resp[0]?.rightPayDistribution?.replace(/\D/g, '');
                         clonedSalary.progressivePay = resp[0]?.progressivePay;
                         clonedSalary.progressivePayValue = resp[0]?.progressivePay;
                         clonedSalary.formattedPay = resp[0]?.progressivePay?.replace(/[^0-9]/g, '');
