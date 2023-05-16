@@ -295,7 +295,7 @@ export interface SetStagePayload {
     action?: string
     parent?: string
     label?: string
-    card: ICard
+    card?: ICard
     userId?: string
 }
 

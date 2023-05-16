@@ -8,6 +8,7 @@ import "./StageSwitch.scss";
 import {deleteNoteAction} from "../../store/NotesAllReducer";
 import { useAppDispatch, useAppSelector } from "../dashboard/Kanban/hooks/useRedux";
 import { removeCard } from "../../store/kanban.slice";
+import { SetStagePayload } from "../../actions";
 
 export enum StageEnum {
     Interested,
@@ -183,13 +184,20 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
         }
         const existingChildStage = notes.find(note => note.parentStage === parentStage);
         try {
-            localStore.dispatch(updateStageAction({
+            const stageObj: {id:string, state: SetStagePayload} = {
                 id,
-                state: {id: urn, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage, existingChildStageId: existingChildStage?.id,
-                parent: stageParent?.name?.toUpperCase(), label: label?.replaceAll("-", "_"), userId: card?.userId, card: {...card, status: label, category: StageLabels[type].label.replaceAll("-", " "), id: card.id + "/" + Math.random() },
-                action: ['GEOGRAPHY', 'GROUPS'].includes(stageParent?.name?.toUpperCase())  ? 'add' : 'update'
+                state: {
+                    id: urn, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage, existingChildStageId: existingChildStage?.id,
+                    parent: stageParent?.name?.toUpperCase(), label: label?.replaceAll("-", "_"), userId: card?.userId,
+                },
+            }
+            if(card) {
+                stageObj.state.card= {
+                    ...card, status: label, category: StageLabels[type].label.replaceAll("-", " "), id: card.id + "/" + Math.random()
                 }
-            }));
+                stageObj.state.action=['GEOGRAPHY', 'GROUPS'].includes(stageParent?.name?.toUpperCase())  ? 'add' : 'update'
+            }
+            localStore.dispatch(updateStageAction(stageObj));
         } catch (error) {
             console.log('error', error)
         }

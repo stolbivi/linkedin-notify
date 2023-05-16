@@ -106,9 +106,9 @@ export default () => {
             if (!r.error && r.note) {
                 const act = action.payload.state.action;
                 const {parent, label, card} = action.payload.state;
-                if(act === "add") {
+                if(act === "add" && card) {
                     listenerApi.dispatch(addCard({parent, label, card: {...card, ...r.stage.response}}))
-                } else if (act==="update") {
+                } else if (act==="update" && card) {
                     listenerApi.dispatch(updateCard({parent, label, card:{...card, ...r.stage.response}}))
 
                 }
