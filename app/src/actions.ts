@@ -150,6 +150,8 @@ export const getFeatures = createAction<{}, Response<Features>>("getFeatures",
 export const setFeatures = createAction<SetFeaturePayload, Response<Features>>("setFeatures",
     (payload) => backEndAPI.setFeatures(payload));
 
+export const saveHandler = createAction<any, any>("saveHandler", (payload) =>  backEndAPI.saveHandler(payload))
+
 export const getSubscription = createAction<{}, any>("getSubscription",
     () => backEndAPI.getSubscription());
 

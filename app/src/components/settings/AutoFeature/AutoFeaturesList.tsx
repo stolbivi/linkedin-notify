@@ -5,7 +5,7 @@ import React, {useEffect, useState, useRef} from "react";
 import {Loader} from "../../Loader";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../../../global";
-import {getCompanyByUrn, getFeatures, getProfileByUrn, setFeatures as setFeaturesAction} from "../../../actions";
+import {getCompanyByUrn, getFeatures, getProfileByUrn, setFeatures as setFeaturesAction, saveHandler as saveHandlerAction} from "../../../actions";
 import "./AutoFeaturesList.scss";
 import {AutoFeatureCard} from "./AutoFeatureCard";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../../themes/ThemeUtils";
@@ -79,20 +79,24 @@ const AutoFeaturesList = (props) => {
     };
     const saveHandler = async () => {
         setCompleted(false);
-        const featurePromises = [];
+        const features = [];
         updatedFeatures.current.forEach(feature => {
             const isLiked = feature.types.includes("like") ? "set" : "unset";
             const isReposted = feature.types.includes("repost") ? "set" : "unset";
-            featurePromises.push(callFeaturesAction(feature.author, "like", isLiked));
-            featurePromises.push(callFeaturesAction(feature.author, "repost", isReposted));
+            features.push({
+                author: feature.author,
+                type: "like",
+                action: isLiked
+            })
+            features.push({
+                author: feature.author,
+                type: "repost",
+                action: isReposted
+            })
         });
-        try {
-            await Promise.all(featurePromises);
-            setCompleted(true);
-        } catch (error) {
-            console.error("Error saving features:", error);
-            setCompleted(true);
-        }
+
+        const res = await messages.request(saveHandlerAction(features));
+        setCompleted(true);
     };
 
     useEffect(() => {

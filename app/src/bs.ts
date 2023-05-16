@@ -55,7 +55,7 @@ import {
     getAssignedJob,
     getMe,
     getAssignedJobsById,
-    getCustomSalary, setCustomSalary,
+    getCustomSalary, setCustomSalary, saveHandler,
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 
@@ -110,6 +110,7 @@ messagesV2.listen(getSalary);
 messagesV2.listen(getTz);
 messagesV2.listen(getFeatures);
 messagesV2.listen(setFeatures);
+messagesV2.listen(saveHandler);
 messagesV2.listen(getStages);
 messagesV2.listen(setStage);
 messagesV2.listen(getNotesAll);
