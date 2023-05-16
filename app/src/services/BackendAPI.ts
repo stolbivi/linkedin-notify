@@ -56,6 +56,35 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
+    
+    private async retryHandler(url: string, request: RequestInit, retryCount: number): Promise<Response<any>> {
+        console.debug(`retrying ${url} with ${retryCount} retries left`)
+        let res = await this.fetchRequest(url, request)
+        if(res.status === 500 && retryCount > 0) {
+            // await for 1 second
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            // retry
+            res = await this.retryHandler(url, request, retryCount - 1)
+        }
+        return res
+    }
+
+    public async saveHandler(handler: SetFeaturePayload[]): Promise<any> {
+        for (let features of handler) {
+            let res = await this.fetchRequest(
+                `${BACKEND_API}features`,
+                this.getRequest("POST", features)
+            )
+            if(res.status === 500) {
+                // retry
+                res = await this.retryHandler(`${BACKEND_API}features`, this.getRequest("POST", features), 3)
+            }
+
+            console.log(res);
+        }
+        return true
+    }
+
     public getStage(id: string, as?: string): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}stage/${id}` + (as ? `?as=${as}` : ""),

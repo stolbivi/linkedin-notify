@@ -530,7 +530,7 @@ export class LinkedInAPI {
                     }
                 }
             }
-            let result: any = {name, link};
+            let result: any = {name, link, id};
             const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
             if(profile && profile[0]) {
                 const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
