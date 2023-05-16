@@ -167,7 +167,7 @@ const ListView = ({cards, parentTheme, jobsList}) => {
         } else {
             localStore.dispatch(showNotesAndChartsAction({id: userId, state: {showSalary: false, showNotes: true, show: true, id: userId}}));
              dispatch(setActiveCard(row))
-         // render componetn
+         // render component
          const section = document.querySelectorAll(".lnm-dashboard-content .details-view");
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts", "after",
@@ -219,7 +219,7 @@ const ListView = ({cards, parentTheme, jobsList}) => {
         {
             field: 'status',
             headerName: 'Status',
-            flex: 1,
+            flex: 2,
             sortable: true,
             filterable: false,
             headerAlign: 'center',
