@@ -8,8 +8,8 @@ import { useModal } from '../../hooks/useModal';
 import { useAppDispatch } from '../../hooks/useRedux';
 import ICategory from '../../interfaces/ICategory';
 import IStatus from '../../interfaces/IStatus';
-import { addCard, updateOneCard , } from '../../store/slices/cards.slice';
-import { updateColumns } from '../../store/slices/columns.slice';
+import { addCard, updateOneCard , } from '../../../../../store/cards.slice';
+import { updateColumns } from '../../../../../store/columns.slice';
 import { 
   Container, 
   Input, 

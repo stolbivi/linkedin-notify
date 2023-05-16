@@ -9,6 +9,8 @@ import { CardBorder, CardBottom, CardContainer } from './styles';
 import stylesheet from './styles.scss';
 import {localStore} from "../../../../../../src/store/LocalStore";
 import {showNotesAndChartsAction} from "../../../../../../src/store/ShowNotesAndCharts";
+import { useAppDispatch } from '../../hooks/useRedux';
+import { setActiveCard } from '../../../../../store/cards.slice';
 
 interface CardProps {
   card: ICard;
@@ -17,12 +19,14 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ card, index }) => {
 
+  const dispatch = useAppDispatch();
   const theme = useContext(ThemeContext);
   const [backgroundColor, setBackgroundColor] = useState<string>(theme.colors.primary);
   const onMoreClick =(event: React.MouseEvent<HTMLParagraphElement, MouseEvent>)=> {
     event.stopPropagation();
     window.parent.scrollTo(0, 0);
-    localStore.dispatch(showNotesAndChartsAction({id: card.userId, state: {showSalary: false, showNotes: true, show: true, id: card.userId}}));
+    dispatch(setActiveCard(card))
+    localStore.dispatch(showNotesAndChartsAction({id: card.userId, state: {showSalary: false, showNotes: true, show: true, id: card.userId}, }));
   }
 
   useEffect(() => {

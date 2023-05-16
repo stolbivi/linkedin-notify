@@ -41,6 +41,7 @@ import AssignedJobs from "../../components/AssignedJobs";
 import {ShowNotesAndCharts, showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
 import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
 import {getNotesAction,postNoteAction} from "../../store/NotesAllReducer";
+import { useAppSelector } from "../dashboard/Kanban/hooks/useRedux";
 
 export const NotesAndChartsFactory = () => {
     setTimeout(() => {
@@ -123,6 +124,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [text, setText] = useState<{ value: string }>({value: ""});
     const [stageParents] = useState([...stageParentsData]);
     const [customStages, setCustomStages] = useState<UserStage[]>([]);
+    const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
     const [editButton, setEditButton] = useState(false);
     const [currencySymbol, setCurrencySymbol] = useState("");
     const [salaryLabel, setSalaryLabel] = useState("");
@@ -140,7 +142,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     const [url] = useUrlChangeSupport(window.location.href);
     const lastNoteRef = useRef();
     const [salaryInternal, setSalaryInternal] = useState<Salary>({});
-        
+    const activeCard = useAppSelector(state => state.cards.activeCard)
 
     useEffect(() => {
         if (url?.length > 0 && trackUrl) {
@@ -525,6 +527,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                 {customStages?.map(customStage => (
                                                     <div className="nested-childs">
                                                         <StageSwitch
+                                                            card={activeCard}
                                                             key={extractFromIdAware(salary).urn}
                                                             type={StageEnum[customStage.text]}
                                                             customText={customStage.text}
@@ -535,7 +538,10 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                             parentStageName={StageParentData.GROUPS}
                                                             notes={notes}
                                                             setNotes={setNotes}
-                                                            allGroupsMode={allGroupsMode}/>
+                                                            allGroupsMode={allGroupsMode}
+                                                            stageChildData={stageChildData}
+                                                            stageParent={{name: StageParentData.GROUPS, label: StageParentData.GROUPS}}
+                                                            />
                                                     </div>
                                                 ))}
                                             </div>
@@ -551,7 +557,11 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                 <div className={fromListView ? 'notes-listview-heading' : ''}>{stageParent.name}</div>
                                                                 <div className="nested-childs">
                                                                     {stageChildData[stageParent.name]?.map?.((child,index) => stageParent.name !== StageParentData.GROUPS ?
-                                                                        <StageSwitch key={extractFromIdAware(salary).urn + index}
+                                                                        <StageSwitch 
+                                                                        stageChildData={stageChildData}
+                                                                        stageParent={stageParent}
+                                                                        card={activeCard}
+                                                                        key={extractFromIdAware(salary).urn}
                                                                                      type={child.name}
                                                                                      id={idInternal}
                                                                                      urn={extractFromIdAware(salary).urn}
@@ -565,7 +575,8 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                         <>
                                                                             {customStages?.slice(0, 3).map(customStage => (
                                                                                 <StageSwitch
-                                                                                    key={extractFromIdAware(salary).urn + index}
+                                                                                    card={activeCard}
+                                                                                    key={extractFromIdAware(salary).urn}
                                                                                     type={StageEnum[customStage.text]}
                                                                                     customText={customStage.text}
                                                                                     urn={extractFromIdAware(salary).urn}
@@ -575,7 +586,9 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                                     activeStage={extractFromIdAware(stage).stage}
                                                                                     notes={notes}
                                                                                     setNotes={setNotes}
-                                                                                    allGroupsMode={allGroupsMode}/>
+                                                                                    allGroupsMode={allGroupsMode}
+                                                                                    stageParent={{name: StageParentData.GROUPS, label: StageParentData.GROUPS}}
+                                                                                    />
                                                                             ))}
                                                                             {customStages?.length > 3 && (
                                                                                 <div className="create-new-group-wrapper customPill"

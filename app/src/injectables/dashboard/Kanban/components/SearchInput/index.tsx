@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import SearchIcon from '../../assets/search.png'
 import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
-import { clearFilters, filterCards, setSearchText } from '../../store/slices/cards.slice';
+import { clearFilters, filterCards, setSearchText } from '../../../../../store/cards.slice';
 import { Container } from './styles';
 
 const SearchInput: React.FC = () => {

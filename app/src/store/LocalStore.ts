@@ -10,7 +10,7 @@ import notesAllReducer from "./NotesAllReducer";
 import {NoteExtended} from "../global";
 import columnsReducer from "./columns.slice";
 import cardsReducer from "./cards.slice";
-
+import kanbanReducer from "./kanban.slice";
 export const listenerMiddleware = createListenerMiddleware();
 initListeners();
 
@@ -52,7 +52,8 @@ export const localStore = configureStore({
         geoTz: geoTzReducer,
         notesAll: notesAllReducer,
         columns: columnsReducer,
-        cards: cardsReducer
+        cards: cardsReducer,
+        kanbanData: kanbanReducer
     },
     devTools: true,
     middleware: (getDefaultMiddleware) =>

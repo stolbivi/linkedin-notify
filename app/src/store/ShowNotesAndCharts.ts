@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import ICard from "../injectables/dashboard/Kanban/interfaces/ICard";
 import {IdAwareRequest, IdAwareState} from "./LocalStore";
 
 export interface ShowNotesAndCharts {
@@ -6,6 +7,7 @@ export interface ShowNotesAndCharts {
     showSalary: boolean
     showNotes: boolean
     show: boolean
+    card?: ICard
 }
 
 const initialState: IdAwareState<any> = {};

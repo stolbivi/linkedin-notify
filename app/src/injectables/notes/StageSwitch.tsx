@@ -6,6 +6,8 @@ import {shallowEqual, useSelector} from "react-redux";
 import {extractIdFromUrl, Note, NoteExtended} from "../../global";
 import "./StageSwitch.scss";
 import {deleteNoteAction} from "../../store/NotesAllReducer";
+import { useAppDispatch, useAppSelector } from "../dashboard/Kanban/hooks/useRedux";
+import { removeCard } from "../../store/kanban.slice";
 
 export enum StageEnum {
     Interested,
@@ -125,45 +127,72 @@ type Props = {
     setNotes?: any;
     urn: string
     allGroupsMode?: any;
+    card?: any;
+    stageChildData?: any;
+    stageParent?: any;
 };
 
 export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
-                                                 customText, parentStage, notes,allGroupsMode}) => {
+                                                 customText, parentStage, notes,allGroupsMode, card, stageChildData, stageParent}) => {
 
     const [hovered, setHovered] = useState(false);
     const stagePillRef = useRef();
     const stage: CompleteEnabled<Stage> = useSelector(selectStage, shallowEqual)[id];
     const [isSelected, setIsSelected] = useState(false);
     const [completed, setCompleted] = useState<boolean>(false);
-
+    const {kanbanData} = useAppSelector(state => state.kanbanData);
+    const dispatch = useAppDispatch();
     useEffect(() => {
         if (activeStage !== undefined) {
             setCompleted(true);
         }
-        setIsSelected(Boolean(notes.find(note => note.stageTo === type)));
+        setIsSelected(Boolean(notes.find(note => {
+            if(note.stageText && customText && note.stageText === customText) {
+                return true
+            }
+            else if(!customText && note.stageTo === type) {
+                return true
+            }
+
+            return false
+
+        } )));
     }, [activeStage,notes]);
 
     const removeSelectedTag = (id: string) => {
         setCompleted(false)
-        localStore.dispatch(deleteNoteAction({id, url: extractIdFromUrl(window.location.href)}));
+        localStore.dispatch(deleteNoteAction({id, url: extractIdFromUrl(window.location.href)}))
         setTimeout(() => setCompleted(true), 3000);
     };
 
     const onClick = () => {
+        const label = StageLabels[type].label
+        console.log({stage, type, activeStage, isSelected, notes, card, stageChildData, stageParent, label: StageLabels[type].label, kanbanData})
         if(!stage?.completed && !customText) {
             return;
         }
-        const selectedNote = notes.find(note => note.stageTo === type);
+        setCompleted(false);
+        const selectedNote = notes.find(note => (note.stageText && customText && note.stageText === customText) || (!customText && note.stageTo === type) || null );
         if (selectedNote && isSelected) {
             removeSelectedTag(selectedNote.id);
+            dispatch(removeCard({parent: stageParent.name.toUpperCase(), label: label.replaceAll("-", "_"), userId: card.userId}))
+            setTimeout(() => {
+                setCompleted(true);
+            }, 3000);
             return;
         }
-        setCompleted(false);
         const existingChildStage = notes.find(note => note.parentStage === parentStage);
-        localStore.dispatch(updateStageAction({
-            id,
-            state: {id: urn, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage, existingChildStageId: existingChildStage?.id}
-        }));
+        try {
+            localStore.dispatch(updateStageAction({
+                id,
+                state: {id: urn, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage, existingChildStageId: existingChildStage?.id,
+                parent: stageParent?.name?.toUpperCase(), label: label?.replaceAll("-", "_"), userId: card?.userId, card: {...card, status: label, category: StageLabels[type].label.replaceAll("-", " "), id: card.id + "/" + Math.random() },
+                action: ['GEOGRAPHY', 'GROUPS'].includes(stageParent?.name?.toUpperCase())  ? 'add' : 'update'
+                }
+            }));
+        } catch (error) {
+            console.log('error', error)
+        }
         setTimeout(() => setCompleted(true), 6000);
         if (isSelected) {
             // @ts-ignore

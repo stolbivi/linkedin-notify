@@ -30,6 +30,7 @@ import {
     triggerDeleteNoteAction
 } from "./NotesAllReducer";
 import {StageParentData} from "../injectables/notes/StageSwitch";
+import { addCard, updateCard } from "./kanban.slice";
 
 export default () => {
     console.log("Initializing effects");
@@ -103,6 +104,14 @@ export default () => {
             const stageText = r?.stage?.response?.stageText ? r?.stage?.response?.stageText : null;
             listenerApi.dispatch(setStageAction({id: action.payload.id, state: {stage, stageText, completed: true}}));
             if (!r.error && r.note) {
+                const act = action.payload.state.action;
+                const {parent, label, card} = action.payload.state;
+                if(act === "add") {
+                    listenerApi.dispatch(addCard({parent, label, card: {...card, ...r.stage.response}}))
+                } else if (act==="update") {
+                    listenerApi.dispatch(updateCard({parent, label, card:{...card, ...r.stage.response}}))
+
+                }
                 listenerApi.dispatch(appendNoteAction(r.note.response));
             }
             if(action.payload.state.existingChildStageId
