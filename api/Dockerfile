@@ -3,7 +3,8 @@ RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 ADD static /home/node/app/static
 ADD src /home/node/app/src
 ADD scripts /home/node/app/scripts
-COPY prod.env /home/node/app/.env
+# COPY .env /home/node/app/.env # since we set env variables through heroku, we don't need this anymore.
+# but we may still need it for local development
 COPY package*.json /home/node/app/
 COPY tsoa.json /home/node/app/
 COPY tsconfig.json /home/node/app/
