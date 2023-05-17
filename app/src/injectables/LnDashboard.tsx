@@ -14,6 +14,7 @@ import ReactDOM from "react-dom";
 import Navbar from "./dashboard/Navbar";
 import { useUrlChangeSupport } from "../utils/URLChangeSupport";
 import {getQuery} from "../utils/LnDashboardHelper";
+import { AccessGuard, AccessState } from "./AccessGuard";
 
 export const LnDashboardFactory = () => {
     const header = document.getElementsByClassName("global-nav__primary-items");
@@ -31,6 +32,8 @@ export const LnDashboard: React.FC<Props> = ({}) => {
     const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
     const [view, setView] = useState<View>("candidates")
     const [currentUrl] = useUrlChangeSupport(window.location.href)
+    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
+
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
@@ -141,6 +144,7 @@ export const LnDashboard: React.FC<Props> = ({}) => {
   }, [])
 
   const dashboardClickHandler = () => {
+    if(accessState !== AccessState.Valid) return
     if (document.querySelector(".scaffold-layout")) {
       window.history.pushState({ component: view },"","https://www.linkedin.com/#lndashboard?view=" + view)
       initDashboard()
@@ -152,7 +156,10 @@ export const LnDashboard: React.FC<Props> = ({}) => {
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <div className="global-nav__primary-item" onClick={dashboardClickHandler} ref={rootElement} style={{cursor:"pointer"}}>
-                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px"
+              <AccessGuard setAccessState={setAccessState} className={"access-guard-px24"}
+                         loaderClassName={"loader-base loader-px24"} hideTitle/>
+                {
+                  accessState === AccessState.Valid && <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px"
                      width="24" height="24" className="ln-dashboard-svg" y="0px" viewBox="0 0 400 360.1" xmlSpace="preserve">
                     <g id="o_1_">
                         <g>
@@ -166,6 +173,8 @@ export const LnDashboard: React.FC<Props> = ({}) => {
                         </g>
                     </g>
                 </svg>
+                }
+                
                 <div className="ln-dashboard-title">
                     Dashboard
                 </div>
