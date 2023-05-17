@@ -1,6 +1,6 @@
 {
   "name": "linkedin-manager",
-  "version": "0.4.6",
+  "version": "0.5.5",
   "description": "Extension to monitor activity on your LinkedIn profile",
   "scripts": {
     "prettifier": "npx prettier --write '(tests|src)/**/*.(ts|tsx|js|jsx)'",
@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.3",
+    "@sentry/react": "^7.52.1",
     "@stolbivi/pirojok": "^1.22.0",
     "axios": "^1.2.1",
     "bootstrap": "^5.2.3",
