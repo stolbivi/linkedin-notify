@@ -17,6 +17,7 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../themes/dark";
 import { useUrlChangeSupport } from "../../utils/URLChangeSupport";
 import {getQuery} from "../../utils/LnDashboardHelper";
+import { AccessGuard, AccessState } from "../AccessGuard";
 
 type View = "candidates" | "jobList" | "search"
 
@@ -41,6 +42,7 @@ const Navbar = ({handleInit, customView} : {handleInit: Function, customView?: V
     useEffect(() => {
         updateView(view)
     }, [view])
+    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
 
 
     const updateView = (view: View) => {
@@ -70,13 +72,15 @@ const Navbar = ({handleInit, customView} : {handleInit: Function, customView?: V
     }, []);
 
     const renderComponent = (component: JSX.Element, jobListClicked:boolean, candidatesClicked: boolean, booleanSearchClicked: boolean) => {
+        setIsJobListClicked(jobListClicked);
+        setIsCandidatesClicked(candidatesClicked);
+        setIsBooleanSearchClicked(booleanSearchClicked);
+        if(accessState !== AccessState.Valid) return;
+        
         const targetElement = document.querySelector('.lnm-dashboard-content') as HTMLElement;
         if (targetElement) {
           targetElement.style.width = 'auto';
           ReactDOM.render(component, targetElement);
-          setIsJobListClicked(jobListClicked);
-          setIsCandidatesClicked(candidatesClicked);
-          setIsBooleanSearchClicked(booleanSearchClicked);
         } else {
           console.warn('Target element not found.');
           handleInit();
@@ -118,6 +122,11 @@ const Navbar = ({handleInit, customView} : {handleInit: Function, customView?: V
                     Boolean Search Tool
                 </button>
             </div>
+            <div className="navbar-access-guard-wrapper">
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px24"}
+                         loaderClassName={"loader-base loader-px24"}/>
+            </div>
+
             <div className="lnm-dashboard-content"/>
         </>
     )
