@@ -1,6 +1,8 @@
 @import "~bootstrap/dist/css/bootstrap.css";
+@import "../../themes/primary";
+
 .body {
-  background-color: #f9f2f28c;
+  //background-color: $boolean-base-card;
   font-family: Arial, sans-serif;
   max-width: 1200px;
   width: 1200px;
@@ -32,7 +34,7 @@ ul{
   border: none;
   cursor: pointer;
   text-align: center;
-  color: #383637;
+  color: $navbar-button-text;
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 700;
@@ -44,19 +46,25 @@ ul{
 }
 
 .navbarBtn.clicked {
-  background-color: #FFFFFF;
+  background-color: $navbar-button;
+  color: $navbar-button-text-clicked;
+}
+
+.navbarBtn:hover {
+  background-color: $navbar-button; /* same color as .navbarBtn.clicked */
+  color: $navbar-button-text;
 }
 
 #formatted-results {
   border: 1px solid #ccc;
-  padding: 20px;
-  margin-top: 20px;
+  padding: 15px;
+  margin-top: 11px;
 }
 
 #google-formatted-results {
   border: 1px solid #ccc;
-  padding: 20px;
-  margin-top: 20px;
+  padding: 15px;
+  margin-top: 11px;
 }
 
 .imgStyle {
@@ -105,15 +113,16 @@ img {
   margin-bottom: 40px;
   margin-right: 280px;
   margin-top: 20px;
+  width: 100% !important;
 }
 .queryContainers {
-  background-color: white;
+  background-color: $boolean-search-query-container;
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
-  border: 1px solid #E4E4E4;
+  border: 1px solid $boolean-search-query-container;
   height: 82px;
 }
 
@@ -128,6 +137,7 @@ img {
 }
 .queryContainers label {
   width: 200px;
+  margin-top: 5px;
 }
 .queryContainers input{
   border-radius: 5px;
@@ -140,7 +150,15 @@ img {
   left: 14px;
   top: 8px;
   opacity: 70%;
+  color: $boolean-search-query-container-text;
 }
+
+.queryContainers pre[contentEditable="true"]::placeholder {
+  content: "Boolean search string will appear here";
+  opacity: 70%;
+  color: $boolean-search-query-container-text;
+}
+
 label{
   font-size: 14px;
   font-family: Helvetica;
@@ -154,6 +172,8 @@ pre {
   opacity: 70%;
   margin-left: 30px;
   margin-right: 30px;
+  font-size: 14px;
+  color: $boolean-search-query-container-text;
 }
 #linkedin-search-button {
   background-color: #1569BF;
@@ -193,6 +213,7 @@ pre[contenteditable="true"]:empty:before {
   top: 8px;
   opacity: 50%;
   font-family: Helvetica;
+  font-size: 13px;
 }
 
 .jobs-selection {
@@ -210,6 +231,10 @@ pre[contenteditable="true"]:empty:before {
   border-radius: 5px;
   margin-right: 10px;
   padding-left: 10px;
+  font-size: 14px;
+  font-family: Helvetica;
+  font-weight: 400;
+  color: #4a4a4a59;
 }
 
 .jobs-selection button {
@@ -222,11 +247,10 @@ pre[contenteditable="true"]:empty:before {
   align-items: center;
   justify-content: center;
   color: #585858;
-  background-color: #E8E8E8;
   border-radius: 5px;
   border: 1px solid black;
   padding: 10px;
-  width: 261px;
+  width: 205px;
   height: 41px;
   text-align: left;
   letter-spacing: 0em;
@@ -251,10 +275,12 @@ pre[contenteditable="true"]:empty:before {
   width: 261px;
   height: 41px;
   background: #FFFFFF;
+  font-size: 13px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 5px;
   margin-right: 10px;
   padding-left: 10px;
+  color: #00000040;
 }
 
 .preset-selection button {
@@ -267,7 +293,6 @@ pre[contenteditable="true"]:empty:before {
   align-items: center;
   justify-content: center;
   color: #585858;
-  background-color: #E8E8E8;
   border-radius: 5px;
   border: 1px solid black;
   padding: 10px;

@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import mockColumns from "../../data/columns";
-import IColumn from "../../interfaces/IColumn";
-import IStatus from "../../interfaces/IStatus";
+import mockColumns from "../../src/injectables/dashboard/Kanban/data/columns";
+import IColumn from "../../src/injectables/dashboard/Kanban/interfaces/IColumn";
+import IStatus from "../../src/injectables/dashboard/Kanban/interfaces/IStatus";
 
 interface ColumnsSliceState {
   columns: IColumn[],

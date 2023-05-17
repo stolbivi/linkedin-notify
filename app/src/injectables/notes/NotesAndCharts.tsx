@@ -1,9 +1,9 @@
 import React, {FormEvent, useEffect, useRef, useState} from "react";
 import {NotesContainer} from "./NotesContainer";
 import {Collapsible, CollapsibleRole} from "./Collapsible";
-import {getSalaryValue, Salary} from "../SalaryPill";
 import {PayDistribution} from "./PayDistribution";
-import {StageEnum, StageLabels, StageSwitch} from "./StageSwitch";
+import {getSalaryValue} from "../SalaryPill";
+import {stageChildData, StageEnum, StageLabels, StageParentData, stageParentsData, StageSwitch} from "./StageSwitch";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, NoteExtended, UserStage, VERBOSE} from "../../global";
 import {inject} from "../../utils/InjectHelper";
@@ -14,23 +14,34 @@ import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
 import {
-    createCustomStage, deleteNote,
+    createCustomStage,
     getConversationProfile,
     getCustomStages,
-    getNotesByProfile,
-    getSalary,
-    getStages,
     getTheme,
-    postNote as postNoteAction,
-    ShowNotesAndChartsPayload
+    setCustomSalary
 } from "../../actions";
-import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {
+    CompleteEnabled,
+    DataWrapper,
+    IdAwareState,
+    localStore,
+    selectNotesAll,
+    selectSalary,
+    selectShowNotesAndCharts,
+    selectStage
+} from "../../store/LocalStore";
+import {Provider, shallowEqual, useSelector} from "react-redux";
+import {getSalaryAction, Salary} from "../../store/SalaryReducer";
+import {getStageAction, Stage} from "../../store/StageReducer";
 // @ts-ignore
 import stylesheet from "./NotesAndCharts.scss";
 import {useThemeSupport} from "../../themes/ThemeUtils";
 import {theme as LightTheme} from "../../themes/light";
-import UpChevron from "../../icons/UpChevron";
-import DownChevron from "../../icons/DownChevron";
+import AssignedJobs from "../../components/AssignedJobs";
+import {ShowNotesAndCharts, showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
+import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
+import {getNotesAction,postNoteAction} from "../../store/NotesAllReducer";
+import { useAppSelector } from "../dashboard/Kanban/hooks/useRedux";
 
 export const NotesAndChartsFactory = () => {
     setTimeout(() => {
@@ -39,19 +50,29 @@ export const NotesAndChartsFactory = () => {
             const section = document.querySelectorAll('section[data-member-id]');
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                    <NotesAndCharts/>, "NotesAndCharts"
+                    <Provider store={localStore}>
+                        <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={true} profileMode/>
+                    </Provider>, "NotesAndCharts"
                 );
             }
-        }
-        if (window.location.href.indexOf("/messaging/") > 0) {
+        } else if (window.location.href.indexOf("/messaging/") > 0) {
             const section = document.getElementsByClassName("scaffold-layout__list-detail msg__list-detail");
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                    <NotesAndCharts convId={"yes"}/>, "NotesAndCharts"
+                    <Provider store={localStore}>
+                        <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={true} conversation/>
+                    </Provider>, "NotesAndCharts"
                 );
             }
         }
-
+        const section = document.querySelectorAll(".kanban-title");
+        if (section && section.length > 0) {
+            inject(section[0].lastChild, "lnm-notes-and-charts", "after",
+                <Provider store={localStore}>
+                    <NotesAndCharts id={extractIdFromUrl(window.location.href)} trackUrl={false}/>
+                </Provider>, "NotesAndCharts"
+            );
+        }
         // people's search
         if (window.location.href.toLowerCase().indexOf("search/results/people/") > 0) {
             const profileCards = document.querySelectorAll('[data-chameleon-result-urn*="urn:li:member:"]');
@@ -66,7 +87,9 @@ export const NotesAndChartsFactory = () => {
                             const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                             const id = extractIdFromUrl(link);
                             inject(lastChild, `lnm-notes-and-charts-${index}`, "after",
-                                <NotesAndCharts id={id}/>, "NotesAndCharts"
+                                <Provider store={localStore}>
+                                    <NotesAndCharts id={id} salaryMode/>
+                                </Provider>, "NotesAndCharts"
                             );
                         }
                     }
@@ -77,163 +100,153 @@ export const NotesAndChartsFactory = () => {
 }
 
 type Props = {
-    stage?: StageEnum
-    salary?: Salary
     id?: string
-    convId?: string
+    trackUrl?: boolean
+    conversation?: boolean
+    salaryMode?: boolean
+    profileMode?: boolean
+    fromJobList?: boolean
 };
 
-export enum StageParentData {
-    AVAILABILITY = "Availability",
-    GEOGRAPHY = "Geography",
-    STATUS = "Status",
-    TYPE = "Type",
-    Groups = "Groups"
-}
-
-export const stageParentsData = [
-    {name: StageParentData.AVAILABILITY},
-    {name: StageParentData.STATUS},
-    {name: StageParentData.TYPE},
-    {name: StageParentData.GEOGRAPHY},
-    {name: StageParentData.Groups}
-]
-
-export const stageChildData = {
-    [StageParentData.AVAILABILITY]: [
-        {name: StageEnum.Passive_Candidate},
-        {name: StageEnum.Actively_Looking},
-        {name: StageEnum.Open_To_New_Offers},
-        {name: StageEnum.Not_Looking_Currently},
-        {name: StageEnum.Future_Interest}
-    ],
-    [StageParentData.GEOGRAPHY]: [
-        {name: StageEnum.Relocation},
-        {name: StageEnum.Commute},
-        {name: StageEnum.Hybrid},
-        {name: StageEnum.Remote}
-    ],
-    [StageParentData.STATUS]: [
-        {name: StageEnum.Contacted},
-        {name: StageEnum.Pending_Response},
-        {name: StageEnum.Interview_Scheduled},
-        {name: StageEnum.Offer_Extended},
-        {name: StageEnum.Hired},
-        {name: StageEnum.Rejected}
-    ],
-    [StageParentData.TYPE]: [
-        {name: StageEnum.Part_Time},
-        {name: StageEnum.Full_Time},
-        {name: StageEnum.Permanent},
-        {name: StageEnum.Contract},
-        {name: StageEnum.Freelance}
-    ],
-    [StageParentData.Groups]: [
-        {name: StageEnum.Commute}
-    ]
-}
-
-export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => {
+export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversation = false, salaryMode,profileMode, fromJobList }) => {
 
     const MAX_LENGTH = 200;
 
+    const [idInternal, setIdInternal] = useState<string>(id);
     const [showSalary, setShowSalary] = useState<boolean>(false);
     const [showNotes, setShowNotes] = useState<boolean>(false);
-    const [show, setShow] = useState<boolean>(false);
+    const [showStages] = useState<boolean>(true);
+    const [show] = useState<boolean>(false);
     const [showChart, setShowChart] = useState<boolean>(false);
-    const [completed, setCompleted] = useState<boolean>(false);
     const [minimized, setMinimized] = useState<boolean>(true);
-    const [stageInternal, setStageInternal] = useState<StageEnum>(stage);
-    const [salaryInternal, setSalaryInternal] = useState<Salary>(salary);
     const [editable, setEditable] = useState<boolean>(true);
-    const [notes, setNotes] = useState<NoteExtended[]>([]);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
-    const lastNoteRef = useRef();
     const [stageParents] = useState([...stageParentsData]);
     const [customStages, setCustomStages] = useState<UserStage[]>([]);
-    const [activeStageParent, setActiveStageParent] = useState<StageParentData>(StageParentData.AVAILABILITY);
+    const [fetchCustomSalary, setFetchCustomSalary] = useState(false);
     const [editButton, setEditButton] = useState(false);
     const [currencySymbol, setCurrencySymbol] = useState("");
     const [salaryLabel, setSalaryLabel] = useState("");
+    const [fromListView, setFromListView] = useState(false);
+    const [allGroupsMode, setAllGroupsMode] = useState(false);
+    const listviewNotesRef = useRef();
     const messages = new MessagesV2(VERBOSE);
-
-    useEffect(() => {
-        setSalaryLabel(salaryInternal && getSalaryValue(salaryInternal));
-    },[salaryInternal]);
-
-    useEffect(()=>{
-        console.log("Salary label: ", salaryLabel);
-        if (salaryLabel){
-            setCurrencySymbol(salaryLabel[0]);
-            if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
-                (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryLabel;
-            }
-        }
-    },[salaryLabel])
-
-
+    const inputRef = useRef<HTMLInputElement>(null);
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
+    const showNotesAndCharts: IdAwareState<ShowNotesAndCharts> = useSelector(selectShowNotesAndCharts, shallowEqual);
+    const salary: IdAwareState<CompleteEnabled<Salary>> = useSelector(selectSalary, shallowEqual);
+    const stage: IdAwareState<CompleteEnabled<Stage>> = useSelector(selectStage, shallowEqual);
+    const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
+    const [notes, setNotes] = useState<NoteExtended[]>([]);
+    const [url] = useUrlChangeSupport(window.location.href);
+    const lastNoteRef = useRef();
+    const [salaryInternal, setSalaryInternal] = useState<Salary>({});
+    const activeCard = useAppSelector(state => state.cards.activeCard)
 
     useEffect(() => {
-        const listener = () => {
-            setShow(false);
+        if (url?.length > 0 && trackUrl) {
+            setIdInternal(extractIdFromUrl(url))
         }
-        window.addEventListener('popstate', listener);
-        messages.listen(createAction<ShowNotesAndChartsPayload, any>("showNotesAndCharts",
-            (payload) => {
-                if (id && payload?.id !== id) {
-                    return Promise.resolve();
-                }
-                setShowNotes(payload?.showNotes)
-                setShowSalary(payload?.showSalary)
-                setShow(true);
-                return Promise.resolve();
-            }));
-        // getting data
-        setCompleted(false);
-        if (convId) {
-            messages.request(getConversationProfile(extractIdFromUrl(window.location.href)))
+    }, [url]);
+
+    useEffect(() => {
+        const customSalary = sessionStorage.getItem("customSalary") ? JSON.parse(sessionStorage.getItem("customSalary")) : salary;
+        setCurrencySymbol(customSalary?.symbol);
+        setSalaryInternal(customSalary);
+        setSalaryLabel(getSalaryValue(customSalary));
+    },[salary,showSalary]);
+
+
+    useEffect(() => {
+        if(notesAll.completed) {
+            setTimeout(() => {
+                // @ts-ignore
+                lastNoteRef?.current?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'end',
+                    inline: 'nearest',
+                    marginBottom: 50
+                });
+            }, 100);
+        }
+    },[notesAll, lastNoteRef.current]);
+
+    const extractFromIdAware = (idAware: IdAwareState<CompleteEnabled<any>>):
+        CompleteEnabled<any> => idAware && idAware[idInternal] ? idAware[idInternal] : {};
+
+    useEffect(() => {
+        if (conversation) {
+            messages.request(getConversationProfile(idInternal))
                 .then((r: any) => {
                     const entityUrns = r.participants.map((participant: any) => {
                         return participant["com.linkedin.voyager.messaging.MessagingMember"].miniProfile.entityUrn.split(":")[3];
                     });
-                    messages.request(getSalary(entityUrns[0]))
-                        .then((r) => {
-                            const salary = {...r.result, title: r.title, urn: r.urn};
-                            setSalaryInternal(salary);
-                            return salary;
-                        }).then(salary => {
-                        const stagePromise = messages.request(getStages({id: salary.urn}))
-                            .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                            .catch(e => console.error(e.error));
-                        const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                            .then((r) => setNotes(r.response))
-                            .catch(e => console.error(e.error));
-                        Promise.all([stagePromise, notesPromise]).then(() => setCompleted(true));
-                    }).catch(e => console.error(e.error));
+                    localStore.dispatch(getNotesAction());
+                    localStore.dispatch(getSalaryAction({id: entityUrns[0], state: {id: entityUrns[0], conversation: conversation}}));
+                    localStore.dispatch(getStageAction({id: entityUrns[0], state: {url: entityUrns[0]}}));
                 });
-        } else {
-            messages.request(getSalary(extractIdFromUrl(window.location.href)))
-                .then((r) => {
-                    const salary = {...r.result, title: r.title, urn: r.urn};
-                    setSalaryInternal(salary);
-                    return salary;
-                }).then(salary => {
-                const stagePromise = messages.request(getStages({id: salary.urn}))
-                    .then((r) => setStageInternal(r?.response?.stage >= 0 ? r?.response?.stage : -1))
-                    .catch(e => console.error(e.error));
-                const notesPromise = messages.request(getNotesByProfile(salary.urn))
-                    .then((r) => setNotes(r.response))
-                    .catch(e => console.error(e.error));
-                const customStagePromise = messages.request(getCustomStages())
-                    .then((r) => setCustomStages(r))
-                    .catch(e => console.error(e.error));
-                Promise.all([stagePromise, notesPromise, customStagePromise]).then(() => setCompleted(true));
-            }).catch(e => console.error(e.error));
+        } else if(idInternal) {
+            localStore.dispatch(getNotesAction());
+            localStore.dispatch(getSalaryAction({id: idInternal, state: {id: idInternal, conversation: conversation}}));
+            localStore.dispatch(getStageAction({id: idInternal, state: {url: idInternal}}));
         }
-        return () => window.removeEventListener('popstate', listener)
-    }, [window.location.href]);
+    }, [idInternal]);
+
+    useEffect(() => {
+        if (extractFromIdAware(salary) && idInternal) {
+            if (notesAll?.data?.length > 0) {
+                let response = notesAll?.data?.filter(n => n.profile === extractFromIdAware(salary).urn);
+                // @ts-ignore
+                let filtered = response.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                setNotes(filtered);
+            }
+        }
+    }, [notesAll, salary]);
+
+    useEffect(() => {
+        setPostAllowed(text && text.value.length > 0);
+    }, [text]);
+
+    useEffect(() => {
+        if (extractFromIdAware(showNotesAndCharts)) {
+            setFromListView(false);
+            setAllGroupsMode(false);
+            const profileId = showNotesAndCharts?.profileId;
+            if(salaryMode) {
+                setShowChart(true);
+                if (id && showNotesAndCharts[profileId]?.id !== id) {
+                    return;
+                }
+            }
+            if((profileId && showNotesAndCharts[profileId]?.id && !showNotes)) {
+                setIdInternal(showNotesAndCharts[profileId]?.id)
+                setShowNotes(showNotesAndCharts[profileId]?.showNotes)
+                setShowSalary(showNotesAndCharts[profileId]?.showSalary)
+                if(!profileMode) {
+                    setFromListView(true);
+                }
+            } else {
+                setShowNotes(extractFromIdAware(showNotesAndCharts).showNotes)
+                setShowSalary(extractFromIdAware(showNotesAndCharts).showSalary)
+                setFetchCustomSalary(true);
+            }
+            if (extractFromIdAware(showNotesAndCharts).show || (profileId && showNotesAndCharts[profileId]?.show && !showNotes)) {
+                messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+                setTimeout(() => setMinimized(false), 100);
+            } else {
+                setMinimized(true);
+            }
+        }
+    }, [showNotesAndCharts]);
+
+    const canShow = () => extractFromIdAware(showNotesAndCharts)?.show;
+    const completed = () => extractFromIdAware(salary).completed;
+
+    useEffect(() => {
+        messages.request(getCustomStages())
+            .then((r) => setCustomStages(r))
+    },[]);
 
     useEffect(() => {
         if (show) {
@@ -245,48 +258,27 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     }, [show]);
 
     useEffect(() => {
+        if (inputRef?.current) {
+            inputRef?.current?.focus();
+        }
+    }, []);
+
+    useEffect(() => {
         setPostAllowed(text && text.value.length > 0);
     }, [text]);
-
-    useEffect(() => console.log('custom-stages', customStages), [customStages])
-
-    const appendNote = (note: NoteExtended) => {
-        setNotes([...notes, note]);
-        setTimeout(() => {
-            // @ts-ignore
-            lastNoteRef?.current?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'end',
-                inline: 'nearest',
-                marginBottom: 50
-            });
-        }, 200);
-    }
 
     const postNote = (text: string) => {
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
             setPostAllowed(false);
-            messages.request(postNoteAction({id: salaryInternal.urn, stageTo: stageInternal, text}))
-                .then((r) => {
-                    if (r.error) {
-                        console.error(r.error);
-                    } else {
-                        setText({value: ""});
-                        appendNote(r.note.response);
-                        setTimeout(() => {
-                            // @ts-ignore
-                            lastNoteRef?.current?.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'end',
-                                inline: 'nearest',
-                                marginBottom: 50
-                            });
-                        }, 200);
-                    }
-                    setEditable(true);
-                }).then(/* nada */);
+            localStore.dispatch(postNoteAction({
+                id: extractFromIdAware(salary).urn,
+                stageTo: -1,
+                text
+            }));
+            setText({value: ""});
+            setEditable(true);
         }
     }
 
@@ -302,38 +294,19 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
     }
 
     const close = () => {
-        setShow(false);
         setShowChart(false);
+        localStore.dispatch(showNotesAndChartsAction({
+            id: idInternal,
+            state: {showSalary: false, showNotes: false, show: false}
+        }));
+        const body = document.querySelector('body');
+        body.classList.remove('popup-open');
     }
 
     const onExpanded = () => {
         setShowChart(true);
-    }
-
-    const removeSelectedTag = (id: string) => {
-        let updatedNotes = [...notes];
-        let tagToRemoveIndex = updatedNotes.findIndex(tag => tag.id === id);
-        if (tagToRemoveIndex !== -1) {
-            updatedNotes.splice(tagToRemoveIndex, 1);
-            setNotes(updatedNotes);
-        }
-        messages.request(deleteNote(id))
-            .then((_r) => {});
-        console.log("stage: ",stageInternal);
-        setStageInternal(-1);
-    };
-
-    const getStage = (stage: number, id: string) => {
-        return <div className={"stage " + StageLabels[stage].class} style={{width: "27%"}}>
-                    <label>{StageLabels[stage].label}</label>
-                <span className="close-button close-button-salary" onClick={() => removeSelectedTag(id)}>
-                        <svg width="3" height="3" viewBox="0 0 17 17" fill="none"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 2L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                            <path d="M15 2L2 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
-                    </span>
-            </div>
+        const body = document.querySelector('body');
+        body.classList.add('popup-open');
     }
 
     const CreateNewGroup = () => {
@@ -348,9 +321,19 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
             messages.request(createCustomStage({text: customName}))
                 .then((r) => {
                     let temp = [...customStages]
-                    const {stageId, text, userId, id} = r
-                    temp.push({stageId, text, userId, id})
-                    setCustomStages(temp)
+                    const {author, stageId, text, userId, id} = r
+                    temp.push({author, id, stageId, text, userId});
+                    const stageEnumLength = Object.keys(StageEnum).filter(k => isNaN(Number(k))).length;
+                    let count = stageEnumLength + 1;
+                    // @ts-ignore
+                    if(!StageEnum[text]) {
+                        // @ts-ignore
+                        StageEnum[text] = count;
+                    }
+                    if(!StageLabels[count] && !Object.values(StageLabels).some(({ label }) => label === text)) {
+                        StageLabels[count] = {label: text, class: "interested"};
+                    }
+                    setCustomStages(temp);
                 })
                 .catch(err => console.error(err))
                 .finally(() => setLoading(false))
@@ -358,35 +341,73 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
 
         return (
             <React.Fragment>
-                {loading ? <>loading...</> : <div onClick={!isCreating ? () => setIsCreating(true) : undefined}
-                                                  className={`create-new-group-wrapper ${isCreating ? "is-creating" : ""}`}>
-                    {isCreating ? <form onSubmit={handleCustomTagSubmit}><input value={customName}
-                                                                                onChange={e => setCustomName(e.currentTarget.value)}
-                                                                                placeholder='Enter New Group Here'/>
-                    </form> : '+ Create New Group'}
-                </div>}
+                {loading
+                    ? <>loading...</>
+                    : <div onClick={!isCreating ? () => setIsCreating(true) : undefined}
+                           style={{cursor: "pointer"}}
+                           className={`create-new-group-wrapper customPill ${isCreating ? "is-creating" : ""}`}>
+                        {isCreating ?
+                            <form onSubmit={handleCustomTagSubmit}>
+                                <input value={customName}
+                                       onChange={e => setCustomName(e.currentTarget.value)}
+                                       placeholder='Enter Name'/>
+                            </form>
+                            : 'Add Group'
+                        }
+                    </div>
+                }
             </React.Fragment>
         )
     }
 
-    useEffect(() => console.log(customStages), [customStages])
+    useEffect(() => {
+        if(customStages.length > 0) {
+            const stageEnumLength = Object.keys(StageEnum).filter(k => isNaN(Number(k))).length;
+            let count = stageEnumLength + 1;
+            customStages.map(stage => {
+                // @ts-ignore
+                if(!StageEnum[stage.text]) {
+                    // @ts-ignore
+                    StageEnum[stage.text] = count;
+                }
+                if(!StageLabels[count] && !Object.values(StageLabels).some(({ label }) => label === stage.text)) {
+                    StageLabels[count] = {label: stage.text, class: "interested"};
+                }
+                count++;
+            });
+        }
+    }, [customStages]);
 
-    const editOnClick = (event: React.MouseEvent<SVGSVGElement>) => {
+    const editOnClick = (event: any) => {
         event.stopPropagation();
+        if(editButton) {
+            const salaryWithSymbol = currencySymbol+salaryLabel.replace(currencySymbol, "");
+            setSalaryLabel(salaryWithSymbol);
+            if(document.querySelector(".Salary div") && document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span")){
+                (document.querySelector(".Salary div").shadowRoot.querySelector(".salary-pill span") as HTMLElement).innerText = salaryWithSymbol;
+            }
+            const clonedSalary = JSON.parse(JSON.stringify(salaryInternal));
+            clonedSalary.progressivePay = salaryWithSymbol;
+            sessionStorage.setItem("customSalary", JSON.stringify(clonedSalary));
+            messages.request(setCustomSalary(clonedSalary)).then(resp => {console.log(resp)})
+        }
         setEditButton(!editButton);
     }
 
-    // @ts-ignore
-    // @ts-ignore
+
+    const notesAndChartsClass = `notes-and-charts ${completed && !minimized ? 'position-expanded' : 'position-collapsed'} ${(!showSalary) ? 'custom-width' : ''} ${(fromListView) ? 'position-expanded-listview' : ''} ${(fromJobList ? 'position-expanded-joblist' : '')}`;
+
     // @ts-ignore
     return (
         <React.Fragment>
-            {show &&
+            {canShow() &&
                 <React.Fragment>
                     <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-                    <div onTransitionEnd={() => onExpanded()}
-                         className={"notes-and-charts " + ((completed && !minimized) ? "position-expanded" : "position-collapsed")}
-                         ref={rootElement}>
+                    <div className="popup-backdrop" onClick={() => close()}></div>
+                    <div id="notes-charts-container" onTransitionEnd={() => onExpanded()}
+                         className={notesAndChartsClass}
+                         ref={rootElement}
+                         style={{...(!showSalary && { width: '1000px !important' })}}>
                         <div className="close-button" onClick={() => close()}>
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
@@ -395,27 +416,57 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                             </svg>
                         </div>
                         <React.Fragment>
-                            <div className="local-loader"><Loader show={!completed}/></div>
-                            {completed && !minimized && <NotesContainer>
+                            <div className="local-loader"><Loader show={!completed()}/></div>
+                            {completed() && !minimized &&
+                            <NotesContainer>
                                 {showSalary && (
                                     <Collapsible initialOpened={showSalary}>
                                             <div data-role={CollapsibleRole.Title} className="salary-title">
                                                 <span className="salary-title-text">Avg. Base Salary (GBR)</span>
-                                                <svg onClick={(event) => editOnClick(event)} width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M11.25 17.0625H6.75C2.6775 17.0625 0.9375 15.3225 0.9375 11.25V6.75C0.9375 2.6775 2.6775 0.9375 6.75 0.9375H8.25C8.5575 0.9375 8.8125 1.1925 8.8125 1.5C8.8125 1.8075 8.5575 2.0625 8.25 2.0625H6.75C3.2925 2.0625 2.0625 3.2925 2.0625 6.75V11.25C2.0625 14.7075 3.2925 15.9375 6.75 15.9375H11.25C14.7075 15.9375 15.9375 14.7075 15.9375 11.25V9.75C15.9375 9.4425 16.1925 9.1875 16.5 9.1875C16.8075 9.1875 17.0625 9.4425 17.0625 9.75V11.25C17.0625 15.3225 15.3225 17.0625 11.25 17.0625Z" fill="#1569BF"/>
-                                                    <path d="M6.375 13.2675C5.9175 13.2675 5.4975 13.1025 5.19 12.8025C4.8225 12.435 4.665 11.9025 4.7475 11.34L5.07 9.08248C5.13 8.64748 5.415 8.08498 5.7225 7.77748L11.6325 1.86748C13.125 0.374983 14.64 0.374983 16.1325 1.86748C16.95 2.68498 17.3175 3.51748 17.2425 4.34998C17.175 5.02498 16.815 5.68498 16.1325 6.35998L10.2225 12.27C9.915 12.5775 9.3525 12.8625 8.9175 12.9225L6.66 13.245C6.5625 13.2675 6.465 13.2675 6.375 13.2675ZM12.4275 2.66248L6.5175 8.57248C6.375 8.71498 6.21 9.04498 6.18 9.23998L5.8575 11.4975C5.8275 11.715 5.8725 11.895 5.985 12.0075C6.0975 12.12 6.2775 12.165 6.495 12.135L8.7525 11.8125C8.9475 11.7825 9.285 11.6175 9.42 11.475L15.33 5.56498C15.8175 5.07748 16.0725 4.64248 16.11 4.23748C16.155 3.74998 15.9 3.23248 15.33 2.65498C14.13 1.45498 13.305 1.79248 12.4275 2.66248Z" fill="#1569BF"/>
-                                                    <path d="M14.8875 7.37252C14.835 7.37252 14.7825 7.36502 14.7375 7.35002C12.765 6.79502 11.1975 5.22752 10.6425 3.25502C10.56 2.95502 10.7325 2.64752 11.0325 2.55752C11.3325 2.47502 11.64 2.64752 11.7225 2.94752C12.1725 4.54502 13.44 5.81252 15.0375 6.26252C15.3375 6.34502 15.51 6.66002 15.4275 6.96002C15.36 7.21502 15.135 7.37252 14.8875 7.37252Z" fill="#1569BF"/>
-                                                </svg>
+                                                {
+                                                    editButton ? (
+                                                    <svg width="20" height="20" className="icon-color"
+                                                         onClick={(event) => editOnClick(event)} fill="#585858" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                                                        <g id="SVGRepo_iconCarrier">
+                                                        <g fillRule="evenodd">
+                                                        <path d="M65.456 48.385c10.02 0 96.169-.355 96.169-.355 2.209-.009 5.593.749 7.563 1.693 0 0-1.283-1.379.517.485 1.613 1.67 35.572 36.71 36.236 37.416.665.707.241.332.241.332.924 2.007 1.539 5.48 1.539 7.691v95.612c0 7.083-8.478 16.618-16.575 16.618-8.098 0-118.535-.331-126.622-.331-8.087 0-16-6.27-16.356-16.1-.356-9.832.356-118.263.356-126.8 0-8.536 6.912-16.261 16.932-16.261zm-1.838 17.853l.15 121c.003 2.198 1.8 4.003 4.012 4.015l120.562.638a3.971 3.971 0 0 0 4-3.981l-.143-90.364c-.001-1.098-.649-2.616-1.445-3.388L161.52 65.841c-.801-.776-1.443-.503-1.443.601v35.142c0 3.339-4.635 9.14-8.833 9.14H90.846c-4.6 0-9.56-4.714-9.56-9.14s-.014-35.14-.014-35.14c0-1.104-.892-2.01-1.992-2.023l-13.674-.155a1.968 1.968 0 0 0-1.988 1.972zm32.542.44v27.805c0 1.1.896 2.001 2 2.001h44.701c1.113 0 2-.896 2-2.001V66.679a2.004 2.004 0 0 0-2-2.002h-44.7c-1.114 0-2 .896-2 2.002z"></path>
+                                                        <path d="M127.802 119.893c16.176.255 31.833 14.428 31.833 31.728s-14.615 31.782-31.016 31.524c-16.401-.259-32.728-14.764-32.728-31.544s15.735-31.963 31.91-31.708zm-16.158 31.31c0 9.676 7.685 16.882 16.218 16.843 8.534-.039 15.769-7.128 15.812-16.69.043-9.563-7.708-16.351-15.985-16.351-8.276 0-16.045 6.52-16.045 16.197z"></path>
+                                                        </g>
+                                                        </g>
+                                                    </svg>
+                                                    ) : (
+                                                        <svg onClick={(event) => editOnClick(event)} width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M11.25 17.0625H6.75C2.6775 17.0625 0.9375 15.3225 0.9375 11.25V6.75C0.9375 2.6775 2.6775 0.9375 6.75 0.9375H8.25C8.5575 0.9375 8.8125 1.1925 8.8125 1.5C8.8125 1.8075 8.5575 2.0625 8.25 2.0625H6.75C3.2925 2.0625 2.0625 3.2925 2.0625 6.75V11.25C2.0625 14.7075 3.2925 15.9375 6.75 15.9375H11.25C14.7075 15.9375 15.9375 14.7075 15.9375 11.25V9.75C15.9375 9.4425 16.1925 9.1875 16.5 9.1875C16.8075 9.1875 17.0625 9.4425 17.0625 9.75V11.25C17.0625 15.3225 15.3225 17.0625 11.25 17.0625Z" fill="#1569BF"/>
+                                                            <path d="M6.375 13.2675C5.9175 13.2675 5.4975 13.1025 5.19 12.8025C4.8225 12.435 4.665 11.9025 4.7475 11.34L5.07 9.08248C5.13 8.64748 5.415 8.08498 5.7225 7.77748L11.6325 1.86748C13.125 0.374983 14.64 0.374983 16.1325 1.86748C16.95 2.68498 17.3175 3.51748 17.2425 4.34998C17.175 5.02498 16.815 5.68498 16.1325 6.35998L10.2225 12.27C9.915 12.5775 9.3525 12.8625 8.9175 12.9225L6.66 13.245C6.5625 13.2675 6.465 13.2675 6.375 13.2675ZM12.4275 2.66248L6.5175 8.57248C6.375 8.71498 6.21 9.04498 6.18 9.23998L5.8575 11.4975C5.8275 11.715 5.8725 11.895 5.985 12.0075C6.0975 12.12 6.2775 12.165 6.495 12.135L8.7525 11.8125C8.9475 11.7825 9.285 11.6175 9.42 11.475L15.33 5.56498C15.8175 5.07748 16.0725 4.64248 16.11 4.23748C16.155 3.74998 15.9 3.23248 15.33 2.65498C14.13 1.45498 13.305 1.79248 12.4275 2.66248Z" fill="#1569BF"/>
+                                                            <path d="M14.8875 7.37252C14.835 7.37252 14.7825 7.36502 14.7375 7.35002C12.765 6.79502 11.1975 5.22752 10.6425 3.25502C10.56 2.95502 10.7325 2.64752 11.0325 2.55752C11.3325 2.47502 11.64 2.64752 11.7225 2.94752C12.1725 4.54502 13.44 5.81252 15.0375 6.26252C15.3375 6.34502 15.51 6.66002 15.4275 6.96002C15.36 7.21502 15.135 7.37252 14.8875 7.37252Z" fill="#1569BF"/>
+                                                        </svg>
+                                                    )
+                                                }
                                             </div>
-
                                         <div data-role={CollapsibleRole.Static}>
                                             <div className="d-flex">
                                                 <section className="label-section">
                                                     {
                                                         editButton
-                                                            ?(<input className="label-salary-edit"
-                                                                     placeholder={salaryLabel}
-                                                                     onChange={(event) => setSalaryLabel(currencySymbol+event.target.value)}/>)
+                                                            ?(
+                                                                <input
+                                                                    className="label-salary-edit"
+                                                                    placeholder={salaryLabel}
+                                                                    value={salaryLabel}
+                                                                    onChange={(event) => {
+                                                                        const input = event.target.value.replace(/,/g, ''); // Remove existing commas from the input
+                                                                        const formattedValue = input.replace(/\B(?=(\d{3})+(?!\d))/g, ','); // Format value with commas
+                                                                        setSalaryLabel(formattedValue); // Update the salaryLabel state without currency symbol
+                                                                    }}
+                                                                    onKeyDown={(event) => {
+                                                                        if (event.key === 'Enter') {
+                                                                            editOnClick(event);
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            )
                                                             :(<div className="label-salary">{salaryLabel} year</div>)
                                                     }
                                                     <div className="label-position">
@@ -432,102 +483,173 @@ export const NotesAndCharts: React.FC<Props> = ({salary, stage, id, convId}) => 
                                                     </div>
                                                 </section>
                                                 <section className="chart-section">
-                                                    {salaryInternal && <PayDistribution salary={salaryInternal} currencySymbol={currencySymbol} editable={editButton}/>}
+                                                    {salaryInternal && <PayDistribution
+                                                        salaryLabel={salaryLabel}
+                                                        setSalaryInternal={setSalaryInternal}
+                                                        salary={salaryInternal} currencySymbol={currencySymbol} editable={editButton}/>}
                                                 </section>
                                             </div>
                                         </div>
                                         <div data-role={CollapsibleRole.Collapsible}>
                                             {showChart &&
-                                                <PayExtrapolationChart salary={salaryInternal} theme={theme}/>}
+                                            <PayExtrapolationChart salary={salaryInternal} theme={theme}/>}
                                         </div>
                                     </Collapsible>
                                 )}
-                                {showNotes && salaryInternal &&
-                                    <Collapsible initialOpened={true} typeCollapse={true}>
-                                        <div data-role={CollapsibleRole.Title} className="title-child assigned">
-                                            <label>Track Candidates</label>
-                                            <div className="assigned-job">
-                                                <p>Assigned Job: </p>
-                                                <select onClick={(event)=>{event.stopPropagation()}} className="assigned-job-dropdown">
-                                                    <option>Enter Job Name</option>
-                                                </select>
-                                            </div>
+                                {!showSalary ? (
+                                    <div className={`title-child ${!fromListView ? 'assigned' : 'title-child-listview'}`}>
+                                            <span style={{paddingRight: "5%", cursor: "pointer"}} ref={listviewNotesRef}>
+                                                Track Candidates
+                                            </span>
+                                            {
+                                                !allGroupsMode ? (
+                                                    <span style={{marginLeft:"475px", paddingRight: "5%", cursor: "pointer", display: "flex", alignItems:"center"}}>
+                                                        Notes
+                                                        <label className="notes-counter">{notes ? notes.length : 0}</label>
+                                                    </span>
+                                                ) : null
+                                            }
                                         </div>
-                                        <div data-role={CollapsibleRole.Collapsible}>
-                                            <div className="stage-parents-container">
-                                                {stageParents.map(stage => <div
-                                                    onClick={() => setActiveStageParent(prev => prev === stage.name ? null : stage.name)}
-                                                    className={activeStageParent === stage.name ? "active-item" : "item"}>
-                                                    <div className={activeStageParent === stage.name ? "stage-name-title-active" : "stage-name-title"}>{stage.name}</div>
-                                                    {activeStageParent === stage.name ? <UpChevron/> : <DownChevron/>}
-                                                </div>)}
-                                                <div className="nested-childs">
-                                                    {stageChildData[activeStageParent]?.map?.((child,index) => activeStageParent !== "Groups" ?
-                                                        <StageSwitch key={salaryInternal.urn+index} type={child.name} activeStage={stageInternal}
-                                                                     parentStage={Object.values(StageParentData).indexOf(activeStageParent)}
-                                                                     setStage={setStageInternal} id={salaryInternal.urn}
-                                                                     appendNote={appendNote} notes={notes}>
-                                                        </StageSwitch> :
-                                                        <div className="custom-stages-wrapper">
-                                                            {customStages?.map?.(customStage => <StageSwitch
-                                                                                    key={salaryInternal.urn}
-                                                                                    activeStage={stageInternal}
-                                                                                    customText={customStage.text} classType="interested"
-                                                                                    setStage={setStageInternal}
-                                                                                    id={customStage?.stageId?.toString()}
-                                                                                    appendNote={appendNote}/>
-                                                            )}
-                                                            <CreateNewGroup/>
-                                                        </div>)}
-                                                </div>
-                                                <div className="selected-stages">
-                                                    Selected
-                                                    tags: {notes?.length ? notes?.map(note => <>{getStage(note.stageTo,note.id)}</>) : 'no selected tags'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Collapsible>
+                                    ) : null
                                 }
-                                {showNotes && (
-                                    <Collapsible initialOpened={showNotes}>
-                                        <div data-role={CollapsibleRole.Title} className="title-child">
-                                            <label>Notes</label>
-                                            <label className="notes-counter">{notes ? notes.length : 0}</label>
-                                        </div>
-                                        <div data-role={CollapsibleRole.Collapsible}>
-                                            <div className="scroll-container h-300">
-                                                <div className="scroll-content">
-                                                    {completed && notes?.map((n, i) => (
-                                                        <NoteCard key={i} note={n}
-                                                                  currentCount={i} totalCount={notes.length}
-                                                                  lastNoteRef={lastNoteRef}/>)
-                                                    )
-                                                    }
-                                                    {completed && notes.length == 0 &&
-                                                        <div className="no-notes">
-                                                            <NoNotes/>
-                                                            <div>No notes yet</div>
-                                                        </div>}
-                                                </div>
+                                <>
+                                {
+                                    allGroupsMode ? (
+                                        <>
+                                            <div onClick={() => setAllGroupsMode(false)} className={`go-back-heading ${fromListView ? "go-back-heading-listview" : ""}`}>
+                                            Go back
                                             </div>
-                                        </div>
-                                        <div data-role={CollapsibleRole.Footer} className="footer-child">
-                                            <div className="text-input-container">
-                                                <div className="text-input">
-                                                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
-                                                           disabled={!editable}
-                                                           placeholder="Leave a note" value={text?.value}/>
-                                                    <div onClick={() => postNote(text?.value)}
-                                                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
-                                                        <Submit/>
+                                            <div className={`groups-heading ${fromListView ? "groups-heading-listview" : ""}`}>
+                                                Groups
+                                                <label className="notes-counter">{customStages ? customStages.length : 0}</label>
+                                            </div>
+                                            <div className="stage-parents-container" style={{flexWrap:"wrap", width: "auto"}}>
+                                                {customStages?.map(customStage => (
+                                                    <div className="nested-childs">
+                                                        <StageSwitch
+                                                            card={activeCard}
+                                                            key={extractFromIdAware(salary).urn}
+                                                            type={StageEnum[customStage.text]}
+                                                            customText={customStage.text}
+                                                            urn={extractFromIdAware(salary).urn}
+                                                            id={customStage?.stageId?.toString()}
+                                                            activeStage={extractFromIdAware(stage).stage}
+                                                            parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                            parentStageName={StageParentData.GROUPS}
+                                                            notes={notes}
+                                                            setNotes={setNotes}
+                                                            allGroupsMode={allGroupsMode}
+                                                            stageChildData={stageChildData}
+                                                            stageParent={{name: StageParentData.GROUPS, label: StageParentData.GROUPS}}
+                                                            />
                                                     </div>
-                                                </div>
+                                                ))}
                                             </div>
-                                            <Credits/>
+                                        </>
+                                        )
+                                        : (
+                                        <div id="outer-container" style={{ display: "flex" }}>
+                                            {
+                                                showStages && !showSalary ? (
+                                                    <div className="stage-parents-container stage-parents-container-border">
+                                                        {stageParents.map(stageParent =>
+                                                            <div className="parent-container">
+                                                                <div className={fromListView ? 'notes-listview-heading' : ''}>{stageParent.name}</div>
+                                                                <div className="nested-childs">
+                                                                    {stageChildData[stageParent.name]?.map?.((child,index) => stageParent.name !== StageParentData.GROUPS ?
+                                                                        <StageSwitch 
+                                                                        stageChildData={stageChildData}
+                                                                        stageParent={stageParent}
+                                                                        card={activeCard}
+                                                                        key={extractFromIdAware(salary).urn}
+                                                                                     type={child.name}
+                                                                                     id={idInternal}
+                                                                                     urn={extractFromIdAware(salary).urn}
+                                                                                     parentStage={Object.values(StageParentData).indexOf(stageParent.name)}
+                                                                                     parentStageName={stageParent.name}
+                                                                                     activeStage={extractFromIdAware(stage).stage}
+                                                                                     notes={notes}
+                                                                                     setNotes={setNotes}
+                                                                                     allGroupsMode={allGroupsMode}/>
+                                                                        :
+                                                                        <>
+                                                                            {customStages?.slice(0, 3).map(customStage => (
+                                                                                <StageSwitch
+                                                                                    card={activeCard}
+                                                                                    key={extractFromIdAware(salary).urn}
+                                                                                    type={StageEnum[customStage.text]}
+                                                                                    customText={customStage.text}
+                                                                                    urn={extractFromIdAware(salary).urn}
+                                                                                    id={idInternal}
+                                                                                    parentStage={Object.values(StageParentData).indexOf(StageParentData.GROUPS)}
+                                                                                    parentStageName={StageParentData.GROUPS}
+                                                                                    activeStage={extractFromIdAware(stage).stage}
+                                                                                    notes={notes}
+                                                                                    setNotes={setNotes}
+                                                                                    allGroupsMode={allGroupsMode}
+                                                                                    stageParent={{name: StageParentData.GROUPS, label: StageParentData.GROUPS}}
+                                                                                    />
+                                                                            ))}
+                                                                            {customStages?.length > 3 && (
+                                                                                <div className="create-new-group-wrapper customPill"
+                                                                                     style={{cursor: "pointer"}}
+                                                                                     onClick={()=>setAllGroupsMode(true)}>
+                                                                                    See all ({customStages.length})
+                                                                                </div>
+                                                                            )}
+                                                                            <CreateNewGroup />
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        <AssignedJobs urn={extractFromIdAware(salary).urn}/>
+                                                    </div>
+                                                ) : null
+                                            }
+                                            {showNotes && !allGroupsMode && (
+                                                <>
+                                                    <div className="scroll-container-parent" style={{width: "45%"}}>
+                                                        <div className="scroll-container h-300" style={{height: "285px", width: "550px", paddingLeft: "26px"}}>
+                                                            <div className="scroll-content">
+                                                                {completed && notes?.map((n, i) => (
+                                                                        <NoteCard key={i} note={n}
+                                                                                  currentCount={i} totalCount={notes.length}
+                                                                                  lastNoteRef={lastNoteRef}
+                                                                                  fromListView={fromListView}/>
+                                                                    )
+                                                                )}
+                                                                {completed && notes.length == 0 &&
+                                                                <div className="no-notes">
+                                                                    <NoNotes/>
+                                                                    <div>No notes yet</div>
+                                                                </div>}
+                                                            </div>
+                                                        </div>
+                                                        <div data-role={CollapsibleRole.Footer} className={`footer-child ${fromListView ? "footer-child-listview" : ""}`}>
+                                                            <div className="text-input-container">
+                                                                <div className="text-input">
+                                                                    <input type="text" onKeyUp={onKeyUp} onChange={onChange}
+                                                                           disabled={!editable}
+                                                                           placeholder="Leave a note" value={text?.value}
+                                                                           ref={inputRef}/>
+                                                                    <div onClick={() => postNote(text?.value)}
+                                                                         className={postAllowed ? "submit-allowed" : "submit-disabled"}>
+                                                                        <Submit/>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <Credits fromListView={fromListView}/>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
-                                    </Collapsible>
-                                )}
-                            </NotesContainer>}
+                                    )
+                                }
+                                </>
+                            </NotesContainer>
+                            }
                         </React.Fragment>
                     </div>
                 </React.Fragment>}

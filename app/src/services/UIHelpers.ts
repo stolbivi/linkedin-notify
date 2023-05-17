@@ -14,4 +14,4 @@ export const formatDate = (timestamp: Date) =>
     }) : `${MONTH_NAMES[timestamp.getMonth()]} ${timestamp.getDate()}`;
 
 export const formatDateToday = (timestamp: Date) =>
-    isToday(timestamp) ? "Today" : `${MONTH_NAMES[timestamp.getMonth()]} ${timestamp.getDate()}`;
+    isToday(timestamp) ? "Today" : `${MONTH_NAMES[timestamp.getMonth()]} ${timestamp.getDate()} ${timestamp.getFullYear()}`;

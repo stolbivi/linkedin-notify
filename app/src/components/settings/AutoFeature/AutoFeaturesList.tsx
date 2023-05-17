@@ -5,7 +5,7 @@ import React, {useEffect, useState, useRef} from "react";
 import {Loader} from "../../Loader";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {VERBOSE} from "../../../global";
-import {getCompanyByUrn, getFeatures, getProfileByUrn, setFeatures as setFeaturesAction} from "../../../actions";
+import {getCompanyByUrn, getFeatures, getProfileByUrn, setFeatures as setFeaturesAction, saveHandler as saveHandlerAction} from "../../../actions";
 import "./AutoFeaturesList.scss";
 import {AutoFeatureCard} from "./AutoFeatureCard";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../../themes/ThemeUtils";
@@ -79,37 +79,50 @@ const AutoFeaturesList = (props) => {
     };
     const saveHandler = async () => {
         setCompleted(false);
-        const featurePromises = [];
+        const features = [];
         updatedFeatures.current.forEach(feature => {
             const isLiked = feature.types.includes("like") ? "set" : "unset";
             const isReposted = feature.types.includes("repost") ? "set" : "unset";
-            featurePromises.push(callFeaturesAction(feature.author, "like", isLiked));
-            featurePromises.push(callFeaturesAction(feature.author, "repost", isReposted));
+            features.push({
+                author: feature.author,
+                type: "like",
+                action: isLiked
+            })
+            features.push({
+                author: feature.author,
+                type: "repost",
+                action: isReposted
+            })
         });
-        try {
-            await Promise.all(featurePromises);
-            setCompleted(true);
-        } catch (error) {
-            console.error("Error saving features:", error);
-            setCompleted(true);
-        }
-    };
 
+        const res = await messages.request(saveHandlerAction(features));
+        setCompleted(true);
+    };
 
     useEffect(() => {
         if(props.accessState === AccessState.Valid) {
+            setCompleted(false);
             messages.request(getFeatures())
                 .then(async (resp) => {
                     if (resp && resp?.response?.features?.length > 0) {
-                        const features = resp?.response?.features;
-                        setAutoFeatures(await getFeatureProfiles(features));
+                        const features = resp.response.features;
+                        const autoFeatures = await getFeatureProfiles(features);
+                        setAutoFeatures(autoFeatures);
+                        setCompleted(true);
                     }
-                    setCompleted(true);
                 }).catch(_err => setCompleted(true));
         } else {
             setCompleted(true);
         }
     }, []);
+
+    const deleteFeature = (feature:any) => {
+        feature.types = [];
+        updatedFeatures.current = [...updatedFeatures.current, feature];
+        const clonedFeatures = JSON.parse(JSON.stringify(autoFeatures));
+        delete clonedFeatures[feature.id];
+        setAutoFeatures(clonedFeatures);
+    }
 
     useEffect(() => {
         setPrevFeatures(JSON.parse(JSON.stringify(autoFeatures)));
@@ -142,14 +155,14 @@ const AutoFeaturesList = (props) => {
                         <span style={{marginLeft:"10px"}} className="auto-feature-text">Auto Repost</span>
                     </div>
                     {Object.entries(autoFeatures).map(([id, feature]) => (
-                        <AutoFeatureCard autoFeature={feature} id={id} key={id} updatedFeatures={updatedFeatures}/>
+                        <AutoFeatureCard autoFeature={feature} id={id} key={id} updatedFeatures={updatedFeatures} deleteFeature={deleteFeature}/>
                     ))}
-                    <div style={{marginTop:"10%", marginBottom:"10%"}}>
-                        <button className="reset-btn" style={{marginLeft: "26%"}} onClick={closeHandler}>Close</button>
-                        <button className="save-btn" style={{marginLeft: "26%"}} onClick={saveHandler}>Save</button>
-                    </div>
                 </>
             )}
+            <div style={{marginTop:"10%", marginBottom:"10%"}}>
+                <button className="reset-btn" style={{marginLeft: "26%"}} onClick={closeHandler}>Close</button>
+                <button className="save-btn" style={{marginLeft: "26%"}} onClick={saveHandler}>Save</button>
+            </div>
         </div>
     )
 }

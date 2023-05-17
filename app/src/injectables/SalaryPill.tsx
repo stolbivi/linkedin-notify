@@ -1,13 +1,17 @@
 import React, {useEffect, useState} from "react";
-import {MessagesV2} from "@stolbivi/pirojok";
 import {extractIdFromUrl, VERBOSE} from "../global";
 import {Loader} from "../components/Loader";
 import {inject} from "../utils/InjectHelper";
 import {AccessGuard, AccessState} from "./AccessGuard";
-import {getSalary, showNotesAndCharts} from "../actions";
-
+import {CompleteEnabled, localStore, selectSalary} from "../store/LocalStore";
+import {Provider, shallowEqual, useSelector} from "react-redux";
+import {showNotesAndChartsAction} from "../store/ShowNotesAndCharts";
+import {getSalaryAction, Salary} from "../store/SalaryReducer";
 // @ts-ignore
 import stylesheet from "./SalaryPill.scss";
+import {useUrlChangeSupport} from "../utils/URLChangeSupport";
+import {getCustomSalary, getMe} from "../actions";
+import {MessagesV2} from "@stolbivi/pirojok";
 
 export const SalaryPillFactory = () => {
     // individual profile
@@ -17,7 +21,9 @@ export const SalaryPillFactory = () => {
             const actions = profileActions[0].getElementsByClassName("pvs-profile-actions");
             if (actions && actions.length > 0) {
                 inject(actions[0], "lnm-salary", "after",
-                    <SalaryPill showSalary={true}/>, "Salary"
+                    <Provider store={localStore}>
+                        <SalaryPill showSalary={true} id={extractIdFromUrl(window.location.href)} trackUrl={true}/>
+                    </Provider>, "Salary"
                 );
             }
         }
@@ -35,7 +41,10 @@ export const SalaryPillFactory = () => {
                         const lastChild = profileActions[0].childNodes[profileActions[0].childNodes.length - 1];
                         const id = extractIdFromUrl(link);
                         inject(lastChild, `lnm-salary-${index}`, "before",
-                            <SalaryPill url={link} id={id}/>, "Salary");
+                            <Provider store={localStore}>
+                                <SalaryPill url={link} id={id} showSalary={true}/>
+                            </Provider>, "Salary"
+                        );
                     }
                 }
             })
@@ -44,72 +53,112 @@ export const SalaryPillFactory = () => {
 }
 
 type Props = {
+    id: string
     url?: string
     showSalary?: boolean
     showNotes?: boolean
-    id?: string
+    trackUrl?: boolean
 };
 
-export interface Salary {
-    urn?: string
-    title?: string
-    symbol?: string
-    formattedPay?: string
-    formattedPayValue?: number
-    progressivePay?: string
-    progressivePayValue?: number
-    note?: string
-    payDistribution?: string[]
-    payDistributionValues?: number[]
-    payPeriodAnnual?: string[]
-    experienceYears?: number
-}
-
 export const getSalaryValue = (salary: Salary) => {
-    if (salary.progressivePay) {
-        return salary.progressivePay;
+    if (salary?.progressivePay) {
+        return salary?.progressivePay;
     } else {
-        return salary.formattedPay;
+        return salary?.formattedPay;
     }
 }
 
-export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNotes = false}) => {
-
-    const messages = new MessagesV2(VERBOSE);
+export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNotes = false, trackUrl = false}) => {
 
     const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
-    const [salary, setSalary] = useState<Salary>({formattedPay: "", note: ""});
-    const [completed, setCompleted] = useState<boolean>(false);
-    const [urlInternal, setUrlInternal] = useState<string>(url);
+    const salary: CompleteEnabled<Salary> = useSelector(selectSalary, shallowEqual)[id];
+    const [salaryInternal, setSalaryInternal] = useState(salary);
+    const [urlInternal] = useUrlChangeSupport(window.location.href);
+    const [show, setShow] = useState(true);
+    const messages = new MessagesV2(VERBOSE);
+    const [completed, setCompleted] = useState(false);
 
     useEffect(() => {
+        setShow(true);
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }
-        setCompleted(false);
-        messages.request(getSalary(extractIdFromUrl(urlInternal)))
-            .then((r) => {
-                if (r.error) {
-                    setSalary({formattedPay: "N/A", note: r.error});
-                } else {
-                    setSalary({...r.result, title: r.title, urn: r.urn});
-                }
-                setCompleted(true);
-            });
-    }, [accessState, urlInternal]);
+    }, [accessState]);
 
     useEffect(() => {
-        if (!url) {
-            setUrlInternal(window.location.href);
-            window.addEventListener("popstate", () => {
-                setUrlInternal(window.location.href);
-            });
+        const userId = extractIdFromUrl(window.location.href);
+        messages.request(getMe()).then(res => {
+            if(userId === res.miniProfile.publicIdentifier) {
+                setShow(false);
+            } else {
+                setCompleted(false);
+                messages.request(getCustomSalary(extractIdFromUrl(trackUrl ? urlInternal : url))).then(resp => {
+                    if(resp && resp.length > 0) {
+                        const tempSalary = {
+                            "formattedPay": "$378,429",
+                            "payPeriodAnnual": [
+                                "$181,428",
+                                "$197,001"
+                            ],
+                            "payDistribution": [
+                                "$219K",
+                                "$284K",
+                                "$530K",
+                                "$693K"
+                            ],
+                            "note": "The estimated total pay for a CEO is $378,429 per year in the United States area, with an average salary of $181,428 per year. These numbers represent the median, which is the midpoint of the ranges from our proprietary Total Pay Estimate model and based on salaries collected from our users. The estimated additional pay is $197,001 per year. Additional pay could include cash bonus, commission, tips, and profit sharing. The \"Most Likely Range\" represents values that exist within the 25th and 75th percentile of all pay data available for this role.",
+                            "payDistributionValues": [
+                                219000,
+                                284000,
+                                530000,
+                                693000
+                            ],
+                            "formattedPayValue": 378429,
+                            "symbol": "$",
+                            "experienceYears": 22,
+                            "progressivePay": "$693,000",
+                            "progressivePayValue": 693000
+                        }
+                        const clonedSalary = JSON.parse(JSON.stringify(tempSalary));
+                        clonedSalary.urn = resp[0]?.id;
+                        clonedSalary.id = resp[0]?.id;
+                        clonedSalary.payDistributionValues[0] = resp[0]?.leftPayDistribution?.replace(/\D/g, '');
+                        clonedSalary.payDistributionValues[clonedSalary.payDistributionValues.length - 1] = resp[0]?.rightPayDistribution?.replace(/\D/g, '');
+                        clonedSalary.payDistribution[0] = resp[0]?.leftPayDistribution?.replace(/\D/g, '');
+                        clonedSalary.payDistribution[clonedSalary.payDistribution.length - 1] = resp[0]?.rightPayDistribution?.replace(/\D/g, '');
+                        clonedSalary.progressivePay = resp[0]?.progressivePay;
+                        clonedSalary.progressivePayValue = resp[0]?.progressivePay;
+                        clonedSalary.formattedPay = resp[0]?.progressivePay?.replace(/[^0-9]/g, '');
+                        clonedSalary.formattedPayValue = resp[0]?.progressivePay?.replace(/[^0-9]/g, '');
+                        setSalaryInternal(clonedSalary);
+                        setCompleted(true);
+                    } else {
+                        if (!salary?.completed) {
+                            localStore.dispatch(getSalaryAction({id: id, state: {id: extractIdFromUrl(trackUrl ? urlInternal : url)}}));
+                        }
+                    }
+                })
+            }
+        });
+    },[urlInternal])
+
+    useEffect(() => {
+        if(salary?.completed) {
+            setSalaryInternal(salary);
+            setCompleted(true);
         }
-    }, []);
+    },[salary]);
+
+    useEffect(() => {
+        if(salaryInternal) {
+            sessionStorage.setItem("customSalary", JSON.stringify(salaryInternal));
+        }
+    },[salaryInternal])
+
 
     const onClick = () => {
         if (salary) {
-            return messages.request(showNotesAndCharts({id, showSalary, showNotes, setSalary}));
+            localStore.dispatch(showNotesAndChartsAction({id: id, state: {showSalary, showNotes, show: true, id: id}}));
         }
     }
 
@@ -118,11 +167,11 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName={"loader-base loader-px24"}/>
-            {accessState === AccessState.Valid &&
-                <div id="agha" className={"salary-pill" + (completed ? " clickable" : "")}
+            {accessState === AccessState.Valid && show &&
+                <div className={"salary-pill" + (completed ? " clickable" : "")}
                      onClick={onClick}>
                     <Loader show={!completed}/>
-                    {completed && <span>{getSalaryValue(salary)}</span>}
+                    {completed && salary && <span>{getSalaryValue(salaryInternal)}</span>}
                 </div>}
         </React.Fragment>
     );

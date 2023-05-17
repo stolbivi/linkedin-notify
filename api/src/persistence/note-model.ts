@@ -9,8 +9,9 @@ export interface Note {
     stageFrom?: number
     stageTo?: number
     createdAt?: string
-    updatedAt?: string,
-    stageText?: string;
+    updatedAt?: string
+    stageText?: string
+    parentStage?: number
 }
 
 const noteSchema = new dynamoose.Schema({
@@ -48,7 +49,12 @@ const noteSchema = new dynamoose.Schema({
         required: false
     },
     stageText: {
-        type: String
+        type: String,
+        required: false
+    },
+    parentStage: {
+        type: Number,
+        required: false
     }
 }, {
     "saveUnknown": true,

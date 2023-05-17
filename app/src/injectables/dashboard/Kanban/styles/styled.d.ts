@@ -6,6 +6,30 @@ declare module 'styled-components' {
 
     colors: {
       primary: string,
+      interested: string,
+      notInterested: string,
+      interviewing: string,
+      failedInterview: string,
+      hired: string,
+      notLookingCurrently: string,
+      openToNewOffers: string,
+      passiveCandidate: string,
+      activelyLooking: string,
+      futureInterest: string,
+      relocation: string,
+      commute: string,
+      hybrid: string,
+      remote: string,
+      contacted: string,
+      pendingResponse: string,
+      interviewScheduled: string,
+      offerExtended: string,
+      rejected: string,
+      partTime: string,
+      fullTime: string,
+      permanent: string,
+      contract: string,
+      freelance: string,
       feature: string,
       bug: string,
       deploy: string,
@@ -22,6 +46,8 @@ declare module 'styled-components' {
       scrollbar_background: string,
       scrollbar_thumb: string,
       scrollbar_thumb_hover: string,
+      text_black: string,
+      text_white: string
     }
   }
 }

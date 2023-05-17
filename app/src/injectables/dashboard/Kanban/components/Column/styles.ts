@@ -23,6 +23,4 @@ export const CardsList = styled.div`
   margin-top: 1rem;
   height: 100%;
   width: 220px;
-  overflow-y: auto;
-  overflow-x: hidden;
 `;
