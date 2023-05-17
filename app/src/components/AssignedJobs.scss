@@ -1,0 +1,45 @@
+@import "../themes/primary";
+@import "../../src/injectables/AccessGuard";
+
+.assigned{
+  flex-wrap: wrap;
+}
+
+.assigned-job {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  max-height: 50px;
+  margin-top: -44px;
+  margin-left: -2px;
+}
+
+.assigned-job p {
+  margin-right: 10px;
+}
+
+.assigned-job-dropdown {
+  box-sizing: border-box;
+  width: 452px;
+  height: 41px;
+  background: $notes-and-charts-background;
+  border: 1px solid $notes-color-3;
+  border-radius: 5px;
+  margin-right: 10px;
+  padding-left: 10px;
+  color: $notes-color-3;
+}
+
+.assigned-job-options {
+  color: $notes-and-charts-salary;
+}
+
+.assigned-job-loader{
+  width: 20px;
+  padding-left: 10px;
+}
+
+.border-div {
+  border-bottom: 1px solid $notes-color-3;
+  margin-bottom: 10px; /* add spacing between the div */
+}

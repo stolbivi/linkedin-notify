@@ -10,6 +10,8 @@ $base-card-message: var(--base-card-message);
 $base-card-message-background: var(--base-card-message-background);
 $base-card-unread: var(--base-card-unread);
 $base-card-border: var(--base-card-border);
+$boolean-base-card: var(--boolean-base-card);
+$joblist-edit-base-card: var(--joblist-edit-base-card);
 
 $conversation-card-badge: var(--conversation-card-badge);
 $conversation-card-background: var(--conversation-card-background);
@@ -69,6 +71,7 @@ $last-viewed: var(--last-viewed);
 
 $salary-pill: var(--salary-pill);
 
+$navbar-button: var(--navbar-button);
 $note-card-border: var(--note-card-border);
 $note-card-picture: var(--note-card-picture);
 $note-card-author: var(--note-card-author);
@@ -93,6 +96,7 @@ $notes-color-2: var(--notes-color-2);
 $notes-color-3: var(--notes-color-3);
 $notes-color-4: var(--notes-color-4);
 $notes-color-5: var(--notes-color-5);
+$notes-border: var(--notes-border);
 
 $notes-container: var(--notes-container);
 $notes-container-background: var(--notes-container-background);
@@ -113,7 +117,6 @@ $pay-distribution-right: var(--pay-distribution-right);
 
 $stage: var(--stage);
 $stage-interested: var(--stage-interested);
-$stage-not-interested: var(--stage-not-interested);
 $stage-interviewing: var(--stage-interviewing);
 $stage-failed: var(--stage-failed);
 $stage-hired: var(--stage-hired);
@@ -133,3 +136,20 @@ $reply-text-area-caret-color: var(--reply-text-area-caret-color);
 $ln-dashboard-menu-icon-color: var(--ln-dashboard-menu-icon-color);
 $ln-dashboard-menu-icon-color-hover: var(--ln-dashboard-menu-icon-color-hover);
 $settings-icon-color: var(--settings-icon-color);
+
+$navbar-button-text: var(--navbar-button-text);
+$navbar-button-text-clicked: var(--navbar-button-text-clicked);
+$boolean-search-query-container: var(--boolean-search-query-container);
+$boolean-search-query-container-text: var(--boolean-search-query-container-text);
+$joblist-table-color: var(--joblist-table-color);
+$joblist-table-strip-color: var(--joblist-table-strip-color);
+
+$kanban-table-container-color: var(--kanban-table-container-color);
+$kanban-table-more-color: var(--kanban-table-more-color);
+$kanban-table-status-color: var(--kanban-table-status-color);
+$kanban-table-list-card-color: var(--kanban-table-list-card-color);
+$kanban-table-bottom-border-color: var(--kanban-table-bottom-border-color);
+$kanban-table-message-color: var(--kanban-table-message-color);
+$kanban-table-action-btn-color: var(--kanban-table-action-btn-color);
+$add-status-border: var(--add-status-border);
+$joblist-edit-input: var(--joblist-edit-input);

@@ -24,6 +24,7 @@ export interface Experience {
         entityUrn: string
         url: string
     }
+    conversationUrn?: string
 }
 
 export class LinkedInAPI {
@@ -43,18 +44,23 @@ export class LinkedInAPI {
     }
 
     public extractExperience(response: any): Experience {
-        const urn = response.elements[0].entityUrn?.split(":").pop();
-        const element = response.elements[0]?.profileTopPosition?.elements[0];
-        const {month: startMonth, year: startYear} = element.dateRange?.start ?? {};
-        const {month: endMonth, year: endYear} = element.dateRange?.end ?? {};
+        const urn = response?.elements[0].entityUrn?.split(":").pop();
+        const element = response?.elements[0]?.profileTopPosition?.elements[0];
+        const {month: startMonth, year: startYear} = element?.dateRange?.start ?? {};
+        const {month: endMonth, year: endYear} = element?.dateRange?.end ?? {};
         let result = {urn, startMonth, startYear, endMonth, endYear} as Experience;
-        if (element.company) {
-            const {entityUrn, name, universalName, url} = element.company;
+        if (element?.company) {
+            const {entityUrn, name, universalName, url} = element?.company;
             result = {
                 ...result,
                 company: {name, universalName, entityUrn, url}
             };
         }
+        const conversationUrn = response.elements[0]?.profileStatefulProfileActions?.primaryActionResolutionResult?.composeOption?.composeNavigationContext?.existingConversationUrn?.split(':').pop();
+        result = {
+            ...result,
+            conversationUrn
+        };
         return result;
     }
 
@@ -100,7 +106,7 @@ export class LinkedInAPI {
             defaultLocalizedNameWithoutCountryName: locationName
         } = JSONPath.query(response, "$..geoLocation.geo").shift() as any;
         if (countryName) {
-            const country = countryName.defaultLocalizedName;
+            const country = countryName?.defaultLocalizedName;
             let location = locationName;
             if (location.indexOf(",") > 0) {
                 location = locationName.split(",")
@@ -524,7 +530,7 @@ export class LinkedInAPI {
                     }
                 }
             }
-            let result: any = {name, link};
+            let result: any = {name, link, id};
             const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
             if(profile && profile[0]) {
                 const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
@@ -543,6 +549,7 @@ export class LinkedInAPI {
     public extractCompany(id: string, response: any): any {
         let name: any[] = [];
         let profilePicture = undefined;
+        let entityUrn;
         if (response && response.elements) {
             const company = response.elements[0];
             if (company) {
@@ -550,9 +557,10 @@ export class LinkedInAPI {
                 const artifacts = extractArtifacts(company.logo.image["com.linkedin.common.VectorImage"].artifacts);
                 const rootUrl = company.logo.image["com.linkedin.common.VectorImage"].rootUrl;
                 profilePicture = {rootUrl, artifacts};
+                entityUrn = company.entityUrn;
             }
         }
-        return {id, name, profilePicture};
+        return {id, name, profilePicture, entityUrn};
     }
 
 
@@ -561,6 +569,13 @@ export class LinkedInAPI {
             this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
             .then(response => response.json());
     }
+
+    public getProfileDetails(token: string, id: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `identity/profiles/${id}`,
+            this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
+            .then(response => response.json());
+    }
+
     public getCompanyDetails(token: string, urn: string): Promise<any> {
         return fetch(LinkedInAPI.BASE + `organization/companies?decorationId=com.linkedin.voyager.deco.organization.web.WebFullCompanyMain-12&q=universalName&universalName=${urn}`, this.getRequest(token))
             .then(response => response.json());
@@ -587,5 +602,38 @@ export class LinkedInAPI {
             .replace("(", "%28")
             .replace(")", "%29");
     }
+
+    public getMsgLastSeen(token: string, id: string): Promise<any> {
+        return fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.463cafd0fd1961a6e716e85ae4b0b32a`, this.getRequest(token))
+            .then(response => response.text())
+            .then(responseText => {
+                return responseText;
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    public getPresenceLastSeen(token: string, urn?: string) {
+        return fetch(`${LinkedInAPI.BASE}messaging/dash/presenceStatuses`, {
+            method: "POST",
+            headers: {
+                "Accept": "*/*",
+                "Accept-Language": "en-US,en;q=0.5",
+                "Sec-Fetch-Dest": "empty",
+                "Sec-Fetch-Mode": "no-cors",
+                "Sec-Fetch-Site": "same-origin",
+                "csrf-token": token,
+                "x-http-method-override": "GET",
+                "content-type": "application/x-www-form-urlencoded",
+                "Pragma": "no-cache",
+                "Cache-Control": "no-cache"
+            },
+            body: `ids=List(urn%3Ali%3Afsd_profile%3A${urn})`,
+            mode: "cors",
+            credentials: "include"
+        }).then(response => response.json());
+    }
+
 
 }

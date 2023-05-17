@@ -1,14 +1,26 @@
+@import "../../../../../themes/primary";
+
 .job-detail{
   color: rgba(144, 144, 144, 0.59);
   font-family: 'Arial';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .card-container {
   display: flex;
   align-items: center;
+  overflow-x: clip;
+}
+
+.card-container-external{
+  background-color: $kanban-table-container-color;
 }
 
 .card-container img {
@@ -26,7 +38,7 @@
 }
 
 .more-text{
-    color: #727272;
+    color: $kanban-table-more-color;
     text-transform: uppercase;
     padding: 4px 2px;
     font-family: 'Helvetica';

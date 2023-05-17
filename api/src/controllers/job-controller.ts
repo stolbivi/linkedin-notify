@@ -4,6 +4,7 @@ import {BaseController} from "./base-controller";
 import {User} from "../persistence/user-model";
 import {Job, JobModel} from "../persistence/job-model";
 import {v4 as uuid} from "uuid";
+import {AssignedJob, JobAssignmentModel} from "../persistence/job-assignment-model";
 
 
 @Route("/api")
@@ -23,7 +24,7 @@ export class JobController extends BaseController {
         try {
             const user =  request.user as User;
             const userJobs = await JobModel.scan({ userId: user.id }).exec();
-            const resolvedJobs = userJobs.map(job => ({
+            const resolvedJobs = userJobs.map((job: Job) => ({
                 id: job.id,
                 title: job.title,
                 salary: job.salary,
@@ -68,7 +69,7 @@ export class JobController extends BaseController {
 
     @Tags("Persistence")
     @Post("job")
-    public async create(@Body() body: Job,
+    public async createJob(@Body() body: Job,
                         @Request() request?: express.Request
     ): Promise<any> {
         if (this.abruptOnNoSession(request)) {
@@ -136,5 +137,83 @@ export class JobController extends BaseController {
             return this.handleError(error, request);
         }
     }
+
+    @Tags('Persistence')
+    @Post('job/assign')
+    public async createOrUpdateAssignedJob(@Body() body: AssignedJob, @Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve('Please, sign in to use premium features');
+        }
+        try {
+            let message: any;
+            const user = request.user as User;
+            const toCreate = { ...body, id: uuid(), assignedBy: `${user?.firstName} ${user?.lastName}` };
+            const existingRecord = await JobAssignmentModel.query('author')
+                                        .eq(body.author)
+                                        .where('userId')
+                                        .eq(body.userId)
+                                        .exec();
+            if (existingRecord.length > 0) {
+                delete toCreate.id;
+                const saved = await JobAssignmentModel.update(existingRecord[0].id, toCreate);
+                message = { response: saved.toJSON() };
+            } else {
+                const saved = await JobAssignmentModel.create(toCreate);
+                message = { response: saved.toJSON() };
+            }
+            if (request?.user) {
+                message = { ...message, user: request.user };
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
+    @Tags("Persistence")
+    @Get("job/assigned/{id}")
+    public async findAssignedJob(id: string, @Query() author?: string, @Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+        try {
+            const result = await JobAssignmentModel.query('author').eq(author).where('userId').eq(id).exec();
+            let message: any = {response: this.getFirst(result)};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
+    @Tags("Persistence")
+    @Get("jobs/assigned/{jobId}")
+    public async findAssignedJobsById(jobId: string,
+                          @Query() as?: string,
+                          @Request() request?: express.Request): Promise<any> {
+        if (this.abruptOnNoSession(request)) {
+            this.setStatus(403);
+            return Promise.resolve("Please, sign in to use premium features");
+        }
+
+        try {
+            let query = as
+                ? JobAssignmentModel.query("jobId").eq(jobId).where("author").eq(as)
+                : JobAssignmentModel.query("jobId").eq(jobId);
+            const result = await query.exec();
+            let message: any = {response: result.toJSON()};
+            if (request?.user) {
+                message = {...message, user: request.user};
+            }
+            return Promise.resolve(message);
+        } catch (error) {
+            return this.handleError(error, request);
+        }
+    }
+
 
 }

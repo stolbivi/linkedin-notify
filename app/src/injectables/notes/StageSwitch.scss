@@ -6,7 +6,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
   padding: 6px 14px;
   border-radius: 37px;
   color: $stage;
@@ -18,6 +18,7 @@
   user-select: none;
   white-space: nowrap;
   height: 18px;
+  width: 60px !important;
 
   .loader {
     position: absolute;
@@ -39,27 +40,30 @@
 
 .interested {
   background-color: $stage-interested;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .not-interested {
-  background-color: $stage-not-interested;
+  background-color: $stage-passive;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .interviewing {
   background-color: $stage-interviewing;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .failed {
   background-color: $stage-failed;
-}
-
-.hired {
-  background-color: $stage-hired;
-}
-
-.passive{
-  background-color: $stage-passive;
-  color: #767676;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .inactive {
@@ -67,5 +71,52 @@
   color: #8B8B8B;
   border: 1px solid #8B8B8B;
   border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
+.hired {
+  background-color: $stage-hired;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.passive{
+  background-color: $stage-passive;
+  color: $notes-color-3;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.customPill {
+  width: 75%;
+  white-space: normal;
+  word-wrap: break-word;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.pill-parent{
+  justify-content: center;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
+}
+
+.ellipsis-stage-pill{
+  height: 28px;
+  align-items: center;
+  display: flex;
+}
+
+.note-card-fit{
+  width: fit-content !important;
+}
+
+.note-drop-down{
+  width: 84px !important;
+}

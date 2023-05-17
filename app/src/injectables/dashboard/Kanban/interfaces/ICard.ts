@@ -7,7 +7,15 @@ interface ICard {
   title: string,
   description: string,
   status: IStatus,
-  hidden: boolean
+  hidden: boolean,
+  name: string,
+  designation?: string,
+  profileImg?: string,
+  profileId?: string,
+  userId?: string,
+  companyName?: string,
+  conversationUrn?: string
+  statuses?: []
 }
 
 export default ICard;

@@ -34,7 +34,7 @@ export const injectLastChild = (target: any, tag: string, injectable:  JSX.Eleme
     }
 };
 
-const mountComponent = (componentName: string, container: HTMLElement) => {
+export const mountComponent = (componentName: string, container: HTMLElement) => {
     let elements = componentElements.get(componentName) || [];
     elements.push(container);
     componentElements.set(componentName, elements);

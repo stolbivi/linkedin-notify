@@ -66,7 +66,7 @@ export const Conversations: React.FC<Props> = ({setBadges}) => {
                     });
             })
 
-    }, [showDetails]);
+    }, [showDetails, searchInput?.current]);
 
     useEffect(() => {
         if(originalConversations.length === 0) {

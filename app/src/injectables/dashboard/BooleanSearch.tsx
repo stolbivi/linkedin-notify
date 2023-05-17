@@ -4,8 +4,32 @@
 import React, {useEffect} from "react";
 // @ts-ignore
 import stylesheet from "./BooleanSearch.scss";
+import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
+import {theme as LightTheme} from "../../themes/light";
+import {getTheme, SwitchThemePayload} from "../../actions";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as DarkTheme} from "../../themes/dark";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {VERBOSE} from "../../global";
 
 const BooleanSearch = () => {
+    const messages = new MessagesV2(VERBOSE);
+    const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
+
+    useEffect(() => {
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            }));
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                return Promise.resolve();
+            }));
+    }, []);
 
     function translateToGoogleBooleanSearch(linkedinQuery: string) {
         const querySegments = linkedinQuery.match(/(\(.*?\))|(-\w+)|(\w+)/g);
@@ -146,7 +170,7 @@ const BooleanSearch = () => {
     return (
         <>
             <style dangerouslySetInnerHTML={{__html: stylesheet}}/>
-            <div className="body">
+            <div className="body" ref={rootElement}>
                 <div style={{width: "100%"}}>
                     <h1 className={"booleanText"}>Boolean Search Tool</h1>
                     <h2 className={"filterText"}>Filters</h2>
@@ -156,13 +180,13 @@ const BooleanSearch = () => {
                         (or not after) in the fields below. Comma-separate them, and you're
                         good to go.
                     </p>
-                    <p>Jobs</p>
-                    <div className="jobs-selection">
-                        <select className="jobs-dropdown">
-                            <option>No jobs selected</option>
-                        </select>
-                        <button>AI Keyword Generator</button>
-                    </div>
+                    {/*<p>Jobs</p>*/}
+                    {/*<div className="jobs-selection">*/}
+                    {/*    <select className="jobs-dropdown">*/}
+                    {/*        <option>No jobs selected</option>*/}
+                    {/*    </select>*/}
+                    {/*    <button>AI Keyword Generator</button>*/}
+                    {/*</div>*/}
                     <div className="queryContainers">
                         <label htmlFor="job-title-input">Job Titles to Include:</label>
                         <input
@@ -209,7 +233,7 @@ const BooleanSearch = () => {
                     </div>
                     <div className="queryContainers">
                         <label htmlFor="general-keyword-include-input">
-                            General Keywords to Include:
+                            Skills to Include:
                         </label>
                         <input
                             style={{marginRight: "30px"}}
@@ -220,7 +244,7 @@ const BooleanSearch = () => {
                     </div>
                     <div className="queryContainers">
                         <label htmlFor="general-keyword-exclude-input">
-                            General Keywords to Exclude:
+                            Skills to Exclude:
                         </label>
                         <input
                             style={{marginRight: "30px"}}
@@ -230,15 +254,15 @@ const BooleanSearch = () => {
                         />
                     </div>
                     <br/>
-                    <div className="preset-text">
-                        <p>Preset</p>
-                    </div>
-                    <div className="preset-selection">
-                        <select className="preset-dropdown">
-                            <option>No preset selected</option>
-                        </select>
-                        <button>Save Preset</button>
-                    </div>
+                    {/*<div className="preset-text">*/}
+                    {/*    <p>Preset</p>*/}
+                    {/*</div>*/}
+                    {/*<div className="preset-selection">*/}
+                    {/*    <select className="preset-dropdown">*/}
+                    {/*        <option>No preset selected</option>*/}
+                    {/*    </select>*/}
+                    {/*    <button>Save Preset</button>*/}
+                    {/*</div>*/}
                     <br/>
                     <h2>Custom Search</h2>
                     <p>
@@ -263,7 +287,7 @@ const BooleanSearch = () => {
                               id="google-formatted-results"
                               contentEditable="true"
                               placeholder="Boolean search string will appear here"
-                          />
+                          ></pre>
                         <button
                             style={{width: "20%", marginRight: "20px", cursor: "pointer"}}
                             id="google-search-button"

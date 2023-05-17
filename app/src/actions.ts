@@ -1,7 +1,8 @@
 import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {
-    Badges,
+    AssignedJob,
+    Badges, CustomSalary,
     Features,
     Invitation,
     Job,
@@ -18,9 +19,10 @@ import {Response} from "./services/BaseAPI";
 import {StageEnum} from "./injectables/notes/StageSwitch";
 import {MessagesV2, Tabs} from "@stolbivi/pirojok";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
-import {store} from "./store/Store";
-import {setLastViewed as setLastViewedAction} from "./store/LastViewedReducers";
+import {LastViewed} from "./store/LastViewedReducer";
 import Cookie = chrome.cookies.Cookie;
+import {Salary} from "./store/SalaryReducer";
+import ICard from "./injectables/dashboard/Kanban/interfaces/ICard";
 
 const messagesV2 = new MessagesV2(VERBOSE);
 const api = new LinkedInAPI();
@@ -93,8 +95,7 @@ export const getConversationProfile = createAction<string, Array<any>>("getConve
     (convId) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
-            const detailsResponse = await api.getConversationProfile(token, convId);
-            return detailsResponse;
+            return await api.getConversationProfile(token, convId);
         }));
 
 export const conversationAck = createAction<string, void>("conversationAck",
@@ -150,6 +151,8 @@ export const getFeatures = createAction<{}, Response<Features>>("getFeatures",
 export const setFeatures = createAction<SetFeaturePayload, Response<Features>>("setFeatures",
     (payload) => backEndAPI.setFeatures(payload));
 
+export const saveHandler = createAction<any, any>("saveHandler", (payload) =>  backEndAPI.saveHandler(payload))
+
 export const getSubscription = createAction<{}, any>("getSubscription",
     () => backEndAPI.getSubscription());
 
@@ -164,6 +167,7 @@ export const getSalary = createAction<string, any>("getSalary",
             const experience = api.extractExperience(experienceResponse);
             const titleResponse = await api.getTitle(token, experience.urn);
             const title = api.extractTitle(titleResponse);
+            delete experience.conversationUrn;
             let request = {...title, ...experience, location};
             if (experience.company?.universalName) {
                 const organizationResponse = await api.getOrganization(token, experience.company?.universalName);
@@ -174,8 +178,16 @@ export const getSalary = createAction<string, any>("getSalary",
             return {...response, ...request};
         }));
 
-// TODO add to store
-export const getTz = createAction<string, any>("getTz",
+export interface GeoTz {
+    geo: {
+        lat: any
+        lng: any
+        city: any
+    }
+    tz: any
+}
+
+export const getTz = createAction<string, GeoTz>("getTz",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -206,8 +218,14 @@ export interface GetStagesPayload {
     url?: string
 }
 
-// TODO add to store
-export const getStages = createAction<GetStagesPayload, Response<any>>("getStages",
+export interface StageResponse {
+    id: string
+    author: string
+    stage: number
+    updatedAt: string
+}
+
+export const getStages = createAction<GetStagesPayload, Response<StageResponse>>("getStages",
     (payload) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -273,6 +291,12 @@ export interface SetStagePayload {
     stageFrom: StageEnum
     stageText?: string;
     parentStage?: number
+    existingChildStageId?: string
+    action?: string
+    parent?: string
+    label?: string
+    card?: ICard
+    userId?: string
 }
 
 export const setStage = createAction<SetStagePayload, any>("setStage",
@@ -286,30 +310,53 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
                 author,
                 stageFrom: payload.stageFrom,
                 stageTo: payload.stage,
-                stageText: payload.stageText || undefined
+                stageText: payload.stageText || undefined,
+                parentStage: payload.parentStage
             });
             const noteExtended = await extendNote(token, [note.response], author);
-            const stage = await backEndAPI.setStage(payload.id, payload.stage, author, payload.parentStage);
+            const experienceResponse = await api.getExperience(token, payload.id);
+            const experience = api.extractExperience(experienceResponse);
+            let profile= await api.getProfileDetails(token,payload.id);
+            let rcpntPrfl = {name: "", designation: "", profileImg: "", profileId: "", userId: ""};
+            if(profile && profile.included[0]) {
+                profile = profile.included[0];
+                rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
+                            designation: profile.occupation,
+                            profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
+                            profileId: payload.id, userId: profile.publicIdentifier}
+            }
+            const prflImg = rcpntPrfl.profileImg ? rcpntPrfl.profileImg : 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
+            const stage = await backEndAPI.setStage(note?.response?.id, payload?.stage, author, payload?.parentStage, rcpntPrfl?.name,
+                rcpntPrfl?.designation, prflImg, payload?.stageText || "", rcpntPrfl?.profileId, experience?.company?.name, experience?.conversationUrn, rcpntPrfl?.userId);
             return {note: {response: noteExtended[0]}, stage: stage};
         }));
 
+export const setStageFromKanban = createAction<SetStagePayload, any>("setStageFromKanban",
+    (payload) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const me = await api.getMe(token);
+            const author = api.extractProfileUrn(me);
+            return  await backEndAPI.setStageFromKanban(payload.id, payload.stage, payload.stageText, author);
+        }));
 
 export interface ShowNotesAndChartsPayload {
     id?: string
     showSalary: boolean
     showNotes: boolean
+    showStages?: boolean
     setSalary?:any
+    userId?: string
+    profileId?: string
 }
 
-// TODO add to store
 const showNotesAndChartsRequest = createRequest<ShowNotesAndChartsPayload, void>("showNotesAndCharts");
 
 export const showNotesAndCharts = createAction<ShowNotesAndChartsPayload, any>("showNotesAndChartsProxy",
-    (payload) => tabs.withCurrentTab()
-        .then(tab => messagesV2.requestTab(tab?.id, showNotesAndChartsRequest(payload).toAction())));
+    (payload, sender) => tabs.withCurrentTab()
+        .then(tab => messagesV2.requestTab(tab?.id || sender?.tab?.id, showNotesAndChartsRequest(payload).toAction())));
 
-// TODO add to store
-export const getNotesAll = createAction<{}, any>("getNotesAll",
+export const getNotesAll = createAction<{}, Response<NoteExtended[]>>("getNotesAll",
     () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -324,12 +371,22 @@ export const getNotesAll = createAction<{}, any>("getNotesAll",
                         return {response};
                     })
             } else {
-                return notes;
+                return notes as Response<NoteExtended[]>;
             }
         }));
 
-// TODO add to store
-export const getNotesByProfile = createAction<string, any>("getNotesByProfile",
+export const sortAsc = (notes: NoteExtended[]) => notes.sort((a, b) => {
+    //@ts-ignore
+    return a?.timestamp - b?.timestamp;
+});
+
+export const sortDesc = (notes: NoteExtended[]) => notes.sort((a, b) => {
+    //@ts-ignore
+    return b?.timestamp - a?.timestamp;
+});
+
+// @Deprecated: this API is deprecated and is not used since all notes are now shared via store
+export const getNotesByProfile = createAction<string, Response<NoteExtended[]>>("getNotesByProfile",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -344,18 +401,23 @@ export const getNotesByProfile = createAction<string, any>("getNotesByProfile",
                         return {response};
                     })
             } else {
-                return notes;
+                return notes as Response<NoteExtended[]>;
             }
         }));
 
 export interface PostNotePayload {
     id: string
+    stageFrom?: StageEnum
     stageTo: StageEnum
-    text: string
+    text?: string
     stateText?: string
 }
 
-export const postNote = createAction<PostNotePayload, any>("postNote",
+export interface PostNoteResponse {
+    note: Response<NoteExtended>
+}
+
+export const postNote = createAction<PostNotePayload, PostNoteResponse>("postNote",
     (payload) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
@@ -364,6 +426,7 @@ export const postNote = createAction<PostNotePayload, any>("postNote",
             const note = await backEndAPI.postNote({
                 profile: payload.id,
                 author,
+                stageFrom: payload.stageFrom,
                 stageTo: payload.stageTo,
                 text: payload.text,
                 stageText: payload.stateText
@@ -387,18 +450,16 @@ export const createCustomStage = createAction("createCustomStage",
         }));
 
 export const getCustomStages = createAction("getCustomStages",
-        () => getCookies(LINKEDIN_DOMAIN)
+    () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async () => {
-            console.log('in action creator get custom stages')
             const { response } = await backEndAPI.getCustomStages()
             return response
         })
 )
 
-// TODO add to store
-export const getLastViewed = createAction<string, any>("getLastViewed",
-    (id, sender) => getCookies(LINKEDIN_DOMAIN)
+export const getLastViewed = createAction<string, LastViewed[]>("getLastViewed",
+    (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
             const experienceResponse = await api.getExperience(token, id);
@@ -407,17 +468,17 @@ export const getLastViewed = createAction<string, any>("getLastViewed",
             const me = await api.getMe(token);
             const as = api.extractProfileUrn(me);
             if (profile === as) {
-                return {response: {profile: me, author: as, hide: true}}
+                return {response: [{profile: me, author: as, hide: true} as LastViewed]}
             } else {
-                return backEndAPI.getLastViewed(profile, as);
+                return backEndAPI.getLastViewed(profile, as)
+                    .then(response => ({
+                        ...response,
+                        response: response.response.map(item => ({ ...item, hide: false })),
+                    }));
             }
         })
-        .then(response => {
-            if (sender.tab) {
-                store.dispatch(setLastViewedAction({tabId: sender.tab.id, payload: response.response}));
-            }
-            return response;
-        }));
+        .then(response => response.response));
+
 
 export const setLastViewed = createAction<string, any>("setLastViewed",
     (id) => getCookies(LINKEDIN_DOMAIN)
@@ -432,6 +493,87 @@ export const setLastViewed = createAction<string, any>("setLastViewed",
                 profile,
                 author,
             });
+        }));
+const findTimeValue = (text: string) => {
+    const regex = /"text":"[^"]+•\s(\d+(yr|mo|w|d|h|m|s))/;
+    const match = text.match(regex);
+    if (!match || match.length < 2) {
+        return null;
+    }
+    return match[1];
+};
+const calculatePostedTime = (timeValue: string) => {
+    const currentTime = new Date();
+    const value = parseInt(timeValue.match(/\d+/g)[0]);
+    const unit = timeValue.match(/[a-zA-Z]+/g)[0];
+    switch (unit) {
+        case 's':
+            currentTime.setSeconds(currentTime.getSeconds() - value);
+            break;
+        case 'm':
+            currentTime.setMinutes(currentTime.getMinutes() - value);
+            break;
+        case 'h':
+            currentTime.setHours(currentTime.getHours() - value);
+            break;
+        case 'd':
+            currentTime.setDate(currentTime.getDate() - value);
+            break;
+        case 'w':
+            currentTime.setDate(currentTime.getDate() - value * 7);
+            break;
+        case 'mo':
+            currentTime.setMonth(currentTime.getMonth() - value);
+            break;
+        case 'yr':
+            currentTime.setFullYear(currentTime.getFullYear() - value);
+            break;
+        default:
+            return null;
+    }
+
+    return currentTime;
+};
+export const getLastSeen = createAction<string, any>("getLastSeen",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const experienceResponse = await api.getExperience(token, id);
+            const experience = api.extractExperience(experienceResponse);
+            const profile = experience.urn;
+            const me = await api.getMe(token);
+            const as = api.extractProfileUrn(me);
+            if (profile === as) {
+                return {response: {profile: me, author: as, hide: true}}
+            } else {
+                const profileActivityResp = await api.getMsgLastSeen(token, profile);
+                const timeValue = findTimeValue(profileActivityResp);
+                let profileActivityTime;
+                if (timeValue) {
+                    const postedTime = calculatePostedTime(timeValue);
+                    if (postedTime) {
+                        console.log(`The post was created at: ${postedTime.toISOString()}`);
+                        profileActivityTime = postedTime.getTime();
+                    } else {
+                        console.log("Unable to calculate the posted time.");
+                    }
+                } else {
+                    console.log("Unable to find the time value in the text.");
+                }
+                const presenceLastSeenResp = await api.getPresenceLastSeen(token, profile);
+                let presenceTime;
+                if(presenceLastSeenResp.results && Object.keys(presenceLastSeenResp.results).length > 0) {
+                    presenceTime = presenceLastSeenResp.results[`urn:li:fsd_profile:${profile}`]['lastActiveAt'];
+                }
+                if (typeof profileActivityTime !== 'number') {
+                    profileActivityTime = 0;
+                }
+                if (typeof presenceTime !== 'number') {
+                    presenceTime = 0;
+                }
+                const earliestTimestamp = Math.max(profileActivityTime, presenceTime);
+                return {response: {lastActiveAt: earliestTimestamp}}
+            }
         }));
 
 export interface SwitchThemePayload {
@@ -462,10 +604,21 @@ export const deleteNote = createAction<string, any>("deleteNote",
         })
 )
 
+export const deleteStage = createAction<string, any>("deleteStage",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async () => {
+            const { response } = await backEndAPI.deleteStage(id)
+            return response
+        })
+)
+
 export const postJob = createAction<Job, any>("postJob",
     (job) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
-        .then(async () => {
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            job.author = api.extractProfileUrn(me);
             const { response } = await backEndAPI.postJob(job)
             return response
         })
@@ -477,7 +630,9 @@ export const getJobs = createAction<{}, any>("getJobs",
 export const updateJob = createAction<Job, any>("updateJob",
     (job) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
-        .then(async () => {
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            job.author = api.extractProfileUrn(me);
             const { response } = await backEndAPI.updateJob(job)
             return response
         })
@@ -488,6 +643,111 @@ export const deleteJob = createAction<string, any>("deleteJob",
         .then(cookies => api.getCsrfToken(cookies))
         .then(async () => {
             const { response } = await backEndAPI.deleteJob(id)
+            return response
+        })
+)
+
+export const getAuthorStages = createAction("getAuthorStages",
+    () => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const author = api.extractProfileUrn(me);
+            return await backEndAPI.getAuthorStages(author)
+        }));
+
+export const getUserIdByUrn = createAction<string, any>("getUserIdByUrn",
+    (id) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const experienceResponse = await api.getExperience(token, id);
+            const experience = api.extractExperience(experienceResponse);
+            return experience.urn;
+        }));
+
+export const getLatestStage = createAction<string, any>("getLatestStage",
+    (url) => getCookies(LINKEDIN_DOMAIN)
+        .then(async cookies => api.getCsrfToken(cookies))
+        .then(async token => {
+            const experienceResponse = await api.getExperience(token, url);
+            const experience = api.extractExperience(experienceResponse);
+            const profile = experience.urn;
+            const me = await api.getMe(token);
+            const as = api.extractProfileUrn(me);
+            return backEndAPI.getLatestStage(profile,as);
+        }));
+
+export const assignJob = createAction("assignJob",
+    (payload: { jobId: string, urn: string}) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const experienceResponse = await api.getExperience(token, payload.urn);
+            const experience = api.extractExperience(experienceResponse);
+            let profile= await api.getProfileDetails(token,payload.urn);
+            let rcpntPrfl = {name: "", designation: "", profileImg: "", profileId: "", userId: ""};
+            if(profile && profile.included[0]) {
+                profile = profile.included[0];
+                rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
+                    designation: profile.occupation,
+                    profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
+                    profileId: payload.urn, userId: profile.publicIdentifier}
+            }
+            const prflImg = rcpntPrfl.profileImg ? rcpntPrfl.profileImg : 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
+            const job: AssignedJob = {jobId: payload?.jobId, author: api.extractProfileUrn(me), userId: rcpntPrfl?.userId, profileId: rcpntPrfl?.profileId,
+            companyName: experience?.company?.name, conversationUrn: experience?.conversationUrn, profileImg: prflImg, designation: rcpntPrfl?.designation, name: rcpntPrfl?.name };
+            const { response } = await backEndAPI.assignJob(job)
+            return response
+        })
+)
+
+export const getAssignedJob = createAction("getAssignedJob",
+    (payload: {url: string}) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const { response } = await backEndAPI.getAssignedJob(payload.url,api.extractProfileUrn(me));
+            return response
+        })
+)
+
+export const getMe = createAction("getMe", () => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            return await api.getMe(token)
+        })
+)
+
+export const getAssignedJobsById = createAction<string, any>("getAssignedJobsById",
+    (jobId) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const { response } = await backEndAPI.getAssignedJobsById(jobId,api.extractProfileUrn(me));
+            return response
+        })
+)
+
+export const setCustomSalary = createAction<Salary,any>("setCustomSalary",
+    (payload: Salary) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const salary: CustomSalary = {id: payload.urn, author:api.extractProfileUrn(me), leftPayDistribution: payload.payDistributionValues[0],
+                rightPayDistribution: payload.payDistributionValues[payload.payDistributionValues.length - 1], progressivePay: payload.progressivePay}
+            const { response } = await backEndAPI.setCustomSalary(salary)
+            return response
+        })
+)
+
+export const getCustomSalary = createAction<string, any>("getCustomSalary",
+    (urn) => getCookies(LINKEDIN_DOMAIN)
+        .then(cookies => api.getCsrfToken(cookies))
+        .then(async (token) => {
+            const me = await api.getMe(token);
+            const experienceResponse = await api.getExperience(token, urn);
+            const experience = api.extractExperience(experienceResponse);
+            const { response } = await backEndAPI.getCustomSalary(experience.urn,api.extractProfileUrn(me));
             return response
         })
 )

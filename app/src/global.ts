@@ -64,6 +64,7 @@ export interface Note {
     createdAt?: string
     updatedAt?: string
     stageText?: string
+    parentStage?: number
 }
 
 export interface NoteExtended extends Note {
@@ -132,4 +133,26 @@ export interface Job {
     geography?: string
     status?: string
     assigned?: string
+    description?: string
+    author?: string
+}
+export interface AssignedJob {
+    id?: string
+    jobId?: string
+    author?: string
+    assignedBy?: string
+    name?: string
+    designation?:string
+    profileImg?:string
+    profileId?: string
+    companyName?: string
+    conversationUrn?: string
+    userId?: string
+}
+export interface CustomSalary {
+    id?: string
+    author?: string
+    leftPayDistribution?: number,
+    rightPayDistribution?: number,
+    progressivePay?: string
 }

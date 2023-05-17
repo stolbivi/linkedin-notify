@@ -16,6 +16,7 @@ import {
     getInvitations,
     getIsLogged,
     getIsUnlocked,
+    getLastSeen,
     getLastViewed,
     getNotesAll,
     getNotesByProfile,
@@ -35,7 +36,6 @@ import {
     setLastViewed,
     setStage,
     setTheme,
-    showNotesAndCharts,
     switchThemeRequest,
     unlock,
     postReply,
@@ -45,10 +45,19 @@ import {
     postJob,
     getJobs,
     updateJob,
-    deleteJob
+    deleteJob,
+    getAuthorStages,
+    setStageFromKanban,
+    deleteStage,
+    getUserIdByUrn,
+    getLatestStage,
+    assignJob,
+    getAssignedJob,
+    getMe,
+    getAssignedJobsById,
+    getCustomSalary, setCustomSalary, saveHandler,
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
-import {store} from "./store/Store";
 
 const messagesV2 = new MessagesV2(VERBOSE);
 const tabs = new Tabs();
@@ -71,7 +80,6 @@ const startMonitoring = () => {
     chrome.alarms.create(CHECK_BADGES, {periodInMinutes: CHECK_FREQUENCY, delayInMinutes: 0});
     chrome.alarms.create(AUTO_FEATURES, {periodInMinutes: AUTO_FREQUENCY, delayInMinutes: 0.2});
 }
-
 // Main course below! //
 
 getCookies(LINKEDIN_DOMAIN)
@@ -102,13 +110,14 @@ messagesV2.listen(getSalary);
 messagesV2.listen(getTz);
 messagesV2.listen(getFeatures);
 messagesV2.listen(setFeatures);
+messagesV2.listen(saveHandler);
 messagesV2.listen(getStages);
 messagesV2.listen(setStage);
-messagesV2.listen(showNotesAndCharts);
 messagesV2.listen(getNotesAll);
 messagesV2.listen(getNotesByProfile);
 messagesV2.listen(postNote);
 messagesV2.listen(getSubscription);
+messagesV2.listen(getLastSeen);
 messagesV2.listen(getLastViewed);
 messagesV2.listen(setLastViewed);
 messagesV2.listen(getTheme);
@@ -123,7 +132,17 @@ messagesV2.listen(postJob);
 messagesV2.listen(getJobs);
 messagesV2.listen(updateJob);
 messagesV2.listen(deleteJob);
-
+messagesV2.listen(getAuthorStages);
+messagesV2.listen(setStageFromKanban);
+messagesV2.listen(deleteStage);
+messagesV2.listen(getUserIdByUrn);
+messagesV2.listen(getLatestStage);
+messagesV2.listen(assignJob);
+messagesV2.listen(getAssignedJob);
+messagesV2.listen(getMe);
+messagesV2.listen(getAssignedJobsById);
+messagesV2.listen(getCustomSalary);
+messagesV2.listen(setCustomSalary);
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
     tabs.withAllTabs().then(tabs => {
@@ -191,8 +210,8 @@ function autoFeatures() {
     console.debug('Firing feed updates');
 
     function getValue(n: any) {
-        const id = n.miniCompany ? n.miniCompany : n.miniProfile;
-        return id.split(":").pop();
+        const id = n?.miniCompany ? n?.miniCompany : n?.miniProfile;
+        return id?.split(":")?.pop();
     }
 
     return getCookies(LINKEDIN_DOMAIN)
@@ -255,11 +274,6 @@ chrome.alarms.onAlarm.addListener(a => {
     }
 });
 
-store.subscribe(() => {
-    // TODO debug only
-    console.log("Store:", store.getState());
-})
-
 let contentScriptReady = false;
 //@ts-ignore
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -308,3 +322,12 @@ chrome.history.onVisited.addListener((historyItem) => {
     });
     visitedUrls.push(historyItem.url);
 });
+
+// if user directly goes to linkedin.com/#lndashboard?view=...
+// then we need to set showDashboard to true
+chrome.webNavigation.onBeforeNavigate.addListener((e) => {
+    if (e.url.includes("lndashboard")) {
+        const v = e.url.split('view=')[1]?.split('&')[0]
+        chrome.storage.local.set({ showDashboard: true, view: v })
+    }
+  })

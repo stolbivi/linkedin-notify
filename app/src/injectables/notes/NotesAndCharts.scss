@@ -8,6 +8,17 @@
 @import "PayExtrapolationChart";
 @import "../Credits";
 
+.popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 25;
+}
+
 .position-collapsed {
   width: 75px;
   height: 75px;
@@ -15,10 +26,28 @@
   transform: translateX(-50%);
 }
 
+.custom-width{
+  width: 1282px !important;
+}
+
 .position-expanded {
   width: 500px;
-  left: 50%;
+  left: 70%;
   transform: translateX(-50%);
+}
+
+.position-expanded-listview{
+  left: 50% !important;
+  top: -10% !important;
+  padding-top: 0px !important;
+  height: fit-content;
+}
+
+.position-expanded-joblist{
+  left: 53.5% !important;
+  top: -10% !important;
+  padding-top: 0px !important;
+  height: fit-content;
 }
 
 .notes-and-charts {
@@ -26,10 +55,12 @@
   background: $notes-and-charts-background;
   border-radius: 9px;
   overflow: hidden;
-  padding: 1em 1em 0em;
+  padding-top: 1em;
+  padding-left: 16px;
+  padding-right: 20px;
   position: absolute;
   top: 25px;
-  z-index: 10;
+  z-index: 25;
   box-shadow: 0px 18px 101px $notes-and-charts-shadow;
   transition: width 100ms cubic-bezier(0.0, 0.0, 0.2, 1);
 
@@ -39,8 +70,8 @@
 
   .close-button {
     position: absolute;
-    right: 0.25em;
-    top: 0.25em;
+    right: 10px;
+    top: 10px;
     cursor: pointer;
     width: 1em;
     height: 1em;
@@ -50,11 +81,28 @@
   }
 
   .footer-child {
-    margin-top: 0.5em;
-    margin-left: -1.5em;
-    margin-right: -1.5em;
+    margin-top: 12px;
+    margin-right: -88px;
   }
 
+  .footer-child-listview {
+    margin-top: 3px !important;
+    .text-input-container {
+      margin-bottom: 0 !important;
+      .text-input {
+        height: 18px;
+        display: flex;
+        input {
+          outline: none;
+        }
+      }
+    }
+  }
+
+}
+
+.notes-and-charts-listview{
+  padding-top: 0 !important;
 }
 
 .label-section {
@@ -82,7 +130,7 @@
     font-style: normal;
     font-weight: 700;
     font-size: 14px;
-    color: $notes-and-charts-salary;
+    color: #6e6e6e;
     width: 35%;
     border: 1px solid rgba(0, 0, 0, 0.12);
   }
@@ -107,10 +155,13 @@
 .title-child {
   display: flex;
   align-items: center;
+  padding-left: 5%;
+  padding-left: 27px;
 }
 
-.title-child label {
-  flex-basis: 100%;
+.title-child-listview{
+  margin-top: -8px;
+  margin-bottom: 7px;
 }
 
 .stage-container {
@@ -124,13 +175,16 @@
   }
 }
 
+.stage-parents-container-border {
+  margin-bottom: -60px !important;;
+}
+
 .stage-parents-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
-  width: 100%;
-  padding: 10px;
+  width: 48%;
   flex-wrap: wrap;
+  padding: 10px;
   margin-bottom: 20px;
 
   .item {
@@ -170,26 +224,16 @@
   }
 
   .nested-childs {
-    display: flex;
+    display: grid;
     justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
     padding: 10px;
     gap: 10px;
-    width: 100%;
-  }
-
-  .selected-stages {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    width: 100%;
   }
 
   .custom-stages-wrapper {
-    display: flex;
+    display: grid;
     justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
@@ -197,6 +241,13 @@
     gap: 10px;
     width: 100%;
   }
+}
+.selected-stages {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
 }
 
 .create-new-group-wrapper {
@@ -208,51 +259,28 @@
   color: #1569BF;
   border: 1px solid #1569BF;
   height: 28px;
-  padding-left: 10px;
+  padding-left: 12px;
   padding-right: 10px;
+  font-size: 11px;
 
   input {
-      width: 100%;
+      width: 140%;
       height: 100%;
       border: none;
       outline: none;
-
+      font-size: 10px;
       &:focus {
           outline: none;
       }
+    background-color: $notes-container-background;
+    color: $notes-color-3;
   }
 
 }
 
 .is-creating {
   border: 1px solid #8B8B8B;
-}
-
-.assigned{
-  flex-wrap: wrap;
-}
-
-.assigned-job {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  margin-top: 20px;
-}
-
-.assigned-job p {
-  margin-right: 10px;
-}
-
-.assigned-job-dropdown {
-  box-sizing: border-box;
-  width: 261px;
-  height: 41px;
-  background: $notes-and-charts-background;
-  border: 1px solid $notes-color-3;
-  border-radius: 5px;
-  margin-right: 10px;
-  padding-left: 10px;
-  color: $notes-color-3;
+  padding-right: 10px;
 }
 
 .close-button-salary {
@@ -274,4 +302,44 @@
   font-weight: 400;
   font-size: 12px;
   color: $notes-color-5;
+  align-items: center;
+}
+
+.parent-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 68px;
+  border-bottom: 1px solid $notes-border;
+  max-width: 110px;
+}
+
+.icon-color path {
+  stroke: $kanban-table-action-btn-color;
+}
+
+.notes-listview-heading{
+  margin-top: -33px;
+  margin-bottom: -14px;
+}
+
+.go-back-heading{
+  cursor: pointer;
+  padding-left: 2.2%;
+  padding-top: 3%;
+}
+
+.go-back-heading-listview{
+  padding-top: 0px !important;
+}
+
+.groups-heading{
+  display: flex;
+  align-items: center;
+  padding-left: 2.2%;
+  padding-top: 2%;
+}
+
+.groups-heading-listview{
+  padding-top: 0% !important;
 }

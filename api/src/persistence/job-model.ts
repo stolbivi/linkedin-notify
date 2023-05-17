@@ -1,4 +1,4 @@
-import dynamoose from "dynamoose"
+const dynamoose = require("dynamoose");
 import dotenv from "dotenv"
 
 dotenv.config()
@@ -14,6 +14,7 @@ export interface Job {
     status?: string
     assigned?: string
     description?: string
+    author?: string
 }
 
 const jobSchema = new dynamoose.Schema({
@@ -21,6 +22,14 @@ const jobSchema = new dynamoose.Schema({
         type: String,
         hashKey: true,
         required: true
+    },
+    author: {
+        type: String,
+        required: true,
+        index: {
+            name: 'author-index',
+            global: true
+        }
     },
     userId: {
         type: String,
@@ -60,7 +69,13 @@ const jobSchema = new dynamoose.Schema({
     },
     assigned: {
         type: String,
-        required: false
+        required: false,
+        index: {
+            name: 'assigned-jobs-index',
+            global: true,
+            rangeKey: 'id',
+            project: true
+        }
     }
 }, {
     "saveUnknown": true,
