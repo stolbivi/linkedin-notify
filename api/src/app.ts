@@ -22,15 +22,18 @@ require("dotenv").config();
 
         const app = express();
 
-        Sentry.init({
-            dsn: process.env.SENTRY_URL,
-            integrations: [
-                new Sentry.Integrations.Http({tracing: true}),
-                new Sentry.Integrations.Express({app}),
-                ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
-            ],
-            tracesSampleRate: 1.0,
-        });
+        if (process.env.SENTRY_DISABLED === "false") {
+            console.log("Enabling Sentry reporting");
+            Sentry.init({
+                dsn: process.env.SENTRY_URL,
+                integrations: [
+                    new Sentry.Integrations.Http({tracing: true}),
+                    new Sentry.Integrations.Express({app}),
+                    ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
+                ],
+                tracesSampleRate: 1.0,
+            });
+        }
 
         app.use(cors({
             credentials: true,
