@@ -41,7 +41,7 @@ export const NotesManagerFactory = () => {
                 );
             }
         }
-    },1000);
+    }, 1000);
 }
 
 type Props = {
@@ -95,16 +95,16 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
     useEffect(() => {
         messages.request(getCustomStages())
             .then((customStages) => {
-                if(customStages.length > 0) {
+                if (customStages.length > 0) {
                     const stageEnumLength = Object.keys(StageEnum).filter(k => isNaN(Number(k))).length;
                     let count = stageEnumLength + 1;
                     customStages.map(stage => {
                         // @ts-ignore
-                        if(!StageEnum[stage.text]) {
+                        if (!StageEnum[stage.text]) {
                             // @ts-ignore
                             StageEnum[stage.text] = count;
                         }
-                        if(!StageLabels[count] && !Object.values(StageLabels).some(({ label }) => label === stage.text)) {
+                        if (!StageLabels[count] && !Object.values(StageLabels).some(({label}) => label === stage.text)) {
                             StageLabels[count] = {label: stage.text, class: "interested"};
                         }
                         count++;
@@ -163,20 +163,20 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
     }, [selection, searchValue, searchText, notesAll]);
 
     useEffect(() => {
-        if(showProfileNotes && notesAll.data.length > 0) {
+        if (showProfileNotes && notesAll.data.length > 0) {
             let urn = document.querySelector(".app-aware-link.msg-thread__link-to-profile")?.href;
             let profileID: string;
-            if(urn) {
+            if (urn) {
                 let regex = /\/in\/(.+)/;
                 const match = regex.exec(urn);
                 profileID = match[1];
             }
-            if(!profileID) {
+            if (!profileID) {
                 messages.request(getUserIdByUrn(extractIdFromUrl(window.location.href)))
                     .then((profileId) => {
                         profileID = profileId;
                         const note = notesAll?.data?.find(noteObj => noteObj.profile === profileID);
-                        if(note) {
+                        if (note) {
                             setSelection({
                                 profile: note.profile,
                                 profileName: note.profileName,
@@ -189,7 +189,7 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                     });
             } else {
                 const note = notesAll?.data?.find(noteObj => noteObj.profile === profileID);
-                if(note) {
+                if (note) {
                     setSelection({
                         profile: note.profile,
                         profileName: note.profileName,
@@ -199,7 +199,7 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                 }
             }
         }
-    },[notesAll,url]);
+    }, [notesAll, url]);
 
     const onProfileSelect = (profile: any) => setSelection(profile);
 
@@ -218,7 +218,10 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
         return <React.Fragment>
             <div className="notes-title">
                 {
-                    backdrop?(<div className="popup-backdrop" onClick={() => {setBackDrop(false);closeDropDown()}}></div>):null
+                    backdrop ? (<div className="popup-backdrop" onClick={() => {
+                        setBackDrop(false);
+                        closeDropDown()
+                    }}></div>) : null
                 }
                 <label>History</label>
                 <label className="notes-counter">{notes ? notes.length : 0}</label>
@@ -329,6 +332,10 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
         }
     }
 
+    const closeDropDown = () => {
+        setShowDropDown(false);
+    }
+
     const getSelectedNotes = () => {
         return <React.Fragment>
             <div className="notes-header">
@@ -386,10 +393,6 @@ export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
                 <Credits/>
             </div>
         </React.Fragment>
-    }
-
-    const closeDropDown=()=>{
-        setShowDropDown(false);
     }
 
     return (
