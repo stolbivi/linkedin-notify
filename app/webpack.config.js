@@ -1,14 +1,16 @@
-const { tsEntry, withCSSInlined, withHTML } = require("./webpack.core");
+const {tsEntry, withCSSInlined, withHTML} = require("./webpack.core");
 
 const DIST = "dist";
 
 module.exports = function (env, argv) {
     const pathToEnv = `env/${env.env}.env`;
     console.log("Environment:", env, "using env file", pathToEnv);
-    require("dotenv").config({ path: pathToEnv });
+    require("dotenv").config({path: pathToEnv});
     const definitions = {
         "process.env.BACKEND_BASE": process.env.BACKEND_BASE,
         "process.env.SIGN_UP_URL": process.env.SIGN_UP_URL,
+        "process.env.SENTRY_DISABLED": process.env.SENTRY_DISABLED,
+        "process.env.SENTRY_URL": process.env.SENTRY_URL,
     };
     console.log("Definitions:", definitions);
 

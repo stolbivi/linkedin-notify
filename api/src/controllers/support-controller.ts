@@ -2,16 +2,16 @@ import {Body, Post, Request, Route, Tags} from "tsoa";
 import express from "express";
 import {BaseController} from "./base-controller";
 
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 require("dotenv").config();
 
 interface Form {
-    name: string
-    phone: string
-    email: string
-    topic: string
-    message: string
+    name: string;
+    phone: string;
+    email: string;
+    topic: string;
+    message: string;
 }
 
 @Route("/api")
@@ -22,9 +22,9 @@ export class SupportController extends BaseController {
         port: process.env.EMAIL_PORT,
         auth: {
             user: process.env.EMAIL_SENDER_ACCOUNT,
-            pass: process.env.EMAIL_SENDER_PWD
-        }
-    })
+            pass: process.env.EMAIL_SENDER_PWD,
+        },
+    });
 
     constructor() {
         super();
@@ -32,15 +32,17 @@ export class SupportController extends BaseController {
 
     @Tags("Support")
     @Post("support")
-    public async support(@Body() body: Form,
-                         @Request() request?: express.Request
+    public async support(
+        @Body() body: Form,
+        @Request() request?: express.Request
     ): Promise<any> {
         try {
             let info = await this.transporter.sendMail({
-                sender: body.email,
+                from: `"${body.name}" <${process.env.EMAIL_SENDER_ACCOUNT}>`, // Use the client's name and your email address
+                replyTo: body.email, // Set the Reply-To header to the client's email address
                 to: process.env.EMAIL_RECEIVER_ACCOUNT,
                 subject: body.topic,
-                text: body.message
+                text: body.message,
             });
             console.log("Message sent: %s", info.messageId);
             return request.res.redirect(process.env.LOGIN_SUPPORT_URL + "?success=true");
@@ -48,5 +50,4 @@ export class SupportController extends BaseController {
             return request.res.redirect(process.env.LOGIN_SUPPORT_URL + "?success=false");
         }
     }
-
 }

@@ -9,6 +9,8 @@ import {RegisterRoutes} from "./autogen/routes";
 import {Dictionary} from "./data/dictionary";
 import cors from "cors";
 import {getSubscriptions} from "./services/stripe-service";
+import * as Sentry from "@sentry/node";
+import * as process from "process";
 
 require("dotenv").config();
 
@@ -19,6 +21,19 @@ require("dotenv").config();
         Dictionary.loadDictionary();
 
         const app = express();
+
+        if (process.env.SENTRY_DISABLED === "false") {
+            console.log("Enabling Sentry reporting");
+            Sentry.init({
+                dsn: process.env.SENTRY_URL,
+                integrations: [
+                    new Sentry.Integrations.Http({tracing: true}),
+                    new Sentry.Integrations.Express({app}),
+                    ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
+                ],
+                tracesSampleRate: 1.0,
+            });
+        }
 
         app.use(cors({
             credentials: true,
@@ -35,10 +50,15 @@ require("dotenv").config();
         app.use(passport.initialize());
         app.use(passport.session());
 
-        RegisterRoutes(app);
+        app.use(Sentry.Handlers.requestHandler());
+        app.use(Sentry.Handlers.tracingHandler());
 
         app.use("/", express.static("public"));
         app.use("/static", express.static("static"));
+        app.use(["/swagger"], swaggerUi.serve, swaggerUi.setup(Swagger));
+
+        // controllers below
+        RegisterRoutes(app);
 
         app.get("/auth/linkedin", passport.authenticate("linkedin"));
 
@@ -66,8 +86,8 @@ require("dotenv").config();
             })(req, res, next);
         });
 
-        // swagger
-        app.use(["/swagger"], swaggerUi.serve, swaggerUi.setup(Swagger));
+        // end of controllers, Sentry error handler comes as first error handler
+        app.use(Sentry.Handlers.errorHandler());
 
         app.use((err: unknown, _: ExRequest, res: ExResponse, next: NextFunction): ExResponse | void => {
             console.error("ERROR:", JSON.stringify(err));
