@@ -82,4 +82,4 @@ const jobSchema = new dynamoose.Schema({
     "timestamps": true
 })
 
-export const JobModel = dynamoose.model(process.env.DEV_TABLE_JOBS, jobSchema)
+export const JobModel = dynamoose.model(process.env.TABLE_JOBS, jobSchema)
