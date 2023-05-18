@@ -5,8 +5,9 @@
   "scripts": {
     "prettifier": "npx prettier --write '(tests|src)/**/*.(ts|tsx|js|jsx)'",
     "init": "node ./scripts/build.js --command init",
-    "build": "npm run init & webpack --mode development --env env=dev",
-    "release": "npm run init & webpack --mode development --env env=prod",
+    "build-dev": "npm run init & webpack --mode development --env env=dev",
+    "build-uat": "npm run init & webpack --mode development --env env=uat",
+    "build-release": "npm run init & webpack --mode development --env env=prod",
     "pack": "node ./scripts/build.js --command pack"
   },
   "keywords": [],

@@ -39,6 +39,7 @@
     "*://localhost/",
     "*://*.linkedin.com/",
     "*://api.lnmanager.com/",
+    "*://linkedin-manager-apiuat.herokuapp.com/",
     "*://maps.googleapis.com/"
   ],
   "web_accessible_resources": [
