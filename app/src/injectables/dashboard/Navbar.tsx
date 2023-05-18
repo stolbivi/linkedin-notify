@@ -99,6 +99,11 @@ const Navbar = ({handleInit, customView} : {handleInit: Function, customView?: V
         renderComponent(<BooleanSearch />, false, false, true);
       };
 
+    useEffect(() => {
+        updateView(view)
+    }, [accessState])
+
+
 
     const goToView = (view: View) => {
         setView(view);
@@ -122,11 +127,8 @@ const Navbar = ({handleInit, customView} : {handleInit: Function, customView?: V
                     Boolean Search Tool
                 </button>
             </div>
-            <div className="navbar-access-guard-wrapper">
-            <AccessGuard setAccessState={setAccessState} className={"access-guard-px24"}
+            <AccessGuard setAccessState={setAccessState} className={"access-guard-px24 navbar-access-guard-wrapper"}
                          loaderClassName={"loader-base loader-px24"}/>
-            </div>
-
             <div className="lnm-dashboard-content"/>
         </>
     )
