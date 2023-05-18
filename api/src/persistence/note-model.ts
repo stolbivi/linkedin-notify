@@ -61,4 +61,4 @@ const noteSchema = new dynamoose.Schema({
     "timestamps": true
 });
 
-export const NoteModel = dynamoose.model(process.env.DEV_TABLE_NOTES, noteSchema);
+export const NoteModel = dynamoose.model(process.env.TABLE_NOTES, noteSchema);

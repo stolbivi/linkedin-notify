@@ -67,4 +67,4 @@ const jobAssignmentSchema = new dynamoose.Schema(
         timestamps: true,
     }
 );
-export const JobAssignmentModel = dynamoose.model(process.env.DEV_TABLE_JOB_ASSIGNMENTS, jobAssignmentSchema);
+export const JobAssignmentModel = dynamoose.model(process.env.TABLE_JOB_ASSIGNMENTS, jobAssignmentSchema);
