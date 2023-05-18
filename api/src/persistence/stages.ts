@@ -17,4 +17,4 @@ const stagesSchema = new dynamoose.Schema({
     "timestamps": true
 })
 
-export const Stages = dynamoose.model(process.env.DEV_TABLE_ALL_STAGES, stagesSchema)
+export const Stages = dynamoose.model(process.env.TABLE_ALL_STAGES, stagesSchema)

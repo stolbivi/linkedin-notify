@@ -42,4 +42,4 @@ const salarySchema = new dynamoose.Schema({
     "timestamps": true
 })
 
-export const SalaryModel = dynamoose.model(process.env.DEV_TABLE_SALARY, salarySchema)
+export const SalaryModel = dynamoose.model(process.env.TABLE_SALARY, salarySchema)

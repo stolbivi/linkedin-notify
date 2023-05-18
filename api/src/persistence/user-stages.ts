@@ -30,4 +30,4 @@ const userStagesSchema = new dynamoose.Schema({
     "timestamps": true
 })
 
-export const UserStages = dynamoose.model(process.env.DEV_TABLE_USER_STAGES, userStagesSchema)
+export const UserStages = dynamoose.model(process.env.TABLE_USER_STAGES, userStagesSchema)
