@@ -1,61 +1,63 @@
 import {MessagesV2, Tabs} from "@stolbivi/pirojok";
-import {LINKEDIN_DOMAIN, VERBOSE, LOGIN_URL} from "./global";
+import {LINKEDIN_DOMAIN, LOGIN_URL, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
 import {
+    assignJob,
     completion,
     conversationAck,
     createCustomStage,
+    deleteJob,
+    deleteNote,
+    deleteStage,
+    getAssignedJob,
+    getAssignedJobsById,
+    getAuthorStages,
     getBadges,
+    getCompanyByUrn,
     getConversationDetails,
     getConversationProfile,
     getConversations,
     getCookies,
+    getCustomSalary,
     getCustomStages,
     getFeatures,
     getInvitations,
     getIsLogged,
     getIsUnlocked,
+    getJobs,
     getLastSeen,
     getLastViewed,
+    getLatestStage,
+    getMe,
     getNotesAll,
     getNotesByProfile,
     getNotifications,
+    getProfileByUrn,
     getSalary,
     getStages,
     getSubscription,
     getTheme,
     getTz,
+    getUserIdByUrn,
     handleInvitation,
     handleNewsLetterInvitation,
     markNotificationRead,
     markNotificationsSeen,
     openUrl,
+    postJob,
     postNote,
+    postReply,
+    saveHandler,
+    setCustomSalary,
     setFeatures,
     setLastViewed,
     setStage,
+    setStageFromKanban,
     setTheme,
     switchThemeRequest,
     unlock,
-    postReply,
-    getProfileByUrn,
-    getCompanyByUrn,
-    deleteNote,
-    postJob,
-    getJobs,
     updateJob,
-    deleteJob,
-    getAuthorStages,
-    setStageFromKanban,
-    deleteStage,
-    getUserIdByUrn,
-    getLatestStage,
-    assignJob,
-    getAssignedJob,
-    getMe,
-    getAssignedJobsById,
-    getCustomSalary, setCustomSalary, saveHandler,
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 
@@ -149,9 +151,9 @@ listenToThemeCookie((cookie) => {
         for (let i = 0; i < tabs.length; ++i) {
             try {
                 messagesV2.requestTab(tabs[i].id, switchThemeRequest({theme: cookie.value}).toAction())
-                    .catch(e => console.log(e));
+                    .catch(e => console.error(e));
             } catch (e) {
-                console.log(e)
+                console.error(e)
             }
         }
     });
@@ -163,7 +165,7 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
             await chrome.alarms.clearAll();
             await chrome.storage.session.remove("proFeatures");
             await chrome.storage.local.remove("proFeatures");
-            chrome.cookies.getAll({}, function(cookies) {
+            chrome.cookies.getAll({}, function (cookies) {
                 for (let i = 0; i < cookies.length; i++) {
                     if (cookies[i].domain == "www.linkedin.com" || cookies[i].domain == "api.lnmanager.com" || cookies[i].domain == "www.lnmanager.com") {
                         chrome.cookies.remove({
@@ -222,8 +224,6 @@ function autoFeatures() {
                 const featuresResponse = await backEndAPI.getFeatures();
                 if (featuresResponse && featuresResponse?.response?.features?.length > 0) {
                     const features = featuresResponse?.response?.features;
-                    // const updatedAt = new Date(featuresResponse?.response?.updatedAt);
-                    // console.log(updatedAt.toLocaleDateString());
                     const token = api.getCsrfToken(cookies);
                     const response = await api.getUpdates(token, 50);
                     const updates = api.extractUpdates(response);
@@ -279,7 +279,7 @@ let contentScriptReady = false;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.contentScriptReady) {
         contentScriptReady = true;
-        sendResponse({ success: true });
+        sendResponse({success: true});
     }
     return true; // Keep the message channel open for the response
 });
@@ -292,11 +292,11 @@ chrome.cookies.onChanged.addListener((changeInfo) => {
         changeInfo.cookie.domain.includes(".linkedin.com")
     ) {
         const theme = changeInfo.cookie.value === "dark" ? "dark" : "light";
-        chrome.tabs.query({ active: true }, (tabs) => {
+        chrome.tabs.query({active: true}, (tabs) => {
             chrome.scripting.executeScript({
-                target: { tabId: tabs[0].id },
+                target: {tabId: tabs[0].id},
                 func: function (theme) {
-                    window.postMessage({ theme: theme }, "*");
+                    window.postMessage({theme: theme}, "*");
                 },
                 args: [theme],
             }).catch((error) => {
@@ -309,11 +309,11 @@ chrome.cookies.onChanged.addListener((changeInfo) => {
 const visitedUrls: string[] = [];
 chrome.history.onVisited.addListener((historyItem) => {
     let isInitialLoad = !visitedUrls.includes(historyItem.url);
-    chrome.tabs.query({ active: true }, (tabs) => {
+    chrome.tabs.query({active: true}, (tabs) => {
         chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id },
+            target: {tabId: tabs[0].id},
             func: function (isInitialLoad) {
-                window.postMessage({ type: "modifyElements" , initialLoad: isInitialLoad }, "*");
+                window.postMessage({type: "modifyElements", initialLoad: isInitialLoad}, "*");
             },
             args: [isInitialLoad],
         }).catch((error) => {
@@ -328,6 +328,6 @@ chrome.history.onVisited.addListener((historyItem) => {
 chrome.webNavigation.onBeforeNavigate.addListener((e) => {
     if (e.url.includes("lndashboard")) {
         const v = e.url.split('view=')[1]?.split('&')[0]
-        chrome.storage.local.set({ showDashboard: true, view: v })
+        chrome.storage.local.set({showDashboard: true, view: v})
     }
-  })
+})

@@ -17,7 +17,7 @@ import * as Sentry from "@sentry/react";
 
 console.debug('LinkedIn Manager extension engaged');
 
-export const SENTRY_DISABLED = `${process.env.SENTRY_DISABLED}`;
+const SENTRY_DISABLED = `${process.env.SENTRY_DISABLED}`;
 
 if (SENTRY_DISABLED === "false") {
     console.log("Enabling Sentry reporting");
