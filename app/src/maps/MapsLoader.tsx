@@ -7,7 +7,6 @@ import {GeoTz} from "../actions";
 import {CompleteEnabled, localStore, selectGeoTz} from "../store/LocalStore";
 import {shallowEqual, useSelector} from "react-redux";
 import {getGeoTzAction} from "../store/GeoTzReducer";
-import { AccessGuard, AccessState } from "../injectables/AccessGuard";
 
 type Props = {};
 
@@ -27,7 +26,6 @@ export const MapsLoader: React.FC<Props> = ({}) => {
     const [tz, setTz] = useState<Tz>();
     const [city, setCity] = useState<string>();
     const [disabled, setDisabled] = useState<boolean>(false);
-    const [accessState, setAccessState] = useState<AccessState>(AccessState.Unknown);
 
     const mapContainer = React.createRef<HTMLIFrameElement>();
 
@@ -42,7 +40,6 @@ export const MapsLoader: React.FC<Props> = ({}) => {
     }
 
     useEffect(() => {
-        if(accessState !== AccessState.Valid) return;
         if (geoTz?.geo && geoTz?.tz) {
             // setting map
             const {lat, lng, city} = geoTz.geo;
@@ -57,7 +54,6 @@ export const MapsLoader: React.FC<Props> = ({}) => {
     }, [geoTz])
 
     useEffect(() => {
-        if(accessState !== AccessState.Valid) return;
         const searchParams = new URLSearchParams(window.location.search);
         if (!searchParams.has("id")) {
             console.error("Request parameters must include user id");
@@ -67,8 +63,6 @@ export const MapsLoader: React.FC<Props> = ({}) => {
     }, [])
 
     useEffect(() => {
-        if(accessState !== AccessState.Valid) return;
-
         if (src) {
             mapContainer.current?.contentWindow.location.replace(src);
         }
@@ -77,21 +71,13 @@ export const MapsLoader: React.FC<Props> = ({}) => {
     return (
         <div className="map-loader">
             <div className="map-sub-container">
-                {!disabled  &&
+                {!disabled &&
                     <React.Fragment>
-                        {
-                            accessState === AccessState.Valid  ? 
-                                (<>
-                                    {tz?.timeFormatted && city &&
-                                    <div className="timezone" title={`${city} - ${tz.timeFull}`}>
-                                        <Clock/><span>{tz.timeFormatted}</span>
-                                    </div>}
-                                    <iframe scrolling="no" height="200" ref={mapContainer} src={src}></iframe>
-                                </>) :
-                                <div className="access-guard-map-wrapper">
-                                    <AccessGuard setAccessState={setAccessState} className={"access-guard-px24"} loaderClassName={"loader-base loader-px24"} />
-                                </div>
-                        }
+                        {tz?.timeFormatted && city &&
+                            <div className="timezone" title={`${city} - ${tz.timeFull}`}>
+                                <Clock/><span>{tz.timeFormatted}</span>
+                            </div>}
+                        <iframe scrolling="no" height="200" ref={mapContainer} src={src}></iframe>
                     </React.Fragment>
                 }
             </div>

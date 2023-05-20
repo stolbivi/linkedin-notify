@@ -56,11 +56,11 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    
+
     private async retryHandler(url: string, request: RequestInit, retryCount: number): Promise<Response<any>> {
         console.debug(`retrying ${url} with ${retryCount} retries left`)
         let res = await this.fetchRequest(url, request)
-        if(res.status === 500 && retryCount > 0) {
+        if (res.status === 500 && retryCount > 0) {
             // await for 1 second
             await new Promise(resolve => setTimeout(resolve, 1000))
             // retry
@@ -75,11 +75,10 @@ export class BackendAPI extends BaseAPI {
                 `${BACKEND_API}features`,
                 this.getRequest("POST", features)
             )
-            if(res.status === 500) {
+            if (res.status === 500) {
                 // retry
                 res = await this.retryHandler(`${BACKEND_API}features`, this.getRequest("POST", features), 3)
             }
-
             console.log(res);
         }
         return true
@@ -103,14 +102,26 @@ export class BackendAPI extends BaseAPI {
                     profileImg: string, stageText?: string, profileId?: string, companyName?: string, conversationUrn?: string, userId?: string): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}stage`,
-            this.getRequest("POST", {id, stage, author, parentStage, name,
-                            designation, profileImg, stageText: stageText || undefined, profileId, companyName, conversationUrn, userId})
+            this.getRequest("POST", {
+                id,
+                stage,
+                author,
+                parentStage,
+                name,
+                designation,
+                profileImg,
+                stageText: stageText || undefined,
+                profileId,
+                companyName,
+                conversationUrn,
+                userId
+            })
         );
     }
 
     public setStageFromKanban(id: string, stage?: StageEnum, stageText?: string, as?: string): Promise<Response<any>> {
         return this.fetchRequest(
-            `${BACKEND_API}stage/${id}`+ (as ? `?as=${as}` : "") + (stage ? `&stage=${stage}` : "") + (stageText ? `&stageText=${stageText}` : ""),
+            `${BACKEND_API}stage/${id}` + (as ? `?as=${as}` : "") + (stage ? `&stage=${stage}` : "") + (stageText ? `&stageText=${stageText}` : ""),
             this.getRequest("PUT", {})
         );
     }
@@ -248,6 +259,7 @@ export class BackendAPI extends BaseAPI {
             this.getRequest("POST", salary)
         );
     }
+
     public getCustomSalary(id: string, as: string): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}custom-salary/${id}` + (as ? `?as=${as}` : ""),

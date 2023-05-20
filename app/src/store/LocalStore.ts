@@ -11,6 +11,7 @@ import {NoteExtended} from "../global";
 import columnsReducer from "./columns.slice";
 import cardsReducer from "./cards.slice";
 import kanbanReducer from "./kanban.slice";
+
 export const listenerMiddleware = createListenerMiddleware();
 initListeners();
 
@@ -61,8 +62,8 @@ export const localStore = configureStore({
 });
 
 localStore.subscribe(() => {
-    // TODO remove, debug only
-    console.log('Local store:', localStore.getState());
+    // FIXME
+    // console.debug('Local store:', localStore.getState());
 })
 
 export const selectLastViewed = (state: RootState) => state.lastViewed;

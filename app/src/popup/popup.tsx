@@ -5,7 +5,7 @@ import "./popup.scss";
 import {Main} from "../components/Main";
 import * as Sentry from "@sentry/react";
 
-export const SENTRY_DISABLED = `${process.env.SIGN_UP_URL}`;
+const SENTRY_DISABLED = `${process.env.SIGN_UP_URL}`;
 
 if (SENTRY_DISABLED === "false") {
     console.log("Enabling Sentry reporting");
