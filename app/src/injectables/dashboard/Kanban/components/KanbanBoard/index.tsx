@@ -30,6 +30,7 @@ import {shallowEqual, useSelector} from "react-redux";
 import { Salary } from '../../../../../store/SalaryReducer';
 import { appendNoteAction, removeNoteByStageTo, triggerDeleteNoteAction } from '../../../../../store/NotesAllReducer';
 import { stageChildData, StageLabels } from '../../../../notes/StageSwitch';
+import generateUUID from '../../../../../utils/UuidHelper';
 
 const KanbanBoard: React.FC<any> = () => {
   const { cards } = useAppSelector((state => state.cards));
@@ -90,7 +91,8 @@ const KanbanBoard: React.FC<any> = () => {
         destination.index === source.index
       ) return;
 
-    const selectedCard = cards.find(card => card.id === draggableId);
+
+    const selectedCard = (kanbanData[activeButton][sourceLabel] ||  kanbanData[activeButton][sourceLabel.replaceAll("-", "_").replaceAll(" ", "_")])[source.index]
      const destinationCards = cards.filter(card => card.status === destination.droppableId);
       // check selectedCard.userId is in destinationCards
       if(destinationCards.find(card => card.userId === selectedCard?.userId)) {
@@ -157,7 +159,7 @@ const KanbanBoard: React.FC<any> = () => {
     });
     
 
-    let optimisticId = selectedCard?.id + '/' + Math.random();
+    let optimisticId = generateUUID();
     // do that if only parent stage is GEOGRAPHY
     if(activeButton === IStatus.GEOGRAPHY) 
     updatedCards.splice(source.index, 0, ({...selectedCard, id: optimisticId} as ICard));
@@ -372,6 +374,13 @@ const KanbanBoard: React.FC<any> = () => {
  //   sessionStorage.setItem("isListView", false);
   }
 
+  const [winReady, setwinReady] = useState(false);
+  useEffect(() => {
+      setTimeout(() => {
+        setwinReady(true);
+      }, 1000);
+  }, []);
+
   return (
     <>
       <Container>
@@ -379,9 +388,9 @@ const KanbanBoard: React.FC<any> = () => {
         <Header>
           <h1 className="kanban-title">Candidates</h1>
         </Header>
-        <Loader show={!completed} className="p-5 kanban-loader" heightValue="600px"/>
+        <Loader show={!completed || !winReady} className="p-5 kanban-loader" heightValue="600px"/>
         {
-          completed ? (
+          (completed && winReady) ? (
               <>
                 <div className="button-container">
                     <button className={`button ${activeButton === IStatus.AVAILABILITY ? 'active' : ''}`} onClick={() => handleClick(IStatus.AVAILABILITY)}>

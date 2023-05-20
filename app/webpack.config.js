@@ -11,6 +11,7 @@ module.exports = function (env, argv) {
         "process.env.SIGN_UP_URL": process.env.SIGN_UP_URL,
         "process.env.SENTRY_DISABLED": process.env.SENTRY_DISABLED,
         "process.env.SENTRY_URL": process.env.SENTRY_URL,
+        "process.env.BYPASS_AUTH": process.env.BYPASS_AUTH,
     };
     console.log("Definitions:", definitions);
 

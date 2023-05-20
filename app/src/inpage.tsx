@@ -17,7 +17,7 @@ import * as Sentry from "@sentry/react";
 
 console.debug('LinkedIn Manager extension engaged');
 
-export const SENTRY_DISABLED = `${process.env.SENTRY_DISABLED}`;
+const SENTRY_DISABLED = `${process.env.SENTRY_DISABLED}`;
 
 if (SENTRY_DISABLED === "false") {
     console.log("Enabling Sentry reporting");
@@ -48,21 +48,21 @@ const injectUI = () => {
         childList: true,
         onAdd: (_node: Node) => {
             if (initialLoad) {
-                CompletionFactory();
-                SalaryPillFactory();
-                MapsFactory();
-                AutoFeatureFactory();
-                StagePillFactory();
-                NotesAndChartsFactory();
-                NotesManagerFactory();
-                LastViewedFactory();
-                TimeZoneFactory();
-                LnDashboardFactory();
             } else {
                 if (isWatchAutoFeature) {
                     AutoFeatureFactory();
                 }
             }
+            NotesManagerFactory();
+            NotesAndChartsFactory();
+            CompletionFactory();
+            SalaryPillFactory();
+            MapsFactory();
+            AutoFeatureFactory();
+            StagePillFactory();
+            LastViewedFactory();
+            TimeZoneFactory();
+            LnDashboardFactory();
         }
     });
 }
