@@ -13,7 +13,7 @@ import {useAppDispatch, useAppSelector} from '../../hooks/useRedux';
 import {Container, Header, StatusesColumnsContainer} from './styles';
 import {setColumns} from '../../../../../store/columns.slice';
 import {filterCards, setCards} from '../../../../../store/cards.slice';
-import {moveCard, setKanbanData, updateCardIdByOptimisticId} from '../../../../../store/kanban.slice';
+import {moveCard, setKanbanData, updateCardIdByOptimisticId, setActiveTab} from '../../../../../store/kanban.slice';
 // @ts-ignore
 import stylesheet from './styles.scss';
 import {MessagesV2} from "@stolbivi/pirojok";
@@ -44,7 +44,7 @@ const KanbanBoard: React.FC<any> = () => {
   const theme = useContext(ThemeContext);
   const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
  const [isLoaded, setIsLoaded] = useState(false);
- const {kanbanData} = useAppSelector((state => state.kanbanData));
+ const {kanbanData, activeTab} = useAppSelector((state => state.kanbanData));
  const activeCard = useAppSelector((state => state.cards.activeCard));
 
   useEffect(() => {
@@ -65,20 +65,22 @@ const KanbanBoard: React.FC<any> = () => {
   },[notesAll]);
 
   useEffect(() => {
-    messages.request(getCustomStages())
-        .then((customStages) => {
-          if(customStages.length > 0) {
-            customStages.map(stage => {
-              // @ts-ignore
-              if(!ICategory[stage.text]) {
-                // @ts-ignore
-                ICategory[stage.text] = stage.text;
-              }
-            });
-          }
-        })
-        .catch(e => console.error(e.error));
-    populateKanbanData(activeButton);
+      if(activeButton === activeTab) {
+          messages.request(getCustomStages())
+              .then((customStages) => {
+                  if(customStages.length > 0) {
+                      customStages.map(stage => {
+                          // @ts-ignore
+                          if(!ICategory[stage.text]) {
+                              // @ts-ignore
+                              ICategory[stage.text] = stage.text;
+                          }
+                      });
+                  }
+              })
+              .catch(e => console.error(e.error));
+          populateKanbanData(activeButton);
+      }
   },[kanbanData])
 
   const onDragEnd = (result: DropResult) => {
@@ -259,6 +261,7 @@ const KanbanBoard: React.FC<any> = () => {
     if (button !== activeButton) {
       populateKanbanData(button);
       setActiveButton(button);
+      dispatch(setActiveTab(button));
     }
   }
   const populateKanbanData = (parentCategory: string) => {
