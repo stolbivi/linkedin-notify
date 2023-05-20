@@ -13,7 +13,7 @@ import {useAppDispatch, useAppSelector} from '../../hooks/useRedux';
 import {Container, Header, StatusesColumnsContainer} from './styles';
 import {setColumns} from '../../../../../store/columns.slice';
 import {filterCards, setCards} from '../../../../../store/cards.slice';
-import {moveCard, setKanbanData, updateCardIdByOptimisticId} from '../../../../../store/kanban.slice';
+import {moveCard, setKanbanData, updateCardIdByOptimisticId, setActiveTab} from '../../../../../store/kanban.slice';
 // @ts-ignore
 import stylesheet from './styles.scss';
 import {MessagesV2} from "@stolbivi/pirojok";
@@ -44,12 +44,13 @@ const KanbanBoard: React.FC<any> = () => {
   const theme = useContext(ThemeContext);
   const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
  const [isLoaded, setIsLoaded] = useState(false);
- const {kanbanData} = useAppSelector((state => state.kanbanData));
+ const {kanbanData, activeTab} = useAppSelector((state => state.kanbanData));
  const activeCard = useAppSelector((state => state.cards.activeCard));
 
   useEffect(() => {
     if(notesAll.completed && !isLoaded) {
       setCompleted(false);
+      dispatch(setActiveTab(IStatus.AVAILABILITY));
       messages.request(getAuthorStages())
           .then((resp) => {
             if (resp.data) {
@@ -65,20 +66,22 @@ const KanbanBoard: React.FC<any> = () => {
   },[notesAll]);
 
   useEffect(() => {
-    messages.request(getCustomStages())
-        .then((customStages) => {
-          if(customStages.length > 0) {
-            customStages.map(stage => {
-              // @ts-ignore
-              if(!ICategory[stage.text]) {
-                // @ts-ignore
-                ICategory[stage.text] = stage.text;
-              }
-            });
-          }
-        })
-        .catch(e => console.error(e.error));
-    populateKanbanData(activeButton);
+      if(activeButton === activeTab) {
+          messages.request(getCustomStages())
+              .then((customStages) => {
+                  if(customStages.length > 0) {
+                      customStages.map(stage => {
+                          // @ts-ignore
+                          if(!ICategory[stage.text]) {
+                              // @ts-ignore
+                              ICategory[stage.text] = stage.text;
+                          }
+                      });
+                  }
+              })
+              .catch(e => console.error(e.error));
+          populateKanbanData(activeButton);
+      }
   },[kanbanData])
 
   const onDragEnd = (result: DropResult) => {
@@ -259,6 +262,7 @@ const KanbanBoard: React.FC<any> = () => {
     if (button !== activeButton) {
       populateKanbanData(button);
       setActiveButton(button);
+      dispatch(setActiveTab(button));
     }
   }
   const populateKanbanData = (parentCategory: string) => {
@@ -275,13 +279,13 @@ const KanbanBoard: React.FC<any> = () => {
       subCategories = [ICategory.Relocation,ICategory.Commute,ICategory.Hybrid,ICategory.Remote];
     } else if (parentCategory === IStatus.ALL) {
       subCategories = [IStatus.AVAILABILITY,IStatus.STATUS,IStatus.TYPE,IStatus.GEOGRAPHY,IStatus.GROUPS];
-    } else if (parentCategory === IStatus.GROUPS) {
-      subCategories = Object.keys(kanbanData[IStatus.GROUPS]);
+    } else if (parentCategory === IStatus.GROUPS && kanbanData[IStatus.GROUPS]) {
+        subCategories = Object.keys(kanbanData[IStatus.GROUPS]);
     }
-    subCategories?.forEach(value => {
-      cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
-    });
-    if(parentCategory === IStatus.ALL) {
+      subCategories?.forEach(value => {
+          cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
+      });
+      if(parentCategory === IStatus.ALL) {
       for (const [_parentStageKey, parentStage] of Object.entries(kanbanData)) {
         for (const [_stageKey, stage] of Object.entries(parentStage)) {
           for (const item of stage) {
@@ -341,15 +345,17 @@ const KanbanBoard: React.FC<any> = () => {
       });
     }
     let updatedColumns: IColumn[] = [];
-    subCategories.forEach(value => {
-      updatedColumns.push(
-          {
-            id: value,
-            title: value,
-            cardsIds: cardsIdsByStatus[value]
-          }
-      )
-    });
+    if(subCategories?.length > 0) {
+      subCategories.forEach(value => {
+          updatedColumns.push(
+              {
+                  id: value,
+                  title: value,
+                  cardsIds: cardsIdsByStatus[value]
+              }
+          )
+      });
+    }
     dispatch(setColumns(updatedColumns));
     dispatch(setCards(updatedCards));
   }

@@ -18,7 +18,7 @@ interface CardProps {
   draggableId?: string;
 }
 
-const Card: React.FC<CardProps> = ({ card, index, draggableId }) => {
+const Card: React.FC<CardProps> = ({ card, index }) => {
 
   const dispatch = useAppDispatch();
   const theme = useContext(ThemeContext);
@@ -36,9 +36,10 @@ const Card: React.FC<CardProps> = ({ card, index, draggableId }) => {
       setBackgroundColor(categoryColor);
     }
   }, [card])
+
   return (
-    <Draggable draggableId={draggableId} index={index}>
-      {(provided) => (
+    <Draggable draggableId={card.id} index={index}>
+      {provided => (
         <CardContainer
           className="card-container-external"
           onClick={()=>window.open(`https://www.linkedin.com/in/${card.userId}`, '_blank')}
