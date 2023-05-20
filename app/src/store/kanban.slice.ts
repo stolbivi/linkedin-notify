@@ -214,11 +214,11 @@ export const kanbanSlice = createSlice({
         card: Person
       }
 
-      const formattedSourceDroppableId = source.droppableId.replace(/ /g, "_")
-      const formattedDestinationDroppableId = destination.droppableId.replace(
+      const formattedSourceDroppableId = parent !== 'GROUPS' ? source.droppableId.replace(/ /g, "_") : source.droppableId
+      const formattedDestinationDroppableId = parent !== 'GROUPS' ? destination.droppableId.replace(
         / /g,
         "_"
-      )
+      ) : destination.droppableId
 
 
       // if parent is not there return

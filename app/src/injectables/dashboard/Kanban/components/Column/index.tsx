@@ -27,7 +27,7 @@ const Column: React.FC<ColumnProps> = ({ status, cards, index }) => {
           <CardsList ref={provided.innerRef} {...provided.droppableProps}>
             {cards
               .filter(card => card.status === status)
-              .map((card, index) => <Card key={card.id} card={card} index={index}/>)
+              .map((card, index) => <Card key={card.id} card={card} index={index} draggableId={status}/>)
             }
             {provided.placeholder}
         </CardsList>

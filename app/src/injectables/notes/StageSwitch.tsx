@@ -9,6 +9,7 @@ import {deleteNoteAction} from "../../store/NotesAllReducer";
 import { useAppDispatch, useAppSelector } from "../dashboard/Kanban/hooks/useRedux";
 import { removeCard } from "../../store/kanban.slice";
 import { SetStagePayload } from "../../actions";
+import generateUUID from "../../utils/UuidHelper";
 
 export enum StageEnum {
     Interested,
@@ -193,7 +194,7 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
             }
             if(card) {
                 stageObj.state.card= {
-                    ...card, status: label, category: StageLabels[type].label.replaceAll("-", " "), id: card.id + "/" + Math.random()
+                    ...card, status: label, category: StageLabels[type].label.replaceAll("-", " "), id: generateUUID()
                 }
                 stageObj.state.action=['GEOGRAPHY', 'GROUPS'].includes(stageParent?.name?.toUpperCase())  ? 'add' : 'update'
             }
