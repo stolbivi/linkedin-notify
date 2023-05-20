@@ -50,6 +50,7 @@ const KanbanBoard: React.FC<any> = () => {
   useEffect(() => {
     if(notesAll.completed && !isLoaded) {
       setCompleted(false);
+      dispatch(setActiveTab(IStatus.AVAILABILITY));
       messages.request(getAuthorStages())
           .then((resp) => {
             if (resp.data) {
@@ -278,13 +279,13 @@ const KanbanBoard: React.FC<any> = () => {
       subCategories = [ICategory.Relocation,ICategory.Commute,ICategory.Hybrid,ICategory.Remote];
     } else if (parentCategory === IStatus.ALL) {
       subCategories = [IStatus.AVAILABILITY,IStatus.STATUS,IStatus.TYPE,IStatus.GEOGRAPHY,IStatus.GROUPS];
-    } else if (parentCategory === IStatus.GROUPS) {
-      subCategories = Object.keys(kanbanData[IStatus.GROUPS]);
+    } else if (parentCategory === IStatus.GROUPS && kanbanData[IStatus.GROUPS]) {
+        subCategories = Object.keys(kanbanData[IStatus.GROUPS]);
     }
-    subCategories?.forEach(value => {
-      cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
-    });
-    if(parentCategory === IStatus.ALL) {
+      subCategories?.forEach(value => {
+          cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
+      });
+      if(parentCategory === IStatus.ALL) {
       for (const [_parentStageKey, parentStage] of Object.entries(kanbanData)) {
         for (const [_stageKey, stage] of Object.entries(parentStage)) {
           for (const item of stage) {
@@ -344,15 +345,17 @@ const KanbanBoard: React.FC<any> = () => {
       });
     }
     let updatedColumns: IColumn[] = [];
-    subCategories.forEach(value => {
-      updatedColumns.push(
-          {
-            id: value,
-            title: value,
-            cardsIds: cardsIdsByStatus[value]
-          }
-      )
-    });
+    if(subCategories?.length > 0) {
+      subCategories.forEach(value => {
+          updatedColumns.push(
+              {
+                  id: value,
+                  title: value,
+                  cardsIds: cardsIdsByStatus[value]
+              }
+          )
+      });
+    }
     dispatch(setColumns(updatedColumns));
     dispatch(setCards(updatedCards));
   }
