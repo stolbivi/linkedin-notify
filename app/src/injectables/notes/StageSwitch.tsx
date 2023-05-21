@@ -170,17 +170,19 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
     const onClick = () => {
         const label = StageLabels[type].label
         console.log({stage, type, activeStage, isSelected, notes, card, stageChildData, stageParent, label: StageLabels[type].label, kanbanData})
-        if(!stage?.completed && !customText) {
+        if(!completed && !customText) {
             return;
         }
-        setCompleted(false);
         const selectedNote = notes.find(note => (note.stageText && customText && note.stageText === customText) || (!customText && note.stageTo === type) || null );
         if (selectedNote && isSelected) {
             removeSelectedTag(selectedNote.id);
-            dispatch(removeCard({parent: stageParent.name.toUpperCase(), label: label.replaceAll("-", "_"), userId: card.userId}))
-            setTimeout(() => {
-                setCompleted(true);
-            }, 3000);
+            if(card) {
+                setCompleted(false);
+                dispatch(removeCard({parent: stageParent.name.toUpperCase(), label: label.replaceAll("-", "_"), userId: card?.userId}))
+                setTimeout(() => {
+                    setCompleted(true);
+                }, 3000);
+            }
             return;
         }
         const existingChildStage = notes.find(note => note.parentStage === parentStage);
@@ -198,11 +200,12 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
                 }
                 stageObj.state.action=['GEOGRAPHY', 'GROUPS'].includes(stageParent?.name?.toUpperCase())  ? 'add' : 'update'
             }
+            setCompleted(false);
             localStore.dispatch(updateStageAction(stageObj));
+            setTimeout(() => setCompleted(true), 6000);
         } catch (error) {
             console.log('error', error)
         }
-        setTimeout(() => setCompleted(true), 6000);
         if (isSelected) {
             // @ts-ignore
             stagePillRef?.current?.classList.remove(StageLabels[type]?.class);
