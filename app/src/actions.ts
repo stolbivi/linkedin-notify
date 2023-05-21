@@ -751,3 +751,9 @@ export const getCustomSalary = createAction<string, any>("getCustomSalary",
             return response
         })
 )
+export const getBilling = createAction<string, any>("getBilling",
+    () => getCookies(LINKEDIN_DOMAIN)
+        .then(async () => {
+            return await backEndAPI.getBilling()
+        })
+)

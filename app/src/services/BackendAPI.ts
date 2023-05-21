@@ -266,5 +266,11 @@ export class BackendAPI extends BaseAPI {
             this.getRequest("GET")
         );
     }
+    public getBilling(): Promise<Response<any>> {
+        return this.fetchRequest<any>(
+            `${BACKEND_API}billing`,
+            this.getRequest("GET")
+        );
+    }
 
 }
