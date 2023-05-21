@@ -33,6 +33,57 @@ export class LinkedInAPI {
     private static readonly BASE = 'https://www.linkedin.com/voyager/api/';
     private static readonly CSRF = 'JSESSIONID';
 
+    readonly DEFAULT_WAIT = 10000;
+    readonly DEFAULT_WAIT_STEP = 500;
+    readonly MAX_REPLAYS = 5;
+    readonly WINDOW_1_LENGTH = 1000;
+    readonly WINDOW_2_LENGTH = 10000;
+    readonly WINDOW_3_LENGTH = 60000;
+    private probes1: number[] = [];
+    private probes1Max: number = 0;
+    private probes2: number[] = [];
+    private probes2Max: number = 0;
+    private probes3: number[] = [];
+    private probes3Max: number = 0;
+    private currentWait: number = this.DEFAULT_WAIT;
+
+    private updateRate() {
+        function update(probes: number[], window: number) {
+            let index = probes.findIndex(e => e > now - window);
+            if (index > 0) {
+                probes.splice(0, index);
+            }
+            probes.push(now);
+        }
+
+        let now = new Date().getTime();
+        update(this.probes1, this.WINDOW_1_LENGTH);
+        update(this.probes2, this.WINDOW_2_LENGTH);
+        update(this.probes3, this.WINDOW_3_LENGTH);
+        if (this.probes1.length > this.probes1Max) {
+            this.probes1Max = this.probes1.length;
+        }
+        if (this.probes2.length > this.probes2Max) {
+            this.probes2Max = this.probes2.length;
+        }
+        if (this.probes3.length > this.probes3Max) {
+            this.probes3Max = this.probes3.length;
+        }
+        console.log(`Rate: ${this.probes1.length}:${this.probes1Max} ${this.probes2.length}:${this.probes2Max} ${this.probes3.length}:${this.probes3Max}`);
+    }
+
+    private async handleTMR(response: any, replay: (counter: number) => Promise<any>, counter: number) {
+        if (response.status === 429 && counter < this.MAX_REPLAYS) {
+            console.log(`Too many requests [${counter}]: ${this.probes1.length}:${this.probes1Max} ${this.probes2.length}:${this.probes2Max} ${this.probes3.length}:${this.probes3Max}`);
+            await new Promise(r => setTimeout(r, this.currentWait));
+            this.currentWait += this.DEFAULT_WAIT_STEP;
+            return replay(counter + 1);
+        } else {
+            this.currentWait = this.DEFAULT_WAIT;
+            return response;
+        }
+    }
+
     public isLogged(cookies: Cookie[]): boolean {
         const theCookie = cookies.find(c => c.name === LinkedInAPI.COOKIE_AT);
         return Number(theCookie?.expirationDate) * 1000 > new Date().getTime();
@@ -65,8 +116,10 @@ export class LinkedInAPI {
     }
 
     public getExperience(token: string, id: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `identity/dash/profiles?q=memberIdentity&memberIdentity=${id}&decorationId=com.linkedin.voyager.dash.deco.identity.profile.TopCardSupplementary-116`, this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `identity/dash/profiles?q=memberIdentity&memberIdentity=${id}&decorationId=com.linkedin.voyager.dash.deco.identity.profile.TopCardSupplementary-116`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public extractOrganization(response: any): Location {
@@ -84,8 +137,10 @@ export class LinkedInAPI {
     }
 
     public getOrganization(token: string, universalName: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `graphql?includeWebMetadata=true&variables=(universalName:${universalName})&&queryId=voyagerOrganizationDashCompanies.b106540fe89e1f445200ecb8f7d907c4`, this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `graphql?includeWebMetadata=true&variables=(universalName:${universalName})&&queryId=voyagerOrganizationDashCompanies.b106540fe89e1f445200ecb8f7d907c4`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public extractTitle(response: any): any {
@@ -96,8 +151,10 @@ export class LinkedInAPI {
     }
 
     public getTitle(token: string, urn: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `graphql?includeWebMetadata=true&variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${urn},sectionType:experience)&&queryId=voyagerIdentityDashProfileComponents.f282c5d09ccfcf57303f170922b0c0fc`, this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `graphql?includeWebMetadata=true&variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${urn},sectionType:experience)&&queryId=voyagerIdentityDashProfileComponents.f282c5d09ccfcf57303f170922b0c0fc`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public extractLocation(response: any): any {
@@ -136,13 +193,17 @@ export class LinkedInAPI {
     }
 
     public getLocation(token: string, id: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `identity/dash/profiles?decorationId=com.linkedin.voyager.dash.deco.identity.profile.WebTopCardCore-11&memberIdentity=${id}&q=memberIdentity`, this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `identity/dash/profiles?decorationId=com.linkedin.voyager.dash.deco.identity.profile.WebTopCardCore-11&memberIdentity=${id}&q=memberIdentity`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public getMe(token: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + "me", this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + "me", this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public extractProfileUrn(response: any): string {
@@ -150,8 +211,10 @@ export class LinkedInAPI {
     }
 
     public getTabBadges(token: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + "voyagerCommunicationsTabBadges?q=tabBadges&countFrom=0", this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + "voyagerCommunicationsTabBadges?q=tabBadges&countFrom=0", this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public extractBadges(response: any): Badges {
@@ -160,8 +223,10 @@ export class LinkedInAPI {
     }
 
     public getConversations(token: string, profileUrn: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerConversations.d5089df1b5a665ee527be74b9ab1859e&variables=(mailboxUrn:urn%3Ali%3Afsd_profile%3A${this.encode(profileUrn)})`, this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerConversations.d5089df1b5a665ee527be74b9ab1859e&variables=(mailboxUrn:urn%3Ali%3Afsd_profile%3A${this.encode(profileUrn)})`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public extractConversations(response: any): Array<any> {
@@ -203,13 +268,17 @@ export class LinkedInAPI {
     }
 
     public getConversationDetails(token: string, entityUrn: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerMessages.08934c39ffb80ef0ba3206c05dd01362&variables=(conversationUrn:${this.encode(entityUrn)})`, this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `voyagerMessagingGraphQL/graphql?queryId=messengerMessages.08934c39ffb80ef0ba3206c05dd01362&variables=(conversationUrn:${this.encode(entityUrn)})`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public getConversationProfile(token: string, convId: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `messaging/conversations/${convId}`, this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `messaging/conversations/${convId}`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
 
@@ -253,7 +322,8 @@ export class LinkedInAPI {
     }
 
     public markConversationRead(token: string, entityUrn: string) {
-        return fetch(LinkedInAPI.BASE + `voyagerMessagingDashMessengerConversations?ids=List(${this.encode(entityUrn)})`, {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `voyagerMessagingDashMessengerConversations?ids=List(${this.encode(entityUrn)})`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token,
@@ -262,11 +332,13 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(_ => null);
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(_ => null);
     }
 
     public markAllMessageAsSeen(token: string, entityUrn: string) {
-        return fetch(LinkedInAPI.BASE + `messaging/badge?action=markItemsAsSeen`, {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `messaging/badge?action=markItemsAsSeen`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token,
@@ -275,12 +347,15 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(_ => null);
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(_ => null);
     }
 
     public getNotifications(token: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + "voyagerIdentityDashNotificationCards?decorationId=com.linkedin.voyager.dash.deco.identity.notifications.CardsCollectionWithInjectionsNoPills-9&count=50&filterVanityName=all&q=filterVanityName", this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + "voyagerIdentityDashNotificationCards?decorationId=com.linkedin.voyager.dash.deco.identity.notifications.CardsCollectionWithInjectionsNoPills-9&count=50&filterVanityName=all&q=filterVanityName", this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public extractNotifications(response: any): Array<any> {
@@ -329,8 +404,10 @@ export class LinkedInAPI {
     }
 
     public getInvitations(token: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + "relationships/invitationViews?count=50&includeInsights=false&q=receivedInvitation&start=0", this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + "relationships/invitationViews?count=50&includeInsights=false&q=receivedInvitation&start=0", this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public extractInvitations(response: any): Array<any> {
@@ -390,7 +467,8 @@ export class LinkedInAPI {
     }
 
     public handleInvitation(token: string, invitation: Invitation) {
-        return fetch(LinkedInAPI.BASE + `relationships/invitations/${invitation.id}?action=${invitation.action}`, {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `relationships/invitations/${invitation.id}?action=${invitation.action}`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token,
@@ -399,10 +477,13 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(_ => null);
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(_ => null);
     }
+
     public handleNewsLetterInvitation(token: string, invitation: Invitation) {
-        return fetch(LinkedInAPI.BASE + `voyagerRelationshipsDashInvitations/urn%3Ali%3Afsd_invitation%3A${invitation.id}?action=${invitation.action}`, {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `voyagerRelationshipsDashInvitations/urn%3Ali%3Afsd_invitation%3A${invitation.id}?action=${invitation.action}`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token,
@@ -411,10 +492,13 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(_ => null);
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(_ => null);
     }
+
     public markAllNotificationsAsSeen(token: string) {
-        return fetch(LinkedInAPI.BASE + `voyagerNotificationsDashBadge?action=markAllItemsAsSeen`, {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `voyagerNotificationsDashBadge?action=markAllItemsAsSeen`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token,
@@ -423,11 +507,13 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(_ => null);
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(_ => null);
     }
 
     public markNotificationRead(token: string, entityUrn: string) {
-        return fetch(LinkedInAPI.BASE + `voyagerNotificationsDashBadge?action=markItemAsRead`, {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `voyagerNotificationsDashBadge?action=markItemAsRead`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token,
@@ -436,11 +522,13 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(_ => null);
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(_ => null);
     }
 
     public repost(token: string, shareUrn: string) {
-        return fetch("https://www.linkedin.com/voyager/api/contentcreation/normShares", {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch("https://www.linkedin.com/voyager/api/contentcreation/normShares", {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token,
@@ -449,12 +537,15 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(_ => true);
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(_ => true);
     }
 
     public getUpdates(token: string, count: number): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `feed/updatesV2?commentsCount=0&count=${count}&likesCount=0&moduleKey=home-feed%3Adesktop&q=chronFeed`, this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `feed/updatesV2?commentsCount=0&count=${count}&likesCount=0&moduleKey=home-feed%3Adesktop&q=chronFeed`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public extractUpdates(response: any): any {
@@ -472,7 +563,8 @@ export class LinkedInAPI {
     }
 
     public like(token: string, urn: string) {
-        return fetch(LinkedInAPI.BASE + `voyagerSocialDashReactions?threadUrn=${this.encode(urn)}`, {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `voyagerSocialDashReactions?threadUrn=${this.encode(urn)}`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token,
@@ -481,7 +573,8 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(_ => null);
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(_ => null);
     }
 
     // @ts-ignore
@@ -501,7 +594,8 @@ export class LinkedInAPI {
                 "subtype": "MEMBER_TO_MEMBER"
             }
         };
-        return fetch(LinkedInAPI.BASE + `messaging/conversations?action=create`, {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `messaging/conversations?action=create`, {
             "headers": {
                 "accept": "application/vnd.linkedin.normalized+json+2.1",
                 "csrf-token": token
@@ -510,8 +604,10 @@ export class LinkedInAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(_ => null);
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(_ => null);
     }
+
     public extractProfile(id: string, response: any): any {
         try {
             const actor = response.included.filter((i: any) => i.actor !== undefined);
@@ -532,7 +628,7 @@ export class LinkedInAPI {
             }
             let result: any = {name, link, id};
             const profile = response.included.filter((i: any) => i.entityUrn === `urn:li:fsd_profile:${id}`);
-            if(profile && profile[0]) {
+            if (profile && profile[0]) {
                 const vectorImage = JSONPath.query(profile[0], "$..vectorImage");
                 if (vectorImage?.length > 0) {
                     const artifacts = extractArtifacts(vectorImage[0].artifacts);
@@ -563,23 +659,29 @@ export class LinkedInAPI {
         return {id, name, profilePicture, entityUrn};
     }
 
-
     public getProfile(token: string, id: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.22e7cccbd773ceef5ed7c2c9d195473a`,
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.22e7cccbd773ceef5ed7c2c9d195473a`,
             this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
-            .then(response => response.json());
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public getProfileDetails(token: string, id: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `identity/profiles/${id}`,
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `identity/profiles/${id}`,
             this.getRequest(token, {"accept": "application/vnd.linkedin.normalized+json+2.1"}))
-            .then(response => response.json());
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
 
     public getCompanyDetails(token: string, urn: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `organization/companies?decorationId=com.linkedin.voyager.deco.organization.web.WebFullCompanyMain-12&q=universalName&universalName=${urn}`, this.getRequest(token))
-            .then(response => response.json());
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `organization/companies?decorationId=com.linkedin.voyager.deco.organization.web.WebFullCompanyMain-12&q=universalName&universalName=${urn}`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
+
     private getRequest(token: string, headers?: any): any {
         let defaultHeaders = {
             "accept": "application/graphql",
@@ -604,18 +706,15 @@ export class LinkedInAPI {
     }
 
     public getMsgLastSeen(token: string, id: string): Promise<any> {
-        return fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.463cafd0fd1961a6e716e85ae4b0b32a`, this.getRequest(token))
-            .then(response => response.text())
-            .then(responseText => {
-                return responseText;
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(LinkedInAPI.BASE + `graphql?variables=(profileUrn:urn%3Ali%3Afsd_profile%3A${id})&&queryId=voyagerIdentityDashProfileCards.463cafd0fd1961a6e716e85ae4b0b32a`, this.getRequest(token))
+            .then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.text());
     }
 
     public getPresenceLastSeen(token: string, urn?: string) {
-        return fetch(`${LinkedInAPI.BASE}messaging/dash/presenceStatuses`, {
+        this.updateRate();
+        let request = (counter: number): Promise<any> => fetch(`${LinkedInAPI.BASE}messaging/dash/presenceStatuses`, {
             method: "POST",
             headers: {
                 "Accept": "*/*",
@@ -632,8 +731,8 @@ export class LinkedInAPI {
             body: `ids=List(urn%3Ali%3Afsd_profile%3A${urn})`,
             mode: "cors",
             credentials: "include"
-        }).then(response => response.json());
+        }).then(response => this.handleTMR(response, request, counter));
+        return request(0).then(response => response.json());
     }
-
 
 }

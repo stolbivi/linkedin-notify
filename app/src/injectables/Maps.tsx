@@ -52,7 +52,6 @@ export const Maps: React.FC<Props> = ({host}) => {
     }, [disabled]);
 
     useEffect(() => {
-        console.log("urlInternal:", urlInternal);
         let origin = 'chrome-extension://' + chrome.runtime.id;
         if (!location.ancestorOrigins.contains(origin)) {
             setSrc(chrome.runtime.getURL(`maps/loader.html?id=${extractIdFromUrl(urlInternal)}`));
@@ -60,7 +59,6 @@ export const Maps: React.FC<Props> = ({host}) => {
     }, [urlInternal]);
 
     useEffect(() => {
-        console.log("URL:", src);
         if (src) {
             iframeContainer.current?.contentWindow.location.replace(src);
         }

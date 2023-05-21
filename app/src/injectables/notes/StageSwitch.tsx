@@ -6,9 +6,9 @@ import {shallowEqual, useSelector} from "react-redux";
 import {extractIdFromUrl, Note, NoteExtended} from "../../global";
 import "./StageSwitch.scss";
 import {deleteNoteAction} from "../../store/NotesAllReducer";
-import { useAppDispatch, useAppSelector } from "../dashboard/Kanban/hooks/useRedux";
-import { removeCard } from "../../store/kanban.slice";
-import { SetStagePayload } from "../../actions";
+import {useAppDispatch, useAppSelector} from "../dashboard/Kanban/hooks/useRedux";
+import {removeCard} from "../../store/kanban.slice";
+import {SetStagePayload} from "../../actions";
 
 export enum StageEnum {
     Interested,
@@ -43,25 +43,25 @@ export const StageLabels = {
     2: {label: "Interviewing", class: "interviewing"},
     3: {label: "Failed interview", class: "failed"},
     4: {label: "Hired", class: "hired"},
-    5: { label: "Not Open", class: "passive" },
-    6: { label: "Open", class: "hired" },
-    7: { label: "Passive", class: "passive" },
-    8: { label: "Active", class: "interviewing" },
-    9: { label: "Future", class: "interested" },
-    10: { label: "Relocation", class: "interested" },
-    11: { label: "Commute", class: "interested" },
-    12: { label: "Hybrid", class: "interested" },
-    13: { label: "Remote", class: "interested" },
-    14: { label: "Contacted", class: "interviewing" },
-    15: { label: "Pending", class: "interested" },
-    16: { label: "Interview", class: "interviewing" },
-    17: { label: "Offer", class: "hired" },
-    18: { label: "Rejected", class: "failed" },
-    19: { label: "Part-Time", class: "interested" },
-    20: { label: "Full-Time", class: "interested" },
-    21: { label: "Permanent", class: "interested" },
-    22: { label: "Contract", class: "interested" },
-    23: { label: "Freelance", class: "interested" }
+    5: {label: "Not Open", class: "passive"},
+    6: {label: "Open", class: "hired"},
+    7: {label: "Passive", class: "passive"},
+    8: {label: "Active", class: "interviewing"},
+    9: {label: "Future", class: "interested"},
+    10: {label: "Relocation", class: "interested"},
+    11: {label: "Commute", class: "interested"},
+    12: {label: "Hybrid", class: "interested"},
+    13: {label: "Remote", class: "interested"},
+    14: {label: "Contacted", class: "interviewing"},
+    15: {label: "Pending", class: "interested"},
+    16: {label: "Interview", class: "interviewing"},
+    17: {label: "Offer", class: "hired"},
+    18: {label: "Rejected", class: "failed"},
+    19: {label: "Part-Time", class: "interested"},
+    20: {label: "Full-Time", class: "interested"},
+    21: {label: "Permanent", class: "interested"},
+    22: {label: "Contract", class: "interested"},
+    23: {label: "Freelance", class: "interested"}
 } as { [key: number]: any }
 StageLabels[-1] = {label: "Add Status", class: "inactive"};
 
@@ -133,8 +133,19 @@ type Props = {
     stageParent?: any;
 };
 
-export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
-                                                 customText, parentStage, notes,allGroupsMode, card, stageChildData, stageParent}) => {
+export const StageSwitch: React.FC<Props> = ({
+                                                 type,
+                                                 activeStage,
+                                                 urn,
+                                                 id,
+                                                 customText,
+                                                 parentStage,
+                                                 notes,
+                                                 allGroupsMode,
+                                                 card,
+                                                 stageChildData,
+                                                 stageParent
+                                             }) => {
 
     const [hovered, setHovered] = useState(false);
     const stagePillRef = useRef();
@@ -148,17 +159,16 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
             setCompleted(true);
         }
         setIsSelected(Boolean(notes.find(note => {
-            if(note.stageText && customText && note.stageText === customText) {
+            if (note.stageText && customText && note.stageText === customText) {
                 return true
-            }
-            else if(!customText && note.stageTo === type) {
+            } else if (!customText && note.stageTo === type) {
                 return true
             }
 
             return false
 
-        } )));
-    }, [activeStage,notes]);
+        })));
+    }, [activeStage, notes]);
 
     const removeSelectedTag = (id: string) => {
         setCompleted(false)
@@ -168,15 +178,30 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
 
     const onClick = () => {
         const label = StageLabels[type].label
-        console.log({stage, type, activeStage, isSelected, notes, card, stageChildData, stageParent, label: StageLabels[type].label, kanbanData})
-        if(!stage?.completed && !customText) {
+        console.log({
+            stage,
+            type,
+            activeStage,
+            isSelected,
+            notes,
+            card,
+            stageChildData,
+            stageParent,
+            label: StageLabels[type].label,
+            kanbanData
+        })
+        if (!stage?.completed && !customText) {
             return;
         }
         setCompleted(false);
-        const selectedNote = notes.find(note => (note.stageText && customText && note.stageText === customText) || (!customText && note.stageTo === type) || null );
+        const selectedNote = notes.find(note => (note.stageText && customText && note.stageText === customText) || (!customText && note.stageTo === type) || null);
         if (selectedNote && isSelected) {
             removeSelectedTag(selectedNote.id);
-            dispatch(removeCard({parent: stageParent.name.toUpperCase(), label: label.replaceAll("-", "_"), userId: card.userId}))
+            dispatch(removeCard({
+                parent: stageParent.name.toUpperCase(),
+                label: label.replaceAll("-", "_"),
+                userId: card.userId
+            }))
             setTimeout(() => {
                 setCompleted(true);
             }, 3000);
@@ -184,22 +209,32 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
         }
         const existingChildStage = notes.find(note => note.parentStage === parentStage);
         try {
-            const stageObj: {id:string, state: SetStagePayload} = {
+            const stageObj: { id: string, state: SetStagePayload } = {
                 id,
                 state: {
-                    id: urn, stage: type, stageFrom: activeStage, stageText: customText || undefined, parentStage, existingChildStageId: existingChildStage?.id,
-                    parent: stageParent?.name?.toUpperCase(), label: label?.replaceAll("-", "_"), userId: card?.userId,
+                    id: urn,
+                    stage: type,
+                    stageFrom: activeStage,
+                    stageText: customText || undefined,
+                    parentStage,
+                    existingChildStageId: existingChildStage?.id,
+                    parent: stageParent?.name?.toUpperCase(),
+                    label: label?.replaceAll("-", "_"),
+                    userId: card?.userId,
                 },
             }
-            if(card) {
-                stageObj.state.card= {
-                    ...card, status: label, category: StageLabels[type].label.replaceAll("-", " "), id: card.id + "/" + Math.random()
+            if (card) {
+                stageObj.state.card = {
+                    ...card,
+                    status: label,
+                    category: StageLabels[type].label.replaceAll("-", " "),
+                    id: card.id + "/" + Math.random()
                 }
-                stageObj.state.action=['GEOGRAPHY', 'GROUPS'].includes(stageParent?.name?.toUpperCase())  ? 'add' : 'update'
+                stageObj.state.action = ['GEOGRAPHY', 'GROUPS'].includes(stageParent?.name?.toUpperCase()) ? 'add' : 'update'
             }
             localStore.dispatch(updateStageAction(stageObj));
         } catch (error) {
-            console.log('error', error)
+            console.error('error', error);
         }
         setTimeout(() => setCompleted(true), 6000);
         if (isSelected) {
@@ -212,19 +247,21 @@ export const StageSwitch: React.FC<Props> = ({type, activeStage, urn, id,
 
     return (
         <React.Fragment>
-            <div ref={stagePillRef} className={`pill-parent stage ${((isSelected && StageLabels[type]) || (hovered && (stage?.completed || customText))) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''} ${allGroupsMode ? 'note-card-fit' : ''}`}
+            <div ref={stagePillRef}
+                 className={`pill-parent stage ${((isSelected && StageLabels[type]) || (hovered && (stage?.completed || customText))) ? StageLabels[type]?.class : "inactive"} ${customText ? "customPill" : ''} ${allGroupsMode ? 'note-card-fit' : ''}`}
                  onClick={onClick}
                  onMouseEnter={() => {
-                     if(!isSelected) {
+                     if (!isSelected) {
                          setHovered(true);
                      }
                      setTimeout(() => {
-                        setHovered(false);
-                     },10000);
+                         setHovered(false);
+                     }, 10000);
                  }}
                  onMouseLeave={() => setHovered(false)}>
                 <div className="loader"><Loader show={!completed || activeStage === undefined}/></div>
-                <label className={customText && customText.length > 12 ? 'ellipsis' : ''} style={{opacity: completed ? 1 : 0}}>
+                <label className={customText && customText.length > 12 ? 'ellipsis' : ''}
+                       style={{opacity: completed ? 1 : 0}}>
                     {customText || StageLabels[type].label}
                 </label>
             </div>

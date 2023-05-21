@@ -391,7 +391,7 @@ export const NotesAndCharts: React.FC<Props> = ({
             clonedSalary.progressivePay = salaryWithSymbol;
             sessionStorage.setItem("customSalary", JSON.stringify(clonedSalary));
             messages.request(setCustomSalary(clonedSalary)).then(resp => {
-                console.log(resp)
+                console.log(resp); // use debug, please
             })
         }
         setEditButton(!editButton);
