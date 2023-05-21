@@ -528,7 +528,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                     <div className="nested-childs">
                                                         <StageSwitch
                                                             card={activeCard}
-                                                            key={extractFromIdAware(salary).urn}
+                                                            key={extractFromIdAware(salary).urn + customStage?.stageId?.toString()}
                                                             type={StageEnum[customStage.text]}
                                                             customText={customStage.text}
                                                             urn={extractFromIdAware(salary).urn}
@@ -558,25 +558,25 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
                                                                 <div className="nested-childs">
                                                                     {stageChildData[stageParent.name]?.map?.((child,index) => stageParent.name !== StageParentData.GROUPS ?
                                                                         <StageSwitch 
-                                                                        stageChildData={stageChildData}
-                                                                        stageParent={stageParent}
-                                                                        card={activeCard}
-                                                                        key={extractFromIdAware(salary).urn}
-                                                                                     type={child.name}
-                                                                                     id={idInternal}
-                                                                                     urn={extractFromIdAware(salary).urn}
-                                                                                     parentStage={Object.values(StageParentData).indexOf(stageParent.name)}
-                                                                                     parentStageName={stageParent.name}
-                                                                                     activeStage={extractFromIdAware(stage).stage}
-                                                                                     notes={notes}
-                                                                                     setNotes={setNotes}
-                                                                                     allGroupsMode={allGroupsMode}/>
+                                                                             stageChildData={stageChildData}
+                                                                             stageParent={stageParent}
+                                                                             card={activeCard}
+                                                                             key={extractFromIdAware(salary).urn + index}
+                                                                             type={child.name}
+                                                                             id={idInternal}
+                                                                             urn={extractFromIdAware(salary).urn}
+                                                                             parentStage={Object.values(StageParentData).indexOf(stageParent.name)}
+                                                                             parentStageName={stageParent.name}
+                                                                             activeStage={extractFromIdAware(stage).stage}
+                                                                             notes={notes}
+                                                                             setNotes={setNotes}
+                                                                             allGroupsMode={allGroupsMode}/>
                                                                         :
                                                                         <>
                                                                             {customStages?.slice(0, 3).map(customStage => (
                                                                                 <StageSwitch
                                                                                     card={activeCard}
-                                                                                    key={extractFromIdAware(salary).urn}
+                                                                                    key={extractFromIdAware(salary).urn + customStage?.stageId?.toString()}
                                                                                     type={StageEnum[customStage.text]}
                                                                                     customText={customStage.text}
                                                                                     urn={extractFromIdAware(salary).urn}
