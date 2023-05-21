@@ -58,6 +58,7 @@ import {
     switchThemeRequest,
     unlock,
     updateJob,
+    getBilling
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 
@@ -145,6 +146,7 @@ messagesV2.listen(getMe);
 messagesV2.listen(getAssignedJobsById);
 messagesV2.listen(getCustomSalary);
 messagesV2.listen(setCustomSalary);
+messagesV2.listen(getBilling);
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
     tabs.withAllTabs().then(tabs => {

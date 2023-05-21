@@ -79,7 +79,6 @@ export const SalaryPill: React.FC<Props> = ({url, id, showSalary = false, showNo
     const [completed, setCompleted] = useState(false);
 
     useEffect(() => {
-        setShow(true);
         if (accessState !== AccessState.Valid || !urlInternal) {
             return;
         }

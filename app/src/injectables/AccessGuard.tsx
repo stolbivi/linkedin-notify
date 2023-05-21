@@ -4,7 +4,7 @@ import {LOGIN_URL, VERBOSE} from "../global";
 import {Lock} from "../icons/Lock";
 import {Loader} from "../components/Loader";
 import "./AccessGuard.scss";
-import {getSubscription, openUrl as openUrlAction} from "../actions";
+import {getBilling, getSubscription, openUrl as openUrlAction} from "../actions";
 import {AccessService} from "../services/AccessService";
 
 export const SIGN_IN_URL = `${process.env.BACKEND_BASE}/auth/linkedin`;
@@ -32,6 +32,7 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
     const [completed, setCompleted] = useState<boolean>(false);
     const [state, setState] = useState<AccessState>(AccessState.Unknown);
     const [status, setStatus] = useState("Upgrade To Pro");
+    const [redirectUrl, setRedirectUrl] = useState(SIGN_UP_URL);
 
     useEffect(() => {
         messages.request(getSubscription())
@@ -53,6 +54,17 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
             }).finally(() => setCompleted(true));
     }, []);
 
+    useEffect(() => {
+        if(status === "Active Free Trial") {
+            setRedirectUrl(LOGIN_URL)
+        } else if(status === "Upgrade To Pro") {
+            messages.request(getBilling())
+                .then((resp) => {
+                    setRedirectUrl(resp?.session?.url);
+                });
+        }
+    },[status])
+
     const openUrl = (e: any, url: string) => {
         e.preventDefault();
         e.stopPropagation();
@@ -70,7 +82,7 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
                 </div>
             case AccessState.Invalid:
                 return <div className={"access-guard " + (className ?? "")}
-                            onClick={(e) => openUrl(e, status === "Active Free Trial" ? LOGIN_URL : SIGN_UP_URL)}
+                            onClick={(e) => openUrl(e, redirectUrl)}
                             title="Sign up">
                     <Lock/>
                     {!hideTitle && <span>{status}</span>}
