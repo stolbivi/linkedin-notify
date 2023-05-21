@@ -15,6 +15,7 @@ import { setActiveCard } from '../../../../../store/cards.slice';
 interface CardProps {
   card: ICard;
   index: number;
+  draggableId?: string;
 }
 
 const Card: React.FC<CardProps> = ({ card, index }) => {

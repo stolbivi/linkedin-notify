@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
+import IStatus from "../../src/injectables/dashboard/Kanban/interfaces/IStatus";
 type AvailabilityStatus = "Not_Open" | "Open" | "Passive" | "Active" | "Future"
 type StatusStatus = "Hired" | "Contacted" | "Interview" | "Offer" | "Rejected"
 type TypeStatus =
@@ -49,10 +50,12 @@ type IKanbanData = {
 
 interface KanbanSliceState {
   kanbanData: IKanbanData
+  activeTab: string
 }
 
 const initialState: KanbanSliceState = {
   kanbanData: {} as IKanbanData,
+  activeTab: IStatus.AVAILABILITY
 }
 
 export const kanbanSlice = createSlice({
@@ -214,11 +217,11 @@ export const kanbanSlice = createSlice({
         card: Person
       }
 
-      const formattedSourceDroppableId = source.droppableId.replace(/ /g, "_")
-      const formattedDestinationDroppableId = destination.droppableId.replace(
+      const formattedSourceDroppableId = parent !== 'GROUPS' ? source.droppableId.replace(/ /g, "_") : source.droppableId
+      const formattedDestinationDroppableId = parent !== 'GROUPS' ? destination.droppableId.replace(
         / /g,
         "_"
-      )
+      ) : destination.droppableId
 
 
       // if parent is not there return
@@ -324,6 +327,9 @@ export const kanbanSlice = createSlice({
         }
       })
     },
+    setActiveTab: (state, action) => {
+      state.activeTab = action.payload
+    }
   },
 })
 
@@ -334,6 +340,7 @@ export const {
   updateCard,
   moveCard,
   updateCardIdByOptimisticId,
+  setActiveTab
 } = kanbanSlice.actions
 
 export default kanbanSlice.reducer

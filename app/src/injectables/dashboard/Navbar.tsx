@@ -18,6 +18,8 @@ import {theme as DarkTheme} from "../../themes/dark";
 import { useUrlChangeSupport } from "../../utils/URLChangeSupport";
 import {getQuery} from "../../utils/LnDashboardHelper";
 import { AccessGuard, AccessState } from "../AccessGuard";
+import {Provider} from "react-redux";
+import localStore from "../../store/LocalStore";
 
 type View = "candidates" | "jobList" | "search"
 
@@ -88,7 +90,7 @@ const Navbar = ({handleInit, customView} : {handleInit: Function, customView?: V
       };
 
       const jobListClickHandler = () => {
-        renderComponent(<JobList />, true, false, false);
+          renderComponent(<Provider store={localStore}> <JobList /> </Provider>, true, false, false);
       };
 
       const candidatesClickHandler = () => {

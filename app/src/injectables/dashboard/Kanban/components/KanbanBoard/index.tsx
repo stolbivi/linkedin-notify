@@ -13,7 +13,7 @@ import {useAppDispatch, useAppSelector} from '../../hooks/useRedux';
 import {Container, Header, StatusesColumnsContainer} from './styles';
 import {setColumns} from '../../../../../store/columns.slice';
 import {filterCards, setCards} from '../../../../../store/cards.slice';
-import {moveCard, setKanbanData, updateCardIdByOptimisticId} from '../../../../../store/kanban.slice';
+import {moveCard, setKanbanData, updateCardIdByOptimisticId, setActiveTab} from '../../../../../store/kanban.slice';
 // @ts-ignore
 import stylesheet from './styles.scss';
 import {MessagesV2} from "@stolbivi/pirojok";
@@ -30,6 +30,7 @@ import {shallowEqual, useSelector} from "react-redux";
 import { Salary } from '../../../../../store/SalaryReducer';
 import { appendNoteAction, removeNoteByStageTo, triggerDeleteNoteAction } from '../../../../../store/NotesAllReducer';
 import { stageChildData, StageLabels } from '../../../../notes/StageSwitch';
+import generateUUID from '../../../../../utils/UuidHelper';
 
 const KanbanBoard: React.FC<any> = () => {
   const { cards } = useAppSelector((state => state.cards));
@@ -43,12 +44,13 @@ const KanbanBoard: React.FC<any> = () => {
   const theme = useContext(ThemeContext);
   const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
  const [isLoaded, setIsLoaded] = useState(false);
- const {kanbanData} = useAppSelector((state => state.kanbanData));
+ const {kanbanData, activeTab} = useAppSelector((state => state.kanbanData));
  const activeCard = useAppSelector((state => state.cards.activeCard));
 
   useEffect(() => {
     if(notesAll.completed && !isLoaded) {
       setCompleted(false);
+      dispatch(setActiveTab(IStatus.AVAILABILITY));
       messages.request(getAuthorStages())
           .then((resp) => {
             if (resp.data) {
@@ -64,20 +66,22 @@ const KanbanBoard: React.FC<any> = () => {
   },[notesAll]);
 
   useEffect(() => {
-    messages.request(getCustomStages())
-        .then((customStages) => {
-          if(customStages.length > 0) {
-            customStages.map(stage => {
-              // @ts-ignore
-              if(!ICategory[stage.text]) {
-                // @ts-ignore
-                ICategory[stage.text] = stage.text;
-              }
-            });
-          }
-        })
-        .catch(e => console.error(e.error));
-    populateKanbanData(activeButton);
+      if(activeButton === activeTab) {
+          messages.request(getCustomStages())
+              .then((customStages) => {
+                  if(customStages.length > 0) {
+                      customStages.map(stage => {
+                          // @ts-ignore
+                          if(!ICategory[stage.text]) {
+                              // @ts-ignore
+                              ICategory[stage.text] = stage.text;
+                          }
+                      });
+                  }
+              })
+              .catch(e => console.error(e.error));
+          populateKanbanData(activeButton);
+      }
   },[kanbanData])
 
   const onDragEnd = (result: DropResult) => {
@@ -90,7 +94,8 @@ const KanbanBoard: React.FC<any> = () => {
         destination.index === source.index
       ) return;
 
-    const selectedCard = cards.find(card => card.id === draggableId);
+
+    const selectedCard = (kanbanData[activeButton][sourceLabel] ||  kanbanData[activeButton][sourceLabel.replaceAll("-", "_").replaceAll(" ", "_")])[source.index]
      const destinationCards = cards.filter(card => card.status === destination.droppableId);
       // check selectedCard.userId is in destinationCards
       if(destinationCards.find(card => card.userId === selectedCard?.userId)) {
@@ -157,7 +162,7 @@ const KanbanBoard: React.FC<any> = () => {
     });
     
 
-    let optimisticId = selectedCard?.id + '/' + Math.random();
+    let optimisticId = generateUUID();
     // do that if only parent stage is GEOGRAPHY
     if(activeButton === IStatus.GEOGRAPHY) 
     updatedCards.splice(source.index, 0, ({...selectedCard, id: optimisticId} as ICard));
@@ -257,6 +262,7 @@ const KanbanBoard: React.FC<any> = () => {
     if (button !== activeButton) {
       populateKanbanData(button);
       setActiveButton(button);
+      dispatch(setActiveTab(button));
     }
   }
   const populateKanbanData = (parentCategory: string) => {
@@ -273,13 +279,13 @@ const KanbanBoard: React.FC<any> = () => {
       subCategories = [ICategory.Relocation,ICategory.Commute,ICategory.Hybrid,ICategory.Remote];
     } else if (parentCategory === IStatus.ALL) {
       subCategories = [IStatus.AVAILABILITY,IStatus.STATUS,IStatus.TYPE,IStatus.GEOGRAPHY,IStatus.GROUPS];
-    } else if (parentCategory === IStatus.GROUPS) {
-      subCategories = Object.keys(kanbanData[IStatus.GROUPS]);
+    } else if (parentCategory === IStatus.GROUPS && kanbanData[IStatus.GROUPS]) {
+        subCategories = Object.keys(kanbanData[IStatus.GROUPS]);
     }
-    subCategories?.forEach(value => {
-      cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
-    });
-    if(parentCategory === IStatus.ALL) {
+      subCategories?.forEach(value => {
+          cardsIdsByStatus = {...cardsIdsByStatus, [value]:[]}
+      });
+      if(parentCategory === IStatus.ALL) {
       for (const [_parentStageKey, parentStage] of Object.entries(kanbanData)) {
         for (const [_stageKey, stage] of Object.entries(parentStage)) {
           for (const item of stage) {
@@ -339,15 +345,17 @@ const KanbanBoard: React.FC<any> = () => {
       });
     }
     let updatedColumns: IColumn[] = [];
-    subCategories.forEach(value => {
-      updatedColumns.push(
-          {
-            id: value,
-            title: value,
-            cardsIds: cardsIdsByStatus[value]
-          }
-      )
-    });
+    if(subCategories?.length > 0) {
+      subCategories.forEach(value => {
+          updatedColumns.push(
+              {
+                  id: value,
+                  title: value,
+                  cardsIds: cardsIdsByStatus[value]
+              }
+          )
+      });
+    }
     dispatch(setColumns(updatedColumns));
     dispatch(setCards(updatedCards));
   }
@@ -372,6 +380,13 @@ const KanbanBoard: React.FC<any> = () => {
  //   sessionStorage.setItem("isListView", false);
   }
 
+  const [winReady, setwinReady] = useState(false);
+  useEffect(() => {
+      setTimeout(() => {
+        setwinReady(true);
+      }, 1000);
+  }, []);
+
   return (
     <>
       <Container>
@@ -379,9 +394,9 @@ const KanbanBoard: React.FC<any> = () => {
         <Header>
           <h1 className="kanban-title">Candidates</h1>
         </Header>
-        <Loader show={!completed} className="p-5 kanban-loader" heightValue="600px"/>
+        <Loader show={!completed || !winReady} className="p-5 kanban-loader" heightValue="600px"/>
         {
-          completed ? (
+          (completed && winReady) ? (
               <>
                 <div className="button-container">
                     <button className={`button ${activeButton === IStatus.AVAILABILITY ? 'active' : ''}`} onClick={() => handleClick(IStatus.AVAILABILITY)}>
