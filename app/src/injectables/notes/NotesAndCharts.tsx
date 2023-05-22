@@ -65,7 +65,6 @@ export const NotesAndChartsFactory = () => {
             if (section && section.length > 0) {
                 inject(section[0].lastChild, "lnm-notes-and-charts-kanban-cards", "after",
                     <Provider store={localStore}>
-                        <NotesAndCharts id={"FROM_KANBAN"} trackUrl={false} profileMode={true} fromJobList={true}/>
                         <NotesAndCharts id={"FROM_KANBAN"} trackUrl={false}/>
                     </Provider>, "NotesAndCharts"
                 );
@@ -223,7 +222,7 @@ export const NotesAndCharts: React.FC<Props> = ({
     }, [showNotesAndChartsProfile]);
 
     useEffect(() => {
-        if (extractFromIdAware(showNotesAndCharts)) {
+        if (extractFromIdAware(showNotesAndCharts)?.id) {
             setFromListView(false);
             setAllGroupsMode(false);
             if (salaryMode) {
@@ -249,7 +248,7 @@ export const NotesAndCharts: React.FC<Props> = ({
                 setMinimized(true);
             }
         }
-    }, [showNotesAndCharts]);
+    }, [showNotesAndCharts, idInternal]);
 
     const canShow = () => extractFromIdAware(showNotesAndCharts)?.show;
     const completed = () => extractFromIdAware(salary).completed;
@@ -308,7 +307,7 @@ export const NotesAndCharts: React.FC<Props> = ({
         setShowChart(false);
         localStore.dispatch(showNotesAndChartsAction({
             id: idInternal,
-            state: {showSalary: false, showNotes: false, show: false}
+            state: {showSalary: false, showNotes: false, show: false, id: idInternal}
         }));
         const body = document.querySelector('body');
         body.classList.remove('popup-open');

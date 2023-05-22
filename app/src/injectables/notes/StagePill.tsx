@@ -100,7 +100,7 @@ export const StagePill: React.FC<Props> = ({id}) => {
         } else {
             localStore.dispatch(showNotesAndChartsAction({
                 id: idInternal,
-                state: {showSalary: false, showNotes: true, show: true}
+                state: {showSalary: false, showNotes: true, show: true, id: idInternal}
             }));
         }
     }
