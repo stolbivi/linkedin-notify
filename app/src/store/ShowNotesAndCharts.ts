@@ -10,15 +10,23 @@ export interface ShowNotesAndCharts {
     card?: ICard
 }
 
-const initialState: IdAwareState<any> = {};
+export interface NotesAndChartsIndex {
+    data: IdAwareState<any>,
+    profileId: string
+}
+
+const initialState: NotesAndChartsIndex = {
+    data: {},
+    profileId: undefined
+};
 
 const slice = createSlice({
     name: "lastViewedState",
     initialState,
     reducers: {
         showNotesAndChartsAction: (state, action: PayloadAction<IdAwareRequest<ShowNotesAndCharts>>) => {
-            state[action.payload.id] = action.payload.state;
-            state["profileId"] = action.payload.state.id;
+            state.data[action.payload.id] = action.payload.state;
+            state.profileId = action.payload.id;
         }
     }
 });
