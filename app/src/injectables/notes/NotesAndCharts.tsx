@@ -66,6 +66,7 @@ export const NotesAndChartsFactory = () => {
                 inject(section[0].lastChild, "lnm-notes-and-charts-kanban-cards", "after",
                     <Provider store={localStore}>
                         <NotesAndCharts id={"FROM_KANBAN"} trackUrl={false} profileMode={true} fromJobList={true}/>
+                        <NotesAndCharts id={"FROM_KANBAN"} trackUrl={false}/>
                     </Provider>, "NotesAndCharts"
                 );
             }
