@@ -40,7 +40,7 @@ const KanbanBoard: React.FC<any> = () => {
   const messages = new MessagesV2(VERBOSE);
   const dispatch = useAppDispatch();
   const [completed, setCompleted] = useState(false);
-  const [listView, setListView] = useState(false);
+  const [listView, setListView] = useState(true);
   const theme = useContext(ThemeContext);
   const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
  const [isLoaded, setIsLoaded] = useState(false);
@@ -69,7 +69,7 @@ const KanbanBoard: React.FC<any> = () => {
       if(activeButton === activeTab) {
           messages.request(getCustomStages())
               .then((customStages) => {
-                  if(customStages.length > 0) {
+                  if(customStages?.length > 0) {
                       customStages.map(stage => {
                           // @ts-ignore
                           if(!ICategory[stage.text]) {

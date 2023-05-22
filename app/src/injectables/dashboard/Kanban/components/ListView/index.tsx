@@ -150,14 +150,14 @@ const ListView = ({cards, parentTheme, jobsList}) => {
 
     const useStyles = makeStyles({root: gridTheme});
 
-    function messagesClickHandler(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, conversationUrn: any) {
+/*    function messagesClickHandler(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, conversationUrn: any) {
         event.stopPropagation();
         let messageUrl = 'https://www.linkedin.com/messaging/thread/new/';
         if (conversationUrn) {
             messageUrl = `https://www.linkedin.com/messaging/thread/${conversationUrn}`
         }
         window.open(messageUrl, '_blank')
-    }
+    }*/
 
     const dispatch = useAppDispatch();
     const onNotesClick = (userId: string, _profileId: string, row: any) => {
@@ -241,19 +241,6 @@ const ListView = ({cards, parentTheme, jobsList}) => {
             align: 'center',
             renderCell: (params: { row: { conversationUrn: any; userId: string; profileId: string; }; }) => (
                 <>
-                    <button className="btn action-btn-color"
-                            onClick={(event) => messagesClickHandler(event, params.row.conversationUrn)}>
-                        <svg className="icon-color" width="16" height="17" viewBox="0 0 16 17"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M10.3332 8H5.6665C5.39317 8 5.1665 7.77333 5.1665 7.5C5.1665 7.22667 5.39317 7 5.6665 7H10.3332C10.6065 7 10.8332 7.22667 10.8332 7.5C10.8332 7.77333 10.6065 8 10.3332 8Z"
-                                fill="#585858"/>
-                            <path
-                                d="M10.6668 15.3799C10.4402 15.3799 10.2135 15.3133 10.0202 15.1866L7.18016 13.2933H4.66683C2.3735 13.2933 0.833496 11.7533 0.833496 9.45992V5.45992C0.833496 3.16659 2.3735 1.62659 4.66683 1.62659H11.3335C13.6268 1.62659 15.1668 3.16659 15.1668 5.45992V9.45992C15.1668 11.5799 13.8468 13.0599 11.8335 13.2666V14.2133C11.8335 14.6466 11.6002 15.0399 11.2202 15.2399C11.0468 15.3332 10.8535 15.3799 10.6668 15.3799ZM4.66683 2.61991C2.94683 2.61991 1.8335 3.73325 1.8335 5.45325V9.45325C1.8335 11.1732 2.94683 12.2866 4.66683 12.2866H7.3335C7.4335 12.2866 7.52684 12.3132 7.61351 12.3733L10.5802 14.3466C10.6535 14.3933 10.7202 14.3733 10.7535 14.3533C10.7868 14.3333 10.8402 14.2932 10.8402 14.2066V12.7866C10.8402 12.5132 11.0668 12.2866 11.3402 12.2866C13.0602 12.2866 14.1735 11.1732 14.1735 9.45325V5.45325C14.1735 3.73325 13.0602 2.61991 11.3402 2.61991H4.66683Z"
-                                fill="#585858"/>
-                        </svg>
-                        <span style={{paddingLeft: "3px"}}>Message</span>
-                    </button>
                     <button className="btn action-btn-color"
                             onClick={() => {
                                 onNotesClick(params.row.userId, params.row.profileId, params.row);

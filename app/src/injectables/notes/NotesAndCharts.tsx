@@ -361,7 +361,7 @@ export const NotesAndCharts: React.FC<Props> = ({id, trackUrl = false, conversat
     }
 
     useEffect(() => {
-        if(customStages.length > 0) {
+        if(customStages?.length > 0) {
             const stageEnumLength = Object.keys(StageEnum).filter(k => isNaN(Number(k))).length;
             let count = stageEnumLength + 1;
             customStages.map(stage => {
