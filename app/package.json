@@ -1,6 +1,6 @@
 {
   "name": "linkedin-manager",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "Extension to monitor activity on your LinkedIn profile",
   "scripts": {
     "prettifier": "npx prettier --write '(tests|src)/**/*.(ts|tsx|js|jsx)'",
