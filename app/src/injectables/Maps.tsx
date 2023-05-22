@@ -59,8 +59,8 @@ export const Maps: React.FC<Props> = ({host}) => {
     }, [urlInternal]);
 
     useEffect(() => {
-        if (src) {
-            iframeContainer.current?.contentWindow.location.replace(src);
+        if (src && iframeContainer.current?.contentWindow) {
+            iframeContainer.current?.contentWindow?.location.replace(src);
         }
     }, [src])
 
