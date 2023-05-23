@@ -63,7 +63,7 @@ export const NotesAndChartsFactory = () => {
         if (window.location.href.indexOf("#lndashboard") > 0) {
             const section = document.querySelectorAll(".kanban-title");
             if (section && section.length > 0) {
-                inject(section[0].lastChild, "lnm-notes-and-charts-kanban-cards", "after",
+                inject(section[0].lastChild, "lnm-notes-and-charts-kanban", "after",
                     <Provider store={localStore}>
                         <NotesAndCharts id={"FROM_KANBAN"} trackUrl={false}/>
                     </Provider>, "NotesAndCharts"
