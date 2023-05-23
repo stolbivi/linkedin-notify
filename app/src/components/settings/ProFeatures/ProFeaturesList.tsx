@@ -19,7 +19,7 @@ const ProFeaturesList = () => {
     const [theme, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
     let proFeatures = {
         "Salary": { text: "Salary Estimator", isActive: true, id: "Salary" , isChanged: false},
-        "chatGpt": { text: "Integration with ChatGPT", isActive: true, id: "chatGpt", isChanged: false },
+        "chatGpt": { text: "Integration with ChatGPT Pro", isActive: true, id: "chatGpt", isChanged: false },
         "NotesManager": { text: "Unlimited Notes on Linkedin Profile", isActive: true, id: "NotesManager", isChanged: false},
         "Maps": { text: "Integrated Google Maps", isActive: true, id: "Maps", isChanged: false },
         "StagePill": { text: "Add Status", isActive: true, id: "StagePill" , isChanged: false},
