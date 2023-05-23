@@ -14,3 +14,9 @@
                           caret-space: 2px
                   ))
 }
+
+@media (max-width: 767px) {
+  .heading-mobile {
+    font-size: 32px;
+  }
+}
