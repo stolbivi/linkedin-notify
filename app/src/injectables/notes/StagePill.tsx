@@ -113,7 +113,7 @@ export const StagePill: React.FC<Props> = ({id}) => {
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName="loader-base loader-px24"/>
             {accessState === AccessState.Valid &&
-                <div className={`stage inactive`} onClick={onClick} style={{marginLeft: "1em"}} ref={rootElement}>
+                <div className={`stage inactive stage-pill`} onClick={onClick} style={{marginLeft: "1em"}} ref={rootElement}>
                     <div className="loader"><Loader show={!extractFromIdAware().completed}/></div>
                     <label style={{opacity: extractFromIdAware().completed ? 1 : 0,}}>Add Notes</label>
                 </div>}
