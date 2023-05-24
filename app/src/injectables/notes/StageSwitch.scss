@@ -19,7 +19,7 @@
   white-space: nowrap;
   height: 18px;
   width: 60px !important;
-
+  transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
   .loader {
     position: absolute;
     top: 50%;
@@ -119,4 +119,18 @@
 
 .note-drop-down{
   width: 84px !important;
+}
+
+
+.stage-pill {
+  transition: background-color 0.3s ease, border 0.3s ease;
+  background-color: $color-stage-background !important;
+  color: $color-stage-color !important;
+  border:  1px solid $color-stage-border !important;
+
+}
+.stage-pill:hover {
+  background-color: $color-stage-background-hover !important;
+  color: $color-stage-color-hover !important;
+  box-shadow: inset 0 0 0 1px $color-stage-border-hover !important;
 }

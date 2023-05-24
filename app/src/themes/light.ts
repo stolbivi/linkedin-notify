@@ -58,6 +58,7 @@ export const theme: Theme = {
     "--auto-pill-on-background": "rgb(10, 102, 194)",
     "--auto-pill-off": "white",
     "--auto-pill-off-background": "rgb(144, 144, 144)",
+    "--auto-pill-off-background-hover": "#252525",
 
     "--complete-background": "rgb(10, 102, 194)",
     "--complete": "white",
@@ -70,6 +71,8 @@ export const theme: Theme = {
     "--last-viewed": "rgb(38,38,38)",
 
     "--salary-pill": "#117544",
+    "--salary-pill-hover-background": "hsla(126, 79.7%, 42.5%, 0.1)",
+    "--salary-pill-hover-border": "rgb(22, 195, 40)",
 
     "--navbar-button": "#FFFFFF",
 
@@ -157,5 +160,13 @@ export const theme: Theme = {
     "--kanban-table-message-color": "#585858",
     "--kanban-table-action-btn-color": "#585858",
     "--add-status-border": "#00000026",
-    "--joblist-edit-input": "#bebebe42"
+    "--joblist-edit-input": "#bebebe42",
+
+    "--color-stage-background": "hsla(0, 0%, 100%, 0)",
+    "--color-stage-color": "rgba(0, 0, 0, 0.6)",
+    "--color-stage-border": "rgba(0, 0, 0, 0.6)",
+
+    "--color-stage-background-hover": "rgba(0, 0, 0, 0.08)",
+    "--color-stage-color-hover": "rgba(0, 0, 0, 0.6)",
+    "--color-stage-border-hover": "rgba(0, 0, 0, 0.6)",
 }
