@@ -309,9 +309,24 @@ chrome.cookies.onChanged.addListener((changeInfo) => {
 });
 
 const visitedUrls: string[] = [];
+const hostPermissions = [
+    "localhost",
+    "linkedin.com",
+    "api.lnmanager.com",
+    "linkedin-manager-apiuat.herokuapp.com",
+    "maps.googleapis.com"
+  ];
+
 chrome.history.onVisited.addListener((historyItem) => {
     let isInitialLoad = !visitedUrls.includes(historyItem.url);
     chrome.tabs.query({active: true}, (tabs) => {
+        const tabUrl = tabs[0].url;
+        const isMatched = hostPermissions.some((permission) => {
+            return tabUrl.includes(permission);
+          });
+        if (tabUrl?.startsWith("chrome://") || tabUrl?.startsWith("edge://")) return undefined;
+        if (!isMatched) return undefined;
+        
         chrome.scripting.executeScript({
             target: {tabId: tabs[0].id},
             func: function (isInitialLoad) {
