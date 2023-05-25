@@ -70,6 +70,7 @@ export const Maps: React.FC<Props> = ({host}) => {
                 return accessService.handleSubscription(r,
                     () => setDisabled(false),
                     () => setDisabled(true),
+                    () => setDisabled(true),
                     () => setDisabled(true));
             }).then(/* nada */);
     }, []);
