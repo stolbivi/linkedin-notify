@@ -57,6 +57,7 @@
   --auto-pill-on-background: rgb(10, 102, 194);
   --auto-pill-off: white;
   --auto-pill-off-background: rgb(88, 88, 88);
+  --auto-pill-off-background-hover: #8b8b8b;
 
   --complete-background: rgb(10, 102, 194);
   --complete: white;
@@ -69,6 +70,8 @@
   --last-viewed: rgb(162 158 158);
 
   --salary-pill: #16c328;
+  --salary-pill-hover-background: hsla(126, 79.7%, 42.5%, 0.1);
+  --salary-pill-hover-border: rgb(22, 195, 40);
 
   --navbar-button: #FFFFFF;
 
@@ -151,4 +154,12 @@
   --kanban-table-message-color: #585858;
   --kanban-table-action-btn-color: #585858;
   --add-status-border: #00000026;
+
+  --color-stage-background: transparent;
+  --color-stage-color: hsla(0, 0%, 100%, 0.9);
+  --color-stage-border: hsla(0, 0%, 100%, 0.75);
+
+  --color-stage-background-hover: hsla(0, 0%, 100%, 0.18);
+  --color-stage-color-hover: hsla(0, 0%, 100%, 0.9);
+  --color-stage-border-hover: hsla(0, 0%, 100%, 0.75);
 }

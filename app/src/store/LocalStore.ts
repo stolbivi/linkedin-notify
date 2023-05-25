@@ -1,7 +1,7 @@
 import {configureStore, createListenerMiddleware} from "@reduxjs/toolkit"
 import initListeners from "./Effects";
 import lastViewedReducer, {LastViewed} from "./LastViewedReducer";
-import showNotesAndChartsReducer, {ShowNotesAndCharts} from "./ShowNotesAndCharts";
+import showNotesAndChartsReducer, {NotesAndChartsIndex} from "./ShowNotesAndCharts";
 import salaryReducer, {Salary} from "./SalaryReducer";
 import stageReducer from "./StageReducer";
 import {GeoTz, StageResponse} from "../actions";
@@ -36,7 +36,7 @@ export interface IdAwareRequest<State> {
 
 interface RootState {
     lastViewed: CompleteEnabled<LastViewed>
-    showNotesAndCharts: IdAwareState<ShowNotesAndCharts>
+    showNotesAndCharts: NotesAndChartsIndex
     salary: IdAwareState<CompleteEnabled<Salary>>
     stage: IdAwareState<CompleteEnabled<StageResponse>>
     geoTz: CompleteEnabled<GeoTz>
@@ -62,12 +62,12 @@ export const localStore = configureStore({
 });
 
 localStore.subscribe(() => {
-    // FIXME
     // console.debug('Local store:', localStore.getState());
 })
 
 export const selectLastViewed = (state: RootState) => state.lastViewed;
-export const selectShowNotesAndCharts = (state: RootState) => state.showNotesAndCharts;
+export const selectShowNotesAndCharts = (state: RootState) => state.showNotesAndCharts.data;
+export const selectShowNotesAndChartsProfile = (state: RootState) => state.showNotesAndCharts.profileId;
 export const selectSalary = (state: RootState) => state.salary;
 export const selectStage = (state: RootState) => state.stage;
 export const selectGeoTz = (state: RootState) => state.geoTz;

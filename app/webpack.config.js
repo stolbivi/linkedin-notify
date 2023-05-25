@@ -12,6 +12,11 @@ module.exports = function (env, argv) {
         "process.env.SENTRY_DISABLED": process.env.SENTRY_DISABLED,
         "process.env.SENTRY_URL": process.env.SENTRY_URL,
         "process.env.BYPASS_AUTH": process.env.BYPASS_AUTH,
+        "process.env.BALANCER_DEFAULT_WAIT": process.env.BALANCER_DEFAULT_WAIT,
+        "process.env.BALANCER_DEFAULT_WAIT_INCREASE": process.env.BALANCER_DEFAULT_WAIT_INCREASE,
+        "process.env.BALANCER_MAX_REPLAYS": process.env.BALANCER_MAX_REPLAYS,
+        "process.env.BALANCER_WINDOW_LENGTH": process.env.BALANCER_WINDOW_LENGTH,
+        "process.env.BALANCER_WINDOW_THRESHOLD": process.env.BALANCER_WINDOW_THRESHOLD,
     };
     console.log("Definitions:", definitions);
 

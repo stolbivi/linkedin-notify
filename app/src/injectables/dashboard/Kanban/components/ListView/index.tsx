@@ -16,11 +16,9 @@ import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as DarkTheme} from "../../../../../themes/dark";
 import {showNotesAndChartsAction} from "../../../../../store/ShowNotesAndCharts";
 import {localStore} from "../../../../../../src/store/LocalStore";
-import {inject} from '../../../../../utils/InjectHelper';
-import {Provider} from 'react-redux';
-import {NotesAndCharts} from '../../../../notes/NotesAndCharts';
 import {useAppDispatch} from '../../hooks/useRedux';
 import {setActiveCard} from '../../../../../store/cards.slice';
+
 // @ts-ignore
 const ListView = ({cards, parentTheme, jobsList}) => {
 
@@ -150,16 +148,8 @@ const ListView = ({cards, parentTheme, jobsList}) => {
 
     const useStyles = makeStyles({root: gridTheme});
 
-/*    function messagesClickHandler(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, conversationUrn: any) {
-        event.stopPropagation();
-        let messageUrl = 'https://www.linkedin.com/messaging/thread/new/';
-        if (conversationUrn) {
-            messageUrl = `https://www.linkedin.com/messaging/thread/${conversationUrn}`
-        }
-        window.open(messageUrl, '_blank')
-    }*/
-
     const dispatch = useAppDispatch();
+
     const onNotesClick = (userId: string, _profileId: string, row: any) => {
         window.parent.scrollTo(0, 0);
         if (showNotes) {
@@ -169,16 +159,7 @@ const ListView = ({cards, parentTheme, jobsList}) => {
                 id: userId,
                 state: {showSalary: false, showNotes: true, show: true, id: userId}
             }));
-            dispatch(setActiveCard(row))
-            // render component
-            const section = document.querySelectorAll(".lnm-dashboard-content .details-view");
-            if (section && section.length > 0) {
-                inject(section[0].lastChild, "lnm-notes-and-charts", "after",
-                    <Provider store={localStore}>
-                        <NotesAndCharts id={userId} trackUrl={true} profileMode={true} fromJobList={true}/>
-                    </Provider>, "NotesAndCharts"
-                );
-            }
+            dispatch(setActiveCard(row));
         }
     }
 

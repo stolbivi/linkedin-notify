@@ -58,6 +58,7 @@ export const theme: Theme = {
     "--auto-pill-on-background": "rgb(10, 102, 194)",
     "--auto-pill-off": "white",
     "--auto-pill-off-background": "rgb(88, 88, 88)",
+    "--auto-pill-off-background-hover": "#8b8b8b",
 
     "--complete-background": "rgb(10, 102, 194)",
     "--complete": "white",
@@ -70,6 +71,8 @@ export const theme: Theme = {
     "--last-viewed": "rgb(255,255,255)",
 
     "--salary-pill": "#117544",
+    "--salary-pill-hover-background": "hsla(126, 79.7%, 42.5%, 0.1)",
+    "--salary-pill-hover-border": "rgb(22, 195, 40)",
 
     "--navbar-button": "#2D3338",
 
@@ -157,4 +160,12 @@ export const theme: Theme = {
     "--kanban-table-action-btn-color": "#FFFFFF",
     "--add-status-border": "#ffffff36",
     "--joblist-edit-input": "#23272c",
+
+    "--color-stage-background": "transparent",
+    "--color-stage-color": "hsla(0, 0%, 100%, 0.9)",
+    "--color-stage-border": "hsla(0, 0%, 100%, 0.75)",
+
+    "--color-stage-background-hover": "hsla(0, 0%, 100%, 0.18)",
+    "--color-stage-color-hover": "hsla(0, 0%, 100%, 0.9)",
+    "--color-stage-border-hover": "hsla(0, 0%, 100%, 0.75)",
 }
