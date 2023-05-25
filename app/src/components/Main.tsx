@@ -51,6 +51,7 @@ export const Main: React.FC<Props> = ({}) => {
                 return accessService.handleSubscription(r,
                     () => setAccessState(AccessState.Valid),
                     () => setAccessState(AccessState.Invalid),
+                    () => setAccessState(AccessState.SignInRequired),
                     () => setAccessState(AccessState.SignInRequired));
             }).finally(/*nada*/);
     }, []);

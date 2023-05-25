@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {MessagesV2} from "@stolbivi/pirojok";
-import {LOGIN_URL, VERBOSE} from "../global";
+import {VERBOSE} from "../global";
 import {Lock} from "../icons/Lock";
 import {Loader} from "../components/Loader";
 import "./AccessGuard.scss";
@@ -47,6 +47,10 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
                         setAccessState(AccessState.Invalid);
                     },
                     () => {
+                        setState(AccessState.SignInRequired);
+                        setAccessState(AccessState.SignInRequired);
+                    },
+                    () => {
                         setStatus("Active Free Trial");
                         setState(AccessState.SignInRequired);
                         setAccessState(AccessState.SignInRequired);
@@ -55,15 +59,13 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
     }, []);
 
     useEffect(() => {
-        if(status === "Active Free Trial") {
-            setRedirectUrl(LOGIN_URL)
-        } else if(status === "Upgrade To Pro") {
+        if (state === AccessState.SignInRequired || state === AccessState.Invalid) {
             messages.request(getBilling())
                 .then((resp) => {
                     setRedirectUrl(resp?.session?.url);
                 });
         }
-    },[status])
+    }, [state])
 
     const openUrl = (e: any, url: string) => {
         e.preventDefault();
