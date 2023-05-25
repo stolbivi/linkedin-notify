@@ -47,6 +47,7 @@ export const AccessGuard: React.FC<Props> = ({className, loaderClassName, setAcc
                         setAccessState(AccessState.Invalid);
                     },
                     () => {
+                        setStatus(ACTIVE_FREE_TRIAL);
                         setState(AccessState.SignInRequired);
                         setAccessState(AccessState.SignInRequired);
                     },
