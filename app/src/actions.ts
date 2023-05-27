@@ -2,7 +2,8 @@ import {createAction, createRequest} from "@stolbivi/pirojok/lib/chrome/Messages
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {
     AssignedJob,
-    Badges, CustomSalary,
+    Badges,
+    CustomSalary,
     Features,
     Invitation,
     Job,
@@ -20,9 +21,9 @@ import {StageEnum} from "./injectables/notes/StageSwitch";
 import {MessagesV2, Tabs} from "@stolbivi/pirojok";
 import {getThemeCookie, setThemeCookie} from "./themes/ThemeUtils";
 import {LastViewed} from "./store/LastViewedReducer";
-import Cookie = chrome.cookies.Cookie;
 import {Salary} from "./store/SalaryReducer";
 import ICard from "./injectables/dashboard/Kanban/interfaces/ICard";
+import Cookie = chrome.cookies.Cookie;
 
 const messagesV2 = new MessagesV2(VERBOSE);
 const api = new LinkedInAPI();
@@ -151,7 +152,7 @@ export const getFeatures = createAction<{}, Response<Features>>("getFeatures",
 export const setFeatures = createAction<SetFeaturePayload, Response<Features>>("setFeatures",
     (payload) => backEndAPI.setFeatures(payload));
 
-export const saveHandler = createAction<any, any>("saveHandler", (payload) =>  backEndAPI.saveHandler(payload))
+export const saveHandler = createAction<any, any>("saveHandler", (payload) => backEndAPI.saveHandler(payload))
 
 export const getSubscription = createAction<{}, any>("getSubscription",
     () => backEndAPI.getSubscription());
@@ -274,14 +275,14 @@ export const getProfileByUrn = createAction<string, any>("getProfileByUrn",
     (urn) => getCookies(LINKEDIN_DOMAIN)
         .then(async cookies => api.getCsrfToken(cookies))
         .then(async token => {
-            const profile= await api.getProfile(token,urn);
+            const profile = await api.getProfile(token, urn);
             return api.extractProfile(urn, profile);
         }));
 export const getCompanyByUrn = createAction<string, any>("getCompanyByUrn",
     (urn) => getCookies(LINKEDIN_DOMAIN)
         .then(async cookies => api.getCsrfToken(cookies))
         .then(async token => {
-            const resp = await api.getCompanyDetails(token,urn);
+            const resp = await api.getCompanyDetails(token, urn);
             return api.extractCompany(urn, resp);
         }));
 
@@ -316,14 +317,16 @@ export const setStage = createAction<SetStagePayload, any>("setStage",
             const noteExtended = await extendNote(token, [note.response], author);
             const experienceResponse = await api.getExperience(token, payload.id);
             const experience = api.extractExperience(experienceResponse);
-            let profile= await api.getProfileDetails(token,payload.id);
+            let profile = await api.getProfileDetails(token, payload.id);
             let rcpntPrfl = {name: "", designation: "", profileImg: "", profileId: "", userId: ""};
-            if(profile && profile.included[0]) {
+            if (profile && profile.included[0]) {
                 profile = profile.included[0];
-                rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
-                            designation: profile.occupation,
-                            profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
-                            profileId: payload.id, userId: profile.publicIdentifier}
+                rcpntPrfl = {
+                    name: profile.firstName + ' ' + profile.lastName,
+                    designation: profile.occupation,
+                    profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
+                    profileId: payload.id, userId: profile.publicIdentifier
+                }
             }
             const prflImg = rcpntPrfl.profileImg ? rcpntPrfl.profileImg : 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
             const stage = await backEndAPI.setStage(note?.response?.id, payload?.stage, author, payload?.parentStage, rcpntPrfl?.name,
@@ -337,7 +340,7 @@ export const setStageFromKanban = createAction<SetStagePayload, any>("setStageFr
         .then(async token => {
             const me = await api.getMe(token);
             const author = api.extractProfileUrn(me);
-            return  await backEndAPI.setStageFromKanban(payload.id, payload.stage, payload.stageText, author);
+            return await backEndAPI.setStageFromKanban(payload.id, payload.stage, payload.stageText, author);
         }));
 
 export interface ShowNotesAndChartsPayload {
@@ -345,7 +348,7 @@ export interface ShowNotesAndChartsPayload {
     showSalary: boolean
     showNotes: boolean
     showStages?: boolean
-    setSalary?:any
+    setSalary?: any
     userId?: string
     profileId?: string
 }
@@ -435,7 +438,7 @@ export const postNote = createAction<PostNotePayload, PostNoteResponse>("postNot
             return {note: {response: noteExtended[0]}};
         }));
 
-export interface CreateCustomStagePayload  {
+export interface CreateCustomStagePayload {
     text: string
 }
 
@@ -445,7 +448,7 @@ export const createCustomStage = createAction("createCustomStage",
         .then(async (token) => {
             const me = await api.getMe(token);
             const author = api.extractProfileUrn(me);
-            const { response } = await backEndAPI.postCustomStage({...payload, author})
+            const {response} = await backEndAPI.postCustomStage({...payload, author})
             return response
         }));
 
@@ -453,7 +456,7 @@ export const getCustomStages = createAction("getCustomStages",
     () => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async () => {
-            const { response } = await backEndAPI.getCustomStages()
+            const {response} = await backEndAPI.getCustomStages()
             return response
         })
 )
@@ -473,7 +476,7 @@ export const getLastViewed = createAction<string, LastViewed[]>("getLastViewed",
                 return backEndAPI.getLastViewed(profile, as)
                     .then(response => ({
                         ...response,
-                        response: response.response.map(item => ({ ...item, hide: false })),
+                        response: response.response.map(item => ({...item, hide: false})),
                     }));
             }
         })
@@ -562,7 +565,7 @@ export const getLastSeen = createAction<string, any>("getLastSeen",
                 }
                 const presenceLastSeenResp = await api.getPresenceLastSeen(token, profile);
                 let presenceTime;
-                if(presenceLastSeenResp.results && Object.keys(presenceLastSeenResp.results).length > 0) {
+                if (presenceLastSeenResp.results && Object.keys(presenceLastSeenResp.results).length > 0) {
                     presenceTime = presenceLastSeenResp.results[`urn:li:fsd_profile:${profile}`]['lastActiveAt'];
                 }
                 if (typeof profileActivityTime !== 'number') {
@@ -592,14 +595,14 @@ export const postReply = createAction<Message, void>("postReply",
     (message) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async token => {
-            await api.postReply(token, message.conversationId,message.messageBody,message.recipientId);
+            await api.postReply(token, message.conversationId, message.messageBody, message.recipientId);
         }));
 
 export const deleteNote = createAction<string, any>("deleteNote",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async () => {
-            const { response } = await backEndAPI.deleteNote(id)
+            const {response} = await backEndAPI.deleteNote(id)
             return response
         })
 )
@@ -608,7 +611,7 @@ export const deleteStage = createAction<string, any>("deleteStage",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async () => {
-            const { response } = await backEndAPI.deleteStage(id)
+            const {response} = await backEndAPI.deleteStage(id)
             return response
         })
 )
@@ -619,7 +622,7 @@ export const postJob = createAction<Job, any>("postJob",
         .then(async (token) => {
             const me = await api.getMe(token);
             job.author = api.extractProfileUrn(me);
-            const { response } = await backEndAPI.postJob(job)
+            const {response} = await backEndAPI.postJob(job)
             return response
         })
 )
@@ -633,7 +636,7 @@ export const updateJob = createAction<Job, any>("updateJob",
         .then(async (token) => {
             const me = await api.getMe(token);
             job.author = api.extractProfileUrn(me);
-            const { response } = await backEndAPI.updateJob(job)
+            const {response} = await backEndAPI.updateJob(job)
             return response
         })
 )
@@ -642,7 +645,7 @@ export const deleteJob = createAction<string, any>("deleteJob",
     (id) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async () => {
-            const { response } = await backEndAPI.deleteJob(id)
+            const {response} = await backEndAPI.deleteJob(id)
             return response
         })
 )
@@ -674,48 +677,59 @@ export const getLatestStage = createAction<string, any>("getLatestStage",
             const profile = experience.urn;
             const me = await api.getMe(token);
             const as = api.extractProfileUrn(me);
-            return backEndAPI.getLatestStage(profile,as);
+            return backEndAPI.getLatestStage(profile, as);
         }));
 
 export const assignJob = createAction("assignJob",
-    (payload: { jobId: string, urn: string}) => getCookies(LINKEDIN_DOMAIN)
+    (payload: { jobId: string, urn: string }) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async (token) => {
             const me = await api.getMe(token);
             const experienceResponse = await api.getExperience(token, payload.urn);
             const experience = api.extractExperience(experienceResponse);
-            let profile= await api.getProfileDetails(token,payload.urn);
+            let profile = await api.getProfileDetails(token, payload.urn);
             let rcpntPrfl = {name: "", designation: "", profileImg: "", profileId: "", userId: ""};
-            if(profile && profile.included[0]) {
+            if (profile && profile.included[0]) {
                 profile = profile.included[0];
-                rcpntPrfl = {name: profile.firstName + ' ' + profile.lastName,
+                rcpntPrfl = {
+                    name: profile.firstName + ' ' + profile.lastName,
                     designation: profile.occupation,
                     profileImg: profile?.picture?.rootUrl + profile?.picture?.artifacts[0]?.fileIdentifyingUrlPathSegment,
-                    profileId: payload.urn, userId: profile.publicIdentifier}
+                    profileId: payload.urn, userId: profile.publicIdentifier
+                }
             }
             const prflImg = rcpntPrfl.profileImg ? rcpntPrfl.profileImg : 'https://static.licdn.com/sc/h/1c5u578iilxfi4m4dvc4q810q';
-            const job: AssignedJob = {jobId: payload?.jobId, author: api.extractProfileUrn(me), userId: rcpntPrfl?.userId, profileId: rcpntPrfl?.profileId,
-            companyName: experience?.company?.name, conversationUrn: experience?.conversationUrn, profileImg: prflImg, designation: rcpntPrfl?.designation, name: rcpntPrfl?.name };
-            const { response } = await backEndAPI.assignJob(job)
+            const job: AssignedJob = {
+                jobId: payload?.jobId,
+                author: api.extractProfileUrn(me),
+                userId: rcpntPrfl?.userId,
+                profileId: rcpntPrfl?.profileId,
+                companyName: experience?.company?.name,
+                conversationUrn: experience?.conversationUrn,
+                profileImg: prflImg,
+                designation: rcpntPrfl?.designation,
+                name: rcpntPrfl?.name
+            };
+            const {response} = await backEndAPI.assignJob(job)
             return response
         })
 )
 
 export const getAssignedJob = createAction("getAssignedJob",
-    (payload: {url: string}) => getCookies(LINKEDIN_DOMAIN)
+    (payload: { url: string }) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async (token) => {
             const me = await api.getMe(token);
-            const { response } = await backEndAPI.getAssignedJob(payload.url,api.extractProfileUrn(me));
+            const {response} = await backEndAPI.getAssignedJob(payload.url, api.extractProfileUrn(me));
             return response
         })
 )
 
 export const getMe = createAction("getMe", () => getCookies(LINKEDIN_DOMAIN)
-        .then(cookies => api.getCsrfToken(cookies))
-        .then(async (token) => {
-            return await api.getMe(token)
-        })
+    .then(cookies => api.getCsrfToken(cookies))
+    .then(async (token) => {
+        return await api.getMe(token)
+    })
 )
 
 export const getAssignedJobsById = createAction<string, any>("getAssignedJobsById",
@@ -723,19 +737,24 @@ export const getAssignedJobsById = createAction<string, any>("getAssignedJobsByI
         .then(cookies => api.getCsrfToken(cookies))
         .then(async (token) => {
             const me = await api.getMe(token);
-            const { response } = await backEndAPI.getAssignedJobsById(jobId,api.extractProfileUrn(me));
+            const {response} = await backEndAPI.getAssignedJobsById(jobId, api.extractProfileUrn(me));
             return response
         })
 )
 
-export const setCustomSalary = createAction<Salary,any>("setCustomSalary",
+export const setCustomSalary = createAction<Salary, any>("setCustomSalary",
     (payload: Salary) => getCookies(LINKEDIN_DOMAIN)
         .then(cookies => api.getCsrfToken(cookies))
         .then(async (token) => {
             const me = await api.getMe(token);
-            const salary: CustomSalary = {id: payload.urn, author:api.extractProfileUrn(me), leftPayDistribution: payload.payDistributionValues[0],
-                rightPayDistribution: payload.payDistributionValues[payload.payDistributionValues.length - 1], progressivePay: payload.progressivePay}
-            const { response } = await backEndAPI.setCustomSalary(salary)
+            const salary: CustomSalary = {
+                id: payload.urn,
+                author: api.extractProfileUrn(me),
+                leftPayDistribution: payload.payDistributionValues[0],
+                rightPayDistribution: payload.payDistributionValues[payload.payDistributionValues.length - 1],
+                progressivePay: payload.progressivePay
+            }
+            const {response} = await backEndAPI.setCustomSalary(salary)
             return response
         })
 )
@@ -747,7 +766,7 @@ export const getCustomSalary = createAction<string, any>("getCustomSalary",
             const me = await api.getMe(token);
             const experienceResponse = await api.getExperience(token, urn);
             const experience = api.extractExperience(experienceResponse);
-            const { response } = await backEndAPI.getCustomSalary(experience.urn,api.extractProfileUrn(me));
+            const {response} = await backEndAPI.getCustomSalary(experience.urn, api.extractProfileUrn(me));
             return response
         })
 )

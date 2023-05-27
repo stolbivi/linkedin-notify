@@ -74,7 +74,7 @@ export interface NoteExtended extends Note {
     profileName: string
     profilePicture: string
     profileLink: string
-    timestamp: number
+    timestamp: Date
 }
 
 export const extractIdFromUrl = (url: string) => {
@@ -137,19 +137,21 @@ export interface Job {
     description?: string
     author?: string
 }
+
 export interface AssignedJob {
     id?: string
     jobId?: string
     author?: string
     assignedBy?: string
     name?: string
-    designation?:string
-    profileImg?:string
+    designation?: string
+    profileImg?: string
     profileId?: string
     companyName?: string
     conversationUrn?: string
     userId?: string
 }
+
 export interface CustomSalary {
     id?: string
     author?: string
