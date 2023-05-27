@@ -1,8 +1,8 @@
 import Chart from 'chart.js/auto';
 import React, {useEffect, useRef, useState} from "react";
+import {Salary} from "../../../src/store/SalaryReducer";
 import "./PayExtrapolationChart.scss";
 import {Theme} from "../../global";
-import {Salary} from "../../store/SalaryReducer";
 
 type Props = {
     salary: Salary
@@ -23,10 +23,47 @@ export const PayExtrapolationChart: React.FC<Props> = ({salary, theme}) => {
     const [data, setData] = useState<Sample[]>();
     const [chart, setChart] = useState<Chart>();
 
+    function convertToValue(amount: string): number {
+        const currencyMap: {[currency: string]: number} = {
+            "$": 1,
+            "£": 1.39,
+            "€": 1.21,
+        };
+
+        if (!amount || typeof amount !== "string") {
+            return;
+        }
+
+        const match = amount.match(/^([^\d]*)([\d,]+(\.\d+)?)([KM]?)$/);
+
+        if (!match) {
+            throw new Error("Invalid format: " + amount);
+        }
+
+        const currency = match[1] || "$";
+        const value = match[2];
+        const unit = match[4];
+
+        if (!currencyMap[currency]) {
+            throw new Error("Unknown currency: " + currency);
+        }
+
+        const number = parseFloat(value.replace(/,/g, ""));
+        const currencyValue = currencyMap[currency];
+
+        if (unit === "K") {
+            return number * currencyValue * 1000;
+        } else if (unit === "M") {
+            return number * currencyValue * 1000000;
+        } else {
+            return number * currencyValue;
+        }
+    }
+
     const extractData = () => {
         if (salary && salary.formattedPayValue && salary.payDistributionValues) {
-            const first = salary.formattedPayValue;
-            const last = salary.payDistributionValues.slice().pop();
+            const first = convertToValue(String(salary.formattedPayValue));
+            const last = convertToValue(String(salary.payDistributionValues.slice().pop()));
             const step = (last - first) / EXTRA_LENGTH;
             let data: Sample[] = [];
             for (let i = 0; i <= EXTRA_LENGTH; i += STEP) {

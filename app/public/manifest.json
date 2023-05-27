@@ -1,6 +1,6 @@
 {
   "name": "__MSG_name__",
-  "version": "0.6.3",
+  "version": "0.5.10",
   "description": "__MSG_description__",
   "icons": {
     "128": "content/icon-128.png"
@@ -28,13 +28,18 @@
   },
   "permissions": [
     "cookies",
+    "tabs",
     "alarms",
-    "storage"
+    "storage",
+    "scripting",
+    "webNavigation",
+    "history"
   ],
   "host_permissions": [
     "*://localhost/",
     "*://*.linkedin.com/",
     "*://api.lnmanager.com/",
+    "*://linkedin-manager-apiuat.herokuapp.com/",
     "*://maps.googleapis.com/"
   ],
   "web_accessible_resources": [

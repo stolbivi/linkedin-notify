@@ -7,9 +7,11 @@ export const theme: Theme = {
     "--base-card-timestamp": "#8D8D8D",
     "--base-card-title": "rgba(0, 0, 0, 0.9)",
     "--base-card-message": "#909090",
-    "--base-card-message-background": "rgba(244, 244, 244, 0.38)",
+    "--base-card-message-background": "#f6f6f6",
     "--base-card-unread": "#e2f0fd",
     "--base-card-border": "rgba(0, 0, 0, 0.1)",
+    "--boolean-base-card": "#f4f4f48c",
+    "--joblist-edit-base-card": "#ffffff",
 
     "--conversation-card-badge": "white",
     "--conversation-card-background": "rgb(10, 102, 194)",
@@ -56,6 +58,7 @@ export const theme: Theme = {
     "--auto-pill-on-background": "rgb(10, 102, 194)",
     "--auto-pill-off": "white",
     "--auto-pill-off-background": "rgb(144, 144, 144)",
+    "--auto-pill-off-background-hover": "#252525",
 
     "--complete-background": "rgb(10, 102, 194)",
     "--complete": "white",
@@ -65,9 +68,13 @@ export const theme: Theme = {
     "--complete-disabled": "rgba(0, 0, 0, 0.3)",
 
     "--last-viewed-background": "rgba(88, 88, 88, 0.08)",
-    "--last-viewed": "rgba(88, 88, 88, 1)",
+    "--last-viewed": "rgb(38,38,38)",
 
     "--salary-pill": "#117544",
+    "--salary-pill-hover-background": "hsla(126, 79.7%, 42.5%, 0.1)",
+    "--salary-pill-hover-border": "rgb(22, 195, 40)",
+
+    "--navbar-button": "#FFFFFF",
 
     "--note-card-border": "rgb(0 0 0 / 10%)",
     "--note-card-picture": "white",
@@ -90,6 +97,10 @@ export const theme: Theme = {
     "--notes-counter": "#585858",
     "--notes-color-1": "white",
     "--notes-color-2": "#D9D9D9",
+    "--notes-color-3": "#0000009e",
+    "--notes-color-4": "4A4A4A54",
+    "--notes-color-5": "4A4A4A54",
+    "--notes-border": "#0000001c",
 
     "--notes-container": "#909090",
     "--notes-container-background": "#FFFFFF",
@@ -110,11 +121,11 @@ export const theme: Theme = {
 
     "--stage": "white",
     "--stage-interested": "rgba(21, 105, 191, 0.74)",
-    "--stage-not-interested": "rgba(202, 26, 36, 0.74)",
     "--stage-interviewing": "rgba(240, 144, 0, 0.74)",
     "--stage-failed": "rgba(202, 26, 36, 0.74)",
     "--stage-hired": "rgba(17, 117, 68, 0.74)",
     "--stage-inactive": "rgb(144, 144, 144)",
+    "--stage-passive": "#ECECEC",
 
     "--theme-switch": "white",
     "--theme-switch-border": "#E4E7EC",
@@ -126,4 +137,36 @@ export const theme: Theme = {
     "--pay-chart-color2": "#F4EDD8",
     "--pay-chart-border": "#A8A8A8",
     "--pay-chart-grid": "rgba(144, 144, 144, 0.2)",
+
+    "--search-input": "white",
+    "--reply-text-area-color": "white",
+    "--reply-text-container-color": "#f9f9f9",
+    "--reply-text-area-caret-color": "#000000",
+    "--ln-dashboard-menu-icon-color": "rgb(102, 102, 102)",
+    "--ln-dashboard-menu-icon-color-hover": "#000000",
+    "--settings-icon-color": "#000000",
+
+    "--navbar-button-text": "#383637",
+    "--navbar-button-text-clicked": "#383637",
+    "--boolean-search-query-container": "white",
+    "--boolean-search-query-container-text": "#4A4A4A",
+    "--joblist-table-color": "#FFFFFF",
+    "--joblist-table-strip-color": "#FFFFFF",
+    "--kanban-table-container-color": "#FFFFFF",
+    "--kanban-table-more-color": "#727272",
+    "--kanban-table-status-color": "#383637",
+    "--kanban-table-list-card-color": "#585858",
+    "--kanban-table-bottom-border-color": "#0000001c",
+    "--kanban-table-message-color": "#585858",
+    "--kanban-table-action-btn-color": "#585858",
+    "--add-status-border": "#00000026",
+    "--joblist-edit-input": "#bebebe42",
+
+    "--color-stage-background": "hsla(0, 0%, 100%, 0)",
+    "--color-stage-color": "rgba(0, 0, 0, 0.6)",
+    "--color-stage-border": "rgba(0, 0, 0, 0.6)",
+
+    "--color-stage-background-hover": "rgba(0, 0, 0, 0.08)",
+    "--color-stage-color-hover": "rgba(0, 0, 0, 0.6)",
+    "--color-stage-border-hover": "rgba(0, 0, 0, 0.6)",
 }

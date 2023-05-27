@@ -8,9 +8,13 @@ type Props = {
     note: NoteExtended
     extended?: boolean
     onProfileSelect?: (profile: any) => void
+    lastNoteRef?: any
+    currentCount?:number
+    totalCount?:number
+    fromListView?:boolean
 };
 
-export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => {
+export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect, currentCount, totalCount, lastNoteRef, fromListView}) => {
 
     const getAuthor = () => note.authorName;
 
@@ -24,22 +28,36 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => 
 
     const getStage = (stage: number) => {
         if (stage < 0) {
-            return <div className={"stage inactive"}><label>No stage</label></div>
+            return (
+                <div className={"stage inactive"}>
+                    <label>No stage</label>
+                </div>
+            );
         }
-        return <div className={"stage " + StageLabels[stage].class}>
-            <label>{StageLabels[stage].label}</label>
-        </div>
+        const stageLabel = stage > 23 ? note.stageText : StageLabels[stage]?.label;
+        const truncatedLabel =
+            stageLabel && stageLabel?.length > 30
+                ? `${stageLabel?.slice(0, 27)}...`
+                : stageLabel;
+        return (
+            <div className={`stage stage-notecard ${StageLabels[stage] ? StageLabels[stage]?.class : "interested"}`}>
+                <label title={stageLabel}>{truncatedLabel}</label>
+            </div>
+        );
+    };
+
+
+    const setWithNote = () => {
+        onProfileSelect({
+            profile: note.profile,
+            profileName: note.profileName,
+            profilePicture: note.profilePicture,
+            profileLink: note.profileLink
+        })
     }
 
-    const setWithNote = () => onProfileSelect({
-        profile: note.profile,
-        profileName: note.profileName,
-        profilePicture: note.profilePicture,
-        profileLink: note.profileLink
-    })
-
     return (
-        <div className="note-card">
+        <div className="note-card" ref={currentCount === totalCount - 1 ? lastNoteRef : null}>
             <div className="bordered">
                 <div className="picture">
                     {extended ?
@@ -50,7 +68,7 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => 
                         : <img src={note.authorPicture}/>}
                 </div>
                 <div className="details">
-                    <div className="header">
+                    <div className={`header ${fromListView ? 'note-card-listview' : ''}`}>
                         {extended ?
                             <div className="header-regular">
                                 <div className="author">{getAuthor()}</div>
@@ -62,20 +80,13 @@ export const NoteCard: React.FC<Props> = ({note, extended, onProfileSelect}) => 
                                 <div> {getDescription()}</div>
                             </div>
                         }
-                        <label className="timestamp">{formatDate(new Date(note.updatedAt))}</label>
+                        <label className="timestamp">{formatDate(new Date(note.timestamp))}</label>
                     </div>
                     {note.stageFrom !== undefined && note.stageTo !== undefined &&
-                        <div className="transition">
-                            {getStage(note.stageFrom)}
-                            <svg width="14" height="10" viewBox="0 0 14 10" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                                <path opacity="0.2" d="M1 5H13M13 5L9.57143 1M13 5L9.57143 9" stroke="#909090"
-                                      strokeWidth="2"
-                                      strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            {getStage(note.stageTo)}
-                        </div>}
-                    {note.text && <div className="text">{note.text}</div>}
+                    <div className="transition">
+                        {getStage(note.stageTo)}
+                    </div>}
+                    {note.text && <div className={`text ${fromListView ? 'text-listview' : ''}`}>{note.text}</div>}
                 </div>
             </div>
         </div>

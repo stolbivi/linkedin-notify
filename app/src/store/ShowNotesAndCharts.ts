@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import ICard from "../injectables/dashboard/Kanban/interfaces/ICard";
 import {IdAwareRequest, IdAwareState} from "./LocalStore";
 
 export interface ShowNotesAndCharts {
@@ -6,16 +7,26 @@ export interface ShowNotesAndCharts {
     showSalary: boolean
     showNotes: boolean
     show: boolean
+    card?: ICard
 }
 
-const initialState: IdAwareState<ShowNotesAndCharts> = {};
+export interface NotesAndChartsIndex {
+    data: IdAwareState<any>,
+    profileId: string
+}
+
+const initialState: NotesAndChartsIndex = {
+    data: {},
+    profileId: undefined
+};
 
 const slice = createSlice({
     name: "lastViewedState",
     initialState,
     reducers: {
         showNotesAndChartsAction: (state, action: PayloadAction<IdAwareRequest<ShowNotesAndCharts>>) => {
-            state[action.payload.id] = action.payload.state;
+            state.data[action.payload.id] = action.payload.state;
+            state.profileId = action.payload.id;
         }
     }
 });

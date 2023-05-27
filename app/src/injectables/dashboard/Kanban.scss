@@ -1,0 +1,43 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+@import "../../themes/primary";
+
+.body {
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+  padding: 20px;
+  padding-right: 20px;
+  padding-top: 40px;
+
+}
+
+.navbarBtn {
+  height: 37px;
+  width: 200px;
+  left: 0px;
+  top: 0px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  color: $navbar-button-text;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 176.4%;
+  margin-left: 0px;
+  margin-right: 14px;
+  margin-top: 10px;
+}
+
+.navbarBtn.clicked {
+  background-color: $navbar-button;
+  color: $navbar-button-text-clicked;
+}
+
+.navbarBtn:hover {
+  background-color: $navbar-button; /* same color as .navbarBtn.clicked */
+  color: $navbar-button-text;
+}

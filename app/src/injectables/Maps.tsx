@@ -6,6 +6,7 @@ import {getSubscription} from "../actions";
 import {useUrlChangeSupport} from "../utils/URLChangeSupport";
 // @ts-ignore
 import stylesheet from "./Maps.scss";
+import {AccessService} from "../services/AccessService";
 
 type Props = {
     host: HTMLElement
@@ -20,7 +21,7 @@ export const MapsFactory = () => {
             const receiver = profileBackground[0] as HTMLElement;
             const lastChild = receiver.lastChild;
             inject(lastChild, TAG, "after",
-                <Maps host={receiver}/>,
+                <Maps host={receiver}/>, "Maps"
             );
         }
     }
@@ -29,6 +30,7 @@ export const MapsFactory = () => {
 export const Maps: React.FC<Props> = ({host}) => {
 
     const messages = new MessagesV2(VERBOSE);
+    const accessService = new AccessService();
 
     const [disabled, setDisabled] = useState(true);
     const [src, setSrc] = useState<string>();
@@ -57,30 +59,21 @@ export const Maps: React.FC<Props> = ({host}) => {
     }, [urlInternal]);
 
     useEffect(() => {
-        messages.request(getSubscription())
-            .then((r) => {
-                // TODO FIXME AccessGuard
-                setDisabled(false);
-                return Promise.resolve();
-                if (r.status === 403) {
-                    setDisabled(true);
-                } else if (r.subscriptions?.length > 0) {
-                    const subscription = r.subscriptions[0];
-                    if (subscription.status === "trialing" || subscription.status === "active") {
-                        setDisabled(false);
-                        return Promise.resolve();
-                    }
-                }
-                setDisabled(true);
-                return Promise.resolve();
-            }).then(/* nada */);
-    }, []);
-
-    useEffect(() => {
-        if (src) {
-            iframeContainer.current?.contentWindow.location.replace(src);
+        if (src && iframeContainer.current?.contentWindow) {
+            iframeContainer.current?.contentWindow?.location.replace(src);
         }
     }, [src])
+
+    useEffect(() => {
+        messages.request(getSubscription())
+            .then((r) => {
+                return accessService.handleSubscription(r,
+                    () => setDisabled(false),
+                    () => setDisabled(true),
+                    () => setDisabled(true),
+                    () => setDisabled(true));
+            }).then(/* nada */);
+    }, []);
 
     return (
         <React.Fragment>

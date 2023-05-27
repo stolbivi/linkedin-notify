@@ -1,0 +1,24 @@
+@import "../../../../../themes/primary";
+
+.status-container{
+  display: flex;
+  align-items: center;
+}
+
+.status-title{
+  font-weight: 700;
+  margin-right: 10px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-size: 18px;
+  color: $kanban-table-status-color;
+}
+
+.status-title-number{
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  color: $kanban-table-status-color;
+  opacity: 0.4;
+}

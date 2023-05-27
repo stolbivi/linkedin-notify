@@ -1,16 +1,15 @@
-import React, {useEffect, useState} from "react";
-import {NoteExtended, VERBOSE} from "../../global";
+import React, {useEffect, useRef, useState} from "react";
+import {extractIdFromUrl, NoteExtended, VERBOSE} from "../../global";
 import {MessagesV2} from "@stolbivi/pirojok";
 import {Loader} from "../../components/Loader";
 import {NoteCard} from "./NoteCard";
 import {injectFirstChild} from "../../utils/InjectHelper";
-import {StageButton} from "./StageButton";
-import {StageEnum} from "./StageSwitch";
+import {StageEnum, StageLabels} from "./StageSwitch";
 import {AccessGuard, AccessState} from "../AccessGuard";
 import {Credits} from "../Credits";
 import {Submit} from "../../icons/Submit";
 import {NoNotes} from "../../icons/NoNotes";
-import {getTheme, openUrl, sortAsc, sortDesc, SwitchThemePayload} from "../../actions";
+import {getCustomStages, getTheme, getUserIdByUrn, openUrl, sortAsc, sortDesc, SwitchThemePayload} from "../../actions";
 import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
 import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
 import {theme as LightTheme} from "../../themes/light";
@@ -22,26 +21,39 @@ import {NotesContainer} from "./NotesContainer";
 
 // @ts-ignore
 import stylesheet from "./NotesManager.scss";
+import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
 
 export const NotesManagerFactory = () => {
-    const aside = document.getElementsByClassName("scaffold-layout__aside");
-    if (aside && aside.length > 0) {
-        injectFirstChild(aside[0], "lnm-notes-manager",
-            <Provider store={localStore}>
-                <NotesManager/>
-            </Provider>
-        );
-    }
+    setTimeout(() => {
+        const aside = document.getElementsByClassName("scaffold-layout__aside");
+        if (aside && aside.length > 0) {
+            if (window.location.href.indexOf("/in/") > 0 || window.location.href.indexOf("/messaging/") > 0) {
+                injectFirstChild(aside[0], "lnm-notes-manager",
+                    <Provider store={localStore}>
+                        <NotesManager showProfileNotes={true}/>
+                    </Provider>, "NotesManager"
+                );
+            } else {
+                injectFirstChild(aside[0], "lnm-notes-manager",
+                    <Provider store={localStore}>
+                        <NotesManager/>
+                    </Provider>, "NotesManager"
+                );
+            }
+        }
+    }, 1000);
 }
 
-type Props = {};
+type Props = {
+    showProfileNotes?: any
+};
 
 interface SearchValue {
     text: string
     stages: { [key: number]: boolean }
 }
 
-export const NotesManager: React.FC<Props> = ({}) => {
+export const NotesManager: React.FC<Props> = ({showProfileNotes}) => {
 
     const MAX_LENGTH = 200;
     const DEFAULT_SEARCH = {text: "", stages: {}};
@@ -54,16 +66,18 @@ export const NotesManager: React.FC<Props> = ({}) => {
     const [editable, setEditable] = useState<boolean>(true);
     const [searchValue, setSearchValue] = useState<SearchValue>(DEFAULT_SEARCH);
     const [searchText, setSearchText] = useState<string>("");
-    const [showDropDown, setShowDropDown] = useState<boolean>(false);
     const [postAllowed, setPostAllowed] = useState<boolean>(false);
     const [text, setText] = useState<{ value: string }>({value: ""});
     const [selection, setSelection] = useState<any>();
     const notesAll: CompleteEnabled<DataWrapper<NoteExtended[]>> = useSelector(selectNotesAll, shallowEqual);
     const [notes, setNotes] = useState<NoteExtended[]>([]);
+    const lastNoteRef = useRef();
+    const [backdrop, setBackDrop] = useState(false);
+    const [url] = useUrlChangeSupport(window.location.href);
+
 
     useEffect(() => {
         messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
-        // TODO check theme logic below, why 2 similar listeners
         messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
             (payload) => {
                 updateTheme(payload.theme);
@@ -75,6 +89,27 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 setThemeUtil(theme, rootElement);
                 return Promise.resolve();
             }));
+    }, []);
+
+    useEffect(() => {
+        messages.request(getCustomStages())
+            .then((customStages) => {
+                if (customStages?.length > 0) {
+                    const stageEnumLength = Object.keys(StageEnum).filter(k => isNaN(Number(k))).length;
+                    let count = stageEnumLength + 1;
+                    customStages.map(stage => {
+                        // @ts-ignore
+                        if (!StageEnum[stage.text]) {
+                            // @ts-ignore
+                            StageEnum[stage.text] = count;
+                        }
+                        if (!StageLabels[count] && !Object.values(StageLabels).some(({label}) => label === stage.text)) {
+                            StageLabels[count] = {label: stage.text, class: "interested"};
+                        }
+                        count++;
+                    });
+                }
+            })
     }, []);
 
     useEffect(() => {
@@ -106,6 +141,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
         }
     }, [selection])
 
+
     useEffect(() => {
         const stagesCount = Object.values(searchValue.stages).filter(v => v).length;
         let filteredNotes;
@@ -125,23 +161,60 @@ export const NotesManager: React.FC<Props> = ({}) => {
         setNotes(filteredNotes);
     }, [selection, searchValue, searchText, notesAll]);
 
+    useEffect(() => {
+        if (showProfileNotes && notesAll.data.length > 0) {
+            // @ts-ignore
+            let urn = document.querySelector(".app-aware-link.msg-thread__link-to-profile")?.href;
+            let profileID: string;
+            if (urn) {
+                let regex = /\/in\/(.+)/;
+                const match = regex.exec(urn);
+                profileID = match[1];
+            }
+            if (!profileID) {
+                messages.request(getUserIdByUrn(extractIdFromUrl(window.location.href)))
+                    .then((profileId) => {
+                        profileID = profileId;
+                        const note = notesAll?.data?.find(noteObj => noteObj.profile === profileID);
+                        if (note) {
+                            setSelection({
+                                profile: note.profile,
+                                profileName: note.profileName,
+                                profilePicture: note.profilePicture,
+                                profileLink: note.profileLink
+                            });
+                        } else {
+                            setSelection(undefined);
+                        }
+                    });
+            } else {
+                const note = notesAll?.data?.find(noteObj => noteObj.profile === profileID);
+                if (note) {
+                    setSelection({
+                        profile: note.profile,
+                        profileName: note.profileName,
+                        profilePicture: note.profilePicture,
+                        profileLink: note.profileLink
+                    });
+                }
+            }
+        }
+    }, [notesAll, url]);
+
     const onProfileSelect = (profile: any) => setSelection(profile);
 
     const updateSearchValueWithText = (e: any) =>
         setSearchValue({...searchValue, text: e.target.value?.trim()});
 
-    const onStageSelected = (type: StageEnum, selected: boolean) =>
-        setSearchValue({...searchValue, stages: {...searchValue.stages, [type]: selected}});
-
-    const getFilterCount = () => {
-        const values = Object.values(searchValue.stages).filter(v => v);
-        return values?.length > 0 && values?.length < 5 ? values.length : 'All';
-    }
-
     const getAllNotes = () => {
         return <React.Fragment>
             <div className="notes-title">
-                <label>Notes</label>
+                {
+                    backdrop ? (<div className="popup-backdrop" onClick={() => {
+                        setBackDrop(false);
+                    }}></div>) : null
+                }
+                <label>History</label>
                 <label className="notes-counter">{notes ? notes.length : 0}</label>
             </div>
             <div className="search-bar">
@@ -154,53 +227,18 @@ export const NotesManager: React.FC<Props> = ({}) => {
                         fill="#909090"/>
                 </svg>
                 <input type="text" onKeyUp={updateSearchValueWithText} placeholder="Filter"/>
-                <div className="search-dropdown" onClick={() => setShowDropDown(!showDropDown)}>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M8.43994 10.125C7.47994 10.125 6.57494 9.61501 6.08494 8.79001C5.82494 8.37001 5.68994 7.88 5.68994 7.375C5.68994 5.86 6.92494 4.625 8.43994 4.625C9.95494 4.625 11.1899 5.86 11.1899 7.375C11.1899 7.88 11.0499 8.37001 10.7899 8.79501C10.3049 9.61501 9.40494 10.125 8.43994 10.125ZM8.43994 5.375C7.33494 5.375 6.43994 6.27 6.43994 7.375C6.43994 7.74 6.53994 8.09499 6.72994 8.39999C7.08994 9.00499 7.74494 9.375 8.43994 9.375C9.14994 9.375 9.78994 9.015 10.1499 8.405C10.3399 8.095 10.4399 7.74 10.4399 7.375C10.4399 6.27 9.54494 5.375 8.43994 5.375Z"
-                            fill="#909090"/>
-                        <path
-                            d="M9.32993 7.73999H7.55493C7.34993 7.73999 7.17993 7.56999 7.17993 7.36499C7.17993 7.15999 7.34993 6.98999 7.55493 6.98999H9.32993C9.53493 6.98999 9.70493 7.15999 9.70493 7.36499C9.70493 7.56999 9.53493 7.73999 9.32993 7.73999Z"
-                            fill="#909090"/>
-                        <path
-                            d="M8.43994 8.64499C8.23494 8.64499 8.06494 8.47499 8.06494 8.26999V6.5C8.06494 6.295 8.23494 6.125 8.43994 6.125C8.64494 6.125 8.81494 6.295 8.81494 6.5V8.27499C8.81494 8.47999 8.64994 8.64499 8.43994 8.64499Z"
-                            fill="#909090"/>
-                        <path
-                            d="M5.4649 11.375C5.2249 11.375 4.9849 11.315 4.7699 11.195C4.3249 10.945 4.0599 10.495 4.0599 9.98999V7.315C4.0599 7.065 3.8949 6.68499 3.7349 6.48999L1.8349 4.495C1.5199 4.17 1.2749 3.62501 1.2749 3.22501V2.06C1.2749 1.255 1.8849 0.625 2.6599 0.625H9.3299C10.0949 0.625 10.7149 1.24501 10.7149 2.01001V3.12C10.7149 3.645 10.4049 4.23501 10.1049 4.54501L9.2049 5.34C9.1149 5.42 8.9899 5.44999 8.8699 5.42499C8.7349 5.38999 8.5899 5.375 8.4399 5.375C7.3349 5.375 6.4399 6.27 6.4399 7.375C6.4399 7.74 6.5399 8.095 6.7299 8.405C6.8899 8.67 7.1049 8.89001 7.3549 9.04501C7.4649 9.11501 7.5349 9.23499 7.5349 9.36499V9.535C7.5349 9.93 7.2949 10.485 6.8949 10.72L6.2049 11.165C5.9799 11.305 5.7199 11.375 5.4649 11.375ZM2.6649 1.375C2.3099 1.375 2.0299 1.675 2.0299 2.06V3.22501C2.0299 3.40501 2.1799 3.77501 2.3799 3.97501L4.3049 6C4.5599 6.315 4.8149 6.85001 4.8149 7.32001V9.995C4.8149 10.325 5.0449 10.49 5.1399 10.545C5.3549 10.665 5.6099 10.66 5.8049 10.54L6.5049 10.09C6.6399 10.01 6.7749 9.75501 6.7849 9.57501C6.5099 9.37001 6.2699 9.10499 6.0899 8.80499C5.8299 8.37999 5.6899 7.89002 5.6899 7.39002C5.6899 5.87502 6.9249 4.64002 8.4399 4.64002C8.5799 4.64002 8.7199 4.65001 8.8499 4.67001L9.5899 4.01501C9.7599 3.84001 9.9699 3.42501 9.9699 3.13001V2.01999C9.9699 1.66999 9.6849 1.38501 9.3349 1.38501H2.6649V1.375Z"
-                            fill="#909090"/>
-                    </svg>
-                    <div>{getFilterCount()}</div>
-                    <svg width="8" height="5" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 1L4 4L7 1" stroke="#909090" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    {showDropDown && <div className="dropdown-options">
-                        <StageButton type={StageEnum.Interested}
-                                     selected={searchValue.stages[StageEnum.Interested]}
-                                     onSelect={onStageSelected}/>
-                        <StageButton type={StageEnum.NotInterested}
-                                     selected={searchValue.stages[StageEnum.NotInterested]}
-                                     onSelect={onStageSelected}/>
-                        <StageButton type={StageEnum.Interviewing}
-                                     selected={searchValue.stages[StageEnum.Interviewing]}
-                                     onSelect={onStageSelected}/>
-                        <StageButton type={StageEnum.FailedInterview}
-                                     selected={searchValue.stages[StageEnum.FailedInterview]}
-                                     onSelect={onStageSelected}/>
-                        <StageButton type={StageEnum.Hired}
-                                     selected={searchValue.stages[StageEnum.Hired]}
-                                     onSelect={onStageSelected}/>
-                    </div>}
-                </div>
             </div>
             <div className="scroll-container">
                 <div className="scroll-content">
                     {notes?.map((n, i) =>
-                        (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}/>))}
+                        (<NoteCard key={i} note={n} extended={true} onProfileSelect={onProfileSelect}
+                                   currentCount={i} totalCount={notes.length} lastNoteRef={lastNoteRef}/>))}
                     {notes.length == 0 &&
                         <div className="no-notes">
                             <NoNotes/>
                             <div>No notes yet</div>
-                        </div>}
+                        </div>
+                    }
                 </div>
             </div>
             <Credits short={true}/>
@@ -227,8 +265,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
         if (text && text !== "") {
             text = text.slice(0, MAX_LENGTH);
             setEditable(false);
-            const lastState = notes[notes.length - 1].stageTo;
-            localStore.dispatch(postNoteAction({id: selection.profile, stageTo: lastState, text}));
+            localStore.dispatch(postNoteAction({id: selection.profile, stageTo: -1, text}));
             setText({value: ""});
             setEditable(true);
         }
@@ -258,7 +295,7 @@ export const NotesManager: React.FC<Props> = ({}) => {
                 </div>
             </div>
             <div className="notes-title">
-                <label>Notes</label>
+                <label>History</label>
                 <label className="notes-counter">{notes ? notes.length : 0}</label>
             </div>
             <div className="search-bar">
@@ -275,7 +312,8 @@ export const NotesManager: React.FC<Props> = ({}) => {
             <div className="scroll-container">
                 <div className="scroll-content">
                     {notes?.map((n, i) =>
-                        (<NoteCard key={i} note={n}/>))}
+                        (<NoteCard key={i} note={n}
+                                   currentCount={i} totalCount={notes.length} lastNoteRef={lastNoteRef}/>))}
                     {notes.length == 0 &&
                         <div className="no-notes">
                             <NoNotes/>

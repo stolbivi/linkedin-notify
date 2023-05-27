@@ -6,8 +6,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-items: center;
-  padding: 6px 11px;
+  justify-content: center;
+  padding: 6px 14px;
   border-radius: 37px;
   color: $stage;
   font-family: 'Helvetica';
@@ -18,7 +18,8 @@
   user-select: none;
   white-space: nowrap;
   height: 18px;
-
+  width: 60px !important;
+  transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
   .loader {
     position: absolute;
     top: 50%;
@@ -39,24 +40,97 @@
 
 .interested {
   background-color: $stage-interested;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .not-interested {
-  background-color: $stage-not-interested;
+  background-color: $stage-passive;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .interviewing {
   background-color: $stage-interviewing;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .failed {
   background-color: $stage-failed;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.inactive {
+  background-color: white;
+  color: #8B8B8B;
+  border: 1px solid #8B8B8B;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
 .hired {
   background-color: $stage-hired;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
 }
 
-.inactive {
-  background-color: $stage-inactive;
+.passive{
+  background-color: $stage-passive;
+  color: $notes-color-3;
+  border: 1px solid #8b8b8b00;
+  border-radius: 37px;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.customPill {
+  width: 75%;
+  white-space: normal;
+  word-wrap: break-word;
+  transition: background-color 0.3s ease, border 0.3s ease;
+}
+
+.pill-parent{
+  justify-content: center;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60px;
+}
+
+.ellipsis-stage-pill{
+  height: 28px;
+  align-items: center;
+  display: flex;
+}
+
+.note-card-fit{
+  width: fit-content !important;
+}
+
+.note-drop-down{
+  width: 84px !important;
+}
+
+
+.stage-pill {
+  transition: background-color 0.3s ease, border 0.3s ease;
+  background-color: $color-stage-background !important;
+  color: $color-stage-color !important;
+  border:  1px solid $color-stage-border !important;
+
+}
+.stage-pill:hover {
+  background-color: $color-stage-background-hover !important;
+  color: $color-stage-color-hover !important;
+  box-shadow: inset 0 0 0 1px $color-stage-border-hover !important;
 }

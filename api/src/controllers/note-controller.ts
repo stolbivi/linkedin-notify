@@ -3,6 +3,8 @@ import express from "express";
 import {BaseController} from "./base-controller";
 import {Note, NoteModel} from "../persistence/note-model";
 import {v4 as uuid} from 'uuid';
+import {ParentStageEnum, StageModel} from "../persistence/stage-model";
+import {StageController} from "./stage-controller";
 
 
 @Route("/api")
@@ -93,6 +95,38 @@ export class NoteController extends BaseController {
         }
 
         try {
+            if(ParentStageEnum.GEOGRAPHY !== body.parentStage && ParentStageEnum.GROUPS !== body.parentStage) {
+                await StageModel.scan("author").eq(body.author)
+                    .where("profileId").eq(body.profile)
+                    .where("parentStage").eq(body.parentStage)
+                    .exec()
+                    .then((items: any[]) => {
+                        items.forEach((item) => {
+                            item.delete();
+                        });
+                    })
+                    .catch((error: any) => {
+                        console.log(error);
+                    });
+                await NoteModel.scan("author").eq(body.author)
+                    .where("profile").eq(body.profile)
+                    .where("parentStage").eq(body.parentStage)
+                    .exec()
+                    .then((items: any[]) => {
+                        items.forEach((item) => {
+                            item.delete();
+                        });
+                    })
+                    .catch((error: any) => {
+                        console.log(error);
+                    });
+            }
+            if(!body.text) {
+                const stageController = new StageController();
+                await stageController.findLatestStage(body.profile,body.author).then(resp => {
+                    body.stageFrom = resp?.stage >= 0 ? resp?.stage : -1
+                })
+            }
             const toCreate = {...body, id: uuid()};
             const saved = await NoteModel.create(toCreate);
             let message: any = {response: saved.toJSON()};

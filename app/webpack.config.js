@@ -4,25 +4,59 @@ const DIST = "dist";
 
 module.exports = function (env, argv) {
     const pathToEnv = `env/${env.env}.env`;
-    console.log('Environment:', env, 'using env file', pathToEnv);
+    console.log("Environment:", env, "using env file", pathToEnv);
     require("dotenv").config({path: pathToEnv});
     const definitions = {
-        'process.env.BACKEND_BASE': process.env.BACKEND_BASE,
-        'process.env.SIGN_UP_URL': process.env.SIGN_UP_URL
-    }
-    console.log('Definitions:', definitions);
+        "process.env.BACKEND_BASE": process.env.BACKEND_BASE,
+        "process.env.SIGN_UP_URL": process.env.SIGN_UP_URL,
+        "process.env.SENTRY_DISABLED": process.env.SENTRY_DISABLED,
+        "process.env.SENTRY_URL": process.env.SENTRY_URL,
+        "process.env.BYPASS_AUTH": process.env.BYPASS_AUTH,
+        "process.env.BALANCER_DEFAULT_WAIT": process.env.BALANCER_DEFAULT_WAIT,
+        "process.env.BALANCER_DEFAULT_WAIT_INCREASE": process.env.BALANCER_DEFAULT_WAIT_INCREASE,
+        "process.env.BALANCER_MAX_REPLAYS": process.env.BALANCER_MAX_REPLAYS,
+        "process.env.BALANCER_WINDOW_LENGTH": process.env.BALANCER_WINDOW_LENGTH,
+        "process.env.BALANCER_WINDOW_THRESHOLD": process.env.BALANCER_WINDOW_THRESHOLD,
+    };
+    console.log("Definitions:", definitions);
+
+    const commonRules = [
+        {
+            test: /\.(png|jpe?g|gif|svg)$/i,
+            use: [
+                {
+                    loader: "url-loader",
+                    options: {
+                        limit: 8192,
+                        name: "static/media/[name].[hash:8].[ext]",
+                    },
+                },
+            ],
+        },
+    ];
+
     return [
-        tsEntry(DIST, "./src/bs.ts", "scripts/bs.js", definitions),
+        tsEntry(DIST, "./src/bs.ts", "scripts/bs.js", definitions, commonRules),
         withCSSInlined(
-            tsEntry(DIST, "./src/inpage.tsx", "content_scripts/inpage.js", definitions)
+            tsEntry(
+                DIST,
+                "./src/inpage.tsx",
+                "content_scripts/inpage.js",
+                definitions,
+                commonRules
+            )
         ),
         withHTML(
-            tsEntry(DIST, "./src/popup/popup.tsx", "popup.js", definitions),
-            "./src/popup/popup.html", "popup.html", "popup.css"
+            tsEntry(DIST, "./src/popup/popup.tsx", "popup.js", definitions, commonRules),
+            "./src/popup/popup.html",
+            "popup.html",
+            "popup.css"
         ),
         withHTML(
-            tsEntry(DIST, "./src/maps/loader.tsx", "maps/loader.js", definitions),
-            "./src/maps/loader.html", "maps/loader.html", "maps/loader.css"
+            tsEntry(DIST, "./src/maps/loader.tsx", "maps/loader.js", definitions, commonRules),
+            "./src/maps/loader.html",
+            "maps/loader.html",
+            "maps/loader.css"
         ),
     ];
 };

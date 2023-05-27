@@ -1,0 +1,46 @@
+@import "../themes/primary";
+@import "AccessGuard";
+
+.top-right-corner {
+  position: absolute;
+  top: 0.8em;
+  right: 5em;
+}
+
+.last-seen {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  padding: 7px 6px;
+  border-radius: 37px;
+  background: $last-viewed-background;
+  color: $last-viewed;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  user-select: none;
+  white-space: nowrap;
+  height: 20px;
+
+  .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  label {
+    user-select: none;
+    margin: 0em 0.5em;
+  }
+
+  span {
+    font-weight: 600;
+  }
+}

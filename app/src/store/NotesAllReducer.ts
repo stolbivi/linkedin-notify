@@ -18,10 +18,18 @@ const slice = createSlice({
         postNoteAction: (_1, _2: PayloadAction<PostNotePayload>) => {
         },
         appendNoteAction: (state, action: PayloadAction<NoteExtended>) => {
-            state.data = [...state.data, action.payload];
+            state.data.unshift(action.payload);
         },
+        deleteNoteAction: (_1, _2: PayloadAction<{id: string, url?: string}>) => {
+        },
+        triggerDeleteNoteAction: (state, action: PayloadAction<{id: string}>) => {
+            state.data = state.data.filter(note => note.id !== action.payload.id);
+        },
+        removeNoteByStageTo: (state, action: PayloadAction<{stageTo: number}>) => {
+            state.data = state.data.filter(note => note.stageTo !== action.payload.stageTo);
+        }
     }
 });
 
-export const {getNotesAction, setNotesAction, postNoteAction, appendNoteAction} = slice.actions
+export const {getNotesAction, setNotesAction, postNoteAction, appendNoteAction, deleteNoteAction, triggerDeleteNoteAction, removeNoteByStageTo} = slice.actions
 export default slice.reducer

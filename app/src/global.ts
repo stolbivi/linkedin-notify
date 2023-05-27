@@ -4,7 +4,9 @@ export const LINKEDIN_DOMAIN = 'linkedin.com';
 export const VERBOSE = false;
 export const SHARE_URN = "urn:li:share:7010927250069934081";
 export const MAPS_KEY = "AIzaSyDewx7AbMwkRxcyYA9zQ1RTIAsDyWR4svo";
-
+export const LOGIN_URL = `${process.env.BACKEND_BASE}/auth/linkedin`;
+export const UPGRADE_TO_PRO = "Upgrade To Pro";
+export const ACTIVE_FREE_TRIAL = "Active Free Trial";
 // env variables are interpolated
 export const BACKEND_API = `${process.env.BACKEND_BASE}/api/`;
 export const BACKEND_STATIC = `${process.env.BACKEND_BASE}/static/`;
@@ -45,6 +47,14 @@ export interface Features {
     updatedAt: string
 }
 
+export interface UserStage {
+    text: string;
+    userId: string;
+    id?: string;
+    stageId: number;
+    author?: string;
+}
+
 export interface Note {
     id?: string
     profile: string
@@ -54,6 +64,8 @@ export interface Note {
     stageTo?: number
     createdAt?: string
     updatedAt?: string
+    stageText?: string
+    parentStage?: number
 }
 
 export interface NoteExtended extends Note {
@@ -98,4 +110,50 @@ export interface Shared {
 
 export interface Theme {
     [key: string]: string
+}
+
+export interface Message {
+    messageBody?: string,
+    conversationId?: string,
+    recipientId?: string
+}
+
+export interface Message {
+    messageBody?: string,
+    conversationId?: string,
+    recipientId?: string
+}
+
+export interface Job {
+    id?: string
+    title?: string
+    salary?: string
+    company?: string
+    hiringContact?: string
+    type?: string
+    geography?: string
+    status?: string
+    assigned?: string
+    description?: string
+    author?: string
+}
+export interface AssignedJob {
+    id?: string
+    jobId?: string
+    author?: string
+    assignedBy?: string
+    name?: string
+    designation?:string
+    profileImg?:string
+    profileId?: string
+    companyName?: string
+    conversationUrn?: string
+    userId?: string
+}
+export interface CustomSalary {
+    id?: string
+    author?: string
+    leftPayDistribution?: number,
+    rightPayDistribution?: number,
+    progressivePay?: string
 }

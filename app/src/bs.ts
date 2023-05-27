@@ -1,37 +1,64 @@
 import {MessagesV2, Tabs} from "@stolbivi/pirojok";
-import {LINKEDIN_DOMAIN, VERBOSE} from "./global";
+import {LINKEDIN_DOMAIN, LOGIN_URL, VERBOSE} from "./global";
 import {LinkedInAPI} from "./services/LinkedInAPI";
 import {BackendAPI} from "./services/BackendAPI";
 import {
+    assignJob,
     completion,
     conversationAck,
+    createCustomStage,
+    deleteJob,
+    deleteNote,
+    deleteStage,
+    getAssignedJob,
+    getAssignedJobsById,
+    getAuthorStages,
     getBadges,
+    getCompanyByUrn,
     getConversationDetails,
+    getConversationProfile,
     getConversations,
     getCookies,
+    getCustomSalary,
+    getCustomStages,
     getFeatures,
     getInvitations,
     getIsLogged,
     getIsUnlocked,
+    getJobs,
+    getLastSeen,
     getLastViewed,
+    getLatestStage,
+    getMe,
     getNotesAll,
+    getNotesByProfile,
     getNotifications,
+    getProfileByUrn,
     getSalary,
     getStages,
     getSubscription,
     getTheme,
     getTz,
+    getUserIdByUrn,
     handleInvitation,
+    handleNewsLetterInvitation,
     markNotificationRead,
     markNotificationsSeen,
     openUrl,
+    postJob,
     postNote,
+    postReply,
+    saveHandler,
+    setCustomSalary,
     setFeatures,
     setLastViewed,
     setStage,
+    setStageFromKanban,
     setTheme,
     switchThemeRequest,
-    unlock
+    unlock,
+    updateJob,
+    getBilling
 } from "./actions";
 import {listenToThemeCookie} from "./themes/ThemeUtils";
 
@@ -56,7 +83,6 @@ const startMonitoring = () => {
     chrome.alarms.create(CHECK_BADGES, {periodInMinutes: CHECK_FREQUENCY, delayInMinutes: 0});
     chrome.alarms.create(AUTO_FEATURES, {periodInMinutes: AUTO_FREQUENCY, delayInMinutes: 0.2});
 }
-
 // Main course below! //
 
 getCookies(LINKEDIN_DOMAIN)
@@ -74,36 +100,62 @@ messagesV2.listen(getConversations);
 messagesV2.listen(getIsUnlocked);
 messagesV2.listen(unlock);
 messagesV2.listen(getConversationDetails);
+messagesV2.listen(getConversationProfile);
 messagesV2.listen(conversationAck);
 messagesV2.listen(getNotifications);
 messagesV2.listen(markNotificationsSeen);
 messagesV2.listen(markNotificationRead);
 messagesV2.listen(getInvitations);
 messagesV2.listen(handleInvitation);
+messagesV2.listen(handleNewsLetterInvitation);
 messagesV2.listen(completion);
 messagesV2.listen(getSalary);
 messagesV2.listen(getTz);
 messagesV2.listen(getFeatures);
 messagesV2.listen(setFeatures);
+messagesV2.listen(saveHandler);
 messagesV2.listen(getStages);
 messagesV2.listen(setStage);
 messagesV2.listen(getNotesAll);
+messagesV2.listen(getNotesByProfile);
 messagesV2.listen(postNote);
 messagesV2.listen(getSubscription);
+messagesV2.listen(getLastSeen);
 messagesV2.listen(getLastViewed);
 messagesV2.listen(setLastViewed);
 messagesV2.listen(getTheme);
 messagesV2.listen(setTheme);
-
+messagesV2.listen(postReply);
+messagesV2.listen(getProfileByUrn);
+messagesV2.listen(getCompanyByUrn);
+messagesV2.listen(getCustomStages);
+messagesV2.listen(createCustomStage);
+messagesV2.listen(deleteNote);
+messagesV2.listen(postJob);
+messagesV2.listen(getJobs);
+messagesV2.listen(updateJob);
+messagesV2.listen(deleteJob);
+messagesV2.listen(getAuthorStages);
+messagesV2.listen(setStageFromKanban);
+messagesV2.listen(deleteStage);
+messagesV2.listen(getUserIdByUrn);
+messagesV2.listen(getLatestStage);
+messagesV2.listen(assignJob);
+messagesV2.listen(getAssignedJob);
+messagesV2.listen(getMe);
+messagesV2.listen(getAssignedJobsById);
+messagesV2.listen(getCustomSalary);
+messagesV2.listen(setCustomSalary);
+messagesV2.listen(getBilling);
 // listening to cookies store events
 listenToThemeCookie((cookie) => {
     tabs.withAllTabs().then(tabs => {
         for (let i = 0; i < tabs.length; ++i) {
             try {
                 messagesV2.requestTab(tabs[i].id, switchThemeRequest({theme: cookie.value}).toAction())
-                    .catch(e => console.log(e));
+                    .catch(e => console.error(e));
             } catch (e) {
-                console.log(e)
+                console.error(e)
             }
         }
     });
@@ -113,10 +165,25 @@ chrome.cookies.onChanged.addListener(async (changeInfo) => {
         if (changeInfo.removed) {
             console.log("Stop monitoring");
             await chrome.alarms.clearAll();
-            chrome.action.setIcon({path: "/content/icon-128-logout.png"});
+            await chrome.storage.session.remove("proFeatures");
+            await chrome.storage.local.remove("proFeatures");
+            chrome.cookies.getAll({}, function (cookies) {
+                for (let i = 0; i < cookies.length; i++) {
+                    if (cookies[i].domain == "www.linkedin.com" || cookies[i].domain == "api.lnmanager.com" || cookies[i].domain == "www.lnmanager.com") {
+                        chrome.cookies.remove({
+                            url: "https://" + cookies[i].domain + cookies[i].path,
+                            name: cookies[i].name
+                        });
+                    }
+                }
+            });
+            await chrome.action.setIcon({path: "/content/icon-128-logout.png"});
             await chrome.action.setBadgeText({text: ""});
         } else {
-            startMonitoring();
+            chrome.action.setIcon({path: "/content/icon-128.png"});
+            fetch(LOGIN_URL).then(_resp => {
+                startMonitoring();
+            });
         }
     }
 });
@@ -129,8 +196,8 @@ function checkBadges() {
             if (l) {
                 console.debug('Checking badges');
                 chrome.action.setIcon({path: "/content/icon-128.png"});
-                await chrome.action.setBadgeBackgroundColor({color: "#585858"});
-                await chrome.action.setBadgeText({text: "sync"});
+                //await chrome.action.setBadgeBackgroundColor({color: "#585858"});
+                //await chrome.action.setBadgeText({text: "sync"});
 
                 const token = api.getCsrfToken(cookies);
                 const response = await api.getTabBadges(token);
@@ -147,8 +214,8 @@ function autoFeatures() {
     console.debug('Firing feed updates');
 
     function getValue(n: any) {
-        const id = n.miniCompany ? n.miniCompany : n.miniProfile;
-        return id.split(":").pop();
+        const id = n?.miniCompany ? n?.miniCompany : n?.miniProfile;
+        return id?.split(":")?.pop();
     }
 
     return getCookies(LINKEDIN_DOMAIN)
@@ -159,8 +226,6 @@ function autoFeatures() {
                 const featuresResponse = await backEndAPI.getFeatures();
                 if (featuresResponse && featuresResponse?.response?.features?.length > 0) {
                     const features = featuresResponse?.response?.features;
-                    // const updatedAt = new Date(featuresResponse?.response?.updatedAt);
-                    // console.log(updatedAt.toLocaleDateString());
                     const token = api.getCsrfToken(cookies);
                     const response = await api.getUpdates(token, 50);
                     const updates = api.extractUpdates(response);
@@ -210,3 +275,61 @@ chrome.alarms.onAlarm.addListener(a => {
             return autoFeatures();
     }
 });
+
+let contentScriptReady = false;
+//@ts-ignore
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.contentScriptReady) {
+        contentScriptReady = true;
+        sendResponse({success: true});
+    }
+    return true; // Keep the message channel open for the response
+});
+
+chrome.cookies.onChanged.addListener((changeInfo) => {
+    if (
+        contentScriptReady &&
+        changeInfo.cookie &&
+        changeInfo.cookie.name === "li_theme" &&
+        changeInfo.cookie.domain.includes(".linkedin.com")
+    ) {
+        const theme = changeInfo.cookie.value === "dark" ? "dark" : "light";
+        chrome.tabs.query({active: true}, (tabs) => {
+            chrome.scripting.executeScript({
+                target: {tabId: tabs[0].id},
+                func: function (theme) {
+                    window.postMessage({theme: theme}, "*");
+                },
+                args: [theme],
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    }
+});
+
+const visitedUrls: string[] = [];
+chrome.history.onVisited.addListener((historyItem) => {
+    let isInitialLoad = !visitedUrls.includes(historyItem.url);
+    chrome.tabs.query({active: true}, (tabs) => {
+        chrome.scripting.executeScript({
+            target: {tabId: tabs[0].id},
+            func: function (isInitialLoad) {
+                window.postMessage({type: "modifyElements", initialLoad: isInitialLoad}, "*");
+            },
+            args: [isInitialLoad],
+        }).catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+    visitedUrls.push(historyItem.url);
+});
+
+// if user directly goes to linkedin.com/#lndashboard?view=...
+// then we need to set showDashboard to true
+chrome.webNavigation.onBeforeNavigate.addListener((e) => {
+    if (e.url.includes("lndashboard")) {
+        const v = e.url.split('view=')[1]?.split('&')[0]
+        chrome.storage.local.set({showDashboard: true, view: v})
+    }
+})

@@ -1,17 +1,21 @@
 import React, {useEffect, useState} from "react";
-import {extractIdFromUrl} from "../../global";
-import {StageLabels} from "./StageSwitch";
+import {MessagesV2} from "@stolbivi/pirojok";
+import {extractIdFromUrl, VERBOSE} from "../../global";
 import {injectLastChild} from "../../utils/InjectHelper";
 import {Loader} from "../../components/Loader";
 import {AccessGuard, AccessState} from "../AccessGuard";
 import {CompleteEnabled, IdAwareState, localStore, selectStage} from "../../store/LocalStore";
 import {Provider, shallowEqual, useSelector} from "react-redux";
 import {showNotesAndChartsAction} from "../../store/ShowNotesAndCharts";
-
+import {Stage} from "../../store/StageReducer";
+import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
 // @ts-ignore
 import stylesheet from "./StageSwitch.scss";
-import {getStageAction, Stage} from "../../store/StageReducer";
-import {useUrlChangeSupport} from "../../utils/URLChangeSupport";
+import {getTheme, SwitchThemePayload} from "../../actions";
+import {applyThemeProperties as setThemeUtil, useThemeSupport} from "../../themes/ThemeUtils";
+import {theme as LightTheme} from "../../themes/light";
+import {createAction} from "@stolbivi/pirojok/lib/chrome/MessagesV2";
+import {theme as DarkTheme} from "../../themes/dark";
 
 export const StagePillFactory = () => {
     // individual profile
@@ -25,15 +29,32 @@ export const StagePillFactory = () => {
                 injectLastChild(header[0].parentElement, "lnm-stage",
                     <Provider store={localStore}>
                         <StagePill id={extractIdFromUrl(window.location.href)}/>
-                    </Provider>
+                    </Provider>, "StagePill"
                 );
             }
         }
     }
+    setTimeout(() => {
+        if (window.location.href.indexOf("/messaging/") > 0) {
+            const nameContainer = document.getElementsByClassName("artdeco-entity-lockup__badge ember-view");
+            if (nameContainer && nameContainer.length > 0) {
+                const nameHeader = nameContainer[0].getElementsByClassName("artdeco-entity-lockup__degree");
+                if (nameHeader && nameHeader.length > 0) {
+                    (nameHeader[0].parentElement as HTMLElement).style.paddingRight = "0.5em";
+                    injectLastChild(nameHeader[0].parentElement, "lnm-stage",
+                        <Provider store={localStore}>
+                            <StagePill id={extractIdFromUrl(window.location.href)} usePrf/>
+                        </Provider>, "StagePill"
+                    );
+                }
+            }
+        }
+    }, 700);
 }
 
 type Props = {
     id: string
+    usePrf?: boolean
 };
 
 export const StagePill: React.FC<Props> = ({id}) => {
@@ -43,6 +64,23 @@ export const StagePill: React.FC<Props> = ({id}) => {
     const [showNotes, setShowNotes] = useState<boolean>(false);
     const stages: IdAwareState<CompleteEnabled<Stage>> = useSelector(selectStage, shallowEqual);
     const [url] = useUrlChangeSupport(window.location.href);
+    const messages = new MessagesV2(VERBOSE);
+    const [_, rootElement, updateTheme] = useThemeSupport<HTMLDivElement>(messages, LightTheme);
+
+    useEffect(() => {
+        messages.request(getTheme()).then(theme => updateTheme(theme)).catch();
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                updateTheme(payload.theme);
+                return Promise.resolve();
+            }));
+        messages.listen(createAction<SwitchThemePayload, any>("switchTheme",
+            (payload) => {
+                let theme = payload.theme === "light" ? LightTheme : DarkTheme;
+                setThemeUtil(theme, rootElement);
+                return Promise.resolve();
+            }));
+    }, []);
 
     useEffect(() => {
         if (url?.length > 0) {
@@ -54,7 +92,6 @@ export const StagePill: React.FC<Props> = ({id}) => {
         if (accessState !== AccessState.Valid || !idInternal) {
             return;
         }
-        localStore.dispatch(getStageAction({id: idInternal, state: {url: idInternal}}));
     }, [idInternal, accessState]);
 
     const onClick = () => {
@@ -63,16 +100,12 @@ export const StagePill: React.FC<Props> = ({id}) => {
         } else {
             localStore.dispatch(showNotesAndChartsAction({
                 id: idInternal,
-                state: {showSalary: false, showNotes: true, show: true}
+                state: {showSalary: false, showNotes: true, show: true, id: idInternal}
             }));
         }
     }
 
     const extractFromIdAware = (): CompleteEnabled<any> => stages && stages[idInternal] ? stages[idInternal] : {};
-
-    const getStage = () => extractFromIdAware().stage >= 0 ? extractFromIdAware().stage : -1;
-
-    const getText = () => extractFromIdAware().completed ? StageLabels[getStage()].label : "Loading"
 
     return (
         <React.Fragment>
@@ -80,9 +113,9 @@ export const StagePill: React.FC<Props> = ({id}) => {
             <AccessGuard setAccessState={setAccessState} className={"access-guard-px16"}
                          loaderClassName="loader-base loader-px24"/>
             {accessState === AccessState.Valid &&
-                <div className={"stage " + StageLabels[getStage()].class} onClick={onClick} style={{marginLeft: "1em"}}>
+                <div className={`stage inactive stage-pill`} onClick={onClick} style={{marginLeft: "1em"}} ref={rootElement}>
                     <div className="loader"><Loader show={!extractFromIdAware().completed}/></div>
-                    <label style={{opacity: extractFromIdAware().completed ? 1 : 0}}>{getText()}</label>
+                    <label style={{opacity: extractFromIdAware().completed ? 1 : 0,}}>Add Notes</label>
                 </div>}
         </React.Fragment>
     );

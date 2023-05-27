@@ -16,13 +16,18 @@ export interface Salary {
     experienceYears?: number
 }
 
+export interface GetSalaryRequest {
+    id: string
+    conversation?: boolean
+}
+
 const initialState: IdAwareState<CompleteEnabled<Salary>> = {};
 
 const slice = createSlice({
     name: "salaryState",
     initialState,
     reducers: {
-        getSalaryAction: (_1, _2: PayloadAction<IdAwareRequest<string>>) => {
+        getSalaryAction: (_1, _2: PayloadAction<IdAwareRequest<GetSalaryRequest>>) => {
         },
         setSalaryAction: (state, action: PayloadAction<IdAwareRequest<CompleteEnabled<Salary>>>) => {
             if (!state[action.payload.id]) {

@@ -1,10 +1,25 @@
 import {BaseAPI, Response} from "./BaseAPI";
-import {BACKEND_API, Features, Note, Shared, Subscriptions} from "../global";
+import {AssignedJob, BACKEND_API, CustomSalary, Features, Job, Note, Shared, Subscriptions, UserStage} from "../global";
 import {StageEnum} from "../injectables/notes/StageSwitch";
 import {SetFeaturePayload} from "../actions";
 import {LastViewed} from "../store/LastViewedReducer";
 
 export class BackendAPI extends BaseAPI {
+
+    public getCustomStages(): Promise<Response<UserStage[]>> {
+        console.log('in backend api get custom stages')
+        return this.fetchRequest(
+            `${BACKEND_API}stage/userStages`,
+            this.getRequest("GET")
+        )
+    }
+
+    public postCustomStage(payload: { text: string, author: string }): Promise<Response<UserStage>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/userStage`,
+            this.getRequest("POST", payload)
+        )
+    }
 
     public getCompletion(prompt: string): Promise<any> {
         return this.fetchRequest(
@@ -41,6 +56,34 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
+
+    private async retryHandler(url: string, request: RequestInit, retryCount: number): Promise<Response<any>> {
+        console.debug(`retrying ${url} with ${retryCount} retries left`)
+        let res = await this.fetchRequest(url, request)
+        if (res.status === 500 && retryCount > 0) {
+            // await for 1 second
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            // retry
+            res = await this.retryHandler(url, request, retryCount - 1)
+        }
+        return res
+    }
+
+    public async saveHandler(handler: SetFeaturePayload[]): Promise<any> {
+        for (let features of handler) {
+            let res = await this.fetchRequest(
+                `${BACKEND_API}features`,
+                this.getRequest("POST", features)
+            )
+            if (res.status === 500) {
+                // retry
+                res = await this.retryHandler(`${BACKEND_API}features`, this.getRequest("POST", features), 3)
+            }
+            console.log(res);
+        }
+        return true
+    }
+
     public getStage(id: string, as?: string): Promise<Response<any>> {
         return this.fetchRequest(
             `${BACKEND_API}stage/${id}` + (as ? `?as=${as}` : ""),
@@ -48,10 +91,45 @@ export class BackendAPI extends BaseAPI {
         );
     }
 
-    public setStage(id: string, stage: StageEnum, author: string): Promise<Response<any>> {
+    public getLatestStage(id: string, as?: string): Promise<Response<any>> {
         return this.fetchRequest(
-            `${BACKEND_API}stage/${id}`,
-            this.getRequest("PUT", {stage, author})
+            `${BACKEND_API}stage/latest/author/${id}` + (as ? `?as=${as}` : ""),
+            this.getRequest("GET")
+        );
+    }
+
+    public setStage(id: string, stage: StageEnum, author: string, parentStage: number, name: string, designation: string,
+                    profileImg: string, stageText?: string, profileId?: string, companyName?: string, conversationUrn?: string, userId?: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage`,
+            this.getRequest("POST", {
+                id,
+                stage,
+                author,
+                parentStage,
+                name,
+                designation,
+                profileImg,
+                stageText: stageText || undefined,
+                profileId,
+                companyName,
+                conversationUrn,
+                userId
+            })
+        );
+    }
+
+    public setStageFromKanban(id: string, stage?: StageEnum, stageText?: string, as?: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/${id}` + (as ? `?as=${as}` : "") + (stage ? `&stage=${stage}` : "") + (stageText ? `&stageText=${stageText}` : ""),
+            this.getRequest("PUT", {})
+        );
+    }
+
+    public getAuthorStages(id: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/author/${id}`,
+            this.getRequest("GET")
         );
     }
 
@@ -73,6 +151,13 @@ export class BackendAPI extends BaseAPI {
         return this.fetchRequest(
             `${BACKEND_API}note`,
             this.getRequest("POST", note)
+        );
+    }
+
+    public deleteNote(noteId: string): Promise<Response<Note>> {
+        return this.fetchRequest(
+            `${BACKEND_API}note/${noteId}`,
+            this.getRequest("DELETE")
         );
     }
 
@@ -109,6 +194,82 @@ export class BackendAPI extends BaseAPI {
         return this.fetchRequest(
             `${BACKEND_API}shared`,
             this.getRequest("POST", shared)
+        );
+    }
+
+    public getJobs(): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job`,
+            this.getRequest("GET")
+        );
+    }
+
+    public postJob(job: Job): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job`,
+            this.getRequest("POST", job)
+        );
+    }
+
+    public updateJob(job: Job): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/${job.id}`,
+            this.getRequest("PUT", job)
+        );
+    }
+
+    public deleteJob(jobId: string): Promise<Response<Job>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/${jobId}`,
+            this.getRequest("DELETE")
+        );
+    }
+
+    public deleteStage(stageId: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}stage/${stageId}`,
+            this.getRequest("DELETE")
+        );
+    }
+
+    public assignJob(job: AssignedJob): Promise<Response<AssignedJob>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/assign`,
+            this.getRequest("POST", job)
+        );
+    }
+
+    public getAssignedJob(rcpntUserId: string, author: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}job/assigned/${rcpntUserId}` + (author ? `?author=${author}` : ""),
+            this.getRequest("GET")
+        );
+    }
+
+    public getAssignedJobsById(jobId: string, as: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}jobs/assigned/${jobId}` + (as ? `?as=${as}` : ""),
+            this.getRequest("GET")
+        );
+    }
+
+    public setCustomSalary(salary: CustomSalary): Promise<Response<CustomSalary>> {
+        return this.fetchRequest(
+            `${BACKEND_API}custom-salary`,
+            this.getRequest("POST", salary)
+        );
+    }
+
+    public getCustomSalary(id: string, as: string): Promise<Response<any>> {
+        return this.fetchRequest(
+            `${BACKEND_API}custom-salary/${id}` + (as ? `?as=${as}` : ""),
+            this.getRequest("GET")
+        );
+    }
+    public getBilling(): Promise<Response<any>> {
+        return this.fetchRequest<any>(
+            `${BACKEND_API}billing`,
+            this.getRequest("GET")
         );
     }
 

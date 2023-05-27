@@ -4,6 +4,8 @@
 .conversation-card {
   @extend .base-card;
   cursor: pointer;
+  padding: 0.8em 1em;
+  padding-bottom: 0.1em;
 
   .card-badge {
     display: flex;
@@ -11,11 +13,20 @@
     align-items: center;
     font-size: 12px;
     font-weight: 400;
-    color: $conversation-card-badge;
-    background-color: $conversation-card-background;
+    color: var(--conversation-card-badge);
+    background-color: var(--tab-badge-background);
     border-radius: 50%;
-    min-width: 17px;
-    height: 17px;
+    min-width: 9px;
+    height: 9px;
+    position: absolute;
+    top: 3px;
+    left: -2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  }
+
+  .message-time-stamp {
+    margin-left: auto;
+    padding-right: 15px;
   }
 
 }
