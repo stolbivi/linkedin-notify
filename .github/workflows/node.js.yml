@@ -27,3 +27,8 @@ jobs:
           npm run build-release
           npm pack
         working-directory: app
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist.zip
+          path: dist_*.zip
