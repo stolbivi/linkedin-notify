@@ -164,7 +164,7 @@ export const AutoFeature: React.FC<Props> = ({fromProfile,fromCompany, type, url
     useEffect(() => {
         if(features.length > 0) {
             const typedFeature = features.find(f => f.type === type);
-            const index = typedFeature?.authors?.findIndex((f: string) => author.includes(f));
+            const index = typedFeature?.authors?.findIndex((f: string) => author && author.includes(f));
             setActive(index >= 0);
         } else {
             setActive(false);
