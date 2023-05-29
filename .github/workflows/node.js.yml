@@ -25,10 +25,10 @@ jobs:
         run: |
           npm install
           npm run build-release
-          npm pack
+          npm run pack
         working-directory: app
       - name: Upload build
         uses: actions/upload-artifact@v3
         with:
           name: dist.zip
-          path: dist.zip
+          path: dist_*.zip
