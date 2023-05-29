@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: dist.zip
-          path: dist.zip
+          path: app/dist_*.zip
