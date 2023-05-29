@@ -36,7 +36,7 @@ switch (args['command']) {
         init();
         break;
     case 'pack':
-        pack(false).then(/*nada*/)
+        pack(true).then(/*nada*/)
         break;
 }
 
