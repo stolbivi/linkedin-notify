@@ -25,8 +25,8 @@ function formatDate(date) {
     return (`${ye}-${mo}-${da}-${min}${sec}`);
 }
 
-async function pack() {
-    let pathToZip = `${paths.dist}_${formatDate(new Date())}.zip`;
+async function pack(fixedName) {
+    let pathToZip = fixedName ? `${paths.dist}.zip` : `${paths.dist}_${formatDate(new Date())}.zip`;
     console.log('Packing:', paths.dist, 'to:', pathToZip);
     await zip(paths.dist, pathToZip);
 }
@@ -36,7 +36,7 @@ switch (args['command']) {
         init();
         break;
     case 'pack':
-        pack();
+        pack(true).then(/*nada*/)
         break;
 }
 
